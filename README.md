@@ -58,4 +58,4 @@ We encourage you to report issues, documentation faults, and feature requests re
 
 ### License
 
-WSO2 Inc. licenses this source under the WSO2 Software License ([LICENSE](LICENSE)).
+WSO2 Inc. licenses this source under the WSO2 Software License ([LICENSE](https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin/blob/main/LICENSE)).
