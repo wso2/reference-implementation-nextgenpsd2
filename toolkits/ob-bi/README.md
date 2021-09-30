@@ -1,4 +1,4 @@
-### **WSO2 Open Banking BI Accelerator 3.0.0**
+### **WSO2 Open Banking BI Berlin Toolkit 1.0.0**
 
 **Try Locally:**
 

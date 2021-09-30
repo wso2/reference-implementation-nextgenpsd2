@@ -1,4 +1,4 @@
-### **WSO2 Open Banking IS Accelerator 3.0.0**
+### **WSO2 Open Banking IS Berlin Toolkit 1.0.0**
 
 **Try Locally:**
 
