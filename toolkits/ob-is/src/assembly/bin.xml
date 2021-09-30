@@ -35,5 +35,4 @@
             <source>${project.basedir}/README.md</source>
         </file>
     </files>
-
 </assembly>
