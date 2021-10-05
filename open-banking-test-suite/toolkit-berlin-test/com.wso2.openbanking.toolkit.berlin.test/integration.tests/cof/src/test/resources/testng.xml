@@ -1,0 +1,78 @@
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Berlin Group Integration">
+    <test name="Funds Confirmation Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Common_Tests.CofSCAFlowTest"/>
+        </classes>
+    </test>
+    <test name="Funds Confirmation Initiation Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofInitiationRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofInitiationRequestPayloadValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofGetConsentRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofGetConsentResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofDeleteConsentRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofDeleteConsentResponseValidationTests"/>
+        </classes>
+    </test>
+    <test name="Funds Confirmation Authorization Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class
+                    name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Authorization_Tests.CofAuthorizationRequestValidationTests"/>
+        </classes>
+    </test>
+    <test name="Funds Confirmation Retrieval Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Retrieval_Tests.CofRetrievalRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Retrieval_Tests.CofRetrievalRequestPayloadValidationTests"/>
+        </classes>
+    </test>
+</suite>
