@@ -35,7 +35,7 @@ public class AccessToken {
 
         ApplicationAccessTokenDto applicationAccessTokenDto = new ApplicationAccessTokenDto();
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-            .baseUri(ConfigParser.getInstance().getBaseURL())
+            .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .relaxedHTTPSValidation()
             .body(applicationAccessTokenDto.getPayload())
             .post(TestConstants.TOKEN_ENDPOINT);
@@ -89,7 +89,7 @@ public class AccessToken {
         throws TestFrameworkException {
 
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(payload)
                 .post(TestConstants.TOKEN_ENDPOINT);
     }
@@ -105,7 +105,7 @@ public class AccessToken {
         UserAccessTokenDto userAccessTokenDto = new UserAccessTokenDto();
         userAccessTokenDto.setCode(code);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(userAccessTokenDto.getPayload())
                 .post(TestConstants.TOKEN_ENDPOINT);
     }
@@ -121,7 +121,7 @@ public class AccessToken {
 
         userAccessTokenDto.setCode(code);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(userAccessTokenDto.getPayload())
                 .post(TestConstants.TOKEN_ENDPOINT);
     }
