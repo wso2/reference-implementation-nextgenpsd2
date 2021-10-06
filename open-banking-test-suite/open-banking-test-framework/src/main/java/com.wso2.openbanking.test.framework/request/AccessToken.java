@@ -74,7 +74,7 @@ public class AccessToken {
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
             .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .body(payload)
-            .post(TestConstants.OAUTH2_TOKEN_ENDPOINT);
+            .post(TestConstants.TOKEN_ENDPOINT);
     }
 
     /**

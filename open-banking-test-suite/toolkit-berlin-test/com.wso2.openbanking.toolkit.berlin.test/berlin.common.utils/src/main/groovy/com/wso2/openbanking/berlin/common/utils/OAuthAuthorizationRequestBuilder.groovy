@@ -28,7 +28,7 @@ import com.wso2.openbanking.test.framework.util.ConfigParser
 class OAuthAuthorizationRequestBuilder {
 
     static params = [
-            endpoint     : new URI("${ConfigParser.instance.baseURL}/authorize/"),
+            endpoint     : new URI("${ConfigParser.instance.authorisationServerURL}/oauth2/authorize/"),
     ]
 
     /**

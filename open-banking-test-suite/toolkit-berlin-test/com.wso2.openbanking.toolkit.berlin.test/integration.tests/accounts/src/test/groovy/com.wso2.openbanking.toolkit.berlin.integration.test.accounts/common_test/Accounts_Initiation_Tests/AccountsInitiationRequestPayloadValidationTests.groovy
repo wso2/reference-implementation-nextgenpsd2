@@ -80,7 +80,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -119,7 +119,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -158,7 +158,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{  
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -197,7 +197,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{  
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -236,7 +236,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -276,7 +276,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -316,7 +316,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -355,7 +355,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -395,7 +395,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -436,7 +436,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -476,7 +476,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -519,7 +519,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -562,7 +562,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -605,7 +605,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{  
             "access":{  
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                "accounts":[  
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -701,7 +701,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"

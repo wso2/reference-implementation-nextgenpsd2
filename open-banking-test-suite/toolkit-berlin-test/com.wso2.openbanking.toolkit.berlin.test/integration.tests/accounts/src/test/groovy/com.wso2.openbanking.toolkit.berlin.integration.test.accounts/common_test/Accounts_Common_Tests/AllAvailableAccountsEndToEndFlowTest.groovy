@@ -93,7 +93,7 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.ACCOUNTS_PATH)
 
-        Assert.assertNotNull(response.jsonPath().getJsonObject("com.wso2.openbanking.toolkit.berlin.integration.test.accounts"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"],

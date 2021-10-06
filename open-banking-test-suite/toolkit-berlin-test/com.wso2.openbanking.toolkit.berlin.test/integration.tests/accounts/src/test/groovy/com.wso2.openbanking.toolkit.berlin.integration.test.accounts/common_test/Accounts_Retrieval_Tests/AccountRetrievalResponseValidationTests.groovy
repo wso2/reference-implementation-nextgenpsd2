@@ -57,7 +57,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("com.wso2.openbanking.toolkit.berlin.integration.test.accounts"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -70,8 +70,8 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("com.wso2.openbanking.toolkit.berlin.integration.test.accounts"))
-        Assert.assertNotNull(response.jsonPath().getJsonObject("com.wso2.openbanking.toolkit.berlin.integration.test.accounts._links.balances"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts._links.balances"))
 
     }
 

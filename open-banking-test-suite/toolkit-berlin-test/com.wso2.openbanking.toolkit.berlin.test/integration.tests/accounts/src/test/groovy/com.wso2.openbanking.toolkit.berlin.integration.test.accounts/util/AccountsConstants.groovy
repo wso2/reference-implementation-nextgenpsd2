@@ -14,7 +14,6 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util
 
 import com.wso2.openbanking.test.framework.util.ConfigParser
 
-
 class AccountsConstants {
 
     static config = ConfigParser.getInstance()
@@ -25,21 +24,21 @@ class AccountsConstants {
     static final String transactionId = UUID.randomUUID().toString()
 
     public static String AISP_PATH = getConsentPath()
-    static final String ACCOUNTS_PATH = AISP_PATH + "com.wso2.openbanking.toolkit.berlin.integration.test.accounts"
+    static final String ACCOUNTS_PATH = AISP_PATH + "accounts"
     static final String CONSENT_PATH = AISP_PATH + "consents"
     static final String SPECIFIC_ACCOUNT_PATH = ACCOUNTS_PATH + "/" + regularAcc
     static final String TRANSACTIONS_PATH = ACCOUNTS_PATH + "/" + transactionAcc + "/transactions"
     static final String SPECIFIC_TRANSACTIONS_PATH = ACCOUNTS_PATH + "/" + transactionAcc + "/transactions/" + transactionId
     static final String BALANCES_PATH = ACCOUNTS_PATH + "/" + regularAcc + "/balances"
 
-    static final String CARD_ACCOUNTS_PATH = AISP_PATH + "card-com.wso2.openbanking.toolkit.berlin.integration.test.accounts"
+    static final String CARD_ACCOUNTS_PATH = AISP_PATH + "card-accounts"
     static final String SPECIFIC_CARD_ACCOUNTS_PATH = CARD_ACCOUNTS_PATH + "/" + regularAcc
     static final String CARD_ACCOUNTS_BALANCES_PATH = CARD_ACCOUNTS_PATH + "/" + regularAcc + "/balances"
     static final String CARD_ACCOUNTS_TRANSACTIONS_PATH = CARD_ACCOUNTS_PATH + "/" + transactionAcc + "/transactions"
 
     static final String V110_AISP_PATH = "AccountsInfoAPI/v1.1.0/"
     static final String V110_CONSENT_PATH = V110_AISP_PATH + "consents"
-    static final String V110_SPECIFIC_ACCOUNT_PATH = V110_AISP_PATH + "com.wso2.openbanking.toolkit.berlin.integration.test.accounts" + "/" + regularAcc
+    static final String V110_SPECIFIC_ACCOUNT_PATH = V110_AISP_PATH + "accounts" + "/" + regularAcc
 
     static final String CONSENT_STATUS_RECEIVED = "received"
     static final String CONSENT_STATUS_VALID = "valid"

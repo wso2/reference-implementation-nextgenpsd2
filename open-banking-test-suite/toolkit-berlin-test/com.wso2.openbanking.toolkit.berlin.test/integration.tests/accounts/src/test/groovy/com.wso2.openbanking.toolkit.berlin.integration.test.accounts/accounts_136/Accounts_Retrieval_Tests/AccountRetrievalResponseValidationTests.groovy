@@ -82,7 +82,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         if (isMultipleConsentServiceSupported) {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-            Assert.assertNotNull(response.jsonPath().getJsonObject("com.wso2.openbanking.toolkit.berlin.integration.test.accounts"))
+            Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
         } else {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
         }

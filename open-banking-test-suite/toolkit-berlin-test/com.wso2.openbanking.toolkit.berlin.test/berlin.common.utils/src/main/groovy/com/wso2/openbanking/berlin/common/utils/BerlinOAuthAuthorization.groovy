@@ -34,7 +34,7 @@ class BerlinOAuthAuthorization {
     private AuthorizationRequest request
 
     private params = [
-            endpoint     : new URI("${ConfigParser.instance.baseURL}/authorize/"),
+            endpoint     : new URI("${ConfigParser.instance.authorisationServerURL}/oauth2/authorize/"),
             response_type: new ResponseType("code"),
             client_id    : new ClientID(AppConfigReader.getClientId()),
             redirect_uri : new URI(AppConfigReader.getRedirectURL()),

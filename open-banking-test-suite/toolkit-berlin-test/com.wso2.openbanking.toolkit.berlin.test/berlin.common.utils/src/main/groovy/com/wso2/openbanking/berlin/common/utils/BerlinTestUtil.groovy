@@ -60,17 +60,8 @@ class BerlinTestUtil {
      */
     static String getAuthFlowError(String authUrl) {
 
-        def errorDescription
-
-        switch (solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                errorDescription  = URLDecoder.decode(authUrl.split("&")[1].split("=")[1].toString(),"UTF8")
-                break
-            default:
-                errorDescription = URLDecoder.decode(authUrl.split("&")[0].split("=")[1].toString(), "UTF8")
-                break
-        }
-
+        def errorDescription = URLDecoder.decode(authUrl.split("&")[0].split("=")[1]
+                .toString(), "UTF8")
         return errorDescription
     }
 }

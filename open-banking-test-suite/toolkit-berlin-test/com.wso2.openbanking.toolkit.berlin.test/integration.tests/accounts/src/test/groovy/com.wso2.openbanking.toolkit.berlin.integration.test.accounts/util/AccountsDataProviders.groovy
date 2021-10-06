@@ -61,7 +61,7 @@ class AccountsDataProviders {
     Object[][] getBankOfferedConsentData() {
 
         def bankOfferedConsentList = new ArrayList<Object[]>()
-        bankOfferedConsentList.add(["com.wso2.openbanking.toolkit.berlin.integration.test.accounts, balances and transactions from bank offered consent",
+        bankOfferedConsentList.add(["accounts, balances and transactions from bank offered consent",
                                     [AccountsConstants.DD_BALANCES_ACC_LIST,
                                      AccountsConstants.DD_TRANSACTION_ACC_LIST,
                                      AccountsConstants.DD_ACCOUNTS_ACC_LIST],

@@ -88,7 +88,7 @@ class BerlinRequestBuilder {
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
-        URI tokenEndpoint = new URI("${config.getBaseURL()}/token")
+        URI tokenEndpoint = new URI("${config.getAuthorisationServerURL()}/oauth2/token")
 
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
 

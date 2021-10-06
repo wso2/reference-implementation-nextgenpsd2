@@ -19,15 +19,11 @@ import java.util.Arrays;
  * Class to contain common constants used for Test Framework.
  */
 public class TestConstants {
-	public static final ConfigParser config = ConfigParser.getInstance();
+	public static final ConfigParser CONFIG = ConfigParser.getInstance();
 
 	public static final String SOLUTION_VERSION_130 = "1.3.0";
 	public static final String SOLUTION_VERSION_140 = "1.4.0";
 	public static final String SOLUTION_VERSION_150 = "1.5.0";
-
-	public static final String UK_SPEC_VERSION_316 = "3.1.6";
-	public static final String UK_SPEC_VERSION_315 = "3.1.5";
-	public static final String UK_SPEC_VERSION_300 = "3.0.0";
 
 	public static final String CLIENT_CREDENTIALS = "client_credentials";
 	public static final String AUTH_CODE = "authorization_code";
@@ -44,7 +40,7 @@ public class TestConstants {
 	public static final String SCA_CLAIM = "urn:openbanking:psd2:sca";
 	public static final String CA_CLAIM = "urn:openbanking:psd2:ca";
 	public static final String TIME_ZONE = "Asia/Colombo";
-	public static final ArrayList<String> ACCOUNTS_DEFAULT_SCOPES = new ArrayList<>(Arrays.asList("com.wso2.openbanking.toolkit.berlin.integration.test.accounts", "openid"));
+	public static final ArrayList<String> ACCOUNTS_DEFAULT_SCOPES = new ArrayList<>(Arrays.asList("accounts", "openid"));
 	public static final String AUTHORIZATION_HEADER_KEY = "Authorization";
 	public static final String AUTHORIZATION_BEARER_TAG = "Bearer ";
 	public static final String X_FAPI_CUSTOMER_LAST_LOGGED_TIME = "x-fapi-customer-last-logged-time";
@@ -61,13 +57,8 @@ public class TestConstants {
 	public static final String INVALID_KEYSTORE_ALIAS = "tpp3-invalid";
 
 	//Endpoints
-	public static final String AISP_BASE_URL = "open-banking/v3.1/aisp";
-	public static final String GET_ACCOUNT = AISP_BASE_URL + "/com.wso2.openbanking.toolkit.berlin.integration.test.accounts/";
-	public static final String GET_BALANCE = "/balances/";
-	public static final String ACCOUNT_CONSENT_INITIATION = AISP_BASE_URL + "/account-access-consents";
-	public static final String TOKEN_ENDPOINT = "/token";
-	public static final String OAUTH2_TOKEN_ENDPOINT = "/oauth2/token";
-	public static final String AUTHORIZE_ENDPOINT = "/authorize/?";
+	public static final String TOKEN_ENDPOINT = "/oauth2/token";
+	public static final String AUTHORIZE_ENDPOINT = "/oauth2/authorize/?";
 	public static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect";
 	public static final String REGISTER_SCOPE_ENDPOINT = "/api/identity/oauth2/v1.0/scopes";
 	public static final String OAUTH2_REVOKE_ENDPOINT = "/oauth2/revoke";
@@ -193,7 +184,7 @@ public class TestConstants {
 	//Non-Regulatory
 	public static final ArrayList<String> SCOPES_OPEN_ID = new ArrayList<>(Arrays.asList("openid"));
 
-	public static final String CLIENTID_NON_REGULATORY_APP = config.getNonRegulatoryClientId();
+	public static final String CLIENTID_NON_REGULATORY_APP = CONFIG.getNonRegulatoryClientId();
 	public static final String CCPORTAL_SIGNIN_XPATH = "//button[contains(text(),'Sign in')]";
 
 	public static final String OTP_CODE = "123456";

@@ -18,7 +18,7 @@ class AccountsInitiationPayloads {
 
     static final String defaultInitiationPayload = """{
             "access":{
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -45,7 +45,7 @@ class AccountsInitiationPayloads {
 
     static final String initiationPayloadWithoutTransactionsPermission = """{
             "access":{  
-                "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                "accounts":[
                     {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -68,7 +68,7 @@ class AccountsInitiationPayloads {
     static final String initiationPayloadWithoutBalancesPermission = """
           {
                "access":{
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[
+                  "accounts":[
                      {
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -139,7 +139,7 @@ class AccountsInitiationPayloads {
     static final String AllAccessBankOfferedConsentPayload = """
           {  
                "access":{  
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[],
+                  "accounts":[],
                   "balances":[],
                   "transactions":[]
                },
@@ -153,7 +153,7 @@ class AccountsInitiationPayloads {
     static final String TransactionAndBalancesBankOfferedConsentPayload = """
           {  
                "access":{  
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                  "accounts":[  
                      {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -172,7 +172,7 @@ class AccountsInitiationPayloads {
     static final String TransactionBankOfferedConsentPayload = """
           {  
                "access":{  
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                  "accounts":[  
                      {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -196,7 +196,7 @@ class AccountsInitiationPayloads {
     static final String BalancesBankOfferedConsentPayload = """
           {  
                "access":{  
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[  
+                  "accounts":[  
                      {  
                         "iban":"DE12345678901234567890",
                         "currency":"USD"
@@ -220,7 +220,7 @@ class AccountsInitiationPayloads {
     static final String AccountsBankOfferedConsentPayload = """
           {  
                "access":{  
-                  "com.wso2.openbanking.toolkit.berlin.integration.test.accounts":[],
+                  "accounts":[],
                   "balances":[  
                      {  
                         "iban":"DE12345678901234567890",
