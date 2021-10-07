@@ -117,7 +117,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- Add coverage after implementing tests -->
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
