@@ -10,22 +10,19 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.common.utils;
+package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
+
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 
 /**
- * Constants related to errors.
+ * Handle Funds Confirmation initiation request.
  */
-public class ErrorConstants {
+public class FundsConfirmationInitiationRequestHandler implements RequestHandler {
 
-    // Error messages
-    public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
-    public static final String PATH_INVALID = "Request path invalid";
-    public static final String PATCH_NOT_SUPPORTED = "Method PATCH is not supported";
+    @Override
+    public void handle(ConsentManageData consentManageData) throws ConsentException {
 
-    // Error object related constants
-    public static final String PATH = "path";
-    public static final String CATEGORY = "category";
-    public static final String CODE = "code";
-    public static final String TEXT = "text";
-
+    }
 }
