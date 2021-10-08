@@ -23,6 +23,8 @@ public class ConsentExtensionConstants {
 
     // Constants that are used by accounts service
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
+    public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
+    public static final String CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "card-accounts";
 
     // Constants that are used by payments service
     public static final String PAYMENTS_SERVICE_PATH = "payments";
@@ -38,5 +40,6 @@ public class ConsentExtensionConstants {
 
     // Constants that are used by funds confirmation service
     public static final String FUNDS_CONFIRMATIONS_SERVICE_PATH = "confirmation-of-funds";
+    public static final String FUNDS_CONFIRMATIONS_SUBMISSION_PATH_IDENTIFIER = "funds-confirmations";
 
 }

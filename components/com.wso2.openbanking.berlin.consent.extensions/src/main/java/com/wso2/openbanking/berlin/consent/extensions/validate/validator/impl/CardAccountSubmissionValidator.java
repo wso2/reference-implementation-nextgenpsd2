@@ -10,19 +10,22 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
+package com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 
 /**
- * Handle Update Authorisation Resource request.
+ * Validate Card Accounts submission requests.
  */
-public class UpdateAuthorisationResourceRequestHandler implements RequestHandler {
+public class CardAccountSubmissionValidator implements SubmissionValidator {
 
     @Override
-    public void handle(ConsentManageData consentManageData) throws ConsentException {
+    public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
+            throws ConsentException {
 
     }
+
 }

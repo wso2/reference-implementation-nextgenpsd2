@@ -10,40 +10,19 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl;
+package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * Handle the Accounts service requests.
+ * Handle Update Authorisation Resource request.
  */
-public class AccountServiceHandler implements ServiceHandler {
-
-    private static final Log log = LogFactory.getLog(AccountServiceHandler.class);
-    private RequestHandler requestHandler;
+public class UpdateAuthResourceRequestHandler implements RequestHandler {
 
     @Override
-    public void handlePost(ConsentManageData consentManageData) throws ConsentException {
-
-    }
-
-    @Override
-    public void handleGet(ConsentManageData consentManageData) throws ConsentException {
-
-    }
-
-    @Override
-    public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
-
-    }
-
-    @Override
-    public void handlePut(ConsentManageData consentManageData) throws ConsentException {
+    public void handle(ConsentManageData consentManageData) throws ConsentException {
 
     }
 }
