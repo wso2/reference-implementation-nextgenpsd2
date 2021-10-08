@@ -65,10 +65,6 @@ public class SubmissionValidatorFactoryTests {
         Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
 
         submissionValidator = SubmissionValidatorFactory.getSubmissionValidator("card-accounts/{account-id}");
-
-
-
-
         Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
 
         submissionValidator = SubmissionValidatorFactory
