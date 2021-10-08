@@ -22,9 +22,4 @@ public class ErrorConstants {
     public static final String PATH_INVALID = "Request path invalid";
     public static final String PATCH_NOT_SUPPORTED = "Method PATCH is not supported";
 
-    // Error object related constants
-    public static final String PATH = "path";
-    public static final String CATEGORY = "category";
-    public static final String CODE = "code";
-    public static final String TEXT = "text";
 }
