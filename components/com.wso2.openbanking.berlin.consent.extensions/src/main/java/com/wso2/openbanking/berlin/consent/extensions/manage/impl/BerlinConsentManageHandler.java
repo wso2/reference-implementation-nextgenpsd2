@@ -45,14 +45,6 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
-
-        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
-                    consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
-        } else {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-        }
-
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
         if (serviceHandler != null) {

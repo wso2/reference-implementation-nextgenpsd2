@@ -32,13 +32,7 @@ public class FundsConfirmationServiceHandler implements ServiceHandler {
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
-        requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
 
-        if (requestHandler != null) {
-            requestHandler.handle(consentManageData);
-        } else {
-            log.error(ErrorConstants.PATH_INVALID);
-        }
     }
 
     @Override
@@ -53,8 +47,6 @@ public class FundsConfirmationServiceHandler implements ServiceHandler {
 
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
-        requestHandler = new UpdateAuthorisationResourceRequestHandler();
 
-        requestHandler.handle(consentManageData);
     }
 }
