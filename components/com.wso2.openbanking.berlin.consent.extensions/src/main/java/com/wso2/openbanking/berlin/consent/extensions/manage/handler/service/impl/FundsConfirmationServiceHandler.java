@@ -14,10 +14,7 @@ package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.im
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
-import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.UpdateAuthorisationResourceRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
