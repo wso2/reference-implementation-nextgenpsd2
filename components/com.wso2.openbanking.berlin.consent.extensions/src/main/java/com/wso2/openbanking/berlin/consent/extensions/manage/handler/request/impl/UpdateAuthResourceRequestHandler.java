@@ -19,7 +19,7 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 /**
  * Handle Update Authorisation Resource request.
  */
-public class UpdateAuthorisationResourceRequestHandler implements RequestHandler {
+public class UpdateAuthResourceRequestHandler implements RequestHandler {
 
     @Override
     public void handle(ConsentManageData consentManageData) throws ConsentException {
