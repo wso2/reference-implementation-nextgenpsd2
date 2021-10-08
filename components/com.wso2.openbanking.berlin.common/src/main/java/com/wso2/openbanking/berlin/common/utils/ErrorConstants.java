@@ -17,6 +17,11 @@ package com.wso2.openbanking.berlin.common.utils;
  */
 public class ErrorConstants {
 
+    // Error messages
+    public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
+    public static final String PATH_INVALID = "Request path invalid";
+    public static final String PATCH_NOT_SUPPORTED = "Method PATCH is not supported";
+
     // Error object related constants
     public static final String PATH = "path";
     public static final String CATEGORY = "category";
