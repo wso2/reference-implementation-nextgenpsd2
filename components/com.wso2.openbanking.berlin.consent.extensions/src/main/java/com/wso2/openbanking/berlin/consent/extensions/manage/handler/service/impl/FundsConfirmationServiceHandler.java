@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 public class FundsConfirmationServiceHandler implements ServiceHandler {
 
     private static final Log log = LogFactory.getLog(FundsConfirmationServiceHandler.class);
-    RequestHandler requestHandler;
+    private RequestHandler requestHandler;
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {

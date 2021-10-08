@@ -19,7 +19,7 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 /**
  * Handle Explicit Authorisation creation request.
  */
-public class CreateExplicitAuthorisationRequestHandler implements RequestHandler {
+public class ExplicitAuthRequestHandler implements RequestHandler {
 
     @Override
     public void handle(ConsentManageData consentManageData) throws ConsentException {

@@ -16,9 +16,9 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.BulkPaymentInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.CreateExplicitAuthorisationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentCreateExplicitCancellationAuthorisationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PeriodicPaymentInitiationRequestHandler;
 import org.junit.Test;
@@ -34,20 +34,20 @@ public class RequestHandlerFactoryTests {
         // Testing PaymentCreateExplicitCancellationAuthorisationRequestHandler instances
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations");
-        Assert.assertTrue(requestHandler instanceof PaymentCreateExplicitCancellationAuthorisationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof PaymentExplicitCancellationAuthRequestHandler);
 
         // Testing CreateExplicitAuthorisationRequestHandler instances
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("consents/{consentId}/authorisations");
-        Assert.assertTrue(requestHandler instanceof CreateExplicitAuthorisationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof ExplicitAuthRequestHandler);
 
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("{payment-service}/{payment-product}/{paymentId}/authorisations");
-        Assert.assertTrue(requestHandler instanceof CreateExplicitAuthorisationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof ExplicitAuthRequestHandler);
 
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("consents/confirmation-of-funds/{consentId}/authorisations");
-        Assert.assertTrue(requestHandler instanceof CreateExplicitAuthorisationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof ExplicitAuthRequestHandler);
 
         // Testing AccountInitiationRequestHandler instances
         requestHandler = RequestHandlerFactory.getRequestHandler("consents");

@@ -19,7 +19,7 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 /**
  * Handle Payments Explicit Cancellation Authorisation creation request.
  */
-public class PaymentCreateExplicitCancellationAuthorisationRequestHandler implements RequestHandler {
+public class PaymentExplicitCancellationAuthRequestHandler implements RequestHandler {
 
     @Override
     public void handle(ConsentManageData consentManageData) throws ConsentException {

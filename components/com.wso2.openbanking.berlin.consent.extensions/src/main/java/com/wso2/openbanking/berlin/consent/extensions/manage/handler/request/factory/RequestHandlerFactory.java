@@ -17,9 +17,9 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUti
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.BulkPaymentInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.CreateExplicitAuthorisationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentCreateExplicitCancellationAuthorisationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PeriodicPaymentInitiationRequestHandler;
 
@@ -44,12 +44,12 @@ public class RequestHandlerFactory {
 
         if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END
                 .equals(requestPathArray[requestPathArray.length - 1])) {
-            return new PaymentCreateExplicitCancellationAuthorisationRequestHandler();
+            return new PaymentExplicitCancellationAuthRequestHandler();
         }
 
         if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END
                 .equals(requestPathArray[requestPathArray.length - 1])) {
-            return new CreateExplicitAuthorisationRequestHandler();
+            return new ExplicitAuthRequestHandler();
         }
 
         switch (ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath)) {
