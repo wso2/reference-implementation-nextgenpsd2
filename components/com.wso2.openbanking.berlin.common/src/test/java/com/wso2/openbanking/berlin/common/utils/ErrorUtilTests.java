@@ -10,10 +10,8 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.common.util.tests;
+package com.wso2.openbanking.berlin.common.utils;
 
-import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.common.utils.TPPMessage;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;

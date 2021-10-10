@@ -16,7 +16,7 @@
 <suite name="common-base-test-suite">
     <test name="common-base-test-all">
         <classes>
-            <class name="com.wso2.openbanking.berlin.common.util.tests.ErrorUtilTests"/>
+            <class name="com.wso2.openbanking.berlin.common.utils.ErrorUtilTests"/>
         </classes>
     </test>
 </suite>
