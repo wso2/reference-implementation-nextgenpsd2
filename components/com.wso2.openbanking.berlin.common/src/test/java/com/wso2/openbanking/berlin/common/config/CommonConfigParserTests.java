@@ -72,7 +72,7 @@ public class CommonConfigParserTests {
 
         Assert.assertNotNull(consentMgtConfigs.get("PayableAccountsRetrieveEndpoint"));
         Assert.assertNotNull(consentMgtConfigs.get("SharableAccountsRetrieveEndpoint"));
-        Assert.assertNotNull(consentMgtConfigs.get("ErrorURL"));
+        Assert.assertNotNull(consentMgtConfigs.get("SelectedSCAApproach"));
 
     }
 

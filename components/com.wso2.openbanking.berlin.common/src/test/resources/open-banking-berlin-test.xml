@@ -18,8 +18,6 @@
         <PayableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/payable-acounts</PayableAccountsRetrieveEndpoint>
         <SharableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/sharable-accounts</SharableAccountsRetrieveEndpoint>
 
-        <ErrorURL>https://localhost:8243/openbanking/error</ErrorURL>
-
-        <RestrictedPermissions>Permission1|Permission2|Permission3</RestrictedPermissions>
+        <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
     </ConsentManagement>
 </Server>
