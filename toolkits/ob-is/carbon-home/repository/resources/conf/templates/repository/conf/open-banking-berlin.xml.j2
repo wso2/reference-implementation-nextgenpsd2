@@ -12,5 +12,142 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
-    
+    <ConsentManagement>
+        {% if open_banking.consent.payable_account_retrieval_endpoint is defined %}
+        <PayableAccountsRetrieveEndpoint>{{open_banking.consent.payable_account_retrieval_endpoint}}</PayableAccountsRetrieveEndpoint>
+        {% else %}
+        <PayableAccountsRetrieveEndpoint></PayableAccountsRetrieveEndpoint>
+        {% endif %}
+
+        {% if open_banking.consent.sharable_account_retrieval_endpoint is defined %}
+        <SharableAccountsRetrieveEndpoint>{{open_banking.consent.sharable_account_retrieval_endpoint}}</SharableAccountsRetrieveEndpoint>
+        {% else %}
+        <SharableAccountsRetrieveEndpoint></SharableAccountsRetrieveEndpoint>
+        {% endif %}
+
+        <!-- Configurations regarding the Strong Customer Authentication -->
+        <SCA>
+            <!--
+            SelectedSCAApproach denotes the preferred SCA Approach.
+            Allowed values are:
+            1. REDIRECT (OAUTH2 is subsumed by this)
+            2. DECOUPLED
+            3. EMBEDDED
+            -->
+            {% if open_banking.consent.sca.selected_approach is defined %}
+            <SelectedSCAApproach>{{open_banking.consent.sca.selected_approach}}</SelectedSCAApproach>
+            {% else %}
+            <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
+            {% endif %}
+            <!--
+            Dictate if Authorization is required for payment cancellation.
+            true: PSU is required to authorize the cancellation by completing authorization flow
+            false: Authorization not required.
+            -->
+            {% if open_banking.consent.sca.auth_cancellation.enable is defined %}
+            <AuthorizeCancellation>{{open_banking.consent.sca.auth_cancellation.enable}}</AuthorizeCancellation>
+            {% else %}
+            <AuthorizeCancellation>false</AuthorizeCancellation>
+            {% endif %}
+            <!--Endpoint to retrieve OIDC Discovery metadata-->
+            {% if open_banking.consent.sca.oauth_metadata_endpoint is defined %}
+            <OAuthMetadataEndpoint>{{open_banking.consent.sca.oauth_metadata_endpoint}}</OAuthMetadataEndpoint>
+            {% else %}
+            <OAuthMetadataEndpoint>https://APIM_HOSTNAME:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
+            {% endif %}
+            <!-- Configure SCA Methods for API responses -->
+            <SCAMethods>
+                {% if open_banking.consent.sca.sca_methods is defined %}
+                {% for auth_object in open_banking.consent.sca.sca_methods %}
+                <AuthenticationObject>
+                    <AuthenticationType>{{auth_object.auth_type}}</AuthenticationType>
+                    <AuthenticationVersion>{{auth_object.auth_version}}</AuthenticationVersion>
+                    <AuthenticationMethodId>{{auth_object.auth_method_id}}</AuthenticationMethodId>
+                    <Name>{{auth_object.name}}</Name>
+                    <Explanation>{{auth_object.explanation}}</Explanation>
+                    <Default>{{auth_object.default.enable}}</Default>
+                </AuthenticationObject>
+                {% endfor %}
+                {% else %}
+                <AuthenticationObject>
+                    <AuthenticationType>SMS_OTP</AuthenticationType>
+                    <AuthenticationVersion>1.0</AuthenticationVersion>
+                    <AuthenticationMethodId>sms-otp</AuthenticationMethodId>
+                    <Name>SMS OTP on Mobile</Name>
+                    <Explanation>SMS based one time password</Explanation>
+                    <Default>true</Default>
+                </AuthenticationObject>
+                {% endif %}
+            </SCAMethods>
+        </SCA>
+
+        <!--Enable IBAN validation for single accounts -->
+    	{% if open_banking.consent.iban_single_acc_retrieval_validation.enable is defined %}
+    	<EnableIBANBasedSingleAccountRetrievalValidation>{{open_banking.consent.iban_single_acc_retrieval_validation.enable}}</EnableIBANBasedSingleAccountRetrievalValidation>
+    	{% else %}
+    	<EnableIBANBasedSingleAccountRetrievalValidation>false</EnableIBANBasedSingleAccountRetrievalValidation>
+    	{% endif %}
+
+        <!-- Enable frequency per day throttling for eligible API GET calls -->
+    	{% if open_banking.consent.freq_per_day.enable is defined %}
+    	<EnableFrequencyPerDay>{{open_banking.consent.freq_per_day.enable}}</EnableFrequencyPerDay>
+    	{% else %}
+    	<EnableFrequencyPerDay>true</EnableFrequencyPerDay>
+    	{% endif %}
+
+    	<!--Requested maximum frequency for an account access per day using a recurring consent-->
+        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+        {% if open_banking.consent.freq_per_day.val is defined %}
+        <FrequencyPerDay>{{open_banking.consent.freq_per_day.val}}</FrequencyPerDay>
+        {% else %}
+        <FrequencyPerDay>4</FrequencyPerDay>
+        {% endif %}
+
+    	<!-- Enable validUntil Date cap for Account Consent Creation -->
+        <ValidUntilDateCap>
+            {% if open_banking.consent.valid_until_date_cap.enable is defined %}
+            <Enabled>{{open_banking.consent.valid_until_date_cap.enable}}</Enabled>
+            {% else %}
+            <Enabled>false</Enabled>
+            {% endif %}
+            {% if open_banking.consent.valid_until_date_cap.value is defined %}
+            <ValidUntilDays>{{open_banking.consent.valid_until_date_cap.value}}</ValidUntilDays>
+            {% else %}
+            <ValidUntilDays>0</ValidUntilDays>
+            {% endif %}
+        </ValidUntilDateCap>
+
+        <!--
+        Allowed values for account reference type
+            1. iban
+            2. bban
+            3. pan
+        -->
+    	{% if open_banking.consent.acc_ref_type is defined %}
+    	<AccountReferenceType>{{open_banking.consent.acc_ref_type}}</AccountReferenceType>
+    	{% else %}
+    	<AccountReferenceType>iban</AccountReferenceType>
+    	{% endif %}
+
+        <!-- Support for multiple recurring consents on AIS resources -->
+        {% if open_banking.consent.multiple_recurring_consent is defined %}
+        <EnableMultipleRecurringConsent>{{open_banking.consent.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
+        {% else %}
+        <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
+        {% endif %}
+
+        {% if open_banking.consent.max_future_payment_days is defined %}
+        <MaximumFuturePaymentDays>{{open_banking.consent.max_future_payment_days}}</MaximumFuturePaymentDays>
+        {% else %}
+        <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
+        {% endif %}
+
+        <MultiCurrency>
+            {% if open_banking.consent.multi_currency.enable is defined %}
+            <Enable>{{open_banking.consent.multi_currency.enable}}</Enable>
+            {% else %}
+            <Enable>false</Enable>
+            {% endif %}
+        </MultiCurrency>
+    </ConsentManagement>
 </Server>

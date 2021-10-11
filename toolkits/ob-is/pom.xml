@@ -31,6 +31,26 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -41,12 +61,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <delete>
-                                    <fileset dir="${project.basedir}/carbon-home/repository/components/lib">
-                                        <filename
-                                                regex="(com.wso2.openbanking).*-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </delete>
+                                <mkdir dir="${project.basedir}/carbon-home/repository/components/lib"/>
                             </tasks>
                         </configuration>
                     </execution>

@@ -12,5 +12,33 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
+    <ConsentManagement>
+        <!-- Enable frequency per day throttling for eligible API GET calls -->
+        {% if open_banking.consent.freq_per_day.enable is defined %}
+        <EnableFrequencyPerDay>{{open_banking.consent.freq_per_day.enable}}</EnableFrequencyPerDay>
+        {% else %}
+        <EnableFrequencyPerDay>true</EnableFrequencyPerDay>
+        {% endif %}
 
+        <!--Requested maximum frequency for an account access per day using a recurring consent-->
+        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+        {% if open_banking.consent.freq_per_day.val is defined %}
+        <FrequencyPerDay>{{open_banking.consent.freq_per_day.val}}</FrequencyPerDay>
+        {% else %}
+        <FrequencyPerDay>4</FrequencyPerDay>
+        {% endif %}
+
+        <Idempotency>
+            {% if open_banking.consent.idempotency.allowed_time is defined %}
+            <AllowedTimeDurationForIdempotency>{{open_banking.consent.idempotency.allowed_time}}</AllowedTimeDurationForIdempotency>
+            {% else %}
+            <AllowedTimeDurationForIdempotency>1</AllowedTimeDurationForIdempotency>
+            {% endif %}
+            {% if open_banking.consent.idempotency.submission.enabled is defined %}
+            <PaymentSubmissionIdempotencyEnabled>{{open_banking.consent.idempotency.submission.enabled}}</PaymentSubmissionIdempotencyEnabled>
+            {% else %}
+            <PaymentSubmissionIdempotencyEnabled>false</PaymentSubmissionIdempotencyEnabled>
+            {% endif %}
+        </Idempotency>
+    </ConsentManagement>
 </Server>
