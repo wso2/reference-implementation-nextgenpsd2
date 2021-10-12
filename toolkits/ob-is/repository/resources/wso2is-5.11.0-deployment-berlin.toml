@@ -423,7 +423,7 @@ priority = 2
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
 
 [open_banking.consent.validation]
-validator="com.wso2.openbanking.berlin.consent.extensions.validate.impl.BerlinConsentValidator
+validator="com.wso2.openbanking.berlin.consent.extensions.validate.impl.BerlinConsentValidator"
 
 [open_banking.consent.validation.signature]
 alias="wso2carbon"

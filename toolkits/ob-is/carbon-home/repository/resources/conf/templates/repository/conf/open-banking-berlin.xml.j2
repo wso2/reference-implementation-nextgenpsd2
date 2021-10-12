@@ -59,24 +59,24 @@
             <SCAMethods>
                 {% if open_banking.consent.sca.sca_methods is defined %}
                 {% for auth_object in open_banking.consent.sca.sca_methods %}
-                <AuthenticationObject>
-                    <AuthenticationType>{{auth_object.auth_type}}</AuthenticationType>
-                    <AuthenticationVersion>{{auth_object.auth_version}}</AuthenticationVersion>
-                    <AuthenticationMethodId>{{auth_object.auth_method_id}}</AuthenticationMethodId>
+                <Method>
+                    <Type>{{auth_object.auth_type}}</Type>
+                    <Version>{{auth_object.auth_version}}</Version>
+                    <Id>{{auth_object.auth_method_id}}</Id>
                     <Name>{{auth_object.name}}</Name>
-                    <Explanation>{{auth_object.explanation}}</Explanation>
+                    <Description>{{auth_object.explanation}}</Description>
                     <Default>{{auth_object.default.enable}}</Default>
-                </AuthenticationObject>
+                </Method>
                 {% endfor %}
                 {% else %}
-                <AuthenticationObject>
-                    <AuthenticationType>SMS_OTP</AuthenticationType>
-                    <AuthenticationVersion>1.0</AuthenticationVersion>
-                    <AuthenticationMethodId>sms-otp</AuthenticationMethodId>
+                <Method>
+                    <Type>SMS_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>sms-otp</Id>
                     <Name>SMS OTP on Mobile</Name>
-                    <Explanation>SMS based one time password</Explanation>
+                    <Description>SMS based one time password</Description>
                     <Default>true</Default>
-                </AuthenticationObject>
+                </Method>
                 {% endif %}
             </SCAMethods>
         </SCA>

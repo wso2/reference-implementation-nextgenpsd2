@@ -26,7 +26,7 @@
             -->
             <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
             <!--
-            Dictate if Authorization is required for payment cancellation.
+            Specify whether if Authorization is required for payment cancellation.
             true: PSU is required to authorize the cancellation by completing authorization flow
             false: Authorization not required.
             -->
@@ -35,14 +35,14 @@
             <OAuthMetadataEndpoint>https://localhost:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
             <!-- Configure SCA Methods for API responses -->
             <SCAMethods>
-                <AuthenticationObject>
-                    <AuthenticationType>SMS_OTP</AuthenticationType>
-                    <AuthenticationVersion>1.0</AuthenticationVersion>
-                    <AuthenticationMethodId>sms-otp</AuthenticationMethodId>
+                <Method>
+                    <Type>SMS_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>sms-otp</Id>
                     <Name>SMS OTP on Mobile</Name>
-                    <Explanation>SMS based one time password</Explanation>
+                    <Description>SMS based one time password</Description>
                     <Default>true</Default>
-                </AuthenticationObject>
+                </Method>
             </SCAMethods>
         </SCA>
 
