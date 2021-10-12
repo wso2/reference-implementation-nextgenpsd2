@@ -92,7 +92,7 @@ public class CommonConfigParser {
     }
 
     /**
-     * Method to read the configuration (in a recursive manner) as a model and put them in the configuration map.
+     * Method to read the configuration as a model and put them in the configuration map.
      */
     private void buildConfiguration() {
 
@@ -112,10 +112,8 @@ public class CommonConfigParser {
                 }
             }
             if (inStream == null) {
-                String message = "open-banking configuration not found at: " + configFilePath + " . Cause - ";
-                if (log.isDebugEnabled()) {
-                    log.debug(message);
-                }
+                String message = "open-banking configuration not found at: " + configFilePath;
+                log.error(message);
                 throw new FileNotFoundException(message);
             }
             StAXOMBuilder builder = new StAXOMBuilder(inStream);
@@ -150,7 +148,17 @@ public class CommonConfigParser {
     }
 
     /**
-     * Method to read text configs from xml when root element is given.
+     * Method to obtain map of consent management configs.
+     *
+     * @return Config map
+     */
+    public Map<String, String> getConsentMgtConfigs() {
+
+        return consentMgtConfigs;
+    }
+
+    /**
+     * Method to read text configs from xml recursively when root element is given.
      *
      * @param serverConfig XML root element object
      * @param nameStack    stack of config names
@@ -268,10 +276,5 @@ public class CommonConfigParser {
             }
         }
 
-    }
-
-    public Map<String, String> getConsentMgtConfigs() {
-
-        return consentMgtConfigs;
     }
 }

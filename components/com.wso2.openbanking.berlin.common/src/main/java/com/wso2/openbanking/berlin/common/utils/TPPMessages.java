@@ -14,6 +14,7 @@ package com.wso2.openbanking.berlin.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ public class TPPMessages {
 
 
 
+    @Generated(message = "Excluded from code coverage since no logic is involved")
     @Override
     public String toString()  {
         StringBuilder sb = new StringBuilder();
