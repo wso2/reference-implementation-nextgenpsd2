@@ -83,12 +83,4 @@ public class CommonConfigParserTests {
         CommonConfigParser instance2 = CommonConfigParser.getInstance();
         Assert.assertEquals(instance2, instance1);
     }
-
-    @Test(priority = 6)
-    public void testCarbonPath() {
-
-        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
-        System.setProperty("carbon.config.dir.path", carbonConfigDirPath);
-        Assert.assertEquals(CarbonUtils.getCarbonConfigDirPath(), carbonConfigDirPath);
-    }
 }
