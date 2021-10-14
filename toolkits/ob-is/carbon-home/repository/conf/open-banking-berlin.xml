@@ -53,7 +53,7 @@
             <TimeIntervalInMinutes>60</TimeIntervalInMinutes>
         </DuplicateCheck>
         <!--Enable IBAN validation for single accounts -->
-        <EnableIBANBasedSingleAccountRetrievalValidation>false</EnableIBANBasedSingleAccountRetrievalValidation>
+        <EnableIBANValidation>false</EnableIBANValidation>
         <!-- Enable frequency per day throttling for eligible API GET calls -->
         <EnableFrequencyPerDay>true</EnableFrequencyPerDay>
         <!--Requested maximum frequency for an account access per day using a recurring consent-->

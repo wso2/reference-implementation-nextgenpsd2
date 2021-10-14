@@ -83,9 +83,9 @@
 
         <!--Enable IBAN validation for single accounts -->
     	{% if open_banking.consent.iban_single_acc_retrieval_validation.enable is defined %}
-    	<EnableIBANBasedSingleAccountRetrievalValidation>{{open_banking.consent.iban_single_acc_retrieval_validation.enable}}</EnableIBANBasedSingleAccountRetrievalValidation>
+    	<EnableIBANValidation>{{open_banking.consent.iban_single_acc_retrieval_validation.enable}}</EnableIBANValidation>
     	{% else %}
-    	<EnableIBANBasedSingleAccountRetrievalValidation>false</EnableIBANBasedSingleAccountRetrievalValidation>
+    	<EnableIBANValidation>false</EnableIBANValidation>
     	{% endif %}
 
         <!-- Enable frequency per day throttling for eligible API GET calls -->

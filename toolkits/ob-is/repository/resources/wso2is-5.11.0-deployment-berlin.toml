@@ -197,9 +197,6 @@ name = "org.wso2.is.notification.ApimOauthEventInterceptor"
 order = 1
 
 [event_listener.properties]
-PreventTokenReuse= false
-RejectBeforeInMinutes= "100"
-TokenEndpointAlias= "https://IS_HOSTNAME:9446/oauth2/token"
 notification_endpoint = "https://APIM_HOSTNAME:9443/internal/data/v1/notify"
 username = "${admin.username}"
 password = "${admin.password}"
