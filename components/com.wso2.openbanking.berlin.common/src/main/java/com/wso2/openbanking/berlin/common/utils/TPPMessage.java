@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 
 import javax.validation.constraints.NotNull;
 
@@ -141,6 +142,7 @@ public class TPPMessage {
 
 
 
+    @Generated(message = "Excluded from code coverage since no logic is involved")
     @Override
     public String toString()  {
         StringBuilder sb = new StringBuilder();
