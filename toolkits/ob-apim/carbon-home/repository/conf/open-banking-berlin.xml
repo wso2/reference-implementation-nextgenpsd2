@@ -24,7 +24,6 @@
         <Idempotency>
             <!-- Allowed idempotency duration in hours -->
             <AllowedDuration>1</AllowedDuration>
-            <SubmissionIdempotencyEnabled>false</SubmissionIdempotencyEnabled>
         </Idempotency>
     </ConsentManagement>
 </Server>

@@ -34,11 +34,6 @@
             {% else %}
             <AllowedDuration>1</AllowedDuration>
             {% endif %}
-            {% if open_banking.consent.idempotency.submission.enabled is defined %}
-            <SubmissionIdempotencyEnabled>{{open_banking.consent.idempotency.submission.enabled}}</SubmissionIdempotencyEnabled>
-            {% else %}
-            <SubmissionIdempotencyEnabled>false</SubmissionIdempotencyEnabled>
-            {% endif %}
         </Idempotency>
     </ConsentManagement>
 </Server>
