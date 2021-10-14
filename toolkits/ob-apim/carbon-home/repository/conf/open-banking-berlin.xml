@@ -17,7 +17,7 @@
         <!-- Enable frequency per day throttling for eligible API GET calls -->
         <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
         <FrequencyPerDay>
-            <Enable>True</Enable>
+            <Enable>true</Enable>
             <Frequency>4</Frequency>
         </FrequencyPerDay>
 

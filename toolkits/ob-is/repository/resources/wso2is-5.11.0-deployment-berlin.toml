@@ -437,7 +437,7 @@ client_certificate_encode=true
 payable_account_retrieval_endpoint = ""
 sharable_account_retrieval_endpoint = ""
 self_link_version="v1"
-iban_single_acc_retrieval_validation.enable = "false"
+single_acc_no_retrieval_validation.enable = "false"
 acc_ref_type = "iban"
 max_future_payment_days = ""
 

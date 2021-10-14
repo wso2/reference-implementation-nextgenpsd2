@@ -82,26 +82,24 @@
         </SCA>
 
         <!--Enable IBAN validation for single accounts -->
-    	{% if open_banking.consent.iban_single_acc_retrieval_validation.enable is defined %}
-    	<EnableIBANValidation>{{open_banking.consent.iban_single_acc_retrieval_validation.enable}}</EnableIBANValidation>
+    	{% if open_banking.consent.single_acc_no_retrieval_validation.enable is defined %}
+    	<EnableAccountIDValidation>{{open_banking.consent.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
     	{% else %}
-    	<EnableIBANValidation>false</EnableIBANValidation>
+    	<EnableAccountIDValidation>false</EnableAccountIDValidation>
     	{% endif %}
 
         <!-- Enable frequency per day throttling for eligible API GET calls -->
-    	{% if open_banking.consent.freq_per_day.enable is defined %}
-    	<EnableFrequencyPerDay>{{open_banking.consent.freq_per_day.enable}}</EnableFrequencyPerDay>
-    	{% else %}
-    	<EnableFrequencyPerDay>true</EnableFrequencyPerDay>
-    	{% endif %}
-
-    	<!--Requested maximum frequency for an account access per day using a recurring consent-->
         <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
-        {% if open_banking.consent.freq_per_day.val is defined %}
-        <FrequencyPerDay>{{open_banking.consent.freq_per_day.val}}</FrequencyPerDay>
-        {% else %}
-        <FrequencyPerDay>4</FrequencyPerDay>
-        {% endif %}
+        <FrequencyPerDay>
+            {% if open_banking.consent.freq_per_day.enable is defined %}
+            <Enable>{{open_banking.consent.freq_per_day.enable}}</Enable>
+            <Enable>true</Enable>
+            {% endif %}
+            {% if open_banking.consent.freq_per_day.value is defined %}
+            <Frequency>{{open_banking.consent.freq_per_day.value}}</Frequency>
+            <Frequency>4</Frequency>
+            {% endif %}
+        </FrequencyPerDay>
 
     	<!-- Enable validUntil Date cap for Account Consent Creation -->
         <ValidUntilDateCap>

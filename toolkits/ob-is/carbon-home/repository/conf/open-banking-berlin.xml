@@ -52,13 +52,14 @@
         <DuplicateCheck>
             <TimeIntervalInMinutes>60</TimeIntervalInMinutes>
         </DuplicateCheck>
-        <!--Enable IBAN validation for single accounts -->
-        <EnableIBANValidation>false</EnableIBANValidation>
+        <!--Enable IBAN, BBAN, PAN validation for single accounts -->
+        <EnableAccountIDValidation>false</EnableAccountIDValidation>
         <!-- Enable frequency per day throttling for eligible API GET calls -->
-        <EnableFrequencyPerDay>true</EnableFrequencyPerDay>
-        <!--Requested maximum frequency for an account access per day using a recurring consent-->
         <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
-        <FrequencyPerDay>4</FrequencyPerDay>
+        <FrequencyPerDay>
+            <Enable>true</Enable>
+            <Frequency>4</Frequency>
+        </FrequencyPerDay>
         <!-- Enable validUntil Date cap for Account Consent Creation -->
         <ValidUntilDateCap>
             <Enabled>false</Enabled>
