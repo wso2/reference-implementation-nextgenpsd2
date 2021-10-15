@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  ~
@@ -11,19 +10,14 @@
  ~ with WSO2 governing the purchase of this software and any associated services.
 -->
 
-<Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
-    <ConsentManagement>
-
-        <!-- Enable frequency per day throttling for eligible API GET calls -->
-        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
-        <FrequencyPerDay>
-            <Enable>true</Enable>
-            <Frequency>4</Frequency>
-        </FrequencyPerDay>
-
-        <Idempotency>
-            <!-- Allowed idempotency duration in hours -->
-            <AllowedDuration>1</AllowedDuration>
-        </Idempotency>
-    </ConsentManagement>
-</Server>
+<sequence name="jsonConverter" xmlns="http://ws.apache.org/ns/synapse">
+    <filter source="get-property('API_ELECTED_RESOURCE')" regex=".*\/file.*">
+        <then>
+        </then>
+        <else>
+            <property name="messageType" value="application/json" scope="axis2"/>
+        </else>
+    </filter>
+    <property name="error_message_type" value="application/json"/>
+    <class name="com.wso2.openbanking.berlin.gateway.failure.GatewayFailureResponseCreationMediator"/>
+</sequence>
