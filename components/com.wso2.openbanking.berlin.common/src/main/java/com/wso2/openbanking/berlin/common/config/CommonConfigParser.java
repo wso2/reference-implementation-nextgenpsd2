@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import javax.xml.namespace.QName;
@@ -276,5 +277,78 @@ public class CommonConfigParser {
             }
         }
 
+    }
+
+    /**
+     * Returns the element with the provided local part.
+     *
+     * @param localPart local part name
+     * @return Corresponding OMElement
+     */
+    public OMElement getConfigElement(String localPart) {
+
+        return rootElement.getFirstChildWithName(new QName(CommonConstants.OB_BERLIN_CONFIG_QNAME, localPart));
+    }
+
+    /**
+     * Returns the list of configured SCA methods.
+     *
+     * @return List of Maps of SCA method configurations.
+     */
+    public List<Map<String, String>> getSupportedScaMethods() {
+
+        List<Map<String, String>> supportedScaMethodsList = new ArrayList<>();
+
+        Iterator iterator = getConfigElement(CommonConstants.CONSENT_MGT_CONFIG_TAG)
+                .getFirstChildWithName(new QName(CommonConstants.OB_BERLIN_CONFIG_QNAME,
+                        CommonConstants.SCA_CONFIG_TAG))
+                .getFirstChildWithName(new QName(CommonConstants.OB_BERLIN_CONFIG_QNAME,
+                        CommonConstants.SUPPORTED_SCA_METHODS_CONFIG_TAG))
+                .getChildElements();
+
+        while (iterator.hasNext()) {
+            Map<String, String> singleMethod = new HashMap<>();
+            OMElement element = (OMElement) iterator.next();
+            Iterator subElements = element.getChildElements();
+
+            while (subElements.hasNext()) {
+                OMElement subElement = (OMElement) subElements.next();
+                singleMethod.put(subElement.getLocalName(), subElement.getText());
+            }
+            supportedScaMethodsList.add(singleMethod);
+        }
+
+        return supportedScaMethodsList;
+    }
+
+    /**
+     * Returns the list of configured SCA approaches.
+     *
+     * @return List of Maps of SCA approach configurations.
+     */
+    public List<Map<String, String>> getSupportedScaApproaches() {
+
+        List<Map<String, String>> supportedScaApproachesList = new ArrayList<>();
+
+        Iterator iterator = getConfigElement(CommonConstants.CONSENT_MGT_CONFIG_TAG)
+                .getFirstChildWithName(new QName(CommonConstants.OB_BERLIN_CONFIG_QNAME,
+                        CommonConstants.SCA_CONFIG_TAG))
+                .getFirstChildWithName(new QName(CommonConstants.OB_BERLIN_CONFIG_QNAME,
+                        CommonConstants.SUPPORTED_SCA_APPROACHES_CONFIG_TAG))
+                .getChildElements();
+
+        while (iterator.hasNext()) {
+            Map<String, String> singleMethod = new HashMap<>();
+            OMElement element = (OMElement) iterator.next();
+            Iterator subElements = element.getChildElements();
+
+            while (subElements.hasNext()) {
+                OMElement subElement = (OMElement) subElements.next();
+                singleMethod.put(subElement.getLocalName(), subElement.getText());
+            }
+            supportedScaApproachesList.add(singleMethod);
+        }
+
+        return supportedScaApproachesList;
     }
 }

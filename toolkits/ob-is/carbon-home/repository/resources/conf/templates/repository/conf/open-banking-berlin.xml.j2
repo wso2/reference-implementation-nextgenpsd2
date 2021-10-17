@@ -13,57 +13,62 @@
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
     <ConsentManagement>
-        {% if open_banking.consent.payable_account_retrieval_endpoint is defined %}
-        <PayableAccountsRetrieveEndpoint>{{open_banking.consent.payable_account_retrieval_endpoint}}</PayableAccountsRetrieveEndpoint>
+        {% if open_banking_berlin.consent.payable_account_retrieval_endpoint is defined %}
+        <PayableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.payable_account_retrieval_endpoint}}</PayableAccountsRetrieveEndpoint>
         {% else %}
         <PayableAccountsRetrieveEndpoint></PayableAccountsRetrieveEndpoint>
         {% endif %}
 
-        {% if open_banking.consent.sharable_account_retrieval_endpoint is defined %}
-        <SharableAccountsRetrieveEndpoint>{{open_banking.consent.sharable_account_retrieval_endpoint}}</SharableAccountsRetrieveEndpoint>
+        {% if open_banking_berlin.consent.sharable_account_retrieval_endpoint is defined %}
+        <SharableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.sharable_account_retrieval_endpoint}}</SharableAccountsRetrieveEndpoint>
         {% else %}
         <SharableAccountsRetrieveEndpoint></SharableAccountsRetrieveEndpoint>
         {% endif %}
 
         <!-- Configurations regarding the Strong Customer Authentication -->
         <SCA>
+            {% if open_banking_berlin.consent.sca.required is defined %}
+            <Required>{{open_banking_berlin.consent.sca.required}}</Required>
+            {% else %}
+            <Required>true</Required>
+            {% endif %}
             <!--
-            SelectedSCAApproach denotes the preferred SCA Approach.
-            Allowed values are:
+            Allowed values for SupportedSCAApproaches names are:
             1. REDIRECT (OAUTH2 is subsumed by this)
             2. DECOUPLED
             3. EMBEDDED
             -->
-            {% if open_banking.consent.sca.selected_approach is defined %}
-            <SelectedSCAApproach>{{open_banking.consent.sca.selected_approach}}</SelectedSCAApproach>
-            {% else %}
-            <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
-            {% endif %}
-            <!--
-            Dictate if Authorization is required for payment cancellation.
-            true: PSU is required to authorize the cancellation by completing authorization flow
-            false: Authorization not required.
-            -->
-            {% if open_banking.consent.sca.auth_cancellation.enable is defined %}
-            <AuthorizeCancellation>{{open_banking.consent.sca.auth_cancellation.enable}}</AuthorizeCancellation>
-            {% else %}
-            <AuthorizeCancellation>false</AuthorizeCancellation>
-            {% endif %}
+            <SupportedSCAApproaches>
+                {% if open_banking_berlin.consent.sca.supported_sca_approach is defined %}
+                {% for sca_approach_object in open_banking_berlin.consent.sca.supported_sca_approach %}
+                <Approach>
+                     <Name>{{sca_approach_object.name}}</Name>
+                     <Default>{{sca_approach_object.default.enable}}</Default>
+                </Approach>
+                {% endfor %}
+                {% else %}
+                <Approach>
+                     <Name>REDIRECT</Name>
+                     <Default>true</Default>
+                </Approach>
+                {% endif %}
+            </SupportedSCAApproaches>
             <!--Endpoint to retrieve OIDC Discovery metadata-->
-            {% if open_banking.consent.sca.oauth_metadata_endpoint is defined %}
-            <OAuthMetadataEndpoint>{{open_banking.consent.sca.oauth_metadata_endpoint}}</OAuthMetadataEndpoint>
+            {% if open_banking_berlin.consent.sca.oauth_metadata_endpoint is defined %}
+            <OAuthMetadataEndpoint>{{open_banking_berlin.consent.sca.oauth_metadata_endpoint}}</OAuthMetadataEndpoint>
             {% else %}
             <OAuthMetadataEndpoint>https://APIM_HOSTNAME:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
             {% endif %}
             <!-- Configure SCA Methods for API responses -->
-            <SCAMethods>
-                {% if open_banking.consent.sca.sca_methods is defined %}
-                {% for auth_object in open_banking.consent.sca.sca_methods %}
+            <SupportedSCAMethods>
+                {% if open_banking_berlin.consent.sca.supported_sca_method is defined %}
+                {% for auth_object in open_banking_berlin.consent.sca.supported_sca_method %}
                 <Method>
                     <Type>{{auth_object.auth_type}}</Type>
                     <Version>{{auth_object.auth_version}}</Version>
                     <Id>{{auth_object.auth_method_id}}</Id>
                     <Name>{{auth_object.name}}</Name>
+                    <MappedApproach>{{auth_object.mapped_approach}}</MappedApproach>
                     <Description>{{auth_object.explanation}}</Description>
                     <Default>{{auth_object.default.enable}}</Default>
                 </Method>
@@ -74,16 +79,17 @@
                     <Version>1.0</Version>
                     <Id>sms-otp</Id>
                     <Name>SMS OTP on Mobile</Name>
+                    <MappedApproach>REDIRECT</MappedApproach>
                     <Description>SMS based one time password</Description>
                     <Default>true</Default>
                 </Method>
                 {% endif %}
-            </SCAMethods>
+            </SupportedSCAMethods>
         </SCA>
 
         <!--Enable IBAN validation for single accounts -->
-    	{% if open_banking.consent.single_acc_no_retrieval_validation.enable is defined %}
-    	<EnableAccountIDValidation>{{open_banking.consent.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
+    	{% if open_banking_berlin.consent.single_acc_no_retrieval_validation.enable is defined %}
+    	<EnableAccountIDValidation>{{open_banking_berlin.consent.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
     	{% else %}
     	<EnableAccountIDValidation>false</EnableAccountIDValidation>
     	{% endif %}
@@ -91,25 +97,25 @@
         <!-- Enable frequency per day throttling for eligible API GET calls -->
         <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
         <FrequencyPerDay>
-            {% if open_banking.consent.freq_per_day.enable is defined %}
-            <Enable>{{open_banking.consent.freq_per_day.enable}}</Enable>
+            {% if open_banking_berlin.consent.freq_per_day.enable is defined %}
+            <Enable>{{open_banking_berlin.consent.freq_per_day.enable}}</Enable>
             <Enable>true</Enable>
             {% endif %}
-            {% if open_banking.consent.freq_per_day.value is defined %}
-            <Frequency>{{open_banking.consent.freq_per_day.value}}</Frequency>
+            {% if open_banking_berlin.consent.freq_per_day.value is defined %}
+            <Frequency>{{open_banking_berlin.consent.freq_per_day.value}}</Frequency>
             <Frequency>4</Frequency>
             {% endif %}
         </FrequencyPerDay>
 
     	<!-- Enable validUntil Date cap for Account Consent Creation -->
         <ValidUntilDateCap>
-            {% if open_banking.consent.valid_until_date_cap.enable is defined %}
-            <Enabled>{{open_banking.consent.valid_until_date_cap.enable}}</Enabled>
+            {% if open_banking_berlin.consent.valid_until_date_cap.enable is defined %}
+            <Enabled>{{open_banking_berlin.consent.valid_until_date_cap.enable}}</Enabled>
             {% else %}
             <Enabled>false</Enabled>
             {% endif %}
-            {% if open_banking.consent.valid_until_date_cap.value is defined %}
-            <ValidUntilDays>{{open_banking.consent.valid_until_date_cap.value}}</ValidUntilDays>
+            {% if open_banking_berlin.consent.valid_until_date_cap.value is defined %}
+            <ValidUntilDays>{{open_banking_berlin.consent.valid_until_date_cap.value}}</ValidUntilDays>
             {% else %}
             <ValidUntilDays>0</ValidUntilDays>
             {% endif %}
@@ -121,28 +127,28 @@
             2. bban
             3. pan
         -->
-    	{% if open_banking.consent.acc_ref_type is defined %}
-    	<AccountReferenceType>{{open_banking.consent.acc_ref_type}}</AccountReferenceType>
+    	{% if open_banking_berlin.consent.acc_ref_type is defined %}
+    	<AccountReferenceType>{{open_banking_berlin.consent.acc_ref_type}}</AccountReferenceType>
     	{% else %}
     	<AccountReferenceType>iban</AccountReferenceType>
     	{% endif %}
 
         <!-- Support for multiple recurring consents on AIS resources -->
-        {% if open_banking.consent.multiple_recurring_consent is defined %}
-        <EnableMultipleRecurringConsent>{{open_banking.consent.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
+        {% if open_banking_berlin.consent.multiple_recurring_consent is defined %}
+        <EnableMultipleRecurringConsent>{{open_banking_berlin.consent.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
         {% else %}
         <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
         {% endif %}
 
-        {% if open_banking.consent.max_future_payment_days is defined %}
-        <MaximumFuturePaymentDays>{{open_banking.consent.max_future_payment_days}}</MaximumFuturePaymentDays>
+        {% if open_banking_berlin.consent.max_future_payment_days is defined %}
+        <MaximumFuturePaymentDays>{{open_banking_berlin.consent.max_future_payment_days}}</MaximumFuturePaymentDays>
         {% else %}
         <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
         {% endif %}
 
         <MultiCurrency>
-            {% if open_banking.consent.multi_currency.enable is defined %}
-            <Enable>{{open_banking.consent.multi_currency.enable}}</Enable>
+            {% if open_banking_berlin.consent.multi_currency.enable is defined %}
+            <Enable>{{open_banking_berlin.consent.multi_currency.enable}}</Enable>
             {% else %}
             <Enable>false</Enable>
             {% endif %}

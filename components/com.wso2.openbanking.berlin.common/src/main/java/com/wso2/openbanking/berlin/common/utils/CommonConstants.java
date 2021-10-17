@@ -17,7 +17,11 @@ package com.wso2.openbanking.berlin.common.utils;
  */
 public class CommonConstants {
 
+    // Config tag constants
     public static final String OB_CONFIG_FILE = "open-banking-berlin.xml";
     public static final String OB_BERLIN_CONFIG_QNAME = "http://wso2.org/projects/carbon/open-banking-berlin.xml";
     public static final String CONSENT_MGT_CONFIG_TAG = "ConsentManagement";
+    public static final String SCA_CONFIG_TAG = "SCA";
+    public static final String SUPPORTED_SCA_METHODS_CONFIG_TAG = "SupportedSCAMethods";
+    public static final String SUPPORTED_SCA_APPROACHES_CONFIG_TAG = "SupportedSCAApproaches";
 }
