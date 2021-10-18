@@ -432,7 +432,7 @@ handler="com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultC
 #This property needs to be true if the certificate should be decoded when it is passed from the load balancer to the Gateway.
 client_certificate_encode=true
 
-[open_banking.consent]
+[open_banking_berlin.consent]
 # Add backend service URLs when implemented
 payable_account_retrieval_endpoint = ""
 sharable_account_retrieval_endpoint = ""
@@ -441,28 +441,32 @@ single_acc_no_retrieval_validation.enable = "false"
 acc_ref_type = "iban"
 max_future_payment_days = ""
 
-[open_banking.consent.freq_per_day]
+[open_banking_berlin.consent.freq_per_day]
 enable = true
 
-[open_banking.consent.valid_until_date_cap]
+[open_banking_berlin.consent.valid_until_date_cap]
 enable = false
 value = 0
 
-[open_banking.consent.multiple_recurring_consent]
+[open_banking_berlin.consent.multiple_recurring_consent]
 enable = false
 
-[open_banking.consent.sca]
-selected_approach = "REDIRECT"
-auth_cancellation.enable = false
+[open_banking_berlin.consent.sca]
+required = true
 oauth_metadata_endpoint = "https://APIM_HOSTNAME:8243/.well-known/openid-configuration"
 
-[[open_banking.consent.sca.sca_methods]]
-auth_type="SMS_OTP"
-auth_version="1.0"
-auth_method_id="sms-otp"
-name="SMS OTP on Mobile"
-explanation="SMS based one time password"
-default.enable=true
+[[open_banking_berlin.consent.sca.supported_sca_approach]]
+name = "REDIRECT"
+default.enable = true
 
-[open_banking.consent.multi_currency]
+[[open_banking_berlin.consent.sca.supported_sca_method]]
+auth_type = "SMS_OTP"
+auth_version = "1.0"
+auth_method_id = "sms-otp"
+name = "SMS OTP on Mobile"
+mapped_approach = "REDIRECT"
+explanation = "SMS based one time password"
+default.enable = true
+
+[open_banking_berlin.consent.multi_currency]
 enable=false

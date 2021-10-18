@@ -20,6 +20,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class CommonConfigParserTests {
@@ -72,7 +73,6 @@ public class CommonConfigParserTests {
 
         Assert.assertNotNull(consentMgtConfigs.get("PayableAccountsRetrieveEndpoint"));
         Assert.assertNotNull(consentMgtConfigs.get("SharableAccountsRetrieveEndpoint"));
-        Assert.assertNotNull(consentMgtConfigs.get("SelectedSCAApproach"));
 
     }
 
@@ -82,5 +82,36 @@ public class CommonConfigParserTests {
         CommonConfigParser instance1 = CommonConfigParser.getInstance();
         CommonConfigParser instance2 = CommonConfigParser.getInstance();
         Assert.assertEquals(instance2, instance1);
+    }
+
+    @Test(priority = 6)
+    public void testGetSupportedScaMethods() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+        List<Map<String, String>> supportedScaMethods = commonConfigParser.getSupportedScaMethods();
+
+        Map<String, String> supportedScaMethod = supportedScaMethods.get(0);
+
+        Assert.assertEquals(supportedScaMethod.get("Type"), "SMS_OTP");
+        Assert.assertEquals(supportedScaMethod.get("Version"), "1.0");
+        Assert.assertEquals(supportedScaMethod.get("Id"), "sms-otp");
+        Assert.assertEquals(supportedScaMethod.get("Name"), "SMS OTP on Mobile");
+        Assert.assertEquals(supportedScaMethod.get("MappedApproach"), "REDIRECT");
+        Assert.assertEquals(supportedScaMethod.get("Description"), "SMS based one time password");
+        Assert.assertEquals(supportedScaMethod.get("Default"), "true");
+    }
+
+    @Test(priority = 7)
+    public void testGetSupportedScaApproaches() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+        List<Map<String, String>> supportedScaApproaches = commonConfigParser.getSupportedScaApproaches();
+
+        Map<String, String> supportedScaApproach = supportedScaApproaches.get(0);
+
+        Assert.assertEquals(supportedScaApproach.get("Name"), "REDIRECT");
+        Assert.assertEquals(supportedScaApproach.get("Default"), "true");
     }
 }

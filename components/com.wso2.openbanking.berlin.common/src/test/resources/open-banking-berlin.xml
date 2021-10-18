@@ -18,6 +18,35 @@
         <PayableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/payable-acounts</PayableAccountsRetrieveEndpoint>
         <SharableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/sharable-accounts</SharableAccountsRetrieveEndpoint>
 
-        <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
+        <!-- Configurations regarding the Strong Customer Authentication -->
+        <SCA>
+            <Required>true</Required>
+            <!--
+            Allowed values for SupportedSCAApproaches names are:
+            1. REDIRECT (OAUTH2 is subsumed by this)
+            2. DECOUPLED
+            3. EMBEDDED
+            -->
+            <SupportedSCAApproaches>
+                <Approach>
+                    <Name>REDIRECT</Name>
+                    <Default>true</Default>
+                </Approach>
+            </SupportedSCAApproaches>
+            <!--Endpoint to retrieve OIDC Discovery metadata-->
+            <OAuthMetadataEndpoint>https://localhost:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
+            <!-- Configure SCA Methods for API responses -->
+            <SupportedSCAMethods>
+                <Method>
+                    <Type>SMS_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>sms-otp</Id>
+                    <Name>SMS OTP on Mobile</Name>
+                    <MappedApproach>REDIRECT</MappedApproach>
+                    <Description>SMS based one time password</Description>
+                    <Default>true</Default>
+                </Method>
+            </SupportedSCAMethods>
+        </SCA>
     </ConsentManagement>
 </Server>
