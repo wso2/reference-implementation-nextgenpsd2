@@ -19,8 +19,11 @@ public class ErrorConstants {
 
     // Error messages
     public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
-    public static final String PATH_INVALID = "Request path invalid";
     public static final String PATCH_NOT_SUPPORTED = "Method PATCH is not supported";
+    public static final String PATH_INVALID = "Request path invalid";
+    public static final String PAYLOAD_JSON_INVALID = "Request payload is not in correct JSON format";
+    public static final String PAYLOAD_INVALID = "Invalid request payload";
+    public static final String CLIENT_ID_MISSING = "Client Id is missing";
 
     // Error object related constants
     public static final String PATH = "path";

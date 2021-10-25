@@ -114,4 +114,17 @@ public class CommonConfigParserTests {
         Assert.assertEquals(supportedScaApproach.get("Name"), "REDIRECT");
         Assert.assertEquals(supportedScaApproach.get("Default"), "true");
     }
+
+    @Test(priority = 8)
+    public void testBerlinSpecificConfigurations() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertNotNull(commonConfigParser.isScaRequired());
+        Assert.assertNotNull(commonConfigParser.getOauthMetadataEndpoint());
+        Assert.assertNotNull(commonConfigParser.getConfiguredFreqPerDay());
+        Assert.assertNotNull(commonConfigParser.isValidUntilDateCapEnabled());
+        Assert.assertNotNull(commonConfigParser.validUntilDays());
+    }
 }

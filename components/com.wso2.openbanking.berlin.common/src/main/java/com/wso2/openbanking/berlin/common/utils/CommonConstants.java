@@ -24,4 +24,19 @@ public class CommonConstants {
     public static final String SCA_CONFIG_TAG = "SCA";
     public static final String SUPPORTED_SCA_METHODS_CONFIG_TAG = "SupportedSCAMethods";
     public static final String SUPPORTED_SCA_APPROACHES_CONFIG_TAG = "SupportedSCAApproaches";
+    public static final String SCA_REQUIRED = "ConsentManagement.SCA.Required";
+    public static final String OAUTH_METADATA_ENDPOINT = "ConsentManagement.SCA.OAuthMetadataEndpoint";
+    public static final String FREQ_PER_DAY_CONFIG_VALUE = "ConsentManagement.FrequencyPerDay.Frequency";
+    public static final String VALID_UNTIL_DATE_CAP_ENABLED = "ConsentManagement.ValidUntilDateCap.Enabled";
+    public static final String VALID_UNTIL_DAYS = "ConsentManagement.ValidUntilDateCap.ValidUntilDays";
+    public static final String SCA_TYPE = "Type";
+    public static final String SCA_VERSION = "Version";
+    public static final String SCA_ID = "Id";
+    public static final String SCA_NAME = "Name";
+    public static final String SCA_MAPPED_APPROACH = "MappedApproach";
+    public static final String SCA_DESCRIPTION = "Description";
+    public static final String SCA_DEFAULT = "Default";
+
+    public static final String SCA_APPROACH_KEY = "SCA-Approach";
+    public static final String SCA_METHODS_KEY = "SCA-Methods";
 }
