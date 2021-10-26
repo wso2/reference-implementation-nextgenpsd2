@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.utils.CommonConstants;
 import com.wso2.openbanking.berlin.common.utils.ScaApproach;
 import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.utils.ScaMethod;
@@ -44,8 +45,9 @@ public class LinksConstructor {
                                                 String authorisationId) {
         JSONObject links = new JSONObject();
 
-        // TODO: get v1 or v2 from config and append it before the links
-        links.appendField(ConsentExtensionConstants.SELF, String.format("%s/%s", requestPath, consentId));
+        String apiVersion = getApiVersion(requestPath);
+        links.appendField(ConsentExtensionConstants.SELF, String
+                .format("%s/%s/%s", apiVersion, requestPath, consentId));
         links.appendField(ConsentExtensionConstants.STATUS, status);
 
         if (!isTppExplicitAuthorisationPreferred) {
@@ -56,14 +58,13 @@ public class LinksConstructor {
                 String wellKnown = CommonConfigParser.getInstance().getOauthMetadataEndpoint();
                 links.appendField(ConsentExtensionConstants.SCA_OAUTH, wellKnown);
                 links.appendField(ConsentExtensionConstants.SCA_STATUS, scaStatus);
-            } else if (ScaApproachEnum.DECOUPLED.equals(currentScaApproach.getApproach())) {
-                // TODO: Append proper links for Implicit DECOUPLED approach
             } else {
                 // Implicit but SCA approach not decided
                 if (currentScaMethods.size() > 1) {
                     // If SCA is required and has more than 1 current SCA method
                     links.appendField(ConsentExtensionConstants.SELECT_AUTH_METHOD, String
-                            .format("%s/%s/authorisations/%s", requestPath, consentId, authorisationId));
+                            .format("%s/%s/%s/authorisations/%s", apiVersion, requestPath, consentId,
+                                    authorisationId));
                 }
             }
         } else {
@@ -77,19 +78,32 @@ public class LinksConstructor {
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Explicit REDIRECT approach
                 links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, String
-                        .format("%s/%s/authorisations", requestPath, consentId));
-            } else if (ScaApproachEnum.DECOUPLED.equals(currentScaApproach.getApproach())) {
-                // TODO: Append proper links for Explicit DECOUPLED approach
+                        .format("%s/%s/%s/authorisations", apiVersion, requestPath, consentId));
             } else {
                 // Explicit but SCA approach not decided
                 if (currentScaMethods.size() > 1) {
                     // If SCA is required and has more than 1 current SCA method
                     links.appendField(ConsentExtensionConstants.START_AUTH_WITH_AUTH_METHOD_SELECTION,
-                            String.format("%s/%s/authorisations", requestPath, consentId));
+                            String.format("%s/%s/%s/authorisations", apiVersion, requestPath, consentId));
                 }
             }
         }
 
         return links;
+    }
+
+    private static String getApiVersion(String requestPath) {
+        switch (ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath)) {
+            case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
+                return CommonConstants.AIS;
+            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
+            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+                return CommonConstants.PIS;
+            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
+                return CommonConstants.PIIS;
+            default:
+                return "";
+        }
     }
 }

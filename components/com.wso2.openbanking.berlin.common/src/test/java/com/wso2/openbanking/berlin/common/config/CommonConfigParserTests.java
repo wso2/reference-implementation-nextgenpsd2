@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.common.config;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.berlin.common.util.CommonTestUtil;
+import com.wso2.openbanking.berlin.common.utils.CommonConstants;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -126,5 +127,9 @@ public class CommonConfigParserTests {
         Assert.assertNotNull(commonConfigParser.getConfiguredFreqPerDay());
         Assert.assertNotNull(commonConfigParser.isValidUntilDateCapEnabled());
         Assert.assertNotNull(commonConfigParser.validUntilDays());
+
+        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.AIS).isEmpty());
+        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.PIS).isEmpty());
+        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.PIIS).isEmpty());
     }
 }

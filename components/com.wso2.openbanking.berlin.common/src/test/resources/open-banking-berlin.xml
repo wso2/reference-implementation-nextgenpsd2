@@ -76,5 +76,11 @@
             <Enabled>false</Enabled>
             <ValidUntilDays>0</ValidUntilDays>
         </ValidUntilDateCap>
+
+        <APIVersions>
+            <AIS>v1</AIS>
+            <PIS>v1</PIS>
+            <PIIS>v2</PIIS>
+        </APIVersions>
     </ConsentManagement>
 </Server>

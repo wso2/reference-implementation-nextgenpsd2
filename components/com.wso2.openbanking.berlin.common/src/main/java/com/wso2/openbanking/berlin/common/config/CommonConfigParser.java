@@ -374,4 +374,20 @@ public class CommonConfigParser {
     public long validUntilDays() {
         return Integer.parseInt(getConfiguration().get(CommonConstants.VALID_UNTIL_DAYS).toString());
     }
+
+    public String getApiVersion(String apiType) {
+        if (CommonConstants.AIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.AIS_API_VERSION).toString();
+        }
+
+        if (CommonConstants.PIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.PIS_API_VERSION).toString();
+        }
+
+        if (CommonConstants.PIIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.PIIS_API_VERSION).toString();
+        }
+
+        return "";
+    }
 }
