@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+/**
+ * Consent Type enum.
+ */
 public enum ConsentTypeEnum {
 
     ACCOUNTS("accounts"),

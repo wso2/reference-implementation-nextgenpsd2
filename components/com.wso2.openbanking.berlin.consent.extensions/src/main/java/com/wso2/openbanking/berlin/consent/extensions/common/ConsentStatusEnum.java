@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+/**
+ * Consent Status enum.
+ */
 public enum ConsentStatusEnum {
 
     RECEIVED("received"),

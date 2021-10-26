@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+/**
+ * Sca Status enum.
+ */
 public enum ScaStatusEnum {
 
     RECEIVED("received"),

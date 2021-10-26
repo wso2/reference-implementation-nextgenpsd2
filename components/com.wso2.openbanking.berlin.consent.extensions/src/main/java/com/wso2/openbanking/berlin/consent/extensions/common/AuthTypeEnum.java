@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+/**
+ * Auth Type enum.
+ */
 public enum AuthTypeEnum {
 
     AUTHORISATION("authorisation"),
