@@ -153,5 +153,25 @@
             <Enable>false</Enable>
             {% endif %}
         </MultiCurrency>
+
+        <APIVersions>
+            {% if open_banking_berlin.consent.api_versions.ais is defined %}
+            <AIS>{{open_banking_berlin.consent.api_versions.ais}}</AIS>
+            {% else %}
+            <AIS>v1</AIS>
+            {% endif %}
+
+            {% if open_banking_berlin.consent.api_versions.pis is defined %}
+            <PIS>{{open_banking_berlin.consent.api_versions.pis}}</PIS>
+            {% else %}
+            <PIS>v1</PIS>
+            {% endif %}
+
+            {% if open_banking_berlin.consent.api_versions.piis is defined %}
+            <PIIS>{{open_banking_berlin.consent.api_versions.piis}}</PIIS>
+            {% else %}
+            <PIIS>v2</PIIS>
+            {% endif %}
+        </APIVersions>
     </ConsentManagement>
 </Server>

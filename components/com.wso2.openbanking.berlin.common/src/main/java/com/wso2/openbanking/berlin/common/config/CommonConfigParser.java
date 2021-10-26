@@ -351,4 +351,43 @@ public class CommonConfigParser {
 
         return supportedScaApproachesList;
     }
+
+    public boolean isScaRequired() {
+        return Boolean.parseBoolean((String) getConfiguration()
+                .get(CommonConstants.SCA_REQUIRED));
+    }
+
+    public String getOauthMetadataEndpoint() {
+        return (String) getConfiguration().get(CommonConstants.OAUTH_METADATA_ENDPOINT);
+    }
+
+    public int getConfiguredFreqPerDay() {
+        return getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE) == null ? 4 :
+                Integer.parseInt((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE));
+    }
+
+    public boolean isValidUntilDateCapEnabled() {
+        return getConfiguration().get(CommonConstants.VALID_UNTIL_DATE_CAP_ENABLED) != null
+                && Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.VALID_UNTIL_DATE_CAP_ENABLED));
+    }
+
+    public long validUntilDays() {
+        return Integer.parseInt(getConfiguration().get(CommonConstants.VALID_UNTIL_DAYS).toString());
+    }
+
+    public String getApiVersion(String apiType) {
+        if (CommonConstants.AIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.AIS_API_VERSION).toString();
+        }
+
+        if (CommonConstants.PIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.PIS_API_VERSION).toString();
+        }
+
+        if (CommonConstants.PIIS.equals(apiType)) {
+            return getConfiguration().get(CommonConstants.PIIS_API_VERSION).toString();
+        }
+
+        return "";
+    }
 }

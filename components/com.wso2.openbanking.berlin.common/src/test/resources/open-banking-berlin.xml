@@ -32,6 +32,11 @@
                     <Name>REDIRECT</Name>
                     <Default>true</Default>
                 </Approach>
+                <!-- DECOUPLED is not supported by the solution, this is for testing purposes -->
+                <Approach>
+                    <Name>DECOUPLED</Name>
+                    <Default>false</Default>
+                </Approach>
             </SupportedSCAApproaches>
             <!--Endpoint to retrieve OIDC Discovery metadata-->
             <OAuthMetadataEndpoint>https://localhost:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
@@ -46,7 +51,36 @@
                     <Description>SMS based one time password</Description>
                     <Default>true</Default>
                 </Method>
+                <!-- PUSH_OTP is not supported by the solution, this is for testing purposes -->
+                <Method>
+                    <Type>PUSH_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>push-otp</Id>
+                    <Name>PUSH OTP on Mobile app</Name>
+                    <MappedApproach>DECOUPLED</MappedApproach>
+                    <Description>Mobile push notification</Description>
+                    <Default>false</Default>
+                </Method>
             </SupportedSCAMethods>
         </SCA>
+
+        <!-- Enable frequency per day throttling for eligible API GET calls -->
+        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+        <FrequencyPerDay>
+            <Enable>true</Enable>
+            <Frequency>4</Frequency>
+        </FrequencyPerDay>
+
+        <!-- Enable validUntil Date cap for Account Consent Creation -->
+        <ValidUntilDateCap>
+            <Enabled>false</Enabled>
+            <ValidUntilDays>0</ValidUntilDays>
+        </ValidUntilDateCap>
+
+        <APIVersions>
+            <AIS>v1</AIS>
+            <PIS>v1</PIS>
+            <PIIS>v2</PIIS>
+        </APIVersions>
     </ConsentManagement>
 </Server>
