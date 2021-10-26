@@ -89,7 +89,7 @@ public class CommonUtil {
     public static Map<String, Object> getScaApproachAndMethods(Boolean isTppRedirectPreferred, boolean isScaRequired) {
         List<ScaMethod> supportedScaMethods = getSupportedScaMethods();
 
-        ScaApproach currentScaApproach = null;
+        ScaApproach currentScaApproach = new ScaApproach();
         List<ScaMethod> currentScaMethods = new ArrayList<>();
 
         if (Boolean.TRUE.equals(isTppRedirectPreferred)) {

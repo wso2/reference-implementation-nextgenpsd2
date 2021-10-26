@@ -10,7 +10,7 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.factory.tests;
+package com.wso2.openbanking.berlin.consent.extensions.test.manage.handler.service.factory;
 
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.factory.ServiceHandlerFactory;

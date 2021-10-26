@@ -10,7 +10,7 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.validate.validator.factory.tests;
+package com.wso2.openbanking.berlin.consent.extensions.test.validate.validator.factory;
 
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.factory.SubmissionValidatorFactory;
