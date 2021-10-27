@@ -42,12 +42,12 @@ public class RequestHandlerFactory {
 
         String[] requestPathArray = requestPath.split("/");
 
-        if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END
+        if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_IDENTIFIER
                 .equals(requestPathArray[requestPathArray.length - 1])) {
             return new PaymentExplicitCancellationAuthRequestHandler();
         }
 
-        if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END
+        if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_IDENTIFIER
                 .equals(requestPathArray[requestPathArray.length - 1])) {
             return new ExplicitAuthRequestHandler();
         }

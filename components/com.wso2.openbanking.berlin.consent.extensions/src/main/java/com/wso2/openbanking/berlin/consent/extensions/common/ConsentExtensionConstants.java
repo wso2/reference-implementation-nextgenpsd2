@@ -65,7 +65,8 @@ public class ConsentExtensionConstants {
     public static final String PAYMENTS_SERVICE_PATH = "payments";
     public static final String BULK_PAYMENTS_SERVICE_PATH = "bulk-payments";
     public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "periodic-payments";
-    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_IDENTIFIER = "cancellation-authorisations";
+    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_IDENTIFIER =
+            "cancellation-authorisations";
 
     // Payment products
     public static final String SEPA_CREDIT_TRANSFERS = "sepa-credit-transfers";
