@@ -13,7 +13,6 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.utils.CommonConstants;
 import com.wso2.openbanking.berlin.common.utils.ScaApproach;
 import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.utils.ScaMethod;
@@ -33,58 +32,62 @@ public class LinksConstructor {
      * @param currentScaApproach                  current SCA approach
      * @param currentScaMethods                   current SCA methods
      * @param requestPath                         request path of initiation
-     * @param status                              consent/payment current status
-     * @param scaStatus                           authorisation resource status
-     * @param consentId                           consent/payment id
+     * @param id                           consent/payment id
      * @param authorisationId                     authorisation resource id
      * @return constructed links object for initiation response
      */
     public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
                                                 ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
-                                                String requestPath, String status, String scaStatus, String consentId,
-                                                String authorisationId) {
+                                                String requestPath, String id, String authorisationId,
+                                                String consentType) {
         JSONObject links = new JSONObject();
 
-        String apiVersion = getApiVersion(requestPath);
-        links.appendField(ConsentExtensionConstants.SELF, String
-                .format("%s/%s/%s", apiVersion, requestPath, consentId));
-        links.appendField(ConsentExtensionConstants.STATUS, status);
+        String apiVersion = CommonConfigParser.getInstance().getApiVersion(consentType);
+
+        String selfLink = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
+                apiVersion, requestPath, id);
+        links.appendField(ConsentExtensionConstants.SELF, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF, selfLink));
+
+        String statusLink = String.format(ConsentExtensionConstants.STATUS_LINK_TEMPLATE,
+                apiVersion, requestPath, id);
+        links.appendField(ConsentExtensionConstants.STATUS, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF, statusLink));
 
         if (!isTppExplicitAuthorisationPreferred) {
-            // Implicit authorisation (PSU-ID is mandated during implicit initiation
-            // therefore no need to send updatePsuIdentification)
+            // Implicit authorisation
+            String authResourceLink = String.format(ConsentExtensionConstants.AUTH_RESOURCE_LINK_TEMPLATE,
+                    apiVersion, requestPath, id, authorisationId);
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Implicit REDIRECT approach
                 String wellKnown = CommonConfigParser.getInstance().getOauthMetadataEndpoint();
-                links.appendField(ConsentExtensionConstants.SCA_OAUTH, wellKnown);
-                links.appendField(ConsentExtensionConstants.SCA_STATUS, scaStatus);
+                links.appendField(ConsentExtensionConstants.SCA_OAUTH, new JSONObject()
+                        .appendField(ConsentExtensionConstants.HREF, wellKnown));
+
+                links.appendField(ConsentExtensionConstants.SCA_STATUS, new JSONObject()
+                        .appendField(ConsentExtensionConstants.HREF, authResourceLink));
             } else {
                 // Implicit but SCA approach not decided
                 if (currentScaMethods.size() > 1) {
                     // If SCA is required and has more than 1 current SCA method
-                    links.appendField(ConsentExtensionConstants.SELECT_AUTH_METHOD, String
-                            .format("%s/%s/%s/authorisations/%s", apiVersion, requestPath, consentId,
-                                    authorisationId));
+                    links.appendField(ConsentExtensionConstants.SELECT_AUTH_METHOD, new JSONObject()
+                            .appendField(ConsentExtensionConstants.HREF, authResourceLink));
                 }
             }
         } else {
-            // Explicit authorisation (PSU-ID is not mandated during explicit initiation
-            // therefore can send the startAuthorisationWithPsuIdentification.
-            // PSU-ID is mandated during startAuthorisation)
-
-            // NOTE: Optional according to the specification but decided to not consider the PSU-ID sent during
-            // explicit initiation and give priority to PSU-ID sent during startAuthorisation therefore making the
-            // PSU-ID in startAuthorisation mandatory due to unclear requirement
+            // Explicit authorisation
+            String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_AUTH_LINK_TEMPLATE,
+                    apiVersion, requestPath, id);
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Explicit REDIRECT approach
-                links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, String
-                        .format("%s/%s/%s/authorisations", apiVersion, requestPath, consentId));
+                links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, new JSONObject()
+                        .appendField(ConsentExtensionConstants.HREF, startAuthorisationsLink));
             } else {
                 // Explicit but SCA approach not decided
                 if (currentScaMethods.size() > 1) {
                     // If SCA is required and has more than 1 current SCA method
-                    links.appendField(ConsentExtensionConstants.START_AUTH_WITH_AUTH_METHOD_SELECTION,
-                            String.format("%s/%s/%s/authorisations", apiVersion, requestPath, consentId));
+                    links.appendField(ConsentExtensionConstants.START_AUTH_WITH_AUTH_METHOD_SELECTION, new JSONObject()
+                            .appendField(ConsentExtensionConstants.HREF, startAuthorisationsLink));
                 }
             }
         }
@@ -92,18 +95,4 @@ public class LinksConstructor {
         return links;
     }
 
-    private static String getApiVersion(String requestPath) {
-        switch (ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath)) {
-            case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
-                return CommonConstants.AIS;
-            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
-            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
-            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                return CommonConstants.PIS;
-            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
-                return CommonConstants.PIIS;
-            default:
-                return "";
-        }
-    }
 }

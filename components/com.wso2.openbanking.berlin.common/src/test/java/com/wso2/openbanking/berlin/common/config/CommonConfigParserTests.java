@@ -15,7 +15,7 @@ package com.wso2.openbanking.berlin.common.config;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.berlin.common.util.CommonTestUtil;
-import com.wso2.openbanking.berlin.common.utils.CommonConstants;
+import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -122,14 +122,19 @@ public class CommonConfigParserTests {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
         CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
 
-        Assert.assertNotNull(commonConfigParser.isScaRequired());
-        Assert.assertNotNull(commonConfigParser.getOauthMetadataEndpoint());
-        Assert.assertNotNull(commonConfigParser.getConfiguredFreqPerDay());
-        Assert.assertNotNull(commonConfigParser.isValidUntilDateCapEnabled());
-        Assert.assertNotNull(commonConfigParser.validUntilDays());
+        Assert.assertTrue(commonConfigParser.isScaRequired());
 
-        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.AIS).isEmpty());
-        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.PIS).isEmpty());
-        Assert.assertFalse(commonConfigParser.getApiVersion(CommonConstants.PIIS).isEmpty());
+        Assert.assertEquals(commonConfigParser.getOauthMetadataEndpoint(),
+                "https://localhost:8243/.well-known/openid-configuration");
+
+        Assert.assertEquals(commonConfigParser.getConfiguredFreqPerDay(), 4);
+
+        Assert.assertFalse(commonConfigParser.isValidUntilDateCapEnabled());
+
+        Assert.assertEquals(commonConfigParser.validUntilDays(), 0);
+
+        Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.ACCOUNTS.toString()), "v1");
+        Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.PAYMENTS.toString()), "v1");
+        Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.FUNDS_CONFIRMATION.toString()), "v2");
     }
 }
