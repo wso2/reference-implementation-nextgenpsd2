@@ -19,7 +19,7 @@ public class ConsentExtensionConstants {
 
     // Constants that are common to all request types
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
-    public static final String EXPLICIT_AUTHORISATION_PATH_IDENTIFIER = "authorisations";
+    public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
     public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
@@ -65,7 +65,7 @@ public class ConsentExtensionConstants {
     public static final String PAYMENTS_SERVICE_PATH = "payments";
     public static final String BULK_PAYMENTS_SERVICE_PATH = "bulk-payments";
     public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "periodic-payments";
-    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_IDENTIFIER =
+    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END =
             "cancellation-authorisations";
 
     // Payment products
