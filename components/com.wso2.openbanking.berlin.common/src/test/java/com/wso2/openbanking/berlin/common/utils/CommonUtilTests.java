@@ -176,7 +176,12 @@ public class CommonUtilTests {
         scaMethod.setDescription("SMS based one time password");
         scaMethod.setDefault(true);
 
-        Assert.assertTrue(CommonUtil.convertObjectToJson(scaMethod) instanceof JSONObject);
+        JSONObject scaMethodObject = CommonUtil.convertObjectToJson(scaMethod);
+
+        Assert.assertEquals(scaMethodObject.get("authenticationType"), "SMS_OTP");
+        Assert.assertEquals(scaMethodObject.get("authenticationMethodId"), "sms-otp");
+        Assert.assertEquals(scaMethodObject.get("name"), "SMS OTP on Mobile");
+        Assert.assertEquals(scaMethodObject.get("explanation"), "SMS based one time password");
     }
 
 }
