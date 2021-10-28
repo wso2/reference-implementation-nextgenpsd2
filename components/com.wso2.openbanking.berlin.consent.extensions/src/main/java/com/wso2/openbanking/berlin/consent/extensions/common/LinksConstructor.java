@@ -32,32 +32,32 @@ public class LinksConstructor {
      * @param currentScaApproach                  current SCA approach
      * @param currentScaMethods                   current SCA methods
      * @param requestPath                         request path of initiation
-     * @param id                           consent/payment id
-     * @param authorisationId                     authorisation resource id
+     * @param consentId                           consent/payment consentId
+     * @param authorisationId                     authorisation resource consentId
      * @return constructed links object for initiation response
      */
     public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
                                                 ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
-                                                String requestPath, String id, String authorisationId,
+                                                String requestPath, String consentId, String authorisationId,
                                                 String consentType) {
         JSONObject links = new JSONObject();
 
         String apiVersion = CommonConfigParser.getInstance().getApiVersion(consentType);
 
         String selfLink = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
-                apiVersion, requestPath, id);
+                apiVersion, requestPath, consentId);
         links.appendField(ConsentExtensionConstants.SELF, new JSONObject()
                 .appendField(ConsentExtensionConstants.HREF, selfLink));
 
         String statusLink = String.format(ConsentExtensionConstants.STATUS_LINK_TEMPLATE,
-                apiVersion, requestPath, id);
+                apiVersion, requestPath, consentId);
         links.appendField(ConsentExtensionConstants.STATUS, new JSONObject()
                 .appendField(ConsentExtensionConstants.HREF, statusLink));
 
         if (!isTppExplicitAuthorisationPreferred) {
             // Implicit authorisation
             String authResourceLink = String.format(ConsentExtensionConstants.AUTH_RESOURCE_LINK_TEMPLATE,
-                    apiVersion, requestPath, id, authorisationId);
+                    apiVersion, requestPath, consentId, authorisationId);
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Implicit REDIRECT approach
                 String wellKnown = CommonConfigParser.getInstance().getOauthMetadataEndpoint();
@@ -77,7 +77,7 @@ public class LinksConstructor {
         } else {
             // Explicit authorisation
             String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_AUTH_LINK_TEMPLATE,
-                    apiVersion, requestPath, id);
+                    apiVersion, requestPath, consentId);
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Explicit REDIRECT approach
                 links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, new JSONObject()
