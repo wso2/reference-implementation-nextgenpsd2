@@ -24,13 +24,17 @@ public class ConsentExtensionConstants {
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
-    public static final String EXPLICIT_AUTH_PATH_IDENTIFIER = "authorisations";
     public static final String CONSENT_STATUS = "consentStatus";
     public static final String CONSENT_ID = "consentId";
     public static final String CHOSEN_SCA_METHOD = "chosenScaMethod";
     public static final String SCA_METHODS = "scaMethods";
     public static final String LINKS = "_links";
+    public static final String HREF = "href";
     public static final String CONSENT_ATTR_KEY_DELIMITER = ":";
+    public static final String SELF_LINK_TEMPLATE = "/%s/%s/%s";
+    public static final String STATUS_LINK_TEMPLATE = "/%s/%s/%s/status";
+    public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";
+    public static final String START_AUTH_LINK_TEMPLATE = "/%s/%s/%s/authorisations";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -61,7 +65,8 @@ public class ConsentExtensionConstants {
     public static final String PAYMENTS_SERVICE_PATH = "payments";
     public static final String BULK_PAYMENTS_SERVICE_PATH = "bulk-payments";
     public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "periodic-payments";
-    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END = "cancellation-authorisations";
+    public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END =
+            "cancellation-authorisations";
 
     // Payment products
     public static final String SEPA_CREDIT_TRANSFERS = "sepa-credit-transfers";

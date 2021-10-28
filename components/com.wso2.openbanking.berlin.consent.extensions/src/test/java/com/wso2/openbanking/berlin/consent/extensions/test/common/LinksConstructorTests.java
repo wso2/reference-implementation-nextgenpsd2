@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.test.common;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.utils.ScaApproach;
 import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.utils.ScaMethod;
@@ -20,7 +21,6 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
@@ -40,23 +40,16 @@ import java.util.List;
 public class LinksConstructorTests {
 
     private ScaApproach redirectScaApproach;
-    private ScaApproach decoupledScaApproach;
-    private List<ScaMethod> currentScaMethods = new ArrayList<>();
-    private ScaMethod redirectScaMethod = new ScaMethod();
-    private ScaMethod decoupledScaMethod = new ScaMethod();
+    private final List<ScaMethod> currentScaMethods = new ArrayList<>();
+    private final ScaMethod redirectScaMethod = new ScaMethod();
+    private final ScaMethod decoupledScaMethod = new ScaMethod();
 
     @BeforeClass
     public void initClass() {
 
-        MockitoAnnotations.initMocks(this);
-
         redirectScaApproach = new ScaApproach();
         redirectScaApproach.setApproach(ScaApproachEnum.REDIRECT);
         redirectScaApproach.setDefault(true);
-
-        decoupledScaApproach = new ScaApproach();
-        decoupledScaApproach.setApproach(ScaApproachEnum.REDIRECT);
-        decoupledScaApproach.setDefault(true);
 
         redirectScaMethod.setAuthenticationType("SMS_OTP");
         redirectScaMethod.setVersion("1.0");
@@ -79,11 +72,18 @@ public class LinksConstructorTests {
     public void initMethod() {
 
         CommonConfigParser commonConfigParserMock = Mockito.mock(CommonConfigParser.class);
-        Mockito.doReturn("https://localhost:8243/.well-known/openid-configuration")
-                .when(commonConfigParserMock).getOauthMetadataEndpoint();
 
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
+
+        Mockito.doReturn("https://localhost:8243/.well-known/openid-configuration")
+                .when(commonConfigParserMock).getOauthMetadataEndpoint();
+        Mockito.doReturn("v1")
+                .when(commonConfigParserMock).getApiVersion(ConsentTypeEnum.ACCOUNTS.toString());
+        Mockito.doReturn("v1")
+                .when(commonConfigParserMock).getApiVersion(ConsentTypeEnum.PAYMENTS.toString());
+        Mockito.doReturn("v2")
+                .when(commonConfigParserMock).getApiVersion(ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
     }
 
     @ObjectFactory
@@ -93,60 +93,159 @@ public class LinksConstructorTests {
     }
 
     @Test
-    public void testInitiationLinksWithImplicitRedirect() {
+    public void testAccountsInitiationLinksWithImplicitRedirect() {
         currentScaMethods.add(redirectScaMethod);
-        currentScaMethods.add(decoupledScaMethod);
 
         JSONObject links = LinksConstructor.getInitiationLinks(false, redirectScaApproach,
-                currentScaMethods, "v1/consents", "received", "received", "1234",
-                "5678");
+                currentScaMethods, "consents", "1234", "5678", ConsentTypeEnum.ACCOUNTS.toString());
 
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF), "/v1/consents/1234");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF), "/v1/consents/1234/status");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_OAUTH));
+        JSONObject scaOAuthLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_OAUTH);
+        Assert.assertEquals(scaOAuthLinkObject.get(ConsentExtensionConstants.HREF),
+                "https://localhost:8243/.well-known/openid-configuration");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_STATUS));
+        JSONObject scaStatusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_STATUS);
+        Assert.assertEquals(scaStatusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/consents/1234/authorisations/5678");
     }
 
     @Test
-    public void testInitiationLinksWithExplicitRedirect() {
+    public void testPaymentsInitiationLinksWithImplicitRedirect() {
         currentScaMethods.add(redirectScaMethod);
-        currentScaMethods.add(decoupledScaMethod);
+
+        JSONObject links = LinksConstructor.getInitiationLinks(false, redirectScaApproach,
+                currentScaMethods, "payments/sepa-credit-transfers", "1234", "5678",
+                ConsentTypeEnum.PAYMENTS.toString());
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234/status");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_OAUTH));
+        JSONObject scaOAuthLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_OAUTH);
+        Assert.assertEquals(scaOAuthLinkObject.get(ConsentExtensionConstants.HREF),
+                "https://localhost:8243/.well-known/openid-configuration");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_STATUS));
+        JSONObject scaStatusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_STATUS);
+        Assert.assertEquals(scaStatusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234/authorisations/5678");
+    }
+
+    @Test
+    public void testFundsConfirmationInitiationLinksWithImplicitRedirect() {
+        currentScaMethods.add(redirectScaMethod);
+
+        JSONObject links = LinksConstructor.getInitiationLinks(false, redirectScaApproach,
+                currentScaMethods, "consents/confirmation-of-funds", "1234", "5678",
+                ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234/status");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_OAUTH));
+        JSONObject scaOAuthLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_OAUTH);
+        Assert.assertEquals(scaOAuthLinkObject.get(ConsentExtensionConstants.HREF),
+                "https://localhost:8243/.well-known/openid-configuration");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SCA_STATUS));
+        JSONObject scaStatusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SCA_STATUS);
+        Assert.assertEquals(scaStatusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234/authorisations/5678");
+    }
+
+    @Test
+    public void testAccountsInitiationLinksWithExplicitRedirect() {
+        currentScaMethods.add(redirectScaMethod);
 
         JSONObject links = LinksConstructor.getInitiationLinks(true, redirectScaApproach,
-                currentScaMethods, "v1/consents", "received", null, "1234",
-                null);
+                currentScaMethods, "consents", "1234", null, ConsentTypeEnum.ACCOUNTS.toString());
 
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF), "/v1/consents/1234");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF), "/v1/consents/1234/status");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
+        JSONObject startAuthWithPsuIdentificationObject = (JSONObject)
+                links.get(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION);
+        Assert.assertEquals(startAuthWithPsuIdentificationObject.get(ConsentExtensionConstants.HREF),
+                "/v1/consents/1234/authorisations");
     }
 
     @Test
-    public void testInitiationLinksWithImplicit() {
+    public void testPaymentsInitiationLinksWithExplicitRedirect() {
         currentScaMethods.add(redirectScaMethod);
-        currentScaMethods.add(decoupledScaMethod);
 
-        JSONObject links = LinksConstructor.getInitiationLinks(false, new ScaApproach(),
-                currentScaMethods, "v1/consents", "received", "received", "1234",
-                "5678");
+        JSONObject links = LinksConstructor.getInitiationLinks(true, redirectScaApproach,
+                currentScaMethods, "payments/sepa-credit-transfers", "1234", null,
+                ConsentTypeEnum.PAYMENTS.toString());
 
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
-        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELECT_AUTH_METHOD));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234/status");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
+        JSONObject startAuthWithPsuIdentificationObject = (JSONObject)
+                links.get(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION);
+        Assert.assertEquals(startAuthWithPsuIdentificationObject.get(ConsentExtensionConstants.HREF),
+                "/v1/payments/sepa-credit-transfers/1234/authorisations");
     }
 
     @Test
-    public void testInitiationLinksWithExplicit() {
+    public void testFundsConfirmationInitiationLinksWithExplicitRedirect() {
         currentScaMethods.add(redirectScaMethod);
-        currentScaMethods.add(decoupledScaMethod);
 
-        JSONObject links = LinksConstructor.getInitiationLinks(true, new ScaApproach(),
-                currentScaMethods, "v1/consents", "received", "received", "1234",
-                "5678");
+        JSONObject links = LinksConstructor.getInitiationLinks(true, redirectScaApproach,
+                currentScaMethods, "consents/confirmation-of-funds", "1234", null,
+                ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
 
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        JSONObject selfLinkObject = (JSONObject) links.get(ConsentExtensionConstants.SELF);
+        Assert.assertEquals(selfLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234");
+
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
-        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_AUTH_METHOD_SELECTION));
+        JSONObject statusLinkObject = (JSONObject) links.get(ConsentExtensionConstants.STATUS);
+        Assert.assertEquals(statusLinkObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234/status");
+
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
+        JSONObject startAuthWithPsuIdentificationObject = (JSONObject)
+                links.get(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION);
+        Assert.assertEquals(startAuthWithPsuIdentificationObject.get(ConsentExtensionConstants.HREF),
+                "/v2/consents/confirmation-of-funds/1234/authorisations");
     }
 
 }

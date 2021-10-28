@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.berlin.common.utils.CommonConstants;
+import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
@@ -375,16 +376,16 @@ public class CommonConfigParser {
         return Integer.parseInt(getConfiguration().get(CommonConstants.VALID_UNTIL_DAYS).toString());
     }
 
-    public String getApiVersion(String apiType) {
-        if (CommonConstants.AIS.equals(apiType)) {
+    public String getApiVersion(String consentType) {
+        if (ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
             return getConfiguration().get(CommonConstants.AIS_API_VERSION).toString();
         }
 
-        if (CommonConstants.PIS.equals(apiType)) {
+        if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
             return getConfiguration().get(CommonConstants.PIS_API_VERSION).toString();
         }
 
-        if (CommonConstants.PIIS.equals(apiType)) {
+        if (ConsentTypeEnum.FUNDS_CONFIRMATION.toString().equals(consentType)) {
             return getConfiguration().get(CommonConstants.PIIS_API_VERSION).toString();
         }
 
