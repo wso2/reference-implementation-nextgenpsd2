@@ -18,6 +18,7 @@ import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.utils.TPPMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,7 +41,7 @@ public class HeaderValidator {
         if (headers.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.get(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
-            if (psuIpAddress == null || psuIpAddress.isEmpty()) {
+            if (StringUtils.isEmpty(psuIpAddress)) {
                 log.error(String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -59,7 +60,7 @@ public class HeaderValidator {
         if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
-            if (xRequestId == null || xRequestId.isEmpty() || !CommonUtil.isValidUuid(xRequestId)) {
+            if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
                 log.error(String.format("Invalid %s header", ConsentExtensionConstants.X_REQUEST_ID_HEADER));
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -124,7 +125,7 @@ public class HeaderValidator {
      * Mandates any header and returns an error if not present.
      *
      * @param headers request headers
-     * @param header header to mandate
+     * @param header  header to mandate
      */
     public static void mandateHeader(Map<String, String> headers, String header) {
         if (!headers.containsKey(header)) {
