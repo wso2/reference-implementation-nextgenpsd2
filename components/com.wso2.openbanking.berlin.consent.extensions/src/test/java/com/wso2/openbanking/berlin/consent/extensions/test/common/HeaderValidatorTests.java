@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This contains unit tests for HeaderValidator class.
@@ -133,21 +134,21 @@ public class HeaderValidatorTests {
         Map<String, String> headers = new HashMap<>();
         headers.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
-        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Boolean.TRUE);
+        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Optional.of(Boolean.TRUE));
 
         headers.clear();
         headers.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "false");
 
-        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Boolean.FALSE);
+        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Optional.of(Boolean.FALSE));
 
         headers.clear();
         headers.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "");
 
-        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Boolean.FALSE);
+        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Optional.of(Boolean.FALSE));
 
         headers.clear();
 
-        Assert.assertNull(HeaderValidator.isTppRedirectPreferred(headers));
+        Assert.assertEquals(HeaderValidator.isTppRedirectPreferred(headers), Optional.empty());
     }
 
     @Test
@@ -212,5 +213,4 @@ public class HeaderValidatorTests {
 
         HeaderValidator.validateTppRedirectPreferredHeader(headers);
     }
-
 }

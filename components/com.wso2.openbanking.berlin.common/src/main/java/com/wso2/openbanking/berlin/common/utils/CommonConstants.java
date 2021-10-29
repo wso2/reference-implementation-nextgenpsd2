@@ -39,6 +39,11 @@ public class CommonConstants {
     public static final String SCA_MAPPED_APPROACH = "MappedApproach";
     public static final String SCA_DESCRIPTION = "Description";
     public static final String SCA_DEFAULT = "Default";
+    public static final String ACCOUNT_REFERENCE_TYPE_PATH = "ConsentManagement.AccountReferenceType";
+    public static final String MAX_FUTURE_PAYMENT_DAYS = "ConsentManagement.MaximumFuturePaymentDays";
+    public static final String TRANSACTION_FEE_ENABLED_PATH = "ConsentManagement.TransactionFee.Enable";
+    public static final String TRANSACTION_FEE_AMOUNT = "ConsentManagement.TransactionFee.Amount";
+    public static final String TRANSACTION_FEE_CURRENCY = "ConsentManagement.TransactionFee.Currency";
 
     public static final String SCA_APPROACH_KEY = "SCA-Approach";
     public static final String SCA_METHODS_KEY = "SCA-Methods";

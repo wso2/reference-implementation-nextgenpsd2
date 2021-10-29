@@ -15,14 +15,18 @@ package com.wso2.openbanking.berlin.consent.extensions.common;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
+import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.utils.TPPMessage;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Header validations class.
@@ -30,6 +34,22 @@ import java.util.Map;
 public class HeaderValidator {
 
     private static final Log log = LogFactory.getLog(HeaderValidator.class);
+
+    /**
+     * Validates whether the provided headers map is empty or not.
+     *
+     * @param headersMap
+     * @return
+     */
+    public static boolean validateHeadersMap(Map<String, String> headersMap) {
+
+        if (MapUtils.isEmpty(headersMap)) {
+            log.error(ErrorConstants.HEADERS_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.HEADERS_MISSING));
+        }
+        return true;
+    }
 
     /**
      * Validates the PSU-IP-Address request header.
@@ -48,6 +68,11 @@ public class HeaderValidator {
                         String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)
                 ));
             }
+        } else {
+            log.error(ErrorConstants.PSU_IP_ADDRESS_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.PSU_IP_ADDRESS_MISSING));
         }
     }
 
@@ -61,12 +86,16 @@ public class HeaderValidator {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
             if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
-                log.error(String.format("Invalid %s header", ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                log.error(ErrorConstants.X_REQUEST_ID_INVALID);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format("Invalid %s header", ConsentExtensionConstants.X_REQUEST_ID_HEADER)
-                ));
+                        ErrorConstants.X_REQUEST_ID_INVALID));
             }
+        } else {
+            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.X_REQUEST_ID_MISSING));
         }
     }
 
@@ -76,7 +105,10 @@ public class HeaderValidator {
      * @param headers request headers
      */
     public static void validateTppRedirectPreferredHeader(Map<String, String> headers) {
-        if (Boolean.TRUE.equals(isTppRedirectPreferred(headers))
+
+        Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(headers);
+
+        if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
                 && CommonUtil.getScaApproach(ScaApproachEnum.REDIRECT) == null) {
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT));
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
@@ -84,12 +116,15 @@ public class HeaderValidator {
                     String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT)));
         }
 
-        if (Boolean.FALSE.equals(isTppRedirectPreferred(headers))
+        if ((isRedirectPreferred.isPresent() && BooleanUtils.isFalse(isRedirectPreferred.get()))
                 && CommonUtil.getScaApproach(ScaApproachEnum.DECOUPLED) == null) {
+
+            //todo: Since decoupled approach is not supported yet, an error is thrown if the redirect header is false.
+            //issue: https://github.com/wso2-enterprise/financial-open-banking/issues/6858
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT)));
+                    String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED)));
         }
     }
 
@@ -113,12 +148,13 @@ public class HeaderValidator {
      * @param headers request headers
      * @return if redirect approach preferred or not
      */
-    public static Boolean isTppRedirectPreferred(Map<String, String> headers) {
+    public static Optional<Boolean> isTppRedirectPreferred(Map<String, String> headers) {
         if (headers.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
-            return Boolean.parseBoolean(headers.get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER));
+            return Optional.of(Boolean.parseBoolean(headers
+                    .get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

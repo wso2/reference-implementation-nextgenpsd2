@@ -470,3 +470,8 @@ default.enable = true
 
 [open_banking_berlin.consent.multi_currency]
 enable=false
+
+[open_banking_berlin.consent.transaction_fee]
+enable = false
+amunt = 0
+currency = ""

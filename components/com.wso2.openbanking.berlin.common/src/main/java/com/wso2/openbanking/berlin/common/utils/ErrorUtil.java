@@ -12,12 +12,7 @@
 
 package com.wso2.openbanking.berlin.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wso2.openbanking.accelerator.common.util.Generated;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,7 +50,7 @@ public class ErrorUtil {
         tppMessagesList.add(tppMessage);
         tppMessages.setTppMessages(tppMessagesList);
 
-        return convertErrorObjectToJson(tppMessages);
+        return CommonUtil.convertObjectToJson(tppMessages);
     }
 
     /**
@@ -91,28 +86,6 @@ public class ErrorUtil {
         TPPMessages tppMessages = new TPPMessages();
         tppMessages.setTppMessages(tppErrorMessages);
 
-        return convertErrorObjectToJson(tppMessages);
-    }
-
-    /**
-     * Used to convert the error object to a json object.
-     *
-     * @param tppMessages tppMessages object with all the errors inside it
-     * @return
-     */
-    @Generated(message = "Ignoring since this is already tested by other tests")
-    private static JSONObject convertErrorObjectToJson(TPPMessages tppMessages) {
-
-        // Create object mapper
-        ObjectMapper objectMapper = new ObjectMapper();
-        String errorJsonString;
-        try {
-            errorJsonString = objectMapper.writeValueAsString(tppMessages);
-            JSONParser errorJsonParser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-            return (JSONObject) errorJsonParser.parse(errorJsonString);
-        } catch (ParseException | JsonProcessingException e) {
-            log.error("Error while constructing the error", e);
-        }
-        return new JSONObject();
+        return CommonUtil.convertObjectToJson(tppMessages);
     }
 }

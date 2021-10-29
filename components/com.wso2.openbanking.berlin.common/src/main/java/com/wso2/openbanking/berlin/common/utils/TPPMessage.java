@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.wso2.openbanking.accelerator.common.util.Generated;
 
 import javax.validation.constraints.NotNull;
 
@@ -41,6 +40,8 @@ public class TPPMessage {
      * Error Code Enum.
      */
     public enum CodeEnum {
+
+        // Service unspecific HTTP error codes
         CERTIFICATE_INVALID("CERTIFICATE_INVALID"),
         CERTIFICATE_EXPIRED("CERTIFICATE_EXPIRED"),
         CERTIFICATE_BLOCKED("CERTIFICATE_BLOCKED"),
@@ -68,7 +69,15 @@ public class TPPMessage {
         SESSIONS_NOT_SUPPORTED("SESSIONS_NOT_SUPPORTED"),
         ACCESS_EXCEEDED("ACCESS_EXCEEDED"),
         REQUESTED_FORMATS_INVALID("REQUESTED_FORMATS_INVALID"),
-        INVALID_STATUS_VALUE("INVALID_STATUS_VALUE");
+        INVALID_STATUS_VALUE("INVALID_STATUS_VALUE"),
+
+        // PIS specific HTTP error codes
+        PRODUCT_INVALID("PRODUCT_INVALID"),
+        PRODUCT_UNKNOWN("PRODUCT_UNKNOWN"),
+        PAYMENT_FAILED("PAYMENT_FAILED"),
+        REQUIRED_KID_MISSING("REQUIRED_KID_MISSING"),
+        EXECUTION_DATE_INVALID("EXECUTION_DATE_INVALID"),
+        CANCELLATION_INVALID("CANCELLATION_INVALID");
 
         private String value;
 
@@ -140,9 +149,6 @@ public class TPPMessage {
         this.path = path;
     }
 
-
-
-    @Generated(message = "Excluded from code coverage since no logic is involved")
     @Override
     public String toString()  {
         StringBuilder sb = new StringBuilder();
