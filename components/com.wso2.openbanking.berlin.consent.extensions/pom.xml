@@ -173,7 +173,7 @@
                     <xmlOutput>true</xmlOutput>
                     <findbugsXmlOutputDirectory>target/findbugs
                     </findbugsXmlOutputDirectory>
-<!--                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>-->
+                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
                     <!--Exclude generated sources-->
                 </configuration>
                 <executions>

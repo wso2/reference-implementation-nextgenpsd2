@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Common util class.
@@ -32,6 +33,9 @@ import java.util.Map;
 public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
+    private static final Pattern uuidPattern = Pattern.compile
+            ("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                    Pattern.CASE_INSENSITIVE);
 
     /**
      * To get a list of ScaMethod.
@@ -223,6 +227,16 @@ public class CommonUtil {
             log.error("Error while constructing the JSON Object", e);
         }
         return new JSONObject();
+    }
+
+    /**
+     * Validates a format of UUID.
+     *
+     * @param stringUuid
+     * @return
+     */
+    public static boolean isValidUuid(String stringUuid) {
+        return uuidPattern.matcher(stringUuid.trim()).matches();
     }
 
 }

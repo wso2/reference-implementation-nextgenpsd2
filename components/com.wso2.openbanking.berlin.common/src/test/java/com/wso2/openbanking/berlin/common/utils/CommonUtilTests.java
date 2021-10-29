@@ -184,4 +184,12 @@ public class CommonUtilTests {
         Assert.assertEquals(scaMethodObject.get("explanation"), "SMS based one time password");
     }
 
+    @Test
+    public void testIsValidUuid() {
+
+        Assert.assertFalse(CommonUtil.isValidUuid(""));
+        Assert.assertFalse(CommonUtil.isValidUuid("abc"));
+        Assert.assertTrue(CommonUtil.isValidUuid("1b91e649-3d06-4e16-ada7-bf5af2136b44"));
+    }
+
 }
