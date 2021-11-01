@@ -473,5 +473,5 @@ enable=false
 
 [open_banking_berlin.consent.transaction_fee]
 enable = false
-amunt = 0
-currency = ""
+amount = 0
+currency = "EUR"

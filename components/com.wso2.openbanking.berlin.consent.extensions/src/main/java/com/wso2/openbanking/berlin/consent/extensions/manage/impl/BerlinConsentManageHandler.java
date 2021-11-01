@@ -16,9 +16,9 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageHandler;
-import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.common.utils.TPPMessage;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
@@ -49,9 +49,6 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
-
-        log.debug("Validating headers map");
-        HeaderValidator.validateHeadersMap(consentManageData.getHeaders());
 
         log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());

@@ -14,8 +14,8 @@ package com.wso2.openbanking.berlin.common.config;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.util.CommonTestUtil;
-import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

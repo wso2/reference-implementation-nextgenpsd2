@@ -14,12 +14,11 @@ package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
-import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
-import com.wso2.openbanking.berlin.common.utils.TPPMessage;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,28 +35,13 @@ public class HeaderValidator {
     private static final Log log = LogFactory.getLog(HeaderValidator.class);
 
     /**
-     * Validates whether the provided headers map is empty or not.
-     *
-     * @param headersMap
-     * @return
-     */
-    public static boolean validateHeadersMap(Map<String, String> headersMap) {
-
-        if (MapUtils.isEmpty(headersMap)) {
-            log.error(ErrorConstants.HEADERS_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.HEADERS_MISSING));
-        }
-        return true;
-    }
-
-    /**
      * Validates the PSU-IP-Address request header.
      *
      * @param headers request headers
      */
     public static void validatePsuIpAddress(Map<String, String> headers) {
 
+        log.debug("Validating PSU-IP-Address header");
         if (headers.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.get(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
@@ -77,11 +61,38 @@ public class HeaderValidator {
     }
 
     /**
+     * Validates the PSU-Id request header.
+     *
+     * @param headers request headers
+     */
+    public static void validatePsuId(Map<String, String> headers) {
+
+        log.debug("Validate PSU-ID if present in implicit flow");
+        if (headers.containsKey(ConsentExtensionConstants.PSU_ID_HEADER)) {
+            String psuId = headers.get(ConsentExtensionConstants.PSU_ID_HEADER);
+
+            if (StringUtils.isEmpty(psuId)) {
+                log.error(String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER));
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
+                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER)
+                ));
+            }
+        } else {
+            log.error(ErrorConstants.PSU_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.PSU_ID_MISSING));
+        }
+    }
+
+    /**
      * Validates the X-Request-ID request header.
      *
      * @param headers request headers
      */
     public static void validateXRequestId(Map<String, String> headers) {
+        log.debug("Validating the X-Request-ID header");
         if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
@@ -106,6 +117,7 @@ public class HeaderValidator {
      */
     public static void validateTppRedirectPreferredHeader(Map<String, String> headers) {
 
+        log.debug("Validating TPP-Redirect-Preferred header according to the specification");
         Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(headers);
 
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
@@ -135,6 +147,7 @@ public class HeaderValidator {
      * @return
      */
     public static boolean isTppExplicitAuthorisationPreferred(Map<String, String> headers) {
+        log.debug("Determining whether the consent request is implicit or explicit");
         if (headers.containsKey(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {
             return Boolean.parseBoolean(headers.get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         }
@@ -149,6 +162,7 @@ public class HeaderValidator {
      * @return if redirect approach preferred or not
      */
     public static Optional<Boolean> isTppRedirectPreferred(Map<String, String> headers) {
+        log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
         if (headers.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
             return Optional.of(Boolean.parseBoolean(headers
                     .get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)));

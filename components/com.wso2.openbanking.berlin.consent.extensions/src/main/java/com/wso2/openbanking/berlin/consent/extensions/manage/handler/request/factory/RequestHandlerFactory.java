@@ -16,10 +16,12 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.BulkPaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PeriodicPaymentInitiationRequestHandler;
 
 /**
  * Factory for deciding the type of request.
@@ -54,9 +56,11 @@ public class RequestHandlerFactory {
             case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
                 return new AccountInitiationRequestHandler();
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
-            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
-            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
                 return new PaymentInitiationRequestHandler();
+            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+                return new BulkPaymentInitiationRequestHandler();
+            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+                return new PeriodicPaymentInitiationRequestHandler();
             case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
                 return new FundsConfirmationInitiationRequestHandler();
             default:

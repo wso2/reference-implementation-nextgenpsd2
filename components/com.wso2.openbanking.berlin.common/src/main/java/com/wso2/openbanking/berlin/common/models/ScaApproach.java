@@ -10,7 +10,9 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.common.utils;
+package com.wso2.openbanking.berlin.common.models;
+
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 
 /**
  * SCA approach class.

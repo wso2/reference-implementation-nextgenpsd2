@@ -13,9 +13,9 @@
 package com.wso2.openbanking.berlin.consent.extensions.test.common;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
-import com.wso2.openbanking.berlin.common.utils.ScaApproach;
-import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import org.mockito.MockitoAnnotations;

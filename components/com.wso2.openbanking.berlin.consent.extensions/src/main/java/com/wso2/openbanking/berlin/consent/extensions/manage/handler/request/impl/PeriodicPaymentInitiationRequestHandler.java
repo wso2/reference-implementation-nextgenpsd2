@@ -10,34 +10,20 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.common.utils;
+package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
+
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
+import net.minidev.json.JSONObject;
 
 /**
- * SCA Approaches enum.
+ * Class to handle periodic payments initiation request.
  */
-public enum ScaApproachEnum {
+public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRequestHandler {
 
-    REDIRECT("REDIRECT"),
-    DECOUPLED("DECOUPLED"),
-    EMBEDDED("EMBEDDED");
+    @Override
+    protected void validateRequestPayload(JSONObject payload, String paymentType, String configuredAccReference,
+                                          String maxPaymentExecutionDays) {
 
-    private String value;
-
-    ScaApproachEnum(String value) {
-        this.value = value;
+        PaymentConsentUtil.validatePeriodicPaymentsPayload(payload, configuredAccReference);
     }
-
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    public static ScaApproachEnum fromValue(String text) {
-        for (ScaApproachEnum b : ScaApproachEnum.values()) {
-            if (text.equals(String.valueOf(b.value))) {
-                return b;
-            }
-        }
-        return null;
-    }
-
 }

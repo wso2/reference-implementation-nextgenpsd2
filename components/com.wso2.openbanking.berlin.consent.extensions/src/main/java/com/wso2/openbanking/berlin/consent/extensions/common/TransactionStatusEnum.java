@@ -54,9 +54,9 @@ public enum TransactionStatusEnum {
 
     public static TransactionStatusEnum fromValue(String text) {
 
-        for (TransactionStatusEnum b : TransactionStatusEnum.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
+        for (TransactionStatusEnum statusEnum : TransactionStatusEnum.values()) {
+            if (String.valueOf(statusEnum.value).equals(text)) {
+                return statusEnum;
             }
         }
         return null;

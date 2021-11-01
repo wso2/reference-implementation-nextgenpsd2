@@ -50,7 +50,7 @@ public class ConsentExtensionUtil {
      * @param psuId
      * @return
      */
-    public static String ensureSuperTenantDomain(String psuId) {
+    public static String appendSuperTenantDomain(String psuId) {
 
         if (StringUtils.isNotBlank(psuId)) {
             if (psuId.endsWith(ConsentExtensionConstants.SUPER_TENANT_DOMAIN)) {

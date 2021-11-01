@@ -22,12 +22,12 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.utils.CommonConstants;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.common.models.ScaApproach;
+import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
-import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
-import com.wso2.openbanking.berlin.common.utils.ScaApproach;
-import com.wso2.openbanking.berlin.common.utils.ScaMethod;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
@@ -38,7 +38,6 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -73,25 +72,21 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         validateRequestHeaders(headersMap);
         validateRequestPayload(requestPayload, paymentService, configuredAccReference, maxPaymentExecutionDays);
 
-        log.debug("Determining whether the consent request is implicit or explicit");
         boolean isExplicitAuth = HeaderValidator.isTppExplicitAuthorisationPreferred(headersMap);
 
-        log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
 
         log.debug("The consent initiation is an implicit initiation");
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
-            log.debug("Constructing consent request to be stored");
             ConsentResource consentResource = new ConsentResource(clientId,
                     requestPayload.toJSONString(), ConsentTypeEnum.PAYMENTS.toString(),
                     TransactionStatusEnum.RCVD.name());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
-                    .ensureSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
+                    .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
             try {
-                log.debug("Creating consent");
                 createdConsent = consentCoreService.createAuthorizableConsent(consentResource, tenantEnsuredPSUId,
                         ScaStatusEnum.RECEIVED.toString(), AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
@@ -105,7 +100,9 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                 Map<String, Object> scaInfoMap = CommonUtil.getScaApproachAndMethods(true,
                         isSCARequired);
 
-                log.debug("Storing consent attributes");
+                if (log.isDebugEnabled()) {
+                    log.debug("Storing consent attributes against consent: " + consentResource.getConsentID());
+                }
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
                         getConsentAttributesToPersist(consentManageData, scaInfoMap, isExplicitAuth));
             } catch (ConsentManagementException e) {
@@ -113,7 +110,6 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 
-            log.debug("Constructing response");
             String apiVersion = configParser.getApiVersion(consentResource.getConsentType());
             boolean isTransactionFeeEnabled = configParser.isTransactionFeeEnabled();
             int transactionFee = configParser.getTransactionFee();
@@ -136,7 +132,6 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      */
     protected void validateRequestHeaders(Map<String, String> headersMap) throws ConsentException {
 
-        log.debug("Validating TPP-Redirect-Preferred header according to the specification");
         /*
          * 1). If the header is true, the REDIRECT SCA Approach must be configured in open-banking.xml as the
          * supported SCA approach.
@@ -150,8 +145,11 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
          */
         HeaderValidator.validateTppRedirectPreferredHeader(headersMap);
 
-        log.debug("Validating PSU-IP-Address header");
         HeaderValidator.validatePsuIpAddress(headersMap);
+
+        if (HeaderValidator.isTppExplicitAuthorisationPreferred(headersMap)) {
+            HeaderValidator.validatePsuId(headersMap);
+        }
     }
 
     /**
@@ -164,14 +162,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
     protected void validateRequestPayload(JSONObject payload, String paymentType, String configuredAccReference,
                                           String maxPaymentExecutionDays) {
 
-        // One of the following payment types must present according to the swagger validation
-        if (StringUtils.equals(ConsentExtensionConstants.PAYMENTS, paymentType)) {
-            PaymentConsentUtil.validatePaymentsPayload(payload, configuredAccReference);
-        } else if (StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, paymentType)) {
-            PaymentConsentUtil.validateBulkPaymentsPayload(payload, maxPaymentExecutionDays, configuredAccReference);
-        } else {
-            PaymentConsentUtil.validatePeriodicPaymentsPayload(payload, configuredAccReference);
-        }
+        PaymentConsentUtil.validatePaymentsPayload(payload, configuredAccReference);
     }
 
     /**
@@ -217,9 +208,9 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                     headersMap.get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER));
         }
 
-        if (headersMap.containsKey(ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END)) {
+        if (headersMap.containsKey(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {
             consentAttributesMap.put(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER,
-                    headersMap.get(ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END));
+                    headersMap.get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         }
         return consentAttributesMap;
     }

@@ -188,7 +188,7 @@
             {% if open_banking_berlin.consent.transaction_fee.currency is defined %}
             <Currency>{{open_banking_berlin.consent.transaction_fee.currency}}</Currency>
             {% else %}
-            <Currency></Currency>
+            <Currency>EUR</Currency>
             {% endif %}
         </TransactionFee>
     </ConsentManagement>
