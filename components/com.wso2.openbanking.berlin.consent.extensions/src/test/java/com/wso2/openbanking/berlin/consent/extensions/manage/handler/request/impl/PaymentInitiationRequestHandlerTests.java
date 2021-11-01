@@ -54,8 +54,6 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
 
     private static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
     private static final String PAYMENTS_PATH = "payments/sepa-credit-transfers";
-    private static final String BULK_PAYMENTS_PATH = "bulk-payments/sepa-credit-transfers";
-    private static final String PERIODIC_PAYMENTS_PATH = "periodic-payments/sepa-credit-transfers";
 
     @Mock
     CommonConfigParser commonConfigParserMock;

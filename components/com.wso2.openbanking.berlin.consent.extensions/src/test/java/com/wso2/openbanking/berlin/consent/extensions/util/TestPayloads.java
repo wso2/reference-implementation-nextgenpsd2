@@ -47,6 +47,21 @@ public class TestPayloads {
             "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
             "}";
 
+    public static final String PAYMENTS_PAYLOAD_WITH_INVALID_REFERENCE = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"invalid\": \"DE12345678901234567890\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"iban\": \"DE98765432109876543210\"\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+            "}";
+
     public static final String PAYMENTS_PAYLOAD_WITHOUT_DEBTOR_ACCOUNT = "{\n" +
             "    \"instructedAmount\": {\n" +
             "        \"currency\": \"EUR\",\n" +

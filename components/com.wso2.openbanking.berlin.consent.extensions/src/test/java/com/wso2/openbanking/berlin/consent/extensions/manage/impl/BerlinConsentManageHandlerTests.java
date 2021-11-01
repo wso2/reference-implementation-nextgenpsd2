@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.manage.impl;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -76,6 +77,24 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
 
         JSONObject validPayload = (JSONObject) parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD);
         doReturn(validPayload).when(consentManageDataMock).getPayload();
+        doReturn(headersMap).when(consentManageDataMock).getHeaders();
+
+        berlinConsentManageHandler.handlePost(consentManageDataMock);
+    }
+
+    @Test (expectedExceptions = ConsentException.class)
+    public void testHandlePostWithValidConsentDataWithoutPayload() throws ParseException {
+
+        doReturn(null).when(consentManageDataMock).getPayload();
+        doReturn(headersMap).when(consentManageDataMock).getHeaders();
+
+        berlinConsentManageHandler.handlePost(consentManageDataMock);
+    }
+
+    @Test (expectedExceptions = ConsentException.class)
+    public void testHandlePostWithInvalidPayload() throws ParseException {
+
+        doReturn("invalid payload").when(consentManageDataMock).getPayload();
         doReturn(headersMap).when(consentManageDataMock).getHeaders();
 
         berlinConsentManageHandler.handlePost(consentManageDataMock);
