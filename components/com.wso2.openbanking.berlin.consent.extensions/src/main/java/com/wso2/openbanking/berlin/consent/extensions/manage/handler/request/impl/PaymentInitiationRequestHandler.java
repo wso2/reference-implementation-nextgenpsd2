@@ -62,15 +62,11 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
         Map<String, String> headersMap = consentManageData.getHeaders();
         JSONObject requestPayload = (JSONObject) consentManageData.getPayload();
-        String requestPath = consentManageData.getRequestPath();
-        String paymentService = ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath);
-        String maxPaymentExecutionDays = configParser.getMaxFuturePaymentDays();
-        String configuredAccReference = configParser.getAccountReferenceType();
         String clientId = consentManageData.getClientId();
         boolean isSCARequired = configParser.isScaRequired();
 
         validateRequestHeaders(headersMap);
-        validateRequestPayload(requestPayload, paymentService, configuredAccReference, maxPaymentExecutionDays);
+        validateRequestPayload(requestPayload);
 
         boolean isExplicitAuth = HeaderValidator.isTppExplicitAuthorisationPreferred(headersMap);
 
@@ -157,12 +153,11 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      * based specifications.
      *
      * @param payload request payload
-     * @param paymentType payment type (payment, bulk-payment, periodic-payment)
      */
-    protected void validateRequestPayload(JSONObject payload, String paymentType, String configuredAccReference,
-                                          String maxPaymentExecutionDays) {
+    protected void validateRequestPayload(JSONObject payload) {
 
-        PaymentConsentUtil.validatePaymentsPayload(payload, configuredAccReference);
+        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        PaymentConsentUtil.validateCommonPaymentElements(payload);
     }
 
     /**
