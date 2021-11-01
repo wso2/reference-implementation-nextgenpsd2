@@ -46,15 +46,10 @@ import java.util.UUID;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-/**
- * Test class for Payment Initiation Request Handler class.
- */
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
-public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
+public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestCase {
 
     private static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
-    private static final String PAYMENTS_PATH = "payments/sepa-credit-transfers";
-    private static final String BULK_PAYMENTS_PATH = "bulk-payments/sepa-credit-transfers";
     private static final String PERIODIC_PAYMENTS_PATH = "periodic-payments/sepa-credit-transfers";
 
     @Mock
@@ -109,18 +104,19 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
     }
 
     @Test (priority = 1)
-    public void testHandleForPaymentImplicitRedirectInitiation() throws ConsentManagementException, ParseException {
+    public void testHandleForPeriodicPaymentImplicitRedirectInitiation() throws ConsentManagementException,
+            ParseException {
 
         Map<String, String> validHeadersMap = TestPayloads.getMandatoryInitiationHeadersMap("false");
-        ConsentManageData paymentConsentManageData = new ConsentManageData(validHeadersMap,
-                parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD), new HashMap(),
-                PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
-        paymentConsentManageData.setClientId(clientId);
+        ConsentManageData periodicPaymentConsentManageData = new ConsentManageData(validHeadersMap,
+                parser.parse(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD), new HashMap(),
+                PERIODIC_PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
+        periodicPaymentConsentManageData.setClientId(clientId);
 
-        PaymentInitiationRequestHandler paymentInitiationRequestHandler =
-                Mockito.spy(PaymentInitiationRequestHandler.class);
+        PeriodicPaymentInitiationRequestHandler periodicPaymentInitiationRequestHandler =
+                Mockito.spy(PeriodicPaymentInitiationRequestHandler.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentInitiationRequestHandler).getConsentService();
+        doReturn(consentCoreServiceMock).when(periodicPaymentInitiationRequestHandler).getConsentService();
         doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
                 Mockito.anyMap());
 
@@ -138,24 +134,25 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
-        paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(paymentConsentManageData, authorizationResource,
+        periodicPaymentInitiationRequestHandler.handle(periodicPaymentConsentManageData);
+        TestUtil.assertImplicitConsentResponse(periodicPaymentConsentManageData, authorizationResource,
                 true, mockHttpServletRequest, mockHttpServletResponse);
     }
 
-    @Test (priority = 2)
-    public void testHandlePaymentExplicitRedirectInitiationFlow() throws ConsentManagementException, ParseException {
+    @Test (priority = 6)
+    public void testHandlePeriodicPaymentExplicitRedirectInitiationFlow() throws ConsentManagementException,
+            ParseException {
 
         Map<String, String> validHeadersMap = TestPayloads.getMandatoryInitiationHeadersMap("true");
-        ConsentManageData paymentConsentManageData = new ConsentManageData(validHeadersMap,
-                parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD), new HashMap(),
-                PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
-        paymentConsentManageData.setClientId(clientId);
+        ConsentManageData periodicPaymentConsentManageData = new ConsentManageData(validHeadersMap,
+                parser.parse(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD), new HashMap(),
+                PERIODIC_PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
+        periodicPaymentConsentManageData.setClientId(clientId);
 
-        PaymentInitiationRequestHandler paymentInitiationRequestHandler =
-                Mockito.spy(PaymentInitiationRequestHandler.class);
+        PeriodicPaymentInitiationRequestHandler periodicPaymentInitiationRequestHandler =
+                Mockito.spy(PeriodicPaymentInitiationRequestHandler.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentInitiationRequestHandler).getConsentService();
+        doReturn(consentCoreServiceMock).when(periodicPaymentInitiationRequestHandler).getConsentService();
         doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
                 Mockito.anyMap());
 
@@ -166,8 +163,8 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
-        paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(paymentConsentManageData, null,
+        periodicPaymentInitiationRequestHandler.handle(periodicPaymentConsentManageData);
+        TestUtil.assertImplicitConsentResponse(periodicPaymentConsentManageData, null,
                 false, mockHttpServletRequest, mockHttpServletResponse);
     }
 }

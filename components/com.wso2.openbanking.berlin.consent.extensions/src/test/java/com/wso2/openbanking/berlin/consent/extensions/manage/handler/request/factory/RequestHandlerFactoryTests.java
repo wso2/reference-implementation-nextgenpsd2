@@ -14,10 +14,12 @@ package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.fa
 
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.BulkPaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PeriodicPaymentInitiationRequestHandler;
 import org.junit.Test;
 import org.testng.Assert;
 
@@ -55,10 +57,10 @@ public class RequestHandlerFactoryTests {
         Assert.assertTrue(requestHandler instanceof PaymentInitiationRequestHandler);
 
         requestHandler = RequestHandlerFactory.getRequestHandler("bulk-payments/{payment-product}");
-        Assert.assertTrue(requestHandler instanceof PaymentInitiationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof BulkPaymentInitiationRequestHandler);
 
         requestHandler = RequestHandlerFactory.getRequestHandler("periodic-payments/{payment-product}");
-        Assert.assertTrue(requestHandler instanceof PaymentInitiationRequestHandler);
+        Assert.assertTrue(requestHandler instanceof PeriodicPaymentInitiationRequestHandler);
 
         // Testing FundsConfirmationInitiationRequestHandler instances
         requestHandler = RequestHandlerFactory.getRequestHandler("consents/confirmation-of-funds");

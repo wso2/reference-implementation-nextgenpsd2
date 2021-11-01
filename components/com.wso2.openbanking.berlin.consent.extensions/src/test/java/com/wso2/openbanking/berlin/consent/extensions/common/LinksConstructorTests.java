@@ -13,10 +13,10 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.common.utils.ScaApproach;
-import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
-import com.wso2.openbanking.berlin.common.utils.ScaMethod;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.ScaApproach;
+import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;

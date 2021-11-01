@@ -58,10 +58,10 @@ public class ConsentExtensionUtilTests {
         String psuIdWithSuperTenantDomain = "admin@wso2.com@carbon.super";
         String emptyPSUId = "";
 
-        Assert.assertTrue(StringUtils.contains(ConsentExtensionUtil.ensureSuperTenantDomain(samplePSUId),
+        Assert.assertTrue(StringUtils.contains(ConsentExtensionUtil.appendSuperTenantDomain(samplePSUId),
                 "@carbon.super"));
         Assert.assertEquals(psuIdWithSuperTenantDomain,
-                ConsentExtensionUtil.ensureSuperTenantDomain(psuIdWithSuperTenantDomain));
-        Assert.assertNull(ConsentExtensionUtil.ensureSuperTenantDomain(emptyPSUId));
+                ConsentExtensionUtil.appendSuperTenantDomain(psuIdWithSuperTenantDomain));
+        Assert.assertNull(ConsentExtensionUtil.appendSuperTenantDomain(emptyPSUId));
     }
 }

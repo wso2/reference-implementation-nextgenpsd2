@@ -13,9 +13,9 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
-import com.wso2.openbanking.berlin.common.utils.ScaApproach;
-import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
