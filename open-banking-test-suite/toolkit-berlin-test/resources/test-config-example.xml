@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you?ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+<Configurations>
+    <SolutionVersion>Solution.Version</SolutionVersion>
+    <!--OBSpec accepts values BG-->
+    <OBSpec>OB.Spec</OBSpec>
+    <ApiVersion>Api.Version</ApiVersion>
+    <!-- Provisioning Info -->
+    <Provisioning>
+        <Enabled>Provisioning.Enabled</Enabled>
+        <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
+    </Provisioning>
+    <!-- Server Info -->
+    <Server>
+        <BaseURL>Server.BaseURL</BaseURL>
+        <GatewayURL>Server.GatewayURL</GatewayURL>
+        <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
+    </Server>
+
+    <!-- Application List -->
+    <ApplicationConfigList>
+        <!-- Application 1 Details -->
+        <AppConfig>
+            <!-- Application Keystore -->
+            <Application.KeyStore>
+                <!--Absolute path + file name of JKS keystore file-->
+                <Location>AppConfig.Application.KeyStore.Location</Location>
+                <Alias>AppConfig.Application.KeyStore.Alias</Alias>
+                <Password>AppConfig.Application.KeyStore.Password</Password>
+                <DomainName>https://wso2.com</DomainName>
+                <SigningKid>AppConfig.Application.KeyStore.SigningKid</SigningKid>
+            </Application.KeyStore>
+
+            <!-- Transport Keystore and Truststore -->
+            <!--This Keystore and the Truststore will be used during the SSL handshake-->
+            <Transport>
+                <MTLSEnabled>AppConfig.Transport.MTLSEnabled</MTLSEnabled>
+                <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
+                true-->
+                <KeyStore>
+                    <!--Absolute path + file name of keystore file.
+                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <Location>AppConfig.Transport.KeyStore.Location</Location>
+                    <Type>jks</Type>
+                    <Password>AppConfig.Transport.KeyStore.Password</Password>
+                </KeyStore>
+            </Transport>
+
+            <!-- Application Info -->
+            <Application>
+                <ClientID>AppConfig.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig.Application.RedirectURL</RedirectURL>
+            </Application>
+        </AppConfig>
+
+        <!-- Application 2 Details -->
+        <AppConfig>
+            <!-- Application Keystore -->
+            <Application.KeyStore>
+                <!--Absolute path + file name of JKS keystore file-->
+                <Location>AppConfig2.Application.KeyStore.Location</Location>
+                <Alias>AppConfig2.Application.KeyStore.Alias</Alias>
+                <Password>AppConfig2.Application.KeyStore.Password</Password>
+                <DomainName>https://wso2.com</DomainName>
+                <SigningKid>AppConfig2.Application.KeyStore.SigningKid</SigningKid>
+            </Application.KeyStore>
+
+            <!-- Transport Keystore and Truststore -->
+            <!--This Keystore and the Truststore will be used during the SSL handshake-->
+            <Transport>
+                <MTLSEnabled>AppConfig2.Transport.MTLSEnabled</MTLSEnabled>
+                <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
+                true-->
+                <KeyStore>
+                    <!--Absolute path + file name of keystore file.
+                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <Location>AppConfig2.Transport.KeyStore.Location</Location>
+                    <Type>jks</Type>
+                    <Password>AppConfig2.Transport.KeyStore.Password</Password>
+                </KeyStore>
+            </Transport>
+
+            <!-- Application Info -->
+            <Application>
+                <ClientID>AppConfig2.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig2.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig2.Application.RedirectURL</RedirectURL>
+            </Application>
+        </AppConfig>
+    </ApplicationConfigList>
+
+    <Transport>
+        <Truststore>
+            <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
+            (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
+            -->
+            <Location>Transport.Truststore.Location</Location>
+            <Type>jks</Type>
+            <Password>Transport.Truststore.Password</Password>
+        </Truststore>
+    </Transport>
+    <!-- Non Regulatory Application Info -->
+    <NonRegulatoryApplication>
+        <ClientID>NonRegulatoryApplication.ClientID</ClientID>
+        <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
+        <RedirectURL>https://www.google.com</RedirectURL>
+    </NonRegulatoryApplication>
+    <!-- PSU Info -->
+    <PSUList>
+        <!-- Common PSU Info -->
+        <PSUInfo>
+            <Psu>psu@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+        <!-- Secondary PSU Info -->
+        <PSUInfo>
+            <Psu>admin@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+    </PSUList>
+    <!-- Publisher Info -->
+    <PublisherInfo>
+        <Publisher>admin@wso2.com</Publisher>
+        <PublisherPassword>wso2123</PublisherPassword>
+    </PublisherInfo>
+    <!-- PSU Info -->
+    <TPPInfo>
+        <Tpp>admin@wso2.com</Tpp>
+        <TppPassword>wso2123</TppPassword>
+    </TPPInfo>
+    <!-- Customer Care Info -->
+    <CustomerCareInfo>
+        <CustomerCareUser>ann@gold.com</CustomerCareUser>
+        <CustomerCareUserPassword>wso2123</CustomerCareUserPassword>
+    </CustomerCareInfo>
+    <!-- Basic Auth Info -->
+    <BasicAuthInfo>
+        <BasicAuthUser>admin@wso2.com</BasicAuthUser>
+        <BasicAuthUserPassword>wso2123</BasicAuthUserPassword>
+    </BasicAuthInfo>
+    <!-- Browser Automation -->
+    <BrowserAutomation>
+        <!--Eg: chrome/firefox-->
+        <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
+        <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
+        <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
+    </BrowserAutomation>
+    <!-- Common Configurations -->
+    <Common>
+        <!--Access token expire time in seconds-->
+        <AccessTokenExpireTime>30</AccessTokenExpireTime>
+        <TenantDomain>carbon.super</TenantDomain>
+        <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
+        <KeyManager.Admin>
+            <Username>admin@wso2.com</Username>
+            <Password>wso2123</Password>
+        </KeyManager.Admin>
+    </Common>
+    <ConsentApi>
+        <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
+    </ConsentApi>
+    <InternalApiContext>
+        <Consent-Mgt>/consent</Consent-Mgt> <!-- if 2.0.0 /api/openbanking/consent-mgt -->
+        <Multi-Auth>/multi-auth-api/1.0.0</Multi-Auth> <!-- if 2.0.0 /api/openbanking/multi-auth-api/1.0.0 -->
+    </InternalApiContext>
+</Configurations>

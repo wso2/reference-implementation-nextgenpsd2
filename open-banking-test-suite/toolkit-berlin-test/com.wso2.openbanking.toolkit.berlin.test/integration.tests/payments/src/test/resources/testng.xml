@@ -1,0 +1,67 @@
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Berlin Group Integration">
+    <test name="Payments Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Common_Tests.PaymentsSCAFlowTest"/>
+        </classes>
+    </test>
+    <test name="Payments Initiation Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.InitiationRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.SinglePaymentInitiationRequestPayloadValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.BulkPaymentInitiationRequestPayloadValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.PeriodicPaymentInitiationRequestPayloadValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.FutureDatedPaymentInitiationRequestValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentConsentRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentConsentResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentResponseValidationTest"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentRequestHeaderValidationTests"/>
+        </classes>
+    </test>
+    <test name="Payments Authorisation Flow Tests" parallel="false" enabled="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.PaymentAuthorisationRequestValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.ExplicitAuthorisationTest"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.CancellationAuthorisationTest"/>
+        </classes>
+    </test>
+</suite>
