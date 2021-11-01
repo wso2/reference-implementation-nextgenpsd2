@@ -37,6 +37,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEn
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,7 +80,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
 
         log.debug("The consent initiation is an implicit initiation");
-        if (!isRedirectPreferred.isPresent() || isRedirectPreferred.get()) {
+        if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
             log.debug("Constructing consent request to be stored");
