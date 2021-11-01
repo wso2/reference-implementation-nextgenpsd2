@@ -22,8 +22,13 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.utils.CommonConstants;
+import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
+import com.wso2.openbanking.berlin.common.utils.ScaApproach;
+import com.wso2.openbanking.berlin.common.utils.ScaMethod;
+import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
@@ -59,10 +64,10 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         JSONObject requestPayload = (JSONObject) consentManageData.getPayload();
         String requestPath = consentManageData.getRequestPath();
         String paymentService = ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath);
-        String paymentProduct = PaymentConsentUtil.getPaymentProduct(requestPath);
         String maxPaymentExecutionDays = configParser.getMaxFuturePaymentDays();
         String configuredAccReference = configParser.getAccountReferenceType();
         String clientId = consentManageData.getClientId();
+        boolean isSCARequired = configParser.isScaRequired();
 
         validateRequestHeaders(headersMap);
         validateRequestPayload(requestPayload, paymentService, configuredAccReference, maxPaymentExecutionDays);
@@ -78,15 +83,16 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
             log.debug("Constructing consent request to be stored");
-            ConsentResource consentResource = new ConsentResource(clientId, requestPayload.toJSONString(),
-                    ConsentTypeEnum.PAYMENTS.toString(), TransactionStatusEnum.RCVD.name());
+            ConsentResource consentResource = new ConsentResource(clientId,
+                    requestPayload.toJSONString(), ConsentTypeEnum.PAYMENTS.toString(),
+                    TransactionStatusEnum.RCVD.name());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
                     .ensureSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
             try {
                 log.debug("Creating consent");
                 createdConsent = consentCoreService.createAuthorizableConsent(consentResource, tenantEnsuredPSUId,
-                        ScaStatusEnum.RECEIVED.toString(), ConsentExtensionConstants.AUTHORISATION,
+                        ScaStatusEnum.RECEIVED.toString(), AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_INITIATION_ERROR);
@@ -94,9 +100,13 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             }
 
             try {
+                log.debug("Getting SCA information from the config");
+                Map<String, Object> scaInfoMap = CommonUtil.getScaApproachAndMethods(true,
+                        isSCARequired);
+
                 log.debug("Storing consent attributes");
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
-                        getConsentAttributesToPersist(paymentService, paymentProduct, headersMap));
+                        getConsentAttributesToPersist(consentManageData, scaInfoMap, isExplicitAuth));
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -104,19 +114,15 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
             log.debug("Constructing response");
             String apiVersion = configParser.getApiVersion(consentResource.getConsentType());
-            boolean isSCARequired = configParser.isScaRequired();
             boolean isTransactionFeeEnabled = configParser.isTransactionFeeEnabled();
             int transactionFee = configParser.getTransactionFee();
             String transactionFeeCurrency = configParser.getTransactionFeeCurrency();
 
             consentManageData.setResponsePayload(PaymentConsentUtil
-                    .constructPaymentInitiationResponse(consentManageData, createdConsent, isExplicitAuth, requestPath,
-                            apiVersion, isSCARequired, isTransactionFeeEnabled, transactionFee,
+                    .constructPaymentInitiationResponse(consentManageData, createdConsent, isExplicitAuth,
+                            true, apiVersion, isSCARequired, isTransactionFeeEnabled, transactionFee,
                             transactionFeeCurrency));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
-        } else {
-            log.error(ErrorConstants.DECOUPLED_FLOW_NOT_SUPPORTED);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorConstants.DECOUPLED_FLOW_NOT_SUPPORTED);
         }
     }
 
@@ -130,7 +136,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
     protected void validateRequestHeaders(Map<String, String> headersMap) throws ConsentException {
 
         log.debug("Validating TPP-Redirect-Preferred header according to the specification");
-        /**
+        /*
          * 1). If the header is true, the REDIRECT SCA Approach must be configured in open-banking.xml as the
          * supported SCA approach.
          *
@@ -171,13 +177,20 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      * Sets necessary attributes to be persisted as consent attributes. This method can be overridden to persist
      * needed consent attributes by different Berlin based specifications.
      *
-     * @param paymentService payment service
-     * @param paymentProduct payment product
-     * @param headersMap headers map
+     * @param consentManageData
+     * @param scaInfoMap
+     * @param isExplicitAuth
      * @return
      */
-    protected Map<String, String> getConsentAttributesToPersist(String paymentService, String paymentProduct,
-                                                                Map<String, String> headersMap) {
+    protected Map<String, String> getConsentAttributesToPersist(ConsentManageData consentManageData,
+                                                                Map<String, Object> scaInfoMap,
+                                                                boolean isExplicitAuth) {
+
+        String requestPath = consentManageData.getRequestPath();
+        String paymentService =
+                ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath);
+        String paymentProduct = PaymentConsentUtil.getPaymentProduct(requestPath);
+        Map<String, String> headersMap = consentManageData.getHeaders();
 
         Map<String, String> consentAttributesMap = new HashMap<>();
 
@@ -185,6 +198,18 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_PRODUCT, paymentProduct);
         consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
                 headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+
+        if (!isExplicitAuth) {
+            ScaApproach scaApproach = (ScaApproach) scaInfoMap.get(CommonConstants.SCA_APPROACH_KEY);
+            consentAttributesMap.put(ConsentExtensionConstants.ASPSP_SCA_APPROACH,
+                    scaApproach.getApproach().toString());
+
+            ScaMethod scaMethod = CommonUtil.getScaMethod(scaApproach.getApproach());
+            if (scaMethod != null) {
+                consentAttributesMap.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD,
+                        scaMethod.getAuthenticationMethodId());
+            }
+        }
 
         if (headersMap.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
             consentAttributesMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER,

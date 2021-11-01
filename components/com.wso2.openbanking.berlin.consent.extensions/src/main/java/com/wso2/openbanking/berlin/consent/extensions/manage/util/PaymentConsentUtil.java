@@ -345,7 +345,6 @@ public class PaymentConsentUtil {
      *
      * @param consentManageData consent manage data
      * @param createdConsent the created consent
-     * @param requestPath request path
      * @param apiVersion the configured API version to construct the self links
      * @param isSCARequired whether SCA is required or not as configured
      * @param isTransactionFeeEnabled whether a transaction fee is charged or not as configured
@@ -355,17 +354,18 @@ public class PaymentConsentUtil {
      */
     public static JSONObject constructPaymentInitiationResponse(ConsentManageData consentManageData,
                                                                 DetailedConsentResource createdConsent,
-                                                                boolean isExplicitAuth, String requestPath,
+                                                                boolean isExplicitAuth, boolean isRedirectPreferred,
                                                                 String apiVersion, boolean isSCARequired,
                                                                 boolean isTransactionFeeEnabled,
                                                                 int transactionFee, String transactionFeeCurrency) {
 
+        String requestPath = consentManageData.getRequestPath();
         String locationString = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
                 apiVersion, requestPath, createdConsent.getConsentID());
         consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER,
                 locationString);
 
-        Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(true,
+        Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(isRedirectPreferred,
                 isSCARequired);
         ScaApproach scaApproach = (ScaApproach) scaElements.get(CommonConstants.SCA_APPROACH_KEY);
         ArrayList<ScaMethod> scaMethods =
@@ -412,14 +412,7 @@ public class PaymentConsentUtil {
 
         JSONArray chosenSCAMethods = new JSONArray();
         for (ScaMethod scaMethod : scaMethods) {
-            JSONObject scaMethodJson = new JSONObject();
-            scaMethodJson.appendField(CommonConstants.SCA_TYPE, scaMethod.getAuthenticationType());
-            scaMethodJson.appendField(CommonConstants.SCA_VERSION, scaMethod.getVersion());
-            scaMethodJson.appendField(CommonConstants.SCA_ID, scaMethod.getAuthenticationMethodId());
-            scaMethodJson.appendField(CommonConstants.SCA_NAME, scaMethod.getName());
-            scaMethodJson.appendField(CommonConstants.SCA_DESCRIPTION, scaMethod.getDescription());
-
-            chosenSCAMethods.add(scaMethodJson);
+            chosenSCAMethods.add(CommonUtil.convertObjectToJson(scaMethod));
         }
 
         if (scaMethods.size() > 1) {
