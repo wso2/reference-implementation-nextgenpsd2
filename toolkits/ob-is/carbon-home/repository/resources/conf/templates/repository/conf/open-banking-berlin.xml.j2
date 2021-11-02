@@ -87,42 +87,6 @@
             </SupportedSCAMethods>
         </SCA>
 
-        <!--Enable IBAN validation for single accounts -->
-    	{% if open_banking_berlin.consent.single_acc_no_retrieval_validation.enable is defined %}
-    	<EnableAccountIDValidation>{{open_banking_berlin.consent.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
-    	{% else %}
-    	<EnableAccountIDValidation>false</EnableAccountIDValidation>
-    	{% endif %}
-
-        <!-- Enable frequency per day throttling for eligible API GET calls -->
-        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
-        <FrequencyPerDay>
-            {% if open_banking_berlin.consent.freq_per_day.enable is defined %}
-            <Enable>{{open_banking_berlin.consent.freq_per_day.enable}}</Enable>
-            {% else %}
-            <Enable>true</Enable>
-            {% endif %}
-            {% if open_banking_berlin.consent.freq_per_day.value is defined %}
-            <Frequency>{{open_banking_berlin.consent.freq_per_day.value}}</Frequency>
-            {% else %}
-            <Frequency>4</Frequency>
-            {% endif %}
-        </FrequencyPerDay>
-
-    	<!-- Enable validUntil Date cap for Account Consent Creation -->
-        <ValidUntilDateCap>
-            {% if open_banking_berlin.consent.valid_until_date_cap.enable is defined %}
-            <Enabled>{{open_banking_berlin.consent.valid_until_date_cap.enable}}</Enabled>
-            {% else %}
-            <Enabled>false</Enabled>
-            {% endif %}
-            {% if open_banking_berlin.consent.valid_until_date_cap.value is defined %}
-            <ValidUntilDays>{{open_banking_berlin.consent.valid_until_date_cap.value}}</ValidUntilDays>
-            {% else %}
-            <ValidUntilDays>0</ValidUntilDays>
-            {% endif %}
-        </ValidUntilDateCap>
-
         <!--
         Allowed values for account reference type
             1. iban
@@ -134,19 +98,6 @@
     	{% else %}
     	<AccountReferenceType>iban</AccountReferenceType>
     	{% endif %}
-
-        <!-- Support for multiple recurring consents on AIS resources -->
-        {% if open_banking_berlin.consent.multiple_recurring_consent is defined %}
-        <EnableMultipleRecurringConsent>{{open_banking_berlin.consent.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
-        {% else %}
-        <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
-        {% endif %}
-
-        {% if open_banking_berlin.consent.max_future_payment_days is defined %}
-        <MaximumFuturePaymentDays>{{open_banking_berlin.consent.max_future_payment_days}}</MaximumFuturePaymentDays>
-        {% else %}
-        <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
-        {% endif %}
 
         <MultiCurrency>
             {% if open_banking_berlin.consent.multi_currency.enable is defined %}
@@ -174,22 +125,78 @@
             {% endif %}
         </APIVersions>
 
-        <TransactionFee>
-            {% if open_banking_berlin.consent.transaction_fee.enable is defined %}
-            <Enable>{{open_banking_berlin.consent.transaction_fee.enable}}</Enable>
+        <Accounts>
+            <!--Enable IBAN validation for single accounts -->
+            {% if open_banking_berlin.consent.accounts.single_acc_no_retrieval_validation.enable is defined %}
+            <EnableAccountIDValidation>{{open_banking_berlin.consent.accounts.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
             {% else %}
-            <Enable>false</Enable>
+            <EnableAccountIDValidation>false</EnableAccountIDValidation>
             {% endif %}
-            {% if open_banking_berlin.consent.transaction_fee.amount is defined %}
-            <Amount>{{open_banking_berlin.consent.transaction_fee.amount}}</Amount>
+
+            <!-- Enable frequency per day throttling for eligible API GET calls -->
+            <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+            <FrequencyPerDay>
+                {% if open_banking_berlin.consent.accounts.freq_per_day.enable is defined %}
+                <Enable>{{open_banking_berlin.consent.accounts.freq_per_day.enable}}</Enable>
+                {% else %}
+                <Enable>true</Enable>
+                {% endif %}
+                {% if open_banking_berlin.consent.accounts.freq_per_day.value is defined %}
+                <Frequency>{{open_banking_berlin.consent.accounts.freq_per_day.value}}</Frequency>
+                {% else %}
+                <Frequency>4</Frequency>
+                {% endif %}
+            </FrequencyPerDay>
+
+            <!-- Enable validUntil Date cap for Account Consent Creation -->
+            <ValidUntilDateCap>
+                {% if open_banking_berlin.consent.accounts.valid_until_date_cap.enable is defined %}
+                <Enabled>{{open_banking_berlin.consent.accounts.valid_until_date_cap.enable}}</Enabled>
+                {% else %}
+                <Enabled>false</Enabled>
+                {% endif %}
+                {% if open_banking_berlin.consent.accounts.valid_until_date_cap.value is defined %}
+                <ValidUntilDays>{{open_banking_berlin.consent.accounts.valid_until_date_cap.value}}</ValidUntilDays>
+                {% else %}
+                <ValidUntilDays>0</ValidUntilDays>
+                {% endif %}
+            </ValidUntilDateCap>
+
+            <!-- Support for multiple recurring consents on AIS resources -->
+            {% if open_banking_berlin.consent.accounts.multiple_recurring_consent is defined %}
+            <EnableMultipleRecurringConsent>{{open_banking_berlin.consent.accounts.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
             {% else %}
-            <Amount>0</Amount>
+            <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
             {% endif %}
-            {% if open_banking_berlin.consent.transaction_fee.currency is defined %}
-            <Currency>{{open_banking_berlin.consent.transaction_fee.currency}}</Currency>
-            {% else %}
-            <Currency>EUR</Currency>
-            {% endif %}
-        </TransactionFee>
+        </Accounts>
+
+        <Payments>
+            <TransactionFee>
+                {% if open_banking_berlin.consent.payments.transaction_fee.enable is defined %}
+                <Enable>{{open_banking_berlin.consent.payments.transaction_fee.enable}}</Enable>
+                {% else %}
+                <Enable>false</Enable>
+                {% endif %}
+                {% if open_banking_berlin.consent.payments.transaction_fee.amount is defined %}
+                <Amount>{{open_banking_berlin.consent.payments.transaction_fee.amount}}</Amount>
+                {% else %}
+                <Amount>0</Amount>
+                {% endif %}
+                {% if open_banking_berlin.consent.payments.transaction_fee.currency is defined %}
+                <Currency>{{open_banking_berlin.consent.payments.transaction_fee.currency}}</Currency>
+                {% else %}
+                <Currency>EUR</Currency>
+                {% endif %}
+            </TransactionFee>
+            <InstantPayments></InstantPayments>
+            <BulkPayments>
+                {% if open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days is defined %}
+                <MaximumFuturePaymentDays>{{open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days}}</MaximumFuturePaymentDays>
+                {% else %}
+                <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
+                {% endif %}
+            </BulkPayments>
+            <PeriodicPayments></PeriodicPayments>
+        </Payments>
     </ConsentManagement>
 </Server>

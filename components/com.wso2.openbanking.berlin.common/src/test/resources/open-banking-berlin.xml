@@ -82,5 +82,37 @@
             <PIS>v1</PIS>
             <PIIS>v2</PIIS>
         </APIVersions>
+
+        <Accounts>
+            <!--Enable IBAN validation for single accounts -->
+            <EnableAccountIDValidation>false</EnableAccountIDValidation>
+
+            <!-- Enable frequency per day throttling for eligible API GET calls -->
+            <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+            <FrequencyPerDay>
+                <Enable>true</Enable>
+                <Frequency>4</Frequency>
+            </FrequencyPerDay>
+
+            <!-- Enable validUntil Date cap for Account Consent Creation -->
+            <ValidUntilDateCap>
+                <Enabled>false</Enabled>
+                <ValidUntilDays>0</ValidUntilDays>
+            </ValidUntilDateCap>
+            <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
+        </Accounts>
+
+        <Payments>
+            <TransactionFee>
+                <Enable>false</Enable>
+                <Amount>0</Amount>
+                <Currency>EUR</Currency>
+            </TransactionFee>
+            <InstantPayments></InstantPayments>
+            <BulkPayments>
+                <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
+            </BulkPayments>
+            <PeriodicPayments></PeriodicPayments>
+        </Payments>
     </ConsentManagement>
 </Server>
