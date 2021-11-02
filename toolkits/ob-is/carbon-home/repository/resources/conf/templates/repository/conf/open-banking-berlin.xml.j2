@@ -163,7 +163,7 @@
             </ValidUntilDateCap>
 
             <!-- Support for multiple recurring consents on AIS resources -->
-            {% if open_banking_berlin.consent.accounts.multiple_recurring_consent is defined %}
+            {% if open_banking_berlin.consent.accounts.multiple_recurring_consent.enable is defined %}
             <EnableMultipleRecurringConsent>{{open_banking_berlin.consent.accounts.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
             {% else %}
             <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
