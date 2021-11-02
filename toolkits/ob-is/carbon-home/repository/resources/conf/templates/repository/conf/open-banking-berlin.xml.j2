@@ -188,7 +188,7 @@
                 <Currency>EUR</Currency>
                 {% endif %}
             </TransactionFee>
-            <InstantPayments></InstantPayments>
+            <SinglePayments></SinglePayments>
             <BulkPayments>
                 {% if open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days is defined %}
                 <MaximumFuturePaymentDays>{{open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days}}</MaximumFuturePaymentDays>
