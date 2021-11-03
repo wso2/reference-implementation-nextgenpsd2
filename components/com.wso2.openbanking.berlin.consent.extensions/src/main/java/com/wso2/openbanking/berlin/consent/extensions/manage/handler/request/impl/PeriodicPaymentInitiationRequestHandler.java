@@ -13,16 +13,80 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
+import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
+import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
- * Handle Periodic Payments initiation request.
+ * Class to handle periodic payments initiation request.
  */
-public class PeriodicPaymentInitiationRequestHandler implements RequestHandler {
+public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRequestHandler {
+
+    private static final Log log = LogFactory.getLog(PeriodicPaymentInitiationRequestHandler.class);
 
     @Override
-    public void handle(ConsentManageData consentManageData) throws ConsentException {
+    protected void validateRequestPayload(JSONObject payload) {
 
+        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        PaymentConsentUtil.validateCommonPaymentElements(payload);
+
+        log.debug("Validating periodic payments payload for start date");
+        if (payload.get(ConsentExtensionConstants.START_DATE) == null
+                || StringUtils.isBlank(payload.getAsString(ConsentExtensionConstants.START_DATE))) {
+            log.error(ErrorConstants.START_DATE_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.START_DATE_MISSING));
+        } else {
+            log.debug("Validating start date for correct date format");
+            PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.START_DATE),
+                    TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.START_DATE_INVALID);
+        }
+
+        log.debug("Validating periodic payments payload for frequency");
+        if (payload.get(ConsentExtensionConstants.FREQUENCY) == null
+                || StringUtils.isBlank(payload.getAsString(ConsentExtensionConstants.FREQUENCY))) {
+            log.error(ErrorConstants.FREQUENCY_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.FREQUENCY_MISSING));
+        }
+
+        if (payload.get(ConsentExtensionConstants.END_DATE) != null && StringUtils.isNotBlank(payload.getAsString(
+                ConsentExtensionConstants.END_DATE))) {
+            log.debug("Validating whether periodic payments end date if a future date");
+            LocalDate endDate =
+                    PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.END_DATE),
+                    TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.END_DATE_NOT_VALID);
+            LocalDate startDate = LocalDate.parse(payload.get(ConsentExtensionConstants.START_DATE).toString(),
+                    DateTimeFormatter.ISO_DATE);
+            PaymentConsentUtil.validateFutureDate(endDate);
+            PaymentConsentUtil.areDatesValid(startDate, endDate);
+        }
+
+        if (payload.get(ConsentExtensionConstants.EXECUTION_RULE) != null && StringUtils.isNotBlank(payload.getAsString(
+                ConsentExtensionConstants.EXECUTION_RULE))) {
+            log.debug("Validating execution rule");
+            String executionRule = payload.getAsString(ConsentExtensionConstants.EXECUTION_RULE);
+            if (!(StringUtils.equals(ConsentExtensionConstants.FOLLOWING_EXECUTION_RULE, executionRule)
+                    || StringUtils.equals(ConsentExtensionConstants.PRECEDING_EXECUTION_RULE, executionRule))) {
+                log.error(ErrorConstants.INVALID_EXECUTION_RULE);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.INVALID_EXECUTION_RULE));
+            }
+        }
     }
 }

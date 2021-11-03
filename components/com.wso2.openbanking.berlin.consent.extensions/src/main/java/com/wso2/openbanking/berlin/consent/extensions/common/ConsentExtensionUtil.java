@@ -12,11 +12,19 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Consent extension utils.
  */
 public class ConsentExtensionUtil {
 
+    /**
+     * Gets the consent service using the request path.
+     *
+     * @param requestPath
+     * @return
+     */
     public static String getServiceDifferentiatingRequestPath(String requestPath) {
 
         if (requestPath == null) {
@@ -36,4 +44,22 @@ public class ConsentExtensionUtil {
         }
     }
 
+    /**
+     * Ensures the psu ID is appended with the super tenant domain.
+     *
+     * @param psuId
+     * @return
+     */
+    public static String appendSuperTenantDomain(String psuId) {
+
+        if (StringUtils.isNotBlank(psuId)) {
+            if (psuId.endsWith(ConsentExtensionConstants.SUPER_TENANT_DOMAIN)) {
+                return psuId;
+            } else {
+                return psuId + ConsentExtensionConstants.SUPER_TENANT_DOMAIN;
+            }
+        } else {
+            return null;
+        }
+    }
 }

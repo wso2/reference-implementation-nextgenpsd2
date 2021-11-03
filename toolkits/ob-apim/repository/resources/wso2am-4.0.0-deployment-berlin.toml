@@ -522,14 +522,14 @@ maxHttpHeaderSize = 16384
 endpoint = "https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
 
 #===================Berlin Toolkit====================
-[open_banking.consent]
+[open_banking_berlin.consent]
 iban_acc_retrieval_validation.enable = "true"
 host = "APIM_HOSTNAME"
 port = "8243"
 
-[open_banking.consent.freq_per_day]
+[open_banking_berlin.consent.freq_per_day]
 enable = true
 
-[open_banking.consent.idempotency]
+[open_banking_berlin.consent.idempotency]
 allowed_time=1
 submission.enable=false

@@ -14,15 +14,18 @@ package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.common.utils.ScaApproachEnum;
-import com.wso2.openbanking.berlin.common.utils.TPPMessage;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Header validations class.
@@ -38,6 +41,7 @@ public class HeaderValidator {
      */
     public static void validatePsuIpAddress(Map<String, String> headers) {
 
+        log.debug("Validating PSU-IP-Address header");
         if (headers.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.get(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
@@ -48,6 +52,37 @@ public class HeaderValidator {
                         String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)
                 ));
             }
+        } else {
+            log.error(ErrorConstants.PSU_IP_ADDRESS_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.PSU_IP_ADDRESS_MISSING));
+        }
+    }
+
+    /**
+     * Validates the PSU-Id request header.
+     *
+     * @param headers request headers
+     */
+    public static void validatePsuId(Map<String, String> headers) {
+
+        log.debug("Validate PSU-ID if present in implicit flow");
+        if (headers.containsKey(ConsentExtensionConstants.PSU_ID_HEADER)) {
+            String psuId = headers.get(ConsentExtensionConstants.PSU_ID_HEADER);
+
+            if (StringUtils.isEmpty(psuId)) {
+                log.error(String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER));
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
+                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER)
+                ));
+            }
+        } else {
+            log.error(ErrorConstants.PSU_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.PSU_ID_MISSING));
         }
     }
 
@@ -57,16 +92,21 @@ public class HeaderValidator {
      * @param headers request headers
      */
     public static void validateXRequestId(Map<String, String> headers) {
+        log.debug("Validating the X-Request-ID header");
         if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
             if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
-                log.error(String.format("Invalid %s header", ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                log.error(ErrorConstants.X_REQUEST_ID_INVALID);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format("Invalid %s header", ConsentExtensionConstants.X_REQUEST_ID_HEADER)
-                ));
+                        ErrorConstants.X_REQUEST_ID_INVALID));
             }
+        } else {
+            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.X_REQUEST_ID_MISSING));
         }
     }
 
@@ -76,7 +116,11 @@ public class HeaderValidator {
      * @param headers request headers
      */
     public static void validateTppRedirectPreferredHeader(Map<String, String> headers) {
-        if (Boolean.TRUE.equals(isTppRedirectPreferred(headers))
+
+        log.debug("Validating TPP-Redirect-Preferred header according to the specification");
+        Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(headers);
+
+        if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
                 && CommonUtil.getScaApproach(ScaApproachEnum.REDIRECT) == null) {
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT));
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
@@ -84,12 +128,15 @@ public class HeaderValidator {
                     String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT)));
         }
 
-        if (Boolean.FALSE.equals(isTppRedirectPreferred(headers))
+        if ((isRedirectPreferred.isPresent() && BooleanUtils.isFalse(isRedirectPreferred.get()))
                 && CommonUtil.getScaApproach(ScaApproachEnum.DECOUPLED) == null) {
+
+            //todo: Since decoupled approach is not supported yet, an error is thrown if the redirect header is false.
+            //issue: https://github.com/wso2-enterprise/financial-open-banking/issues/6858
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT)));
+                    String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED)));
         }
     }
 
@@ -100,6 +147,7 @@ public class HeaderValidator {
      * @return
      */
     public static boolean isTppExplicitAuthorisationPreferred(Map<String, String> headers) {
+        log.debug("Determining whether the consent request is implicit or explicit");
         if (headers.containsKey(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {
             return Boolean.parseBoolean(headers.get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         }
@@ -113,12 +161,14 @@ public class HeaderValidator {
      * @param headers request headers
      * @return if redirect approach preferred or not
      */
-    public static Boolean isTppRedirectPreferred(Map<String, String> headers) {
+    public static Optional<Boolean> isTppRedirectPreferred(Map<String, String> headers) {
+        log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
         if (headers.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
-            return Boolean.parseBoolean(headers.get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER));
+            return Optional.of(Boolean.parseBoolean(headers
+                    .get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

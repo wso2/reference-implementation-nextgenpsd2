@@ -13,6 +13,10 @@
 package com.wso2.openbanking.berlin.common.utils;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.common.models.ScaApproach;
+import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;

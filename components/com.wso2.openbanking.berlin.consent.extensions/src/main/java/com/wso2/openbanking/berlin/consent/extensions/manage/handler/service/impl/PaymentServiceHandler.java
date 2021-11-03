@@ -13,8 +13,11 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +33,14 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
+        requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
+
+        if (requestHandler != null) {
+            requestHandler.handle(consentManageData);
+        } else {
+            log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorConstants.PATH_INVALID);
+        }
     }
 
     @Override

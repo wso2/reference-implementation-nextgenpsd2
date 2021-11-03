@@ -16,7 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
-import com.wso2.openbanking.berlin.common.utils.ErrorConstants;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.factory.SubmissionValidatorFactory;
 import org.apache.commons.logging.Log;

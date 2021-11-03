@@ -15,8 +15,9 @@ package com.wso2.openbanking.berlin.common.config;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
-import com.wso2.openbanking.berlin.common.utils.CommonConstants;
-import com.wso2.openbanking.berlin.common.utils.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
@@ -114,7 +115,7 @@ public class CommonConfigParser {
                 }
             }
             if (inStream == null) {
-                String message = "open-banking configuration not found at: " + configFilePath;
+                String message = ErrorConstants.CONFIG_NOT_FOUND + configFilePath;
                 log.error(message);
                 throw new FileNotFoundException(message);
             }
@@ -126,7 +127,7 @@ public class CommonConfigParser {
             readChildElements(rootElement, nameStack);
             buildConsentManagementConfigs();
         } catch (IOException | XMLStreamException | OMException e) {
-            throw new OpenBankingRuntimeException("Error occurred while building configuration from open-banking.xml",
+            throw new OpenBankingRuntimeException(ErrorConstants.CONFIGURATION_BUILD_ERROR,
                     e);
         } finally {
             try {
@@ -134,7 +135,7 @@ public class CommonConfigParser {
                     inStream.close();
                 }
             } catch (IOException e) {
-                log.error("Error closing the input stream for open-banking-berlin.xml", e);
+                log.error(ErrorConstants.CONFIG_INPUT_STREAM_ERROR, e);
             }
         }
     }
@@ -390,5 +391,27 @@ public class CommonConfigParser {
         }
 
         return "";
+    }
+
+    public boolean isTransactionFeeEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_ENABLED_PATH));
+    }
+
+    public int getTransactionFee() {
+        return Integer.parseInt((String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_AMOUNT));
+    }
+
+    public String getTransactionFeeCurrency() {
+        return (getConfiguration().get(CommonConstants.TRANSACTION_FEE_CURRENCY) == null) ? "" :
+                (String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_CURRENCY);
+    }
+
+    public String getMaxFuturePaymentDays() {
+        return (getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS) == null) ? "" :
+                (String) getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS);
+    }
+
+    public String getAccountReferenceType() {
+        return (String) getConfiguration().get(CommonConstants.ACCOUNT_REFERENCE_TYPE_PATH);
     }
 }

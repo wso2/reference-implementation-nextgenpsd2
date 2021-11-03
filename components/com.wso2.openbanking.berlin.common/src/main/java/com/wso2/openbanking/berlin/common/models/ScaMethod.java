@@ -10,10 +10,11 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.common.utils;
+package com.wso2.openbanking.berlin.common.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 
 /**
  * SCA Method class.

@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.common.utils;
 
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;
