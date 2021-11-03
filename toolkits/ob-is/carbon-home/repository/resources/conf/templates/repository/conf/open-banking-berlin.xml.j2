@@ -183,23 +183,6 @@
             {% else %}
             <AuthorizeCancellation>false</AuthorizeCancellation>
             {% endif %}
-            <TransactionFee>
-                {% if open_banking_berlin.consent.payments.transaction_fee.enable is defined %}
-                <Enable>{{open_banking_berlin.consent.payments.transaction_fee.enable}}</Enable>
-                {% else %}
-                <Enable>false</Enable>
-                {% endif %}
-                {% if open_banking_berlin.consent.payments.transaction_fee.amount is defined %}
-                <Amount>{{open_banking_berlin.consent.payments.transaction_fee.amount}}</Amount>
-                {% else %}
-                <Amount>0</Amount>
-                {% endif %}
-                {% if open_banking_berlin.consent.payments.transaction_fee.currency is defined %}
-                <Currency>{{open_banking_berlin.consent.payments.transaction_fee.currency}}</Currency>
-                {% else %}
-                <Currency>EUR</Currency>
-                {% endif %}
-            </TransactionFee>
             <SinglePayments></SinglePayments>
             <BulkPayments>
                 {% if open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days is defined %}
