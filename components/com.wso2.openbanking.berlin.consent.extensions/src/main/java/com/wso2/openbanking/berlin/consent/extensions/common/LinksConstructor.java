@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.models.ScaMethod;
@@ -28,12 +29,13 @@ public class LinksConstructor {
     /**
      * Constructs the links object for initiation responses.
      *
-     * @param isTppExplicitAuthorisationPreferred
+     * @param isTppExplicitAuthorisationPreferred is explicit authorisation
      * @param currentScaApproach                  current SCA approach
      * @param currentScaMethods                   current SCA methods
      * @param requestPath                         request path of initiation
      * @param consentId                           consent/payment consentId
      * @param authorisationId                     authorisation resource consentId
+     * @param consentType                         type of consent
      * @return constructed links object for initiation response
      */
     public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
@@ -91,6 +93,63 @@ public class LinksConstructor {
                 }
             }
         }
+
+        return links;
+    }
+
+    /**
+     * Constructs the links object for start authorisation responses.
+     *
+     * @param currentScaApproach                  current SCA approach
+     * @param currentScaMethods                   current SCA methods
+     * @param requestPath                         request path of initiation
+     * @param authorisationId                     authorisation resource consentId
+     * @param consentType                         type of consent
+     * @return constructed links object for start authorisation response
+     */
+    public static JSONObject getStartAuthorisationLinks(ScaApproach currentScaApproach,
+                                                        List<ScaMethod> currentScaMethods,
+                                                        String requestPath, String authorisationId,
+                                                        String consentType) {
+        JSONObject links = new JSONObject();
+
+        String apiVersion = CommonConfigParser.getInstance().getApiVersion(consentType);
+
+        String authResourceLink = String.format(ConsentExtensionConstants.START_AUTH_RESOURCE_LINK_TEMPLATE,
+                apiVersion, requestPath, authorisationId);
+        if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
+            // REDIRECT approach
+            String wellKnown = CommonConfigParser.getInstance().getOauthMetadataEndpoint();
+            links.appendField(ConsentExtensionConstants.SCA_OAUTH, new JSONObject()
+                    .appendField(ConsentExtensionConstants.HREF, wellKnown));
+
+            links.appendField(ConsentExtensionConstants.SCA_STATUS, new JSONObject()
+                    .appendField(ConsentExtensionConstants.HREF, authResourceLink));
+        } else {
+            // SCA approach not decided
+            if (currentScaMethods.size() > 1) {
+                // If SCA is required and has more than 1 current SCA method
+                links.appendField(ConsentExtensionConstants.SELECT_AUTH_METHOD, new JSONObject()
+                        .appendField(ConsentExtensionConstants.HREF, authResourceLink));
+            }
+        }
+
+        return links;
+    }
+
+    /**
+     * Constructs the links object for account consent get responses.
+     *
+     * @return constructed links for account consent get responses
+     */
+    public static JSONObject getAccountConsentResourceLinks() {
+
+        JSONObject links = new JSONObject();
+
+        String apiVersion = CommonConfigParser.getInstance().getApiVersion(ConsentTypeEnum.ACCOUNTS.toString());
+
+        links.appendField(ConsentExtensionConstants.ACCOUNT, new JSONObject().appendField(ConsentExtensionConstants.HREF,
+                String.format(ConsentExtensionConstants.ACCOUNTS_LINK_TEMPLATE, apiVersion)));
 
         return links;
     }
