@@ -172,7 +172,7 @@
         <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
     </ConsentApi>
     <InternalApiContext>
-        <Consent-Mgt>/consent</Consent-Mgt> <!-- if 2.0.0 /api/openbanking/consent-mgt -->
+        <Consent-Mgt>/api/openbanking/consent</Consent-Mgt>
         <Multi-Auth>/multi-auth-api/1.0.0</Multi-Auth> <!-- if 2.0.0 /api/openbanking/multi-auth-api/1.0.0 -->
     </InternalApiContext>
 </Configurations>
