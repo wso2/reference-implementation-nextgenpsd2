@@ -104,8 +104,8 @@
 
         <Payments>
             <TransactionFee>
-                <Enable>false</Enable>
-                <Amount>0</Amount>
+                <Enable>true</Enable>
+                <Amount>3</Amount>
                 <Currency>EUR</Currency>
             </TransactionFee>
             <InstantPayments></InstantPayments>

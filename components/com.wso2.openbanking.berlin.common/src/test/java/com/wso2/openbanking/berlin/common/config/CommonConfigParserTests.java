@@ -137,4 +137,34 @@ public class CommonConfigParserTests {
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.PAYMENTS.toString()), "v1");
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.FUNDS_CONFIRMATION.toString()), "v2");
     }
+
+    @Test(priority = 9)
+    public void testIsTransactionFeeEnabled() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+        boolean isTransactionFeeEnabled = commonConfigParser.isTransactionFeeEnabled();
+
+        Assert.assertTrue(isTransactionFeeEnabled);
+    }
+
+    @Test(priority = 10)
+    public void testGetTransactionFee() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+        int transactionFee = commonConfigParser.getTransactionFee();
+
+        Assert.assertEquals(transactionFee, 3);
+    }
+
+    @Test(priority = 11)
+    public void testGetTransactionFeeCurrency() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+        String transactionFeeCurrency = commonConfigParser.getTransactionFeeCurrency();
+
+        Assert.assertEquals(transactionFeeCurrency, "EUR");
+    }
 }

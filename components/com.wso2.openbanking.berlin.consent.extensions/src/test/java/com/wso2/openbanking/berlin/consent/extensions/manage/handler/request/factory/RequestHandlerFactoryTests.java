@@ -10,10 +10,9 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.test.manage.handler.request.factory;
+package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory;
 
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
