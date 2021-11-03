@@ -414,4 +414,8 @@ public class CommonConfigParser {
     public String getAccountReferenceType() {
         return (String) getConfiguration().get(CommonConstants.ACCOUNT_REFERENCE_TYPE_PATH);
     }
+
+    public boolean isAuthorizationRequiredForCancellation() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.AUTHORIZE_CANCELLATION));
+    }
 }
