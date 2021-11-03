@@ -31,11 +31,13 @@ import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto
 import com.wso2.openbanking.test.framework.request.AccessToken
 import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
 
+import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.logging.Logger
 
@@ -138,5 +140,37 @@ class BerlinRequestBuilder {
 
     static String getCurrentDate() {
         return new SimpleDateFormat("EEE, d MMM YYYY HH:mm:ss z").format(new Date())
+    }
+
+    /**
+     * Build Request Specification for KeyManager Requests.
+     *
+     * @param accessToken
+     * @param xRequestId
+     * @return RequestSpecification with basic request structure
+     */
+    static RequestSpecification buildKeyManagerRequest(String accessToken = null, String xRequestId = null) {
+
+        def config = ConfigParser.getInstance()
+
+        if(accessToken == null) {
+            def authToken = "${config.keyManagerAdminUsername}:${config.keyManagerAdminPassword}"
+            accessToken = "${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset().toString()))}"
+        }
+
+        if (xRequestId == null) {
+            xRequestId = UUID.randomUUID().toString()
+        }
+
+        return TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic ${accessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.instance.authorisationServerURL)
     }
 }

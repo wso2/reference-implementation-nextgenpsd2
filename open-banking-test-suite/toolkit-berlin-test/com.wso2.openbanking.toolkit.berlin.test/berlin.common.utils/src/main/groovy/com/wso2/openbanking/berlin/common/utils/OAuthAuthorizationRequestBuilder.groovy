@@ -169,4 +169,22 @@ class OAuthAuthorizationRequestBuilder {
                 .state(new State(UUID.randomUUID().toString()))
                 .build()
     }
+
+    /**
+     * Build Authorization Request With PLAIN in code_challenge method.
+     * @param scopes
+     * @param accountId
+     * @return
+     */
+    static AuthorizationRequest OAuthRequestWithPlain(BerlinConstants.SCOPES scopes, String accountId) {
+
+        return new AuthorizationRequest.Builder(new ResponseType(), new ClientID(AppConfigReader.getClientId()))
+                .responseType(ResponseType.parse("code"))
+                .endpointURI(params.endpoint)
+                .redirectionURI(new URI(AppConfigReader.getRedirectURL()))
+                .scope(new Scope(scopes.getConsentScope(accountId)))
+                .codeChallenge(new CodeVerifier(), CodeChallengeMethod.PLAIN)
+                .state(new State(UUID.randomUUID().toString()))
+                .build()
+    }
 }

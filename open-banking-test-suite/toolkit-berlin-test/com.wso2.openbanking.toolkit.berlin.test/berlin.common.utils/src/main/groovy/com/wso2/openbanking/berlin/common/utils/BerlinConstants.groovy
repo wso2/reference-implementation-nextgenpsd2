@@ -17,14 +17,15 @@ package com.wso2.openbanking.berlin.common.utils
  */
 class BerlinConstants {
 
-    static final String X_REQUEST_ID = "X-Request-ID"
+    public static final String X_REQUEST_ID = "X-Request-ID"
     static final String PSU_IP_ADDRESS = "PSU-IP-Address"
-    static final String Date = "Date"
+    public static final String Date = "Date"
     static final String PSU_ID = "PSU-ID"
     static final String PSU_TYPE = "PSU-ID-Type"
     static final String EXPLICIT_AUTH_PREFERRED = "TPP-Explicit-Authorisation-Preferred"
     static final String TPP_BRAND_LOGGING_INFORMATION = "TPP-Brand-LoggingInformation"
     static final String CONSENT_ID_HEADER = "Consent-ID"
+    static final String TPP_REDIRECT_PREFERRED = "TPP-Redirect-Preferred"
 
     static final String PAYMENTS_SUBMIT_XPATH = """//*[@id="approve"]"""
     static final String PAYMENTS_DENY_XPATH = """//input[@value='Deny']"""
@@ -52,6 +53,7 @@ class BerlinConstants {
     static final String HEADER_DATEFROM = "Header.dateFrom"
     static final String QUERY_DATEFROM = "Query.dateFrom"
     static final String PRODUCT_UNKNOWN = "PRODUCT_UNKNOWN"
+    static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
 
 
     static final int STATUS_CODE_204 = 204
@@ -88,4 +90,8 @@ class BerlinConstants {
             return "${consentScope}:${consentId}"
         }
     }
+
+    static final String IS_VALID = "IsValid"
+    static final String SCA_STATUS_PARAM = "scaStatus"
+    static final String TRUSTED_BENEFICIARY_FLAG = "trustedBeneficiaryFlag"
 }
