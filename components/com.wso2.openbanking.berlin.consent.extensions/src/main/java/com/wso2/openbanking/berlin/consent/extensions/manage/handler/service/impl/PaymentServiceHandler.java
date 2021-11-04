@@ -78,7 +78,7 @@ public class PaymentServiceHandler implements ServiceHandler {
         try {
             consent = coreService.getConsent(consentId, false);
         } catch (ConsentManagementException e) {
-            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR);
+            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
@@ -118,7 +118,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                 }
             }
         } catch (ParseException e) {
-            log.error(ErrorConstants.RESPONSE_CONSTRUCT_ERROR);
+            log.error(ErrorConstants.RESPONSE_CONSTRUCT_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.RESPONSE_CONSTRUCT_ERROR);
         }
@@ -131,9 +131,9 @@ public class PaymentServiceHandler implements ServiceHandler {
         ConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         Map<String, String> headersMap = consentManageData.getHeaders();
-        String paymentId =
-                ConsentExtensionUtil.getValidatedConsentIdFromRequestPath(consentManageData.getRequest().getMethod(),
-                        requestPath, ConsentTypeEnum.PAYMENTS.toString());
+        String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
+        String paymentId = ConsentExtensionUtil.getValidatedConsentIdFromRequestPath(consentManageData.getRequest()
+                        .getMethod(), requestPath, consentType);
 
         log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
@@ -143,18 +143,14 @@ public class PaymentServiceHandler implements ServiceHandler {
         try {
             consentResource = coreService.getConsent(paymentId, false);
         } catch (ConsentManagementException e) {
-            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR);
+            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
         }
 
-        if (!StringUtils.equals(consentManageData.getClientId(), consentResource.getClientID())) {
-            log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
-        }
+        ConsentExtensionUtil.validateClient(consentManageData.getClientId(), consentResource.getClientID());
+        ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
         log.debug("Send an error is the consent is already deleted");
         if (StringUtils.equals(TransactionStatusEnum.CANC.name(), consentResource.getCurrentStatus())
@@ -195,7 +191,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                 try {
                     coreService.updateConsentStatus(paymentId, TransactionStatusEnum.CANC.name());
                 } catch (ConsentManagementException e) {
-                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR);
+                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             ErrorConstants.CONSENT_UPDATE_ERROR);
                 }

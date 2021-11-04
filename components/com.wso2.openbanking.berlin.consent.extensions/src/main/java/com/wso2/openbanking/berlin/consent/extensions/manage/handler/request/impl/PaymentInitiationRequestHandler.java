@@ -88,7 +88,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                         ScaStatusEnum.RECEIVED.toString(), AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_INITIATION_ERROR);
+                log.error(ErrorConstants.CONSENT_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 
@@ -103,7 +103,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
                         getConsentAttributesToPersist(consentManageData, scaInfoMap, isExplicitAuth));
             } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR);
+                log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 

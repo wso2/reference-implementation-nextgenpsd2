@@ -12,14 +12,21 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
+import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import javax.ws.rs.HttpMethod;
@@ -28,6 +35,8 @@ import javax.ws.rs.HttpMethod;
  * Consent extension utils.
  */
 public class ConsentExtensionUtil {
+
+    private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
 
     /**
      * Gets the consent service using the request path.
@@ -227,5 +236,36 @@ public class ConsentExtensionUtil {
             }
         }
         return authorisationGetStatusResponse;
+    }
+
+    /**
+     * Validates request the consent client ID with the registered client ID.
+     *
+     * @param registeredClientId
+     * @param consentClientId
+     */
+    public static void validateClient(String registeredClientId, String consentClientId) {
+
+        if (!StringUtils.equals(registeredClientId, consentClientId)) {
+            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
+                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
+        }
+    }
+
+    /**
+     * Validates the request consent type with the type of the current consent.
+     *
+     * @param requestConsentType
+     * @param typeOfRetrievedConsent
+     */
+    public static void validateConsentType(String requestConsentType, String typeOfRetrievedConsent) {
+
+        if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
+            log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
+            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
+        }
     }
 }

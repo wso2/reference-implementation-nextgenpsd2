@@ -65,28 +65,18 @@ public class AuthorisationServiceHandler implements ServiceHandler {
         try {
             detailedConsentResource = coreService.getDetailedConsent(consentId);
         } catch (ConsentManagementException e) {
-            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR);
+            log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
         }
 
-        if (!StringUtils.equals(consentManageData.getClientId(), detailedConsentResource.getClientID())) {
-            log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
-        }
+        ConsentExtensionUtil.validateClient(consentManageData.getClientId(), detailedConsentResource.getClientID());
 
         if (log.isDebugEnabled()) {
-            log.debug("Validating detailed consent of Id " + consentId + " for correct type");
+            log.debug("Validating consent of Id " + consentId + " for correct type");
         }
-        if (!StringUtils.equals(consentType, detailedConsentResource.getConsentType())) {
-            log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
-        }
+        ConsentExtensionUtil.validateConsentType(consentType, detailedConsentResource.getConsentType());
 
         if (log.isDebugEnabled()) {
             log.debug("Get authorization resources belong to consent of Id: " + consentId);
