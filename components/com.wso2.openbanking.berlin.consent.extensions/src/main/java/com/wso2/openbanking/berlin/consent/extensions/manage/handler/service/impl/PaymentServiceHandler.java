@@ -66,7 +66,7 @@ public class PaymentServiceHandler implements ServiceHandler {
 
         ConsentResource consent;
         String requestPath = consentManageData.getRequestPath();
-        String consentType = ConsentExtensionUtil.getServiceDifferentiatingRequestPath(requestPath);
+        String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
         String consentId = ConsentExtensionUtil
                 .getValidatedConsentIdFromRequestPath(consentManageData.getRequest().getMethod(), requestPath,
                         consentType);
@@ -84,6 +84,16 @@ public class PaymentServiceHandler implements ServiceHandler {
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Validating detailed consent of Id " + consentId + " for correct type");
+        }
+        if (!StringUtils.equals(consentType, consent.getConsentType())) {
+            log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
+            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
+        }
+
         if (!StringUtils.equals(consentManageData.getClientId(), consent.getClientID())) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
@@ -96,13 +106,13 @@ public class PaymentServiceHandler implements ServiceHandler {
                 consentManageData.setResponsePayload(ConsentExtensionUtil.getConsentStatusResponse(consent,
                         consentType));
             } else {
-                if (StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)) {
+                if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), consentType)) {
                     consentManageData.setResponsePayload(PaymentConsentUtil
                             .getConstructedPaymentsGetResponse(consent));
-                } else if (StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType)) {
+                } else if (StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType)) {
                     consentManageData
                             .setResponsePayload(PaymentConsentUtil.getConstructedPeriodicPaymentGetResponse(consent));
-                } else if (StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, consentType)) {
+                } else if (StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)) {
                     consentManageData
                             .setResponsePayload(PaymentConsentUtil.getConstructedBulkPaymentGetResponse(consent));
                 }

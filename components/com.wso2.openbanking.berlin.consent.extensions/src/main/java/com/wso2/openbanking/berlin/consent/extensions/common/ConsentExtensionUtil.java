@@ -62,6 +62,28 @@ public class ConsentExtensionUtil {
     }
 
     /**
+     * Extracts consent type from request path.
+     *
+     * @param requestPath request path
+     * @return consent type
+     */
+    public static String getConsentTypeFromRequestPath(String requestPath) {
+
+        switch (getServiceDifferentiatingRequestPath(requestPath)) {
+            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.PAYMENTS.toString();
+            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.BULK_PAYMENTS.toString();
+            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.PERIODIC_PAYMENTS.toString();
+            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
+                return ConsentTypeEnum.FUNDS_CONFIRMATION.toString();
+            default:
+                return ConsentTypeEnum.ACCOUNTS.toString();
+        }
+    }
+
+    /**
      * Used to get the consent type an authorisation request.
      *
      * @param requestPath
@@ -70,7 +92,19 @@ public class ConsentExtensionUtil {
     public static String getAuthorisationConsentType(String requestPath) {
 
         String[] pathElements = requestPath.split("/");
-        return pathElements[0];
+        String authorisationConsentType = pathElements[0];
+        switch (authorisationConsentType) {
+            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.PAYMENTS.toString();
+            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.BULK_PAYMENTS.toString();
+            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+                return ConsentTypeEnum.PERIODIC_PAYMENTS.toString();
+            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
+                return ConsentTypeEnum.FUNDS_CONFIRMATION.toString();
+            default:
+                return ConsentTypeEnum.ACCOUNTS.toString();
+        }
     }
 
     /**
@@ -106,9 +140,9 @@ public class ConsentExtensionUtil {
         String consentId;
 
         if (StringUtils.equals(HttpMethod.GET, requestMethod) || StringUtils.equals(HttpMethod.DELETE, requestMethod)) {
-            // Consent Id of accounts always situated in 1nd position. Consent Id of payments and funds confirmation
-            // always situated in 2st position
-            consentId = (StringUtils.equals(ConsentExtensionConstants.ACCOUNTS, consentType)) ?
+            // Consent Id of accounts always situated in 1st position. Consent Id of payments and funds confirmation
+            // always situated in 2nd position
+            consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
                     requestPath.split("/")[1] : requestPath.split("/")[2];
             if (CommonUtil.isValidUuid(consentId)) {
                 return consentId;
@@ -121,7 +155,7 @@ public class ConsentExtensionUtil {
                     .equals(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
                             lastElement)) {
 
-                consentId = (StringUtils.equals(ConsentExtensionConstants.ACCOUNTS, consentType)) ?
+                consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
                         requestPathElements[1] : requestPathElements[2];
                 if (CommonUtil.isValidUuid(consentId)) {
                     return consentId;
