@@ -50,7 +50,6 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
-        log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));

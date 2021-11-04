@@ -16,6 +16,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.AccountServiceHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.AuthorisationServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.FundsConfirmationServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.PaymentServiceHandler;
 
@@ -41,6 +42,9 @@ public class ServiceHandlerFactory {
                 return new PaymentServiceHandler();
             case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
                 return new FundsConfirmationServiceHandler();
+            case ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END:
+            case ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
+                return new AuthorisationServiceHandler();
             default:
                 return null;
         }

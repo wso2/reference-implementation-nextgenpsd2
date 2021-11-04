@@ -171,6 +171,11 @@
         </Accounts>
 
         <Payments>
+            {% if open_banking_berlin.consent.payments.auth_cancellation.enable is defined %}
+            <AuthorizeCancellation>{{open_banking_berlin.consent.payments.auth_cancellation.enable}}</AuthorizeCancellation>
+            {% else %}
+            <AuthorizeCancellation>false</AuthorizeCancellation>
+            {% endif %}
             <TransactionFee>
                 {% if open_banking_berlin.consent.payments.transaction_fee.enable is defined %}
                 <Enable>{{open_banking_berlin.consent.payments.transaction_fee.enable}}</Enable>

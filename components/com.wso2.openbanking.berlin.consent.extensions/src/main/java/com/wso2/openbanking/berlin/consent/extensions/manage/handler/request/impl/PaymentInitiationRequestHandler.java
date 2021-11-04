@@ -24,7 +24,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
-import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
@@ -44,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Handle Payments initiation request.
@@ -76,9 +76,11 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
-            ConsentResource consentResource = new ConsentResource(clientId,
-                    requestPayload.toJSONString(), ConsentTypeEnum.PAYMENTS.toString(),
-                    TransactionStatusEnum.RCVD.name());
+            String paymentConsentType =
+                    ConsentExtensionUtil.getConsentTypeFromRequestPath(consentManageData.getRequestPath());
+
+            ConsentResource consentResource = new ConsentResource(UUID.randomUUID().toString(), requestPayload.toJSONString(),
+                    paymentConsentType, TransactionStatusEnum.RCVD.name());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
                     .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
@@ -87,7 +89,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                         ScaStatusEnum.RECEIVED.toString(), AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_INITIATION_ERROR);
+                log.error(ErrorConstants.CONSENT_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 
@@ -102,7 +104,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
                         getConsentAttributesToPersist(consentManageData, scaInfoMap, isExplicitAuth));
             } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR);
+                log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 
