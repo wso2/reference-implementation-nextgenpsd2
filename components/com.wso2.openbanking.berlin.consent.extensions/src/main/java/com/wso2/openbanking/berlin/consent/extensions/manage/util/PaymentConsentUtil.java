@@ -54,8 +54,8 @@ public class PaymentConsentUtil {
     /**
      * Method to validate debtor account element of the payload.
      *
-     * @param payload
-     * @param configuredAccReference
+     * @param payload the request payload
+     * @param configuredAccReference the configured account reference type
      */
     public static void validateDebtorAccount(JSONObject payload, String configuredAccReference) {
 
@@ -160,7 +160,7 @@ public class PaymentConsentUtil {
     /**
      * Method to validate common payload elements.
      *
-     * @param payload
+     * @param payload request payload
      */
     public static void validateCommonPaymentElements(JSONObject payload) {
 
@@ -307,9 +307,9 @@ public class PaymentConsentUtil {
     /**
      * Construct the payments GET response.
      *
-     * @param retrievedConsent
-     * @return
-     * @throws ParseException
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
      */
     public static JSONObject getConstructedPaymentsGetResponse(ConsentResource retrievedConsent) throws ParseException {
 
@@ -328,9 +328,9 @@ public class PaymentConsentUtil {
     /**
      * Construct the periodic payments GET response.
      *
-     * @param retrievedConsent
-     * @return
-     * @throws ParseException
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the periodic payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
      */
     public static JSONObject getConstructedPeriodicPaymentGetResponse(ConsentResource retrievedConsent)
             throws ParseException {
@@ -365,9 +365,9 @@ public class PaymentConsentUtil {
     /**
      * Constructs the bulk payment GET response.
      *
-     * @param retrievedConsent
-     * @return
-     * @throws ParseException
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the periodic payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
      */
     public static JSONObject getConstructedBulkPaymentGetResponse(ConsentResource retrievedConsent)
             throws ParseException {
@@ -397,8 +397,8 @@ public class PaymentConsentUtil {
     /**
      * Sets debtor account element to response.
      *
-     * @param response
-     * @param receipt
+     * @param response response object of the request
+     * @param receipt the receipt of the consent
      */
     private static void setDebtorAccountToResponse(JSONObject response, JSONObject receipt) {
 
@@ -409,8 +409,8 @@ public class PaymentConsentUtil {
     /**
      * Sets common payment elements to response.
      *
-     * @param response
-     * @param receipt
+     * @param response response object of the request
+     * @param receipt the receipt of the consent
      */
     private static void setCommonPaymentElementsToResponse(JSONObject response, JSONObject receipt) {
 
@@ -447,10 +447,10 @@ public class PaymentConsentUtil {
     /**
      * Constructs the payment cancellation response.
      *
-     * @param updatedConsent
-     * @param requestPath
-     * @param isSCARequired
-     * @return
+     * @param updatedConsent the updated consent resource
+     * @param requestPath the request path string
+     * @param isSCARequired param to determine whether the SCA is required as configured
+     * @return the payment cancellation response
      */
     public static JSONObject getPaymentCancellationResponse(ConsentResource updatedConsent, String requestPath,
                                                             boolean isSCARequired) {
@@ -493,9 +493,9 @@ public class PaymentConsentUtil {
     /**
      * Filters the authorisation resources by the provided authorisation status.
      *
-     * @param retrievedAuthResources
-     * @param authType
-     * @return
+     * @param retrievedAuthResources the retrieved authorization resources
+     * @param authType the authorization status that should filter
+     * @return the list of filtered authorization resources
      */
     public static ArrayList<AuthorizationResource> filterAuthorizations(ArrayList<AuthorizationResource>
                                                                                             retrievedAuthResources,
@@ -516,8 +516,8 @@ public class PaymentConsentUtil {
     /**
      * Returns the payment product from the request path.
      *
-     * @param requestPath
-     * @return
+     * @param requestPath the request path string
+     * @return the payment product of the request
      */
     public static String getPaymentProduct(String requestPath) {
 

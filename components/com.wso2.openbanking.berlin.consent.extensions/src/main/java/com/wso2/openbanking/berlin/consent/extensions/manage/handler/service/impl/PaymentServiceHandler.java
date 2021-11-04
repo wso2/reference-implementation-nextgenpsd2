@@ -128,6 +128,7 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
+        consentManageData.setClientId("62cb7e6c-ecba-4e31-9612-2885eec9d9ed");
         ConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         Map<String, String> headersMap = consentManageData.getHeaders();
@@ -189,7 +190,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                 log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
                         "an explicit authorisation");
                 try {
-                    coreService.updateConsentStatus(paymentId, TransactionStatusEnum.CANC.name());
+                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.name());
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
