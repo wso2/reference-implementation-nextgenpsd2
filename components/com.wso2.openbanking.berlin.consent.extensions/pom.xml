@@ -91,6 +91,11 @@
             <classifier>runtime</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -106,6 +111,7 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants*.class</exclude>
+                        <exclude>**/*Enum.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -146,7 +152,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- Add coverage after implementing tests -->
+                                            <minimum>0.7</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

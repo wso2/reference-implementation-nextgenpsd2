@@ -12,5 +12,191 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
-    
+    <ConsentManagement>
+        {% if open_banking_berlin.consent.payable_account_retrieval_endpoint is defined %}
+        <PayableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.payable_account_retrieval_endpoint}}</PayableAccountsRetrieveEndpoint>
+        {% else %}
+        <PayableAccountsRetrieveEndpoint></PayableAccountsRetrieveEndpoint>
+        {% endif %}
+
+        {% if open_banking_berlin.consent.sharable_account_retrieval_endpoint is defined %}
+        <SharableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.sharable_account_retrieval_endpoint}}</SharableAccountsRetrieveEndpoint>
+        {% else %}
+        <SharableAccountsRetrieveEndpoint></SharableAccountsRetrieveEndpoint>
+        {% endif %}
+
+        <!-- Configurations regarding the Strong Customer Authentication -->
+        <SCA>
+            {% if open_banking_berlin.consent.sca.required is defined %}
+            <Required>{{open_banking_berlin.consent.sca.required}}</Required>
+            {% else %}
+            <Required>true</Required>
+            {% endif %}
+            <!--
+            Allowed values for SupportedSCAApproaches names are:
+            1. REDIRECT (OAUTH2 is subsumed by this)
+            2. DECOUPLED
+            3. EMBEDDED
+            -->
+            <SupportedSCAApproaches>
+                {% if open_banking_berlin.consent.sca.supported_sca_approach is defined %}
+                {% for sca_approach_object in open_banking_berlin.consent.sca.supported_sca_approach %}
+                <Approach>
+                     <Name>{{sca_approach_object.name}}</Name>
+                     <Default>{{sca_approach_object.default.enable}}</Default>
+                </Approach>
+                {% endfor %}
+                {% else %}
+                <Approach>
+                     <Name>REDIRECT</Name>
+                     <Default>true</Default>
+                </Approach>
+                {% endif %}
+            </SupportedSCAApproaches>
+            <!--Endpoint to retrieve OIDC Discovery metadata-->
+            {% if open_banking_berlin.consent.sca.oauth_metadata_endpoint is defined %}
+            <OAuthMetadataEndpoint>{{open_banking_berlin.consent.sca.oauth_metadata_endpoint}}</OAuthMetadataEndpoint>
+            {% else %}
+            <OAuthMetadataEndpoint>https://APIM_HOSTNAME:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
+            {% endif %}
+            <!-- Configure SCA Methods for API responses -->
+            <SupportedSCAMethods>
+                {% if open_banking_berlin.consent.sca.supported_sca_method is defined %}
+                {% for auth_object in open_banking_berlin.consent.sca.supported_sca_method %}
+                <Method>
+                    <Type>{{auth_object.auth_type}}</Type>
+                    <Version>{{auth_object.auth_version}}</Version>
+                    <Id>{{auth_object.auth_method_id}}</Id>
+                    <Name>{{auth_object.name}}</Name>
+                    <MappedApproach>{{auth_object.mapped_approach}}</MappedApproach>
+                    <Description>{{auth_object.explanation}}</Description>
+                    <Default>{{auth_object.default.enable}}</Default>
+                </Method>
+                {% endfor %}
+                {% else %}
+                <Method>
+                    <Type>SMS_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>sms-otp</Id>
+                    <Name>SMS OTP on Mobile</Name>
+                    <MappedApproach>REDIRECT</MappedApproach>
+                    <Description>SMS based one time password</Description>
+                    <Default>true</Default>
+                </Method>
+                {% endif %}
+            </SupportedSCAMethods>
+        </SCA>
+
+        <!--
+        Allowed values for account reference type
+            1. iban
+            2. bban
+            3. pan
+        -->
+    	{% if open_banking_berlin.consent.acc_ref_type is defined %}
+    	<AccountReferenceType>{{open_banking_berlin.consent.acc_ref_type}}</AccountReferenceType>
+    	{% else %}
+    	<AccountReferenceType>iban</AccountReferenceType>
+    	{% endif %}
+
+        <MultiCurrency>
+            {% if open_banking_berlin.consent.multi_currency.enable is defined %}
+            <Enable>{{open_banking_berlin.consent.multi_currency.enable}}</Enable>
+            {% else %}
+            <Enable>false</Enable>
+            {% endif %}
+        </MultiCurrency>
+
+        <APIVersions>
+            {% if open_banking_berlin.consent.api_versions.ais is defined %}
+            <AIS>{{open_banking_berlin.consent.api_versions.ais}}</AIS>
+            {% else %}
+            <AIS>v1</AIS>
+            {% endif %}
+            {% if open_banking_berlin.consent.api_versions.pis is defined %}
+            <PIS>{{open_banking_berlin.consent.api_versions.pis}}</PIS>
+            {% else %}
+            <PIS>v1</PIS>
+            {% endif %}
+            {% if open_banking_berlin.consent.api_versions.piis is defined %}
+            <PIIS>{{open_banking_berlin.consent.api_versions.piis}}</PIIS>
+            {% else %}
+            <PIIS>v2</PIIS>
+            {% endif %}
+        </APIVersions>
+
+        <Accounts>
+            <!--Enable IBAN validation for single accounts -->
+            {% if open_banking_berlin.consent.accounts.single_acc_no_retrieval_validation.enable is defined %}
+            <EnableAccountIDValidation>{{open_banking_berlin.consent.accounts.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
+            {% else %}
+            <EnableAccountIDValidation>false</EnableAccountIDValidation>
+            {% endif %}
+
+            <!-- Enable frequency per day throttling for eligible API GET calls -->
+            <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+            <FrequencyPerDay>
+                {% if open_banking_berlin.consent.accounts.freq_per_day.enable is defined %}
+                <Enable>{{open_banking_berlin.consent.accounts.freq_per_day.enable}}</Enable>
+                {% else %}
+                <Enable>true</Enable>
+                {% endif %}
+                {% if open_banking_berlin.consent.accounts.freq_per_day.value is defined %}
+                <Frequency>{{open_banking_berlin.consent.accounts.freq_per_day.value}}</Frequency>
+                {% else %}
+                <Frequency>4</Frequency>
+                {% endif %}
+            </FrequencyPerDay>
+
+            <!-- Enable validUntil Date cap for Account Consent Creation -->
+            <ValidUntilDateCap>
+                {% if open_banking_berlin.consent.accounts.valid_until_date_cap.enable is defined %}
+                <Enabled>{{open_banking_berlin.consent.accounts.valid_until_date_cap.enable}}</Enabled>
+                {% else %}
+                <Enabled>false</Enabled>
+                {% endif %}
+                {% if open_banking_berlin.consent.accounts.valid_until_date_cap.value is defined %}
+                <ValidUntilDays>{{open_banking_berlin.consent.accounts.valid_until_date_cap.value}}</ValidUntilDays>
+                {% else %}
+                <ValidUntilDays>0</ValidUntilDays>
+                {% endif %}
+            </ValidUntilDateCap>
+
+            <!-- Support for multiple recurring consents on AIS resources -->
+            {% if open_banking_berlin.consent.accounts.multiple_recurring_consent.enable is defined %}
+            <EnableMultipleRecurringConsent>{{open_banking_berlin.consent.accounts.multiple_recurring_consent.enable}}</EnableMultipleRecurringConsent>
+            {% else %}
+            <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
+            {% endif %}
+        </Accounts>
+
+        <Payments>
+            <TransactionFee>
+                {% if open_banking_berlin.consent.payments.transaction_fee.enable is defined %}
+                <Enable>{{open_banking_berlin.consent.payments.transaction_fee.enable}}</Enable>
+                {% else %}
+                <Enable>false</Enable>
+                {% endif %}
+                {% if open_banking_berlin.consent.payments.transaction_fee.amount is defined %}
+                <Amount>{{open_banking_berlin.consent.payments.transaction_fee.amount}}</Amount>
+                {% else %}
+                <Amount>0</Amount>
+                {% endif %}
+                {% if open_banking_berlin.consent.payments.transaction_fee.currency is defined %}
+                <Currency>{{open_banking_berlin.consent.payments.transaction_fee.currency}}</Currency>
+                {% else %}
+                <Currency>EUR</Currency>
+                {% endif %}
+            </TransactionFee>
+            <SinglePayments></SinglePayments>
+            <BulkPayments>
+                {% if open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days is defined %}
+                <MaximumFuturePaymentDays>{{open_banking_berlin.consent.payments.bulk_payments.max_future_payment_days}}</MaximumFuturePaymentDays>
+                {% else %}
+                <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
+                {% endif %}
+            </BulkPayments>
+            <PeriodicPayments></PeriodicPayments>
+        </Payments>
+    </ConsentManagement>
 </Server>

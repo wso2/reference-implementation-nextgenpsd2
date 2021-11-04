@@ -12,5 +12,83 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
+    <ConsentManagement>
+        <!--Configure endpoint to retrieve payable accounts passing userId -->
+        <PayableAccountsRetrieveEndpoint></PayableAccountsRetrieveEndpoint>
+        <!-- Configure endpoint to retrieve sharable accounts passing userId -->
+        <SharableAccountsRetrieveEndpoint></SharableAccountsRetrieveEndpoint>
+        <SCA>
+            <!--
+            SelectedSCAApproach denotes the preferred SCA Approach.
+            Allowed values are:
+            1. REDIRECT (OAUTH2 is subsumed by this)
+            2. DECOUPLED
+            -->
+            <SelectedSCAApproach>REDIRECT</SelectedSCAApproach>
+            <!--
+            Specify whether if Authorization is required for payment cancellation.
+            true: PSU is required to authorize the cancellation by completing authorization flow
+            false: Authorization not required.
+            -->
+            <AuthorizeCancellation>false</AuthorizeCancellation>
+            <!--Endpoint to retrieve OIDC Discovery metadata-->
+            <OAuthMetadataEndpoint>https://localhost:8243/.well-known/openid-configuration</OAuthMetadataEndpoint>
+            <!-- Configure SCA Methods for API responses -->
+            <SCAMethods>
+                <Method>
+                    <Type>SMS_OTP</Type>
+                    <Version>1.0</Version>
+                    <Id>sms-otp</Id>
+                    <Name>SMS OTP on Mobile</Name>
+                    <Description>SMS based one time password</Description>
+                    <Default>true</Default>
+                </Method>
+            </SCAMethods>
+        </SCA>
 
+        <SelfLinksVersion>v1</SelfLinksVersion>
+
+        <!--The time interval for duplicate checking of payment consent initiation requests using X-Request-ID-->
+        <DuplicateCheck>
+            <TimeIntervalInMinutes>60</TimeIntervalInMinutes>
+        </DuplicateCheck>
+        <!--Enable IBAN, BBAN, PAN validation for single accounts -->
+        <EnableAccountIDValidation>false</EnableAccountIDValidation>
+        <!-- Enable frequency per day throttling for eligible API GET calls -->
+        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+        <FrequencyPerDay>
+            <Enable>true</Enable>
+            <Frequency>4</Frequency>
+        </FrequencyPerDay>
+        <!-- Enable validUntil Date cap for Account Consent Creation -->
+        <ValidUntilDateCap>
+            <Enabled>false</Enabled>
+            <ValidUntilDays>0</ValidUntilDays>
+        </ValidUntilDateCap>
+
+        <!--
+        Allowed values for account reference type
+            1. iban
+            2. bban
+            3. pan
+        -->
+        <AccountReferenceType>iban</AccountReferenceType>
+
+        <MultiCurrency>
+            <Enable>false</Enable>
+        </MultiCurrency>
+
+        <!-- Supported code challenge methods -->
+        <SupportedCodeChallengeMethods>
+        </SupportedCodeChallengeMethods>
+
+        <!-- Support for multiple recurring consents on AIS resources -->
+        <EnableMultipleRecurringConsent>false</EnableMultipleRecurringConsent>
+
+        <MaximumFuturePaymentDays></MaximumFuturePaymentDays>
+
+        <MultiCurrency>
+            <Enable>false</Enable>
+        </MultiCurrency>
+    </ConsentManagement>
 </Server>

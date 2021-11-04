@@ -12,5 +12,18 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
+    <ConsentManagement>
 
+        <!-- Enable frequency per day throttling for eligible API GET calls -->
+        <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+        <FrequencyPerDay>
+            <Enable>true</Enable>
+            <Frequency>4</Frequency>
+        </FrequencyPerDay>
+
+        <Idempotency>
+            <!-- Allowed idempotency duration in hours -->
+            <AllowedDuration>1</AllowedDuration>
+        </Idempotency>
+    </ConsentManagement>
 </Server>
