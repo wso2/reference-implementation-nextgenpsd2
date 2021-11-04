@@ -18,9 +18,6 @@ import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.PaymentsInitiationPayloads
-import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
-import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsConstants
-import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsPayloads
 import org.testng.Assert
 import org.testng.annotations.Test
 

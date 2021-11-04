@@ -100,7 +100,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 						"Decoupled Approach is not supported.")
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test(groups = ["1.3.3", "1.3.6"])
 	void "OB-1412_Implicit Authorisation when PSU reject the auth flow "() {
 
 		//Consent Initiation
@@ -167,7 +167,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 						.addStep { driver, context ->
 							WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
 							Assert.assertTrue(lblErrorResponse.getText().trim().contains("Cannot find an application associated " +
-													"with the given consumer key"))
+											"with the given consumer key"))
 						}
 						.execute()
 	}

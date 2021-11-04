@@ -106,7 +106,7 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 						"Decoupled Approach is not supported.")
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test(groups = ["1.3.3", "1.3.6"])
 	void "OB-1429_Explicit Authorisation when PSU reject the consent"() {
 
 		//Consent Initiation
@@ -135,7 +135,7 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test(groups = ["1.3.3", "1.3.6"])
 	void "OB-1454_Create consent authorisation resource for incorrect consent id"() {
 
 		//Consent Initiation

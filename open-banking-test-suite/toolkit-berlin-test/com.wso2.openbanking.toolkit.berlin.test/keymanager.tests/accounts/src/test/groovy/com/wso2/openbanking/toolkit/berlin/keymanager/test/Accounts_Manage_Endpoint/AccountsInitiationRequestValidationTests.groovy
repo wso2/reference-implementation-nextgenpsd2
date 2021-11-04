@@ -40,7 +40,7 @@ class AccountsInitiationRequestValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
-		"SMS_OTP")
+						"SMS_OTP")
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])

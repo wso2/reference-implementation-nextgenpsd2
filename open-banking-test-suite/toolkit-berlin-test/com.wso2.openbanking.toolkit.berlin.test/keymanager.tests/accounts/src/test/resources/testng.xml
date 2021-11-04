@@ -12,7 +12,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Berlin Group Integration">
-    <test name="Accounts Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Manage Endpoints" parallel="false" enabled="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -23,13 +23,12 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.AllAvailableAccountsEndToEndFlowTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.GlobalConsentEndToEndFlowTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.AccountsSCAFlowTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Common_Tests.AccountsFlowTest"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Manage_Endpoint.AccountsInitiationRequestValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Manage_Endpoint.ConsentRetrievalRequestValidationTest"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Manage_Endpoint.ConsentDeleteRequestValidationTest"/>
         </classes>
     </test>
-    <test name="Accounts Initiation Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Authorization Endpoint" parallel="false" enabled="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -40,17 +39,11 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.AccountsInitiationRequestHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.AccountsInitiationRequestPayloadValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.AccountListConsentRequestPayloadValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.GetConsentRequestHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.GetConsentResponseValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.DeleteConsentRequestHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests.DeleteConsentResponseValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Initiation_Tests.AccountListConsentRequestPayloadValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Authorise_Endpoint.ImplicitAuthorisationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Authorise_Endpoint.ExplicitAuthorisationTests"/>
         </classes>
     </test>
-    <test name="Accounts Authorization Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Validate Endpoint" parallel="false" enabled="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -61,29 +54,7 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.ImplicitAuthorisationRequestValidationTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountAuthorisationRequestValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountsBankOfferedConsentTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountsExplicitAuthorisation"/>
-        </classes>
-    </test>
-    <test name="Accounts Retrieval Flow Tests" parallel="false" enabled="true">
-        <method-selectors>
-            <method-selector>
-                <script language="beanshell">
-                    <![CDATA[whatGroup = System.getProperty("groupToRun");
-                            groups.containsKey(whatGroup);
-                    ]]>
-                </script>
-            </method-selector>
-        </method-selectors>
-        <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.AccountRetrievalRequestHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.AccountRetrievalResponseValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.CardAccountsRetrievalRequestBodyValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.AccountsListRetrievalResponseValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.AccountTransactionRetrievalHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Retrieval_Tests.AccountRetrievalResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Validate_Endpoint.ValidateAccountRetrievalTests"/>
         </classes>
     </test>
 </suite>

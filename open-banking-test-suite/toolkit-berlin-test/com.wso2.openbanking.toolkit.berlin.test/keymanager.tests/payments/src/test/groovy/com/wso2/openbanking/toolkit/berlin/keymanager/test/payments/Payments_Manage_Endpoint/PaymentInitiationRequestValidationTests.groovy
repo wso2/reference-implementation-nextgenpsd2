@@ -79,5 +79,4 @@ class PaymentInitiationRequestValidationTests extends AbstractPaymentsFlow {
 		Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
 		Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
 	}
-
 }

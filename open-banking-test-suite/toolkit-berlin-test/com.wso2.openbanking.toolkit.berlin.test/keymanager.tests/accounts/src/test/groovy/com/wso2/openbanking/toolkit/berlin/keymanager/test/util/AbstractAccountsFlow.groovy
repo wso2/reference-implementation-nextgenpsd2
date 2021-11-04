@@ -13,22 +13,23 @@
 package com.wso2.openbanking.toolkit.berlin.keymanager.test.util
 
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
-import com.wso2.openbanking.berlin.common.utils.*
+import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
+import com.wso2.openbanking.berlin.common.utils.BerlinConstants
+import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestUtil
-import io.restassured.http.ContentType
 import io.restassured.response.Response
-import io.restassured.specification.RequestSpecification
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 
 import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 
 /**
  * Abstract Account Flow Methods
@@ -39,7 +40,6 @@ abstract class AbstractAccountsFlow {
     String accountId
     String code
     String consentStatus
-    String userAccessToken
     String oauthErrorCode
     Response consentResponse
     Response retrievalResponse
@@ -139,9 +139,9 @@ abstract class AbstractAccountsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -158,9 +158,9 @@ abstract class AbstractAccountsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_DENY_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_DENY_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL

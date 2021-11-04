@@ -258,8 +258,8 @@ class AccountsPayloads {
      * @return payload
      */
     static final String buildValidationPayload(String accountId, String consentId, String accessMethod, String tppId,
-                                  String psuId = "${PsuConfigReader.getPSU()}@${ConfigParser.getInstance().getTenantDomain()}",
-                                  String xRequestId = UUID.randomUUID().toString()) {
+                                               String psuId = "${PsuConfigReader.getPSU()}@${ConfigParser.getInstance().getTenantDomain()}",
+                                               String xRequestId = UUID.randomUUID().toString()) {
 
         def payload = """
         {
