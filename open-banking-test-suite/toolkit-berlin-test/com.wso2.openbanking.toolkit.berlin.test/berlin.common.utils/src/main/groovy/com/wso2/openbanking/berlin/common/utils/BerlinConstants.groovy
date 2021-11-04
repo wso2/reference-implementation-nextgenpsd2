@@ -65,6 +65,7 @@ class BerlinConstants {
     static final int STATUS_CODE_404 = 404
     static final int STATUS_CODE_405 = 405
     static final int STATUS_CODE_406 = 406
+    static final int STATUS_CODE_202 = 202
 
     static final enum AUTH_METHOD {
         PRIVATE_KEY_JWT

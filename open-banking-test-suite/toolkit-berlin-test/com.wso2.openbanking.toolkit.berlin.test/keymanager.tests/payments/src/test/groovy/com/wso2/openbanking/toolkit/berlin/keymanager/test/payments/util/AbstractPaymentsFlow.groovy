@@ -229,14 +229,13 @@ class AbstractPaymentsFlow {
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")
         requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
-
     }
 
     /**
      * Get Authorisation Cancellation resource Status.
      * @param consentPath
      */
-    void getCancellationStatus(String consentPath) {
+    void getAuthorisationCancellationResource(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
                 .get("${consentPath}/${paymentId}/cancellation-authorisations/${authorisationId}")
