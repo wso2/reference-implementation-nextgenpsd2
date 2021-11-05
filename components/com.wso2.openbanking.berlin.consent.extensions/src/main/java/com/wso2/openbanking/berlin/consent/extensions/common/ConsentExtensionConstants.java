@@ -35,6 +35,7 @@ public class ConsentExtensionConstants {
     public static final String STATUS_LINK_TEMPLATE = "/%s/%s/%s/status";
     public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";
     public static final String START_AUTH_LINK_TEMPLATE = "/%s/%s/%s/authorisations";
+    public static final String AUTHORISATION_IDS = "authorisationIds";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -96,6 +97,12 @@ public class ConsentExtensionConstants {
     public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";
+    public static final String CREDITOR_AGENT = "creditorAgent";
+    public static final String DAY_OF_EXECUTION = "dayOfExecution";
+    public static final String END_TO_END_IDENTIFICATION = "endToEndIdentification";
+    public static final String CREDITOR_ADDRESS = "creditorAddress";
+    public static final String REMITTANCE_INFO_UNSTRUCTURED = "remittanceInformationUnstructured";
+    public static final String BATCH_BOOKING_PREFERRED = "batchBookingPreferred";
 
     // Payment services
     public static final String PAYMENTS = "payments";

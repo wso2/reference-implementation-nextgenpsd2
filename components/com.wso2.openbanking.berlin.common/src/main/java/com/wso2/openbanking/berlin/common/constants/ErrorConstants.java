@@ -29,7 +29,6 @@ public class ErrorConstants {
     public static final String PATH_INVALID = "Invalid request path";
     public static final String PAYLOAD_FORMAT_ERROR = "Incorrect JSON format in the Request Payload";
     public static final String PAYLOAD_NOT_PRESENT_ERROR = "Request payload is not present";
-    public static final String HEADERS_MISSING = "Required headers are missing in the request";
     public static final String PSU_IP_ADDRESS_MISSING = "The PSU-IP-Address mandatory header is missing in the request";
     public static final String PSU_ID_MISSING = "PSU-ID mandatory header is missing in the request";
     public static final String X_REQUEST_ID_INVALID = "Invalid X-Request-ID header. Needs to be in UUID " +
@@ -37,6 +36,8 @@ public class ErrorConstants {
     public static final String DECOUPLED_FLOW_NOT_SUPPORTED = "Decoupled SCA Approach is not supported";
     public static final String DECOUPLED_FLOW_NOT_SUPPORTED_FOR_CANCELLATION = "Decoupled SCA Approach is not " +
             "supported for payment cancellation";
+    public static final String NO_CONSENT_FOR_CLIENT_ERROR = "No valid consent found for given client id";
+    public static final String AUTHORISATIONS_NOT_FOUND = "No authorisations found for provided consent id";
 
     // Payments related error messages
     public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
@@ -64,6 +65,8 @@ public class ErrorConstants {
     public static final String CONSENT_NOT_FOUND_ERROR = "Matching consent not found for provided Id";
     public static final String AUTHORISATION_RESOURCE_NOT_FOUND_ERROR = "Matching authorisation resource/s not found " +
             "for provided consent Id";
+    public static final String CONSENT_ID_TYPE_MISMATCH = "The provided consent ID valid but belongs to a " +
+            "different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";

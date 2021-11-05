@@ -19,6 +19,8 @@ public enum ConsentTypeEnum {
 
     ACCOUNTS("accounts"),
     PAYMENTS("payments"),
+    BULK_PAYMENTS("bulk_payments"),
+    PERIODIC_PAYMENTS("periodic_payments"),
     FUNDS_CONFIRMATION("funds_confirmations");
 
     private String value;

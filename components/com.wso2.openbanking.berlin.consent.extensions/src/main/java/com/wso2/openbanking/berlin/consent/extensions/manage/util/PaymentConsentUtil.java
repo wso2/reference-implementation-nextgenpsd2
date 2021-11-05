@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
@@ -25,10 +26,14 @@ import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +54,8 @@ public class PaymentConsentUtil {
     /**
      * Method to validate debtor account element of the payload.
      *
-     * @param payload
-     * @param configuredAccReference
+     * @param payload the request payload
+     * @param configuredAccReference the configured account reference type
      */
     public static void validateDebtorAccount(JSONObject payload, String configuredAccReference) {
 
@@ -155,7 +160,7 @@ public class PaymentConsentUtil {
     /**
      * Method to validate common payload elements.
      *
-     * @param payload
+     * @param payload request payload
      */
     public static void validateCommonPaymentElements(JSONObject payload) {
 
@@ -300,10 +305,219 @@ public class PaymentConsentUtil {
     }
 
     /**
+     * Construct the payments GET response.
+     *
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
+     */
+    public static JSONObject getConstructedPaymentsGetResponse(ConsentResource retrievedConsent) throws ParseException {
+
+        JSONObject consentReceipt =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(retrievedConsent.getReceipt());
+
+        JSONObject paymentsGetResponse = new JSONObject();
+        setDebtorAccountToResponse(paymentsGetResponse, consentReceipt);
+        setCommonPaymentElementsToResponse(paymentsGetResponse, consentReceipt);
+        paymentsGetResponse.appendField(ConsentExtensionConstants.TRANSACTION_STATUS,
+                retrievedConsent.getCurrentStatus());
+
+        return paymentsGetResponse;
+    }
+
+    /**
+     * Construct the periodic payments GET response.
+     *
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the periodic payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
+     */
+    public static JSONObject getConstructedPeriodicPaymentGetResponse(ConsentResource retrievedConsent)
+            throws ParseException {
+
+        JSONObject consentReceipt =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(retrievedConsent.getReceipt());
+
+        JSONObject periodicPaymentsResponse = new JSONObject();
+
+        periodicPaymentsResponse.appendField(ConsentExtensionConstants.TRANSACTION_STATUS,
+                retrievedConsent.getCurrentStatus());
+        setCommonPaymentElementsToResponse(periodicPaymentsResponse, consentReceipt);
+        periodicPaymentsResponse.appendField(ConsentExtensionConstants.START_DATE,
+                consentReceipt.get(ConsentExtensionConstants.START_DATE));
+        if (consentReceipt.containsKey(ConsentExtensionConstants.END_DATE)) {
+            periodicPaymentsResponse.appendField(ConsentExtensionConstants.END_DATE,
+                    consentReceipt.get(ConsentExtensionConstants.END_DATE));
+        }
+        if (consentReceipt.containsKey(ConsentExtensionConstants.EXECUTION_RULE)) {
+            periodicPaymentsResponse.appendField(ConsentExtensionConstants.EXECUTION_RULE,
+                    consentReceipt.get(ConsentExtensionConstants.EXECUTION_RULE));
+        }
+        periodicPaymentsResponse.appendField(ConsentExtensionConstants.FREQUENCY,
+                consentReceipt.get(ConsentExtensionConstants.FREQUENCY));
+        if (consentReceipt.containsKey(ConsentExtensionConstants.DAY_OF_EXECUTION)) {
+            periodicPaymentsResponse.appendField(ConsentExtensionConstants.DAY_OF_EXECUTION,
+                    consentReceipt.get(ConsentExtensionConstants.DAY_OF_EXECUTION));
+        }
+        return periodicPaymentsResponse;
+    }
+
+    /**
+     * Constructs the bulk payment GET response.
+     *
+     * @param retrievedConsent the retrieved consent resource
+     * @return the response for the periodic payments GET request
+     * @throws ParseException thrown if an error occurs when parsing the consent receipt
+     */
+    public static JSONObject getConstructedBulkPaymentGetResponse(ConsentResource retrievedConsent)
+            throws ParseException {
+
+        JSONObject consentReceipt =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(retrievedConsent.getReceipt());
+
+        JSONObject bulkPaymentResponse = new JSONObject();
+
+        bulkPaymentResponse.appendField(ConsentExtensionConstants.TRANSACTION_STATUS,
+                retrievedConsent.getCurrentStatus());
+        if (consentReceipt.containsKey(ConsentExtensionConstants.BATCH_BOOKING_PREFERRED)) {
+            bulkPaymentResponse.appendField(ConsentExtensionConstants.BATCH_BOOKING_PREFERRED,
+                    consentReceipt.get(ConsentExtensionConstants.BATCH_BOOKING_PREFERRED));
+        }
+        if (consentReceipt.containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
+            bulkPaymentResponse.appendField(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE,
+                    consentReceipt.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE));
+        }
+        setDebtorAccountToResponse(bulkPaymentResponse, consentReceipt);
+        bulkPaymentResponse.appendField(ConsentExtensionConstants.PAYMENTS,
+                consentReceipt.get(ConsentExtensionConstants.PAYMENTS));
+
+        return bulkPaymentResponse;
+    }
+
+    /**
+     * Sets debtor account element to response.
+     *
+     * @param response response object of the request
+     * @param receipt the receipt of the consent
+     */
+    private static void setDebtorAccountToResponse(JSONObject response, JSONObject receipt) {
+
+        response.appendField(ConsentExtensionConstants.DEBTOR_ACCOUNT,
+                receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+    }
+
+    /**
+     * Sets common payment elements to response.
+     *
+     * @param response response object of the request
+     * @param receipt the receipt of the consent
+     */
+    private static void setCommonPaymentElementsToResponse(JSONObject response, JSONObject receipt) {
+
+        if (receipt.containsKey(ConsentExtensionConstants.END_TO_END_IDENTIFICATION)) {
+            response.appendField(ConsentExtensionConstants.END_TO_END_IDENTIFICATION,
+                    receipt.get(ConsentExtensionConstants.END_TO_END_IDENTIFICATION));
+        }
+        response.appendField(ConsentExtensionConstants.DEBTOR_ACCOUNT,
+                receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+        response.appendField(ConsentExtensionConstants.INSTRUCTED_AMOUNT,
+                receipt.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT));
+        response.appendField(ConsentExtensionConstants.CREDITOR_ACCOUNT,
+                receipt.get(ConsentExtensionConstants.CREDITOR_ACCOUNT));
+        if (receipt.containsKey(ConsentExtensionConstants.CREDITOR_AGENT)) {
+            response.appendField(ConsentExtensionConstants.CREDITOR_AGENT,
+                    receipt.get(ConsentExtensionConstants.CREDITOR_AGENT));
+        }
+        response.appendField(ConsentExtensionConstants.CREDITOR_NAME,
+                receipt.get(ConsentExtensionConstants.CREDITOR_NAME));
+        if (receipt.containsKey(ConsentExtensionConstants.CREDITOR_ADDRESS)) {
+            response.appendField(ConsentExtensionConstants.CREDITOR_ADDRESS,
+                    receipt.get(ConsentExtensionConstants.CREDITOR_ADDRESS));
+        }
+        if (receipt.containsKey(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED)) {
+            response.appendField(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED, receipt.get(
+                    ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED));
+        }
+        if (receipt.containsKey(ConsentExtensionConstants.TRANSACTION_STATUS)) {
+            response.appendField(ConsentExtensionConstants.TRANSACTION_STATUS,
+                    receipt.get(ConsentExtensionConstants.TRANSACTION_STATUS));
+        }
+    }
+
+    /**
+     * Constructs the payment cancellation response.
+     *
+     * @param updatedConsent the updated consent resource
+     * @param requestPath the request path string
+     * @param isSCARequired param to determine whether the SCA is required as configured
+     * @return the payment cancellation response
+     */
+    public static JSONObject getPaymentCancellationResponse(ConsentResource updatedConsent, String requestPath,
+                                                            boolean isSCARequired) {
+
+        JSONObject paymentCancellationResponse = new JSONObject();
+
+        Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(true,
+                isSCARequired);
+        ArrayList<ScaMethod> scaMethods =
+                (ArrayList<ScaMethod>) scaElements.get(CommonConstants.SCA_METHODS_KEY);
+
+        paymentCancellationResponse.appendField(ConsentExtensionConstants.TRANSACTION_STATUS,
+                updatedConsent.getCurrentStatus());
+
+        JSONArray chosenSCAMethods = new JSONArray();
+        for (ScaMethod scaMethod : scaMethods) {
+            JSONObject scaMethodJson = new JSONObject();
+            scaMethodJson.appendField(CommonConstants.SCA_TYPE, scaMethod.getAuthenticationType());
+            scaMethodJson.appendField(CommonConstants.SCA_VERSION, scaMethod.getVersion());
+            scaMethodJson.appendField(CommonConstants.SCA_ID, scaMethod.getAuthenticationMethodId());
+            scaMethodJson.appendField(CommonConstants.SCA_NAME, scaMethod.getName());
+            scaMethodJson.appendField(CommonConstants.SCA_DESCRIPTION, scaMethod.getDescription());
+
+            chosenSCAMethods.add(scaMethodJson);
+        }
+
+        if (scaMethods.size() > 1) {
+            paymentCancellationResponse.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
+        } else {
+            paymentCancellationResponse.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+        }
+
+        JSONObject links = LinksConstructor.getCancellationLinks(requestPath, updatedConsent.getConsentID(),
+                ConsentTypeEnum.PAYMENTS.toString());
+        paymentCancellationResponse.appendField(ConsentExtensionConstants.LINKS, links);
+
+        return paymentCancellationResponse;
+    }
+
+    /**
+     * Filters the authorisation resources by the provided authorisation status.
+     *
+     * @param retrievedAuthResources the retrieved authorization resources
+     * @param authType the authorization status that should filter
+     * @return the list of filtered authorization resources
+     */
+    public static ArrayList<AuthorizationResource> filterAuthorizations(ArrayList<AuthorizationResource>
+                                                                                            retrievedAuthResources,
+                                                                        AuthTypeEnum authType) {
+        ArrayList<AuthorizationResource> cancellationAuthResources = new ArrayList<>();
+        for (AuthorizationResource authResource : retrievedAuthResources) {
+            if (StringUtils.equals(authType.toString(), authResource.getAuthorizationType())) {
+                cancellationAuthResources.add(authResource);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(cancellationAuthResources)) {
+            return cancellationAuthResources;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Returns the payment product from the request path.
      *
-     * @param requestPath
-     * @return
+     * @param requestPath the request path string
+     * @return the payment product of the request
      */
     public static String getPaymentProduct(String requestPath) {
 

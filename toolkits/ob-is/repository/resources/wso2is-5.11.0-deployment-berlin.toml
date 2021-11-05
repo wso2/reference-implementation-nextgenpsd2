@@ -447,6 +447,7 @@ valid_until_date_cap.value = 0
 multiple_recurring_consent.enable = false
 
 [open_banking_berlin.consent.payments]
+auth_cancellation.enable = false
 transaction_fee.enable = false
 transaction_fee.amount = 0
 transaction_fee.currency = "EUR"

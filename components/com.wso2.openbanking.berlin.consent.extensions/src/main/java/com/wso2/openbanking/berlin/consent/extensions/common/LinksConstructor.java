@@ -111,6 +111,7 @@ public class LinksConstructor {
                                                         List<ScaMethod> currentScaMethods,
                                                         String requestPath, String authorisationId,
                                                         String consentType) {
+
         JSONObject links = new JSONObject();
 
         String apiVersion = CommonConfigParser.getInstance().getApiVersion(consentType);
@@ -137,7 +138,37 @@ public class LinksConstructor {
         return links;
     }
 
-    /**
+     /**
+     * Method to construct payment cancellation explicit authorisation response links.
+     *
+     * @param requestPath
+     * @param paymentId
+     * @param consentType
+     * @return
+     */
+    public static JSONObject getCancellationLinks(String requestPath, String paymentId, String consentType) {
+
+        JSONObject links = new JSONObject();
+
+        String apiVersion = CommonConfigParser.getInstance().getApiVersion(consentType);
+
+        String selfLink = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
+                apiVersion, requestPath, paymentId);
+        links.appendField(ConsentExtensionConstants.SELF, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF, selfLink));
+
+        String statusLink = String.format(ConsentExtensionConstants.STATUS_LINK_TEMPLATE,
+                apiVersion, requestPath, paymentId);
+        links.appendField(ConsentExtensionConstants.STATUS, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF, statusLink));
+
+        String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_AUTH_LINK_TEMPLATE,
+                apiVersion, requestPath, paymentId);
+        links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, startAuthorisationsLink);
+        return links;
+    }
+
+     /**
      * Constructs the links object for account consent get responses.
      *
      * @return constructed links for account consent get responses
