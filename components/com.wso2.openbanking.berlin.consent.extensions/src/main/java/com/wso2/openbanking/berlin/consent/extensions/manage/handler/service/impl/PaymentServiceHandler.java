@@ -57,26 +57,27 @@ public class PaymentServiceHandler implements ServiceHandler {
             requestHandler.handle(consentManageData);
         } else {
             log.error(ErrorConstants.PATH_INVALID);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
         }
     }
 
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
 
-        ConsentResource consent;
+        ConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
-        String consentId = ConsentExtensionUtil
+        String paymentId = ConsentExtensionUtil
                 .getValidatedConsentIdFromRequestPath(consentManageData.getRequest().getMethod(), requestPath,
                         consentType);
 
         if (log.isDebugEnabled()) {
-            log.debug("Get " + consentType + " consent using core service");
+            log.debug(String.format("Get %s consent using core service", consentType));
         }
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
-            consent = coreService.getConsent(consentId, false);
+            consentResource = coreService.getConsent(paymentId, false);
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
@@ -85,36 +86,30 @@ public class PaymentServiceHandler implements ServiceHandler {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Validating detailed consent of Id " + consentId + " for correct type");
+            log.debug(String.format("Validating payment of Id %s for valid client", paymentId));
         }
-        if (!StringUtils.equals(consentType, consent.getConsentType())) {
-            log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
-        }
+        ConsentExtensionUtil.validateClient(consentManageData.getClientId(), consentResource.getClientID());
 
-        if (!StringUtils.equals(consentManageData.getClientId(), consent.getClientID())) {
-            log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating payment of Id %s for correct type", paymentId));
         }
+        ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
         try {
             if (StringUtils.contains(requestPath, ConsentExtensionConstants.STATUS)) {
-                consentManageData.setResponsePayload(ConsentExtensionUtil.getConsentStatusResponse(consent,
+                consentManageData.setResponsePayload(ConsentExtensionUtil.getConsentStatusResponse(consentResource,
                         consentType));
             } else {
                 if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), consentType)) {
                     consentManageData.setResponsePayload(PaymentConsentUtil
-                            .getConstructedPaymentsGetResponse(consent));
+                            .getConstructedPaymentsGetResponse(consentResource));
                 } else if (StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType)) {
                     consentManageData
-                            .setResponsePayload(PaymentConsentUtil.getConstructedPeriodicPaymentGetResponse(consent));
+                            .setResponsePayload(PaymentConsentUtil
+                                    .getConstructedPeriodicPaymentGetResponse(consentResource));
                 } else if (StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)) {
-                    consentManageData
-                            .setResponsePayload(PaymentConsentUtil.getConstructedBulkPaymentGetResponse(consent));
+                    consentManageData.setResponsePayload(PaymentConsentUtil
+                            .getConstructedBulkPaymentGetResponse(consentResource));
                 }
             }
         } catch (ParseException e) {
@@ -128,13 +123,12 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
-        consentManageData.setClientId("62cb7e6c-ecba-4e31-9612-2885eec9d9ed");
         ConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         Map<String, String> headersMap = consentManageData.getHeaders();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
         String paymentId = ConsentExtensionUtil.getValidatedConsentIdFromRequestPath(consentManageData.getRequest()
-                        .getMethod(), requestPath, consentType);
+                .getMethod(), requestPath, consentType);
 
         log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
@@ -150,10 +144,17 @@ public class PaymentServiceHandler implements ServiceHandler {
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating payment of Id %s for valid client", paymentId));
+        }
         ConsentExtensionUtil.validateClient(consentManageData.getClientId(), consentResource.getClientID());
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating payment of Id %s for correct type", paymentId));
+        }
         ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
-        log.debug("Send an error is the consent is already deleted");
+        log.debug("Send an error if the consent is already deleted");
         if (StringUtils.equals(TransactionStatusEnum.CANC.name(), consentResource.getCurrentStatus())
                 || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), consentResource.getCurrentStatus())) {
             log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
@@ -177,7 +178,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                     updatedConsentResource = coreService.updateConsentStatus(paymentId,
                             TransactionStatusEnum.ACTC.name());
                 } catch (ConsentManagementException e) {
-                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR);
+                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             ErrorConstants.CONSENT_UPDATE_ERROR);
                 }

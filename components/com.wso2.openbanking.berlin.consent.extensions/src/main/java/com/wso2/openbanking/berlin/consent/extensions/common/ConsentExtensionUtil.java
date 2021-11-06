@@ -39,7 +39,8 @@ public class ConsentExtensionUtil {
     private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
 
     /**
-     * Gets the consent service using the request path.
+     * Returns the part of the path that differentiates the request path into
+     * either Accounts, Payments or Funds confirmations.
      *
      * @param requestPath the request path string
      * @return the part to recognize the consent service related to the request
@@ -56,6 +57,10 @@ public class ConsentExtensionUtil {
                 || StringUtils.contains(requestPath,
                 ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END)) {
 
+            if (StringUtils.equals(ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH, requestPathArray[0])) {
+                return requestPathArray[2];
+            }
+
             return requestPathArray[3];
         }
 
@@ -71,37 +76,26 @@ public class ConsentExtensionUtil {
     }
 
     /**
-     * Extracts consent type from request path.
-     *
-     * @param requestPath request path string
-     * @return the relative consent type enum
-     */
-    public static String getConsentTypeFromRequestPath(String requestPath) {
-
-        switch (getServiceDifferentiatingRequestPath(requestPath)) {
-            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
-                return ConsentTypeEnum.PAYMENTS.toString();
-            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
-                return ConsentTypeEnum.BULK_PAYMENTS.toString();
-            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                return ConsentTypeEnum.PERIODIC_PAYMENTS.toString();
-            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
-                return ConsentTypeEnum.FUNDS_CONFIRMATION.toString();
-            default:
-                return ConsentTypeEnum.ACCOUNTS.toString();
-        }
-    }
-
-    /**
      * Used to get the consent type an authorisation request.
      *
      * @param requestPath authorisation request path string
      * @return returns the relative consent type for the request
      */
-    public static String getAuthorisationConsentType(String requestPath) {
+    public static String getConsentTypeFromRequestPath(String requestPath) {
 
         String[] pathElements = requestPath.split("/");
-        String authorisationConsentType = pathElements[0];
+        String authorisationConsentType;
+
+        if (pathElements.length > 1) {
+            if (ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH.equals(pathElements[1])) {
+                authorisationConsentType = pathElements[1];
+            } else {
+                authorisationConsentType = pathElements[0];
+            }
+        } else {
+            authorisationConsentType = pathElements[0];
+        }
+
         switch (authorisationConsentType) {
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
                 return ConsentTypeEnum.PAYMENTS.toString();
@@ -136,11 +130,31 @@ public class ConsentExtensionUtil {
     }
 
     /**
+     * Constructs complex consent attribute keys with ":" separator.
+     *
+     * @param keys array of keys
+     * @return constructed consent attribute key
+     */
+    public static String getConsentAttributeKey(String... keys) {
+        StringBuilder consentAttributeKey = new StringBuilder();
+
+        for (int i = 0; i < keys.length; i++) {
+            if (i == keys.length - 1) {
+                consentAttributeKey.append(keys[i]);
+            } else {
+                consentAttributeKey.append(keys[i]).append(ConsentExtensionConstants.CONSENT_ATTR_KEY_DELIMITER);
+            }
+        }
+
+        return consentAttributeKey.toString();
+    }
+
+    /**
      * Returns the consent ID from the request path after validating it.
      *
      * @param requestMethod the http method of the request
-     * @param requestPath the request path string
-     * @param consentType the consent type
+     * @param requestPath   the request path string
+     * @param consentType   the consent type
      * @return the consent ID from the request path after validating it
      */
     public static String getValidatedConsentIdFromRequestPath(String requestMethod, String requestPath,
@@ -178,7 +192,7 @@ public class ConsentExtensionUtil {
      * Constructs the consent status GET response.
      *
      * @param consentResource the current consent resource
-     * @param consentType the consent type
+     * @param consentType     the consent type
      * @return the consent status response
      */
     public static JSONObject getConsentStatusResponse(ConsentResource consentResource, String consentType) {
@@ -219,7 +233,7 @@ public class ConsentExtensionUtil {
      * Constructs the consent authorisation status GET request.
      *
      * @param authResources current auth resources of the consent
-     * @param authId the authorisation Id which is provided with the request
+     * @param authId        the authorisation Id which is provided with the request
      * @return
      */
     public static JSONObject getAuthorisationGetStatusResponse(ArrayList<AuthorizationResource> authResources,
@@ -239,10 +253,10 @@ public class ConsentExtensionUtil {
     }
 
     /**
-     * Validates request the consent client ID with the registered client ID.
+     * Validates the consent client ID with the registered client ID.
      *
      * @param registeredClientId the registered client id
-     * @param consentClientId the client id of the current consent
+     * @param consentClientId    the client id of the current consent
      */
     public static void validateClient(String registeredClientId, String consentClientId) {
 
@@ -256,7 +270,7 @@ public class ConsentExtensionUtil {
     /**
      * Validates the request consent type with the type of the current consent.
      *
-     * @param requestConsentType the consent type which the request belongs to
+     * @param requestConsentType     the consent type which the request belongs to
      * @param typeOfRetrievedConsent the consent type of the current consent
      */
     public static void validateConsentType(String requestConsentType, String typeOfRetrievedConsent) {

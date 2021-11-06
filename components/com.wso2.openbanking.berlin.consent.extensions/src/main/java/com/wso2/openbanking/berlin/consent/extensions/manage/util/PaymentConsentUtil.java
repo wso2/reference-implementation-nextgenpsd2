@@ -54,7 +54,7 @@ public class PaymentConsentUtil {
     /**
      * Method to validate debtor account element of the payload.
      *
-     * @param payload the request payload
+     * @param payload                the request payload
      * @param configuredAccReference the configured account reference type
      */
     public static void validateDebtorAccount(JSONObject payload, String configuredAccReference) {
@@ -150,7 +150,7 @@ public class PaymentConsentUtil {
         try {
             parsedDate = LocalDate.parse(dateToParse, DateTimeFormatter.ISO_DATE);
         } catch (DateTimeParseException e) {
-            log.error(errorMessage);
+            log.error(errorMessage, e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, errorCode, errorMessage));
         }
@@ -212,13 +212,15 @@ public class PaymentConsentUtil {
     /**
      * Method to construct payment initiation response.
      *
-     * @param consentManageData consent manage data
-     * @param createdConsent the created consent
-     * @param apiVersion the configured API version to construct the self links
-     * @param isSCARequired whether SCA is required or not as configured
+     * @param consentManageData       consent manage data
+     * @param createdConsent          the created consent
+     * @param isExplicitAuth          whether explicit authorisation or not
+     * @param isRedirectPreferred     whether redirect approach is preferred or not
+     * @param apiVersion              the configured API version to construct the self links
+     * @param isSCARequired           whether SCA is required or not as configured
      * @param isTransactionFeeEnabled whether a transaction fee is charged or not as configured
-     * @param transactionFee configured transaction fee
-     * @param transactionFeeCurrency configured transaction fee currency
+     * @param transactionFee          configured transaction fee
+     * @param transactionFeeCurrency  configured transaction fee currency
      * @return the constructed initiation response
      */
     public static JSONObject constructPaymentInitiationResponse(ConsentManageData consentManageData,
@@ -233,6 +235,8 @@ public class PaymentConsentUtil {
                 apiVersion, requestPath, createdConsent.getConsentID());
         consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER,
                 locationString);
+        consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(isRedirectPreferred,
                 isSCARequired);
@@ -398,7 +402,7 @@ public class PaymentConsentUtil {
      * Sets debtor account element to response.
      *
      * @param response response object of the request
-     * @param receipt the receipt of the consent
+     * @param receipt  the receipt of the consent
      */
     private static void setDebtorAccountToResponse(JSONObject response, JSONObject receipt) {
 
@@ -410,7 +414,7 @@ public class PaymentConsentUtil {
      * Sets common payment elements to response.
      *
      * @param response response object of the request
-     * @param receipt the receipt of the consent
+     * @param receipt  the receipt of the consent
      */
     private static void setCommonPaymentElementsToResponse(JSONObject response, JSONObject receipt) {
 
@@ -448,8 +452,8 @@ public class PaymentConsentUtil {
      * Constructs the payment cancellation response.
      *
      * @param updatedConsent the updated consent resource
-     * @param requestPath the request path string
-     * @param isSCARequired param to determine whether the SCA is required as configured
+     * @param requestPath    the request path string
+     * @param isSCARequired  param to determine whether the SCA is required as configured
      * @return the payment cancellation response
      */
     public static JSONObject getPaymentCancellationResponse(ConsentResource updatedConsent, String requestPath,
@@ -494,11 +498,11 @@ public class PaymentConsentUtil {
      * Filters the authorisation resources by the provided authorisation status.
      *
      * @param retrievedAuthResources the retrieved authorization resources
-     * @param authType the authorization status that should filter
+     * @param authType               the authorization status that should filter
      * @return the list of filtered authorization resources
      */
     public static ArrayList<AuthorizationResource> filterAuthorizations(ArrayList<AuthorizationResource>
-                                                                                            retrievedAuthResources,
+                                                                                retrievedAuthResources,
                                                                         AuthTypeEnum authType) {
         ArrayList<AuthorizationResource> cancellationAuthResources = new ArrayList<>();
         for (AuthorizationResource authResource : retrievedAuthResources) {

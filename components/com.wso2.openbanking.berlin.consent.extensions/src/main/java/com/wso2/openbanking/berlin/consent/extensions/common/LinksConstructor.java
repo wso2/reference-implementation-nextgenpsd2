@@ -100,11 +100,11 @@ public class LinksConstructor {
     /**
      * Constructs the links object for start authorisation responses.
      *
-     * @param currentScaApproach                  current SCA approach
-     * @param currentScaMethods                   current SCA methods
-     * @param requestPath                         request path of initiation
-     * @param authorisationId                     authorisation resource consentId
-     * @param consentType                         type of consent
+     * @param currentScaApproach current SCA approach
+     * @param currentScaMethods  current SCA methods
+     * @param requestPath        request path of initiation
+     * @param authorisationId    authorisation resource consentId
+     * @param consentType        type of consent
      * @return constructed links object for start authorisation response
      */
     public static JSONObject getStartAuthorisationLinks(ScaApproach currentScaApproach,
@@ -138,13 +138,13 @@ public class LinksConstructor {
         return links;
     }
 
-     /**
+    /**
      * Method to construct payment cancellation explicit authorisation response links.
      *
-     * @param requestPath
-     * @param paymentId
-     * @param consentType
-     * @return
+     * @param requestPath request path of initiation
+     * @param paymentId   payment id
+     * @param consentType type of consent
+     * @return constructed links object for payment cancellation explicit authorisation response
      */
     public static JSONObject getCancellationLinks(String requestPath, String paymentId, String consentType) {
 
@@ -168,19 +168,20 @@ public class LinksConstructor {
         return links;
     }
 
-     /**
+    /**
      * Constructs the links object for account consent get responses.
      *
      * @return constructed links for account consent get responses
      */
-    public static JSONObject getAccountConsentResourceLinks() {
+    public static JSONObject getAccountConsentGetLinks() {
 
         JSONObject links = new JSONObject();
 
         String apiVersion = CommonConfigParser.getInstance().getApiVersion(ConsentTypeEnum.ACCOUNTS.toString());
 
-        links.appendField(ConsentExtensionConstants.ACCOUNT, new JSONObject().appendField(ConsentExtensionConstants.HREF,
-                String.format(ConsentExtensionConstants.ACCOUNTS_LINK_TEMPLATE, apiVersion)));
+        links.appendField(ConsentExtensionConstants.ACCOUNT, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF,
+                        String.format(ConsentExtensionConstants.ACCOUNTS_LINK_TEMPLATE, apiVersion)));
 
         return links;
     }

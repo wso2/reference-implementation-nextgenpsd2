@@ -24,8 +24,10 @@ public class ConsentExtensionConstants {
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
+    public static final String LAST_ACTION_DATE = "lastActionDate";
     public static final String CONSENT_STATUS = "consentStatus";
     public static final String CONSENT_ID = "consentId";
+    public static final String AUTH_ID = "authorisationId";
     public static final String CHOSEN_SCA_METHOD = "chosenScaMethod";
     public static final String SCA_METHODS = "scaMethods";
     public static final String LINKS = "_links";
@@ -34,8 +36,13 @@ public class ConsentExtensionConstants {
     public static final String SELF_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String STATUS_LINK_TEMPLATE = "/%s/%s/%s/status";
     public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";
+    public static final String START_AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String START_AUTH_LINK_TEMPLATE = "/%s/%s/%s/authorisations";
     public static final String AUTHORISATION_IDS = "authorisationIds";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String UTC = "UTC";
+    public static final String IMPLICIT = "implicit";
+    public static final String EXPLICIT = "explicit";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -44,10 +51,6 @@ public class ConsentExtensionConstants {
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
             "]{12}";
-
-    // Auth types
-    public static final String AUTHORISATION = "AUTHORISATION";
-    public static final String CANCELLATION = "CANCELLATION";
 
     // Constants that are used by accounts service
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
@@ -68,6 +71,8 @@ public class ConsentExtensionConstants {
     public static final String ADDITIONAL_INFORMATION = "additionalInformation";
     public static final String ALL_ACCOUNTS = "allAccounts";
     public static final String ALL_ACCOUNTS_WITH_OWNER_NAME = "allAccountsWithOwnerName";
+    public static final String ACCOUNT = "account";
+    public static final String ACCOUNTS_LINK_TEMPLATE = "/%s/accounts";
 
     // Constants that are used by payments service
     public static final String PAYMENTS_SERVICE_PATH = "payments";

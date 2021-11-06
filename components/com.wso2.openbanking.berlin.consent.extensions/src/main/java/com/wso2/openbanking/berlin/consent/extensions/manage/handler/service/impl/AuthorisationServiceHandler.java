@@ -25,6 +25,8 @@ import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -39,17 +41,28 @@ import java.util.ArrayList;
 public class AuthorisationServiceHandler implements ServiceHandler {
 
     private static final Log log = LogFactory.getLog(AuthorisationServiceHandler.class);
+    private RequestHandler requestHandler;
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
+        requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
+
+        if (requestHandler != null) {
+            requestHandler.handle(consentManageData);
+        } else {
+            log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
+        }
     }
 
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
 
+        DetailedConsentResource detailedConsentResource;
         String requestPath = consentManageData.getRequestPath();
-        String consentType = ConsentExtensionUtil.getAuthorisationConsentType(requestPath);
+        String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
         String consentId = ConsentExtensionUtil
                 .getValidatedConsentIdFromRequestPath(consentManageData.getRequest().getMethod(), requestPath,
                         consentType);
@@ -60,7 +73,6 @@ public class AuthorisationServiceHandler implements ServiceHandler {
         if (log.isDebugEnabled()) {
             log.debug("Get " + consentType + " detailed consent");
         }
-        DetailedConsentResource detailedConsentResource;
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
             detailedConsentResource = coreService.getDetailedConsent(consentId);
@@ -71,15 +83,18 @@ public class AuthorisationServiceHandler implements ServiceHandler {
                     ErrorConstants.CONSENT_NOT_FOUND_ERROR));
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating consent of Id %s for valid client", consentId));
+        }
         ConsentExtensionUtil.validateClient(consentManageData.getClientId(), detailedConsentResource.getClientID());
 
         if (log.isDebugEnabled()) {
-            log.debug("Validating consent of Id " + consentId + " for correct type");
+            log.debug(String.format("Validating consent of Id %s for correct type", consentId));
         }
         ConsentExtensionUtil.validateConsentType(consentType, detailedConsentResource.getConsentType());
 
         if (log.isDebugEnabled()) {
-            log.debug("Get authorization resources belong to consent of Id: " + consentId);
+            log.debug(String.format("Get authorization resources belong to consent of Id: %s", consentId));
         }
         ArrayList<AuthorizationResource> authorizationResources = detailedConsentResource.getAuthorizationResources();
         if (authorizationResources == null || authorizationResources.size() == 0) {
@@ -108,7 +123,10 @@ public class AuthorisationServiceHandler implements ServiceHandler {
             // If an auth ID present in request
             String[] pathElements = requestPath.split("/");
             String providedAuthId = pathElements[pathElements.length - 1];
-            log.debug("The provided auth ID is " + providedAuthId);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("The provided auth ID is %s", providedAuthId));
+            }
             consentManageData.setResponsePayload(ConsentExtensionUtil
                     .getAuthorisationGetStatusResponse(authorizationResources, providedAuthId));
         } else {
@@ -120,7 +138,8 @@ public class AuthorisationServiceHandler implements ServiceHandler {
 
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
-
+        log.error(ErrorConstants.DELETE_NOT_SUPPORTED);
+        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorConstants.DELETE_NOT_SUPPORTED);
     }
 
     @Override

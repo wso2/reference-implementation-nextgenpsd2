@@ -17,7 +17,7 @@ package com.wso2.openbanking.berlin.common.constants;
  */
 public class ErrorConstants {
 
-    public static final String CONFIGURATION_BUILD_ERROR =  "Error occurred while building the configurations using" +
+    public static final String CONFIGURATION_BUILD_ERROR = "Error occurred while building the configurations using" +
             " open-banking.xml";
     public static final String CONFIG_INPUT_STREAM_ERROR = "Error in closing the input stream for open-banking-berlin" +
             ".xml";
@@ -26,6 +26,8 @@ public class ErrorConstants {
     // Error messages
     public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
     public static final String PATCH_NOT_SUPPORTED = "The PATCH method is not supported";
+    public static final String DELETE_NOT_SUPPORTED = "The DELETE method is not supported";
+    public static final String PUT_NOT_SUPPORTED = "The PUT method is not supported";
     public static final String PATH_INVALID = "Invalid request path";
     public static final String PAYLOAD_FORMAT_ERROR = "Incorrect JSON format in the Request Payload";
     public static final String PAYLOAD_NOT_PRESENT_ERROR = "Request payload is not present";
@@ -38,6 +40,10 @@ public class ErrorConstants {
             "supported for payment cancellation";
     public static final String NO_CONSENT_FOR_CLIENT_ERROR = "No valid consent found for given client id";
     public static final String AUTHORISATIONS_NOT_FOUND = "No authorisations found for provided consent id";
+    public static final String START_AUTHORISATION_RESOURCE_CREATION_ERROR = "Error occurred while creating " +
+            "authorisation resource";
+    public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The consent is implicit therefore cannot " +
+            "create authorisation resource";
 
     // Payments related error messages
     public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
@@ -73,6 +79,19 @@ public class ErrorConstants {
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";
     public static final String NO_PAYMENTS_IN_BODY = "No payments found in payments request body";
     public static final String EMPTY_PAYMENTS_ELEMENT = "Empty payment element found in request body";
+
+    // Accounts related error messages
+    public static final String MANDATORY_ELEMENTS_MISSING = "Invalid request payload, mandatory elements are missing";
+    public static final String ACCESS_OBJECT_MANDATORY_ELEMENTS_MISSING = "\"access\" object has missing " +
+            "required attributes";
+    public static final String INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE = "The \"additionalInformation\" attribute " +
+            "can only be used together with at least one of the major \"access\" attributes";
+    public static final String INVALID_FREQ_PER_DAY = "Frequency per day have to be greater than zero";
+    public static final String INVALID_FREQ_PER_DAY_COUNT = "Set frequency per day attribute as 1 for one time " +
+            "account access";
+    public static final String COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED = "Sessions: Combination of AIS and PIS " +
+            "Services are not supported";
+    public static final String INVALID_PERMISSION = "Requested permissions in the Payload are invalid";
 
     // Error object related constants
     public static final String PATH = "path";

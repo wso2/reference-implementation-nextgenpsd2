@@ -69,7 +69,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
             log.debug("Validating whether periodic payments end date if a future date");
             LocalDate endDate =
                     PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.END_DATE),
-                    TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.END_DATE_NOT_VALID);
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.END_DATE_NOT_VALID);
             LocalDate startDate = LocalDate.parse(payload.get(ConsentExtensionConstants.START_DATE).toString(),
                     DateTimeFormatter.ISO_DATE);
             PaymentConsentUtil.validateFutureDate(endDate);

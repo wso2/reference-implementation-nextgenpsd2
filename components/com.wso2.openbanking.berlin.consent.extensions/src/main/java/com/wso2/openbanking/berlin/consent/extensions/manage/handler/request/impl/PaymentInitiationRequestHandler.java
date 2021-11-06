@@ -22,10 +22,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
-import com.wso2.openbanking.berlin.common.models.ScaApproach;
-import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -34,6 +31,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
@@ -62,7 +60,6 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
         Map<String, String> headersMap = consentManageData.getHeaders();
         JSONObject requestPayload = (JSONObject) consentManageData.getPayload();
-        String clientId = consentManageData.getClientId();
         boolean isSCARequired = configParser.isScaRequired();
 
         validateRequestHeaders(headersMap);
@@ -72,21 +69,25 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
 
-        log.debug("The consent initiation is an implicit initiation");
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("The consent initiation is an %s initiation",
+                    isExplicitAuth ? ConsentExtensionConstants.EXPLICIT : ConsentExtensionConstants.IMPLICIT));
+        }
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
             String paymentConsentType =
                     ConsentExtensionUtil.getConsentTypeFromRequestPath(consentManageData.getRequestPath());
 
-            ConsentResource consentResource = new ConsentResource(UUID.randomUUID().toString(), requestPayload.toJSONString(),
-                    paymentConsentType, TransactionStatusEnum.RCVD.name());
+            ConsentResource consentResource = new ConsentResource(UUID.randomUUID().toString(),
+                    requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.name());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
                     .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
+            String authStatus = isExplicitAuth ? null : ScaStatusEnum.RECEIVED.toString();
             try {
                 createdConsent = consentCoreService.createAuthorizableConsent(consentResource, tenantEnsuredPSUId,
-                        ScaStatusEnum.RECEIVED.toString(), AuthTypeEnum.AUTHORISATION.toString(),
+                        authStatus, AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_INITIATION_ERROR, e);
@@ -99,10 +100,11 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                         isSCARequired);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Storing consent attributes against consent: " + consentResource.getConsentID());
+                    log.debug(String.format("Storing consent attributes against consent: %s",
+                            consentResource.getConsentID()));
                 }
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
-                        getConsentAttributesToPersist(consentManageData, scaInfoMap, isExplicitAuth));
+                        getConsentAttributesToPersist(consentManageData, createdConsent, scaInfoMap, isExplicitAuth));
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -134,7 +136,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
          * 1). If the header is true, the REDIRECT SCA Approach must be configured in open-banking.xml as the
          * supported SCA approach.
          *
-         * 2). If the header is false, the DECOUPLED SCA Approach must be configured in open-banking.xml (Currencly
+         * 2). If the header is false, the DECOUPLED SCA Approach must be configured in open-banking.xml (Currently
          * not supported by the toolkit).
          *
          * 3) If the header is not present, the TPP/PSU should decide what is the SCA Approach based on the
@@ -144,10 +146,6 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
         HeaderValidator.validateTppRedirectPreferredHeader(headersMap);
 
         HeaderValidator.validatePsuIpAddress(headersMap);
-
-        if (HeaderValidator.isTppExplicitAuthorisationPreferred(headersMap)) {
-            HeaderValidator.validatePsuId(headersMap);
-        }
     }
 
     /**
@@ -166,12 +164,13 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      * Sets necessary attributes to be persisted as consent attributes. This method can be overridden to persist
      * needed consent attributes by different Berlin based specifications.
      *
-     * @param consentManageData
-     * @param scaInfoMap
-     * @param isExplicitAuth
-     * @return
+     * @param consentManageData consent manage data
+     * @param scaInfoMap        SCA details
+     * @param isExplicitAuth    if explicit is preferred or not
+     * @return map of consent attributes to store
      */
     protected Map<String, String> getConsentAttributesToPersist(ConsentManageData consentManageData,
+                                                                DetailedConsentResource createdConsent,
                                                                 Map<String, Object> scaInfoMap,
                                                                 boolean isExplicitAuth) {
 
@@ -189,20 +188,8 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                 headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         if (!isExplicitAuth) {
-            ScaApproach scaApproach = (ScaApproach) scaInfoMap.get(CommonConstants.SCA_APPROACH_KEY);
-            consentAttributesMap.put(ConsentExtensionConstants.ASPSP_SCA_APPROACH,
-                    scaApproach.getApproach().toString());
-
-            ScaMethod scaMethod = CommonUtil.getScaMethod(scaApproach.getApproach());
-            if (scaMethod != null) {
-                consentAttributesMap.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD,
-                        scaMethod.getAuthenticationMethodId());
-            }
-        }
-
-        if (headersMap.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
-            consentAttributesMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER,
-                    headersMap.get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER));
+            CommonConsentUtil.storeInitiationScaInfoToConsentAttributes(consentAttributesMap, createdConsent,
+                    scaInfoMap);
         }
 
         if (headersMap.containsKey(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {

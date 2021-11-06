@@ -45,6 +45,7 @@
         <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
+            <version>3.0.0.44</version>
         </dependency>
         <dependency>
             <groupId>com.wso2</groupId>

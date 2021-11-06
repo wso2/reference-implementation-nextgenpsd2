@@ -19,7 +19,6 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.imp
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.BulkPaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PeriodicPaymentInitiationRequestHandler;
 
@@ -42,13 +41,11 @@ public class RequestHandlerFactory {
 
         String[] requestPathArray = requestPath.split("/");
 
-        if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END
-                .equals(requestPathArray[requestPathArray.length - 1])) {
-            return new PaymentExplicitCancellationAuthRequestHandler();
-        }
-
+        String lastElement = requestPathArray[requestPathArray.length - 1];
         if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END
-                .equals(requestPathArray[requestPathArray.length - 1])) {
+                .equals(lastElement)
+                || ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END
+                .equals(lastElement)) {
             return new ExplicitAuthRequestHandler();
         }
 

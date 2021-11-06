@@ -468,7 +468,7 @@ public class TestUtil {
     } catch (NoSuchAlgorithmException | JoseException e) {
       log.error("Error occurred while signing", e);
     } catch (UnrecoverableEntryException e) {
-      log.error("Error occurred while retrieving the cert key");
+      log.error("Error occurred while retrieving the cert key", e);
     } catch (TestFrameworkException e) {
       log.error("Error occurred while reading the certificate thumb print", e);
     }
@@ -533,7 +533,7 @@ public class TestUtil {
     } catch (NoSuchAlgorithmException | JoseException e) {
       log.error("Error occurred while signing", e);
     } catch (UnrecoverableEntryException e) {
-      log.error("Error occurred while retrieving the cert key");
+      log.error("Error occurred while retrieving the cert key", e);
     } catch (TestFrameworkException e) {
       log.error("Error occurred while reading the certificate thumb print", e);
     }
@@ -888,11 +888,11 @@ public class TestUtil {
       saveXMLContent(document, xmlFile);
 
     } catch (ParserConfigurationException e) {
-      log.error("Error while creating a new instance of a DocumentBuilder.");
+      log.error("Error while creating a new instance of a DocumentBuilder.", e);
     } catch (SAXException e) {
-      log.error("Error while parsing the content of the given URI as an XML document.");
+      log.error("Error while parsing the content of the given URI as an XML document.", e);
     } catch (IOException e) {
-      log.error("Failed or interrupted I/O operations.");
+      log.error("Failed or interrupted I/O operations.", e);
     }
 
   }
@@ -913,9 +913,9 @@ public class TestUtil {
       transformer.transform(domSource, streamResult);
 
     } catch (TransformerConfigurationException e) {
-      log.error("Failed to create a Transformer instance");
+      log.error("Failed to create a Transformer instance", e);
     } catch (TransformerException e) {
-      log.error("Error while transforming the XML Source to a Result.");
+      log.error("Error while transforming the XML Source to a Result.", e);
     }
   }
 }

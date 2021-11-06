@@ -10,19 +10,13 @@
  *  with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
-
-import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
+package com.wso2.openbanking.berlin.consent.extensions.util;
 
 /**
- * Handle Payments Explicit Cancellation Authorisation creation request.
+ * Test constants.
  */
-public class PaymentExplicitCancellationAuthRequestHandler implements RequestHandler {
+public class TestConstants {
 
-    @Override
-    public void handle(ConsentManageData consentManageData) throws ConsentException {
+    public static final String VALID_PAYMENT_INITIATION_PATH = "payments/sepa-credit-transfers";
 
-    }
 }

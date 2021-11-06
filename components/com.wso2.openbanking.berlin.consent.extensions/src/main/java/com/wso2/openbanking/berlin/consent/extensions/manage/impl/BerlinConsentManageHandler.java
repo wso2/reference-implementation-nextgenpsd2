@@ -37,12 +37,20 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
+
+        log.debug("Validating the X-Request-ID header");
+        HeaderValidator.validateXRequestId(consentManageData.getHeaders());
+        consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
         if (serviceHandler != null) {
             serviceHandler.handleGet(consentManageData);
         } else {
             log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
         }
 
     }
@@ -50,6 +58,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
+        log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
@@ -77,34 +86,40 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
             serviceHandler.handlePost(consentManageData);
         } else {
             log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
         }
     }
 
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
+
+        log.debug("Validating the X-Request-ID header");
+        HeaderValidator.validateXRequestId(consentManageData.getHeaders());
+        consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
         if (serviceHandler != null) {
             serviceHandler.handleDelete(consentManageData);
         } else {
             log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
         }
     }
 
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
-        serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
-
-        if (serviceHandler != null) {
-            serviceHandler.handlePut(consentManageData);
-        } else {
-            log.error(ErrorConstants.PATH_INVALID);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorConstants.PATH_INVALID);
-        }
+        log.error(ErrorConstants.PUT_NOT_SUPPORTED);
+        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorConstants.PUT_NOT_SUPPORTED);
     }
 
     @Override
     public void handlePatch(ConsentManageData consentManageData) throws ConsentException {
+        log.error(ErrorConstants.PATCH_NOT_SUPPORTED);
         throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorConstants.PATCH_NOT_SUPPORTED);
     }
+
 }
