@@ -29,6 +29,7 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
+import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -44,6 +45,23 @@ public class AccountServiceHandler implements ServiceHandler {
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
+
+        log.debug("Checking whether the payload is present");
+        if (consentManageData.getPayload() == null) {
+            log.error(ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
+        }
+
+        log.debug("Checking whether the payload is a JSON");
+        Object payload = consentManageData.getPayload();
+        if (!(payload instanceof JSONObject)) {
+            log.error(ErrorConstants.PAYLOAD_FORMAT_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+        }
 
         requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
 

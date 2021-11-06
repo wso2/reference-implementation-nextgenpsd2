@@ -117,7 +117,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
 
                 if (explicitAuthResources.size() != 0) {
                     for (AuthorizationResource authResource : explicitAuthResources) {
-                        if (StringUtils.equals(tenantEnsuredPSUId, authResource.getUserID())) {
+                        if (!StringUtils.isEmpty(authResource.getUserID())
+                                && StringUtils.equals(tenantEnsuredPSUId, authResource.getUserID())) {
                             // Handling explicit idempotency scenario
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Authorisation resource for user %s already exists",
@@ -178,14 +179,22 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 Map<String, String> newConsentAttributes = getConsentAttributesToPersist(consentManageData,
                         createdAuthorizationResource, scaInfoMap);
                 detailedConsentResource.getConsentAttributes().putAll(newConsentAttributes);
-                consentCoreService.storeConsentAttributes(consentId, detailedConsentResource.getConsentAttributes());
+
+                // Checking if consent attribute key-value pair already exists before storing
+                Map<String, String> finalAttributesToStore = ConsentExtensionUtil
+                        .getFinalAttributesToStore(detailedConsentResource.getConsentAttributes(),
+                                newConsentAttributes);
+
+                if (!finalAttributesToStore.isEmpty()) {
+                    consentCoreService.storeConsentAttributes(consentId, finalAttributesToStore);
+                }
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
 
             consentManageData.setResponsePayload(CommonConsentUtil
-                    .constructStartAuthorisationResponse(consentManageData, authorizationResource,
+                    .constructStartAuthorisationResponse(consentManageData, createdAuthorizationResource,
                             true, apiVersion, isSCARequired));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
 

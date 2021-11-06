@@ -29,6 +29,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import javax.ws.rs.HttpMethod;
 
 /**
@@ -281,5 +284,29 @@ public class ConsentExtensionUtil {
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
                     ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
         }
+    }
+
+    /**
+     * Returns only the consent attribute key-value pairs that were not previously stored.
+     *
+     * @param oldAttributes already stored consent attributes
+     * @param newAttributes new consent attributes to store
+     * @return map of filtered consent attributes
+     */
+    public static Map<String, String> getFinalAttributesToStore(Map<String, String> oldAttributes,
+                                                                Map<String, String> newAttributes) {
+
+        Map<String, String> finalAttributesToStore = new HashMap<>();
+
+        Set<Map.Entry<String, String>> oldAttributesEntrySet = oldAttributes.entrySet();
+        Set<Map.Entry<String, String>> newAttributesEntrySet = newAttributes.entrySet();
+
+        for (Map.Entry<String, String> newEntry : newAttributesEntrySet) {
+            if (!oldAttributesEntrySet.contains(newEntry)) {
+                finalAttributesToStore.put(newEntry.getKey(), newEntry.getValue());
+            }
+        }
+
+        return finalAttributesToStore;
     }
 }

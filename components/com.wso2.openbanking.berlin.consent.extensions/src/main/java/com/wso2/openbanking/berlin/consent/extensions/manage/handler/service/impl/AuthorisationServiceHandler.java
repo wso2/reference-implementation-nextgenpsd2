@@ -114,15 +114,12 @@ public class AuthorisationServiceHandler implements ServiceHandler {
 
         // At this point the request is exactly one of GET authorisations or GET cancellation authorisations
         // If the request has an authorisation ID at the end, it is a status request
-        boolean pathHasAuthId =
-                !(StringUtils.endsWith(requestPath, ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END)
-                        || StringUtils.endsWith(requestPath,
-                        ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END));
+        boolean isStatusPath = StringUtils.endsWith(requestPath, ConsentExtensionConstants.STATUS);
 
-        if (pathHasAuthId) {
+        if (isStatusPath) {
             // If an auth ID present in request
             String[] pathElements = requestPath.split("/");
-            String providedAuthId = pathElements[pathElements.length - 1];
+            String providedAuthId = pathElements[pathElements.length - 2];
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("The provided auth ID is %s", providedAuthId));
