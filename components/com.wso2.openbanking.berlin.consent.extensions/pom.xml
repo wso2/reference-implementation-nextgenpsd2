@@ -45,6 +45,7 @@
         <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
+            <!-- todo: https://github.com/wso2-enterprise/financial-open-banking/issues/6873 -->
             <version>3.0.0.44</version>
         </dependency>
         <dependency>
