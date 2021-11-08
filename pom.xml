@@ -224,42 +224,42 @@
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.keymanager</artifactId>
-                <version>${openbanking.accelerator.version}</version>
+                <version>${openbanking.accelerator.version.range}</version>
             </dependency>
 
             <!--Dependencies from Toolkit -->
@@ -645,6 +645,6 @@
         <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
 
         <!-- Open Banking Accelerator Version-->
-        <openbanking.accelerator.version>3.0.0</openbanking.accelerator.version>
+        <openbanking.accelerator.version.range>[3.0.0, 4.0.0)</openbanking.accelerator.version.range>
     </properties>
 </project>

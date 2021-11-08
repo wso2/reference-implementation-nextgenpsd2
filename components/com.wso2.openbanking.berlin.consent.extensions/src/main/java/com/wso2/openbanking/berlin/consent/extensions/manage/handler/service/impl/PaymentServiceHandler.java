@@ -209,7 +209,9 @@ public class PaymentServiceHandler implements ServiceHandler {
                 log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
                         "an explicit authorisation");
                 try {
-                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.name());
+                    // TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/6875
+                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.name(),
+                            "Deleted Payment consent");
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,

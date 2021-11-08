@@ -182,7 +182,9 @@ public class AccountServiceHandler implements ServiceHandler {
 
         log.debug("Deleting consent resource and updating status");
         try {
-            coreService.revokeConsent(consentId, ConsentStatusEnum.TERMINATED_BY_TPP.toString());
+            // TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/6875
+            coreService.revokeConsent(consentId, ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
+                    "Deleted Account consent");
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
