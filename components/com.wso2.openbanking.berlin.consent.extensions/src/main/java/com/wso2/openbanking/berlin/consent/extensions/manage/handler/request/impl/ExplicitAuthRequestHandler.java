@@ -36,7 +36,6 @@ import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -64,7 +63,6 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         ConsentCoreService consentCoreService = getConsentService();
 
         Map<String, String> headersMap = consentManageData.getHeaders();
-        JSONObject requestPayload = (JSONObject) consentManageData.getPayload();
         boolean isSCARequired = configParser.isScaRequired();
         String requestPath = consentManageData.getRequestPath();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
@@ -72,7 +70,6 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 .getMethod(), requestPath, consentType);
 
         validateRequestHeaders(headersMap);
-        validateRequestPayload(requestPayload);
 
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
         String psuIdOfRequest = consentManageData.getHeaders().get(ConsentExtensionConstants.PSU_ID_HEADER);
@@ -108,7 +105,9 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         boolean shouldCreateAuthorisationResource = false;
         AuthorizationResource authorizationResource = null;
         if (isRetrievedConsentExplicit) {
-            log.debug("The consent is explicit");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("The consent of Id %s is explicit", consentId));
+            }
 
             if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
                 log.debug("SCA approach is Redirect SCA (OAuth2)");
@@ -145,7 +144,9 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         }
 
         if (shouldCreateAuthorisationResource) {
-            log.debug("Creating new authorisation resource");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Creating new authorisation resource for consent Id %s", consentId));
+            }
 
             String authType;
             if (StringUtils.contains(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
@@ -260,16 +261,6 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
          * open-banking.xml). Therefore SCA method choosing is not yet supported by the toolkit.
          */
         HeaderValidator.validateTppRedirectPreferredHeader(headersMap);
-    }
-
-    /**
-     * Validates start authorisation payloads. This method can be overridden to validate payloads by different Berlin
-     * based specifications.
-     *
-     * @param payload request payload
-     */
-    protected void validateRequestPayload(JSONObject payload) {
-
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")

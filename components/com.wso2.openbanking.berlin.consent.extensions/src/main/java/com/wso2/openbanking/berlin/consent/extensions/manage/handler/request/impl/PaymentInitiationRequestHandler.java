@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Handle Payments initiation request.
@@ -79,7 +78,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             String paymentConsentType =
                     ConsentExtensionUtil.getConsentTypeFromRequestPath(consentManageData.getRequestPath());
 
-            ConsentResource consentResource = new ConsentResource(UUID.randomUUID().toString(),
+            ConsentResource consentResource = new ConsentResource(consentManageData.getClientId(),
                     requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.name());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
