@@ -27,6 +27,7 @@ import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -250,8 +251,8 @@ public class AccountConsentUtil {
     public static String getValidatedValidUntil(String validUntil, boolean isValidUntilDateCapEnabled,
                                                 long validUntilDays) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ConsentExtensionConstants.DATE_FORMAT);
-        LocalDate validUntilDate = LocalDate.parse(validUntil, formatter);
+        LocalDate validUntilDate = ConsentExtensionUtil.parseDateToISO(validUntil, TPPMessage.CodeEnum.FORMAT_ERROR,
+                ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDate today = LocalDate.now();
         if (validUntilDate.isBefore(today)) {
             String errorMessage = "validUntil has to be today, %s or a future date";
@@ -281,8 +282,8 @@ public class AccountConsentUtil {
      */
     public static String convertToUtcTimestamp(String date) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ConsentExtensionConstants.DATE_FORMAT);
-        LocalDate localDate = LocalDate.parse(date, formatter);
+        LocalDate localDate = ConsentExtensionUtil.parseDateToISO(date, TPPMessage.CodeEnum.FORMAT_ERROR,
+                ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDateTime localDateTime = localDate.atStartOfDay();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(ConsentExtensionConstants.UTC));
 
@@ -305,8 +306,8 @@ public class AccountConsentUtil {
 
         String expDateVal = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ConsentExtensionConstants.DATE_FORMAT);
-        LocalDate expDate = LocalDate.parse(expDateVal, formatter);
+        LocalDate expDate = ConsentExtensionUtil.parseDateToISO(expDateVal, TPPMessage.CodeEnum.FORMAT_ERROR,
+                ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDateTime updatedDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(updatedTimeVal),
                 ZoneId.of(ConsentExtensionConstants.UTC));
         LocalDate updatedDate = updatedDateTime.toLocalDate();

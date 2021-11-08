@@ -28,6 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -344,5 +347,29 @@ public class ConsentExtensionUtil {
         }
 
         return finalAttributesToStore;
+    }
+
+    /**
+     * Method to parse a provided date to ISO date. Throws an error is the provided date is invalid.
+     *
+     * @param dateToParse
+     * @param errorCode
+     * @param errorMessage
+     * @return
+     * @throws ConsentException
+     */
+    public static LocalDate parseDateToISO(String dateToParse, TPPMessage.CodeEnum errorCode, String errorMessage)
+            throws ConsentException {
+
+        LocalDate parsedDate;
+
+        try {
+            parsedDate = LocalDate.parse(dateToParse, DateTimeFormatter.ISO_DATE);
+        } catch (DateTimeParseException e) {
+            log.error(errorMessage, e);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, errorCode, errorMessage));
+        }
+        return parsedDate;
     }
 }

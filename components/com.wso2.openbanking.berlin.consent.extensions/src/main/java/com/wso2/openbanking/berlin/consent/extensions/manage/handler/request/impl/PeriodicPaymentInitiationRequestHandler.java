@@ -19,6 +19,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
                     ErrorConstants.START_DATE_MISSING));
         } else {
             log.debug("Validating start date for correct date format");
-            PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.START_DATE),
+            ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.START_DATE),
                     TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.START_DATE_INVALID);
         }
@@ -68,7 +69,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
                 ConsentExtensionConstants.END_DATE))) {
             log.debug("Validating whether periodic payments end date if a future date");
             LocalDate endDate =
-                    PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.END_DATE),
+                    ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.END_DATE),
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.END_DATE_NOT_VALID);
             LocalDate startDate = LocalDate.parse(payload.get(ConsentExtensionConstants.START_DATE).toString(),
                     DateTimeFormatter.ISO_DATE);

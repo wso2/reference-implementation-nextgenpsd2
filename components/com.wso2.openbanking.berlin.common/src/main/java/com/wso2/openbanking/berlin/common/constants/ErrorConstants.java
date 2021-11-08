@@ -92,6 +92,7 @@ public class ErrorConstants {
     public static final String COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED = "Sessions: Combination of AIS and PIS " +
             "Services are not supported";
     public static final String INVALID_PERMISSION = "Requested permissions in the Payload are invalid";
+    public static final String VALID_UNTIL_DATE_INVALID = "Valid until date is invalid";
 
     // Error object related constants
     public static final String PATH = "path";
