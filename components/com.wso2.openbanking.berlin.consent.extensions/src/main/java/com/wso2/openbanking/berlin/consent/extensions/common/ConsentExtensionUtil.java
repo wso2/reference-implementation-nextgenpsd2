@@ -59,21 +59,57 @@ public class ConsentExtensionUtil {
         if (StringUtils.contains(requestPath, ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END)
                 || StringUtils.contains(requestPath,
                 ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END)) {
-
-            if (StringUtils.equals(ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH, requestPathArray[0])) {
+            /*
+            Example request paths applicable here:
+            1) consents/{consentId}/authorisations
+            2) {payment-service}/{payment-product}/{paymentId}/cancellation-authorisations
+            3) {payment-service}/{payment-product}/{paymentId}/authorisations
+            4) consents/confirmation-of-funds/{consentId}/authorisations
+             */
+            if (StringUtils.equals(ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH, requestPathArray[0])
+                    && !StringUtils.equals(ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH,
+                    requestPathArray[1])) {
+                /*
+                Example request paths applicable here:
+                1) consents/{consentId}/authorisations
+                 */
                 return requestPathArray[2];
             }
-
+            /*
+            Example request paths applicable here:
+            1) {payment-service}/{payment-product}/{paymentId}/cancellation-authorisations
+            2) {payment-service}/{payment-product}/{paymentId}/authorisations
+            3) consents/confirmation-of-funds/{consentId}/authorisations
+             */
             return requestPathArray[3];
         }
 
+        /*
+        Example request paths applicable here:
+        1) consents
+        2) payments/{payment-product}
+        3) consents/confirmation-of-funds
+         */
         if (requestPathArray.length > 1) {
             if (ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH.equals(requestPathArray[1])) {
+                /*
+                Example request paths applicable here:
+                1) consents/confirmation-of-funds
+                 */
                 return requestPathArray[1];
             } else {
+                /*
+                Example request paths applicable here:
+                1) consents
+                2) payments/{payment-product}
+                 */
                 return requestPathArray[0];
             }
         } else {
+            /*
+            Example request paths applicable here:
+            1) consents
+             */
             return requestPathArray[0];
         }
     }
