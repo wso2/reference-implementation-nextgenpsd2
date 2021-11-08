@@ -61,32 +61,6 @@ public class HeaderValidator {
     }
 
     /**
-     * Validates the PSU-Id request header.
-     *
-     * @param headers request headers
-     */
-    public static void validatePsuId(Map<String, String> headers) {
-
-        log.debug("Validate PSU-ID if present in implicit flow");
-        if (headers.containsKey(ConsentExtensionConstants.PSU_ID_HEADER)) {
-            String psuId = headers.get(ConsentExtensionConstants.PSU_ID_HEADER);
-
-            if (StringUtils.isEmpty(psuId)) {
-                log.error(String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER));
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_ID_HEADER)
-                ));
-            }
-        } else {
-            log.error(ErrorConstants.PSU_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.PSU_ID_MISSING));
-        }
-    }
-
-    /**
      * Validates the X-Request-ID request header.
      *
      * @param headers request headers

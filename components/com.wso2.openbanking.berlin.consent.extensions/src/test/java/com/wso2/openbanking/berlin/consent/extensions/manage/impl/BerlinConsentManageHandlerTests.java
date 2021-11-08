@@ -72,8 +72,8 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
     }
 
-    @Test
-    public void testHandlePostWithValidConsentData() throws ParseException {
+    @Test (expectedExceptions = ConsentException.class)
+    public void testHandlePostWithValidConsentDataWithoutPath() throws ParseException {
 
         JSONObject validPayload = (JSONObject) parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD);
         doReturn(validPayload).when(consentManageDataMock).getPayload();

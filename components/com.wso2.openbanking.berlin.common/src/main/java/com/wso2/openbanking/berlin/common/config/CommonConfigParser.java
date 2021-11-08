@@ -382,7 +382,9 @@ public class CommonConfigParser {
             return getConfiguration().get(CommonConstants.AIS_API_VERSION).toString();
         }
 
-        if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
+        if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)
+                || ConsentTypeEnum.BULK_PAYMENTS.toString().equals(consentType)
+                || ConsentTypeEnum.PERIODIC_PAYMENTS.toString().equals(consentType)) {
             return getConfiguration().get(CommonConstants.PIS_API_VERSION).toString();
         }
 

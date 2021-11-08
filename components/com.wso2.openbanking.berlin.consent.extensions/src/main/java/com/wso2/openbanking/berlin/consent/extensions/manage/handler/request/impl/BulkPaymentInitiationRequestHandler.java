@@ -19,6 +19,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -48,7 +49,7 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
                 && StringUtils.isNotBlank(payload.getAsString(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE))) {
 
             LocalDate requestedExecutionDate =
-                    PaymentConsentUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants
+                    ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants
                                     .REQUESTED_EXECUTION_DATE), TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
                             ErrorConstants.REQUESTED_EXECUTION_DATE_INVALID);
 

@@ -16,7 +16,6 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.Req
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.AccountInitiationRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.ExplicitAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.FundsConfirmationInitiationRequestHandler;
-import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentExplicitCancellationAuthRequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl.PaymentInitiationRequestHandler;
 import org.junit.Test;
 import org.testng.Assert;
@@ -28,12 +27,11 @@ public class RequestHandlerFactoryTests {
 
         RequestHandler requestHandler;
 
-        // Testing PaymentCreateExplicitCancellationAuthorisationRequestHandler instances
+        // Testing ExplicitAuthRequestHandler instances
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations");
-        Assert.assertTrue(requestHandler instanceof PaymentExplicitCancellationAuthRequestHandler);
+        Assert.assertTrue(requestHandler instanceof ExplicitAuthRequestHandler);
 
-        // Testing CreateExplicitAuthorisationRequestHandler instances
         requestHandler = RequestHandlerFactory
                 .getRequestHandler("consents/{consentId}/authorisations");
         Assert.assertTrue(requestHandler instanceof ExplicitAuthRequestHandler);
