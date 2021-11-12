@@ -12,6 +12,10 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Consent extension constants.
  */
@@ -19,6 +23,7 @@ public class ConsentExtensionConstants {
 
     // Constants that are common to all request types
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
+    public static final String CONSENT_ID_HEADER = "consent-id";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
     public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
     public static final String PSU_ID_HEADER = "psu-id";
@@ -63,6 +68,7 @@ public class ConsentExtensionConstants {
     public static final String FREQUENCY_PER_DAY = "frequencyPerDay";
     public static final String COMBINED_SERVICE_INDICATOR = "combinedServiceIndicator";
     public static final String ACCOUNTS = "accounts";
+    public static final String CARD_ACCOUNTS = "card-accounts";
     public static final String BALANCES = "balances";
     public static final String TRANSACTIONS = "transactions";
     public static final String AVAILABLE_ACCOUNTS = "availableAccounts";
@@ -72,7 +78,31 @@ public class ConsentExtensionConstants {
     public static final String ALL_ACCOUNTS = "allAccounts";
     public static final String ALL_ACCOUNTS_WITH_OWNER_NAME = "allAccountsWithOwnerName";
     public static final String ACCOUNT = "account";
+    public static final String WITH_BALANCE = "withBalance";
     public static final String ACCOUNTS_LINK_TEMPLATE = "/%s/accounts";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String IS_BALANCE_PERMISSION = "isBalancePermission";
+    public static final String ACCOUNT_LIST = "accountList";
+    public static final String PERMISSION = "Permission";
+    public static final String VALIDATION_RESPONSE_PERMISSION = "permission";
+    public static final String ACCESS_METHOD = "accessMethod";
+    public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
+    public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
+            .unmodifiableList(Arrays.asList(
+            "accounts",
+            "accounts?withBalance",
+            "card-accounts"));
+    public static final List<String> SINGLE_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
+            .unmodifiableList(Arrays.asList(
+            "accounts/[^/?]*",
+            "accounts/[^/?]*?withBalance",
+            "accounts/[^/?]*/balances",
+            "accounts/[^/?]*/transactions",
+            "accounts/[^/?]*/transactions?withBalance",
+            "accounts/[^/?]*/transactions/[^/?]*",
+            "card-accounts/[^/?]*",
+            "card-accounts/[^/?]*/balances",
+            "card-accounts/[^/?]*/transactions"));
 
     // Constants that are used by payments service
     public static final String PAYMENTS_SERVICE_PATH = "payments";

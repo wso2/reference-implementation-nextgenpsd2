@@ -15,7 +15,6 @@ package com.wso2.openbanking.berlin.consent.extensions.validate.validator.factor
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.AccountSubmissionValidator;
-import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.CardAccountSubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.FundsConfirmationSubmissionValidator;
 
 /**
@@ -39,12 +38,9 @@ public class SubmissionValidatorFactory {
         String[] requestPathArrayWithQuery = requestPath.split("\\?");
 
         if (ConsentExtensionConstants.ACCOUNTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])
-                || ConsentExtensionConstants.ACCOUNTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArrayWithQuery[0])) {
+                || ConsentExtensionConstants.ACCOUNTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArrayWithQuery[0])
+                || ConsentExtensionConstants.CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])) {
             return new AccountSubmissionValidator();
-        }
-
-        if (ConsentExtensionConstants.CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])) {
-            return new CardAccountSubmissionValidator();
         }
 
         if (ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])) {

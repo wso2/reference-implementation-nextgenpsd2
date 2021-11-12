@@ -19,11 +19,13 @@ import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,6 +63,22 @@ public class HeaderValidator {
     }
 
     /**
+     * Validates the PSU-IP-Address request header.
+     *
+     * @param headersObject headers object
+     */
+    public static void validatePsuIpAddress(JSONObject headersObject) {
+
+        Map<String, String> headerMap = new HashMap<>();
+
+        if (headersObject.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+            headerMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER,
+                    headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
+        }
+        validatePsuIpAddress(headerMap);
+    }
+
+    /**
      * Validates the X-Request-ID request header.
      *
      * @param headers request headers
@@ -82,6 +100,22 @@ public class HeaderValidator {
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.X_REQUEST_ID_MISSING));
         }
+    }
+
+    /**
+     * Validates the X-Request-ID request header.
+     *
+     * @param headersObject headers object
+     */
+    public static void validateXRequestId(JSONObject headersObject) {
+
+        Map<String, String> headerMap = new HashMap<>();
+
+        if (headersObject.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+            headerMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+        }
+        validateXRequestId(headerMap);
     }
 
     /**
@@ -157,6 +191,30 @@ public class HeaderValidator {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                     header + " header is missing"));
+        }
+    }
+
+    /**
+     * Checks if the Consent-ID header is present and in proper format.
+     *
+     * @param headersObject headers object
+     */
+    public static void validateConsentId(JSONObject headersObject) {
+        log.debug("Validating the Consent-ID header");
+        if (headersObject.containsKey(ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+            String consentId = headersObject.getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
+
+            if (StringUtils.isEmpty(consentId) || !CommonUtil.isValidUuid(consentId)) {
+                log.error(ErrorConstants.CONSENT_ID_INVALID);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
+                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.CONSENT_ID_INVALID));
+            }
+        } else {
+            log.error(ErrorConstants.CONSENT_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.CONSENT_ID_MISSING));
         }
     }
 

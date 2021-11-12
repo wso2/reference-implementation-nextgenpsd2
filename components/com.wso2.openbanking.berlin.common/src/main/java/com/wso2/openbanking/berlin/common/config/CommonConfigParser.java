@@ -420,4 +420,8 @@ public class CommonConfigParser {
     public boolean isAuthorizationRequiredForCancellation() {
         return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.AUTHORIZE_CANCELLATION));
     }
+
+    public boolean isAccountIdValidationEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.IS_ACCOUNT_ID_VALIDATION_ENABLED));
+    }
 }

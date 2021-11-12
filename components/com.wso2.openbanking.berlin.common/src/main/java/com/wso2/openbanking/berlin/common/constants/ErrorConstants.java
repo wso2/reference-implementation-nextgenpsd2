@@ -25,6 +25,7 @@ public class ErrorConstants {
 
     // Error messages
     public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
+    public static final String CONSENT_ID_MISSING = "Consent-ID header is missing in the request";
     public static final String PATCH_NOT_SUPPORTED = "The PATCH method is not supported";
     public static final String DELETE_NOT_SUPPORTED = "The DELETE method is not supported";
     public static final String PUT_NOT_SUPPORTED = "The PUT method is not supported";
@@ -35,6 +36,8 @@ public class ErrorConstants {
     public static final String PSU_ID_MISSING = "PSU-ID mandatory header is missing in the request";
     public static final String X_REQUEST_ID_INVALID = "Invalid X-Request-ID header. Needs to be in UUID " +
             "format";
+    public static final String CONSENT_ID_INVALID = "Invalid Consent-ID header. Needs to be in UUID " +
+            "format";
     public static final String DECOUPLED_FLOW_NOT_SUPPORTED = "Decoupled SCA Approach is not supported";
     public static final String DECOUPLED_FLOW_NOT_SUPPORTED_FOR_CANCELLATION = "Decoupled SCA Approach is not " +
             "supported for payment cancellation";
@@ -44,6 +47,9 @@ public class ErrorConstants {
             "authorisation resource";
     public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The consent is implicit therefore cannot " +
             "create authorisation resource";
+    public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
+    public static final String CONSENT_EXPIRED = "The consent is expired";
+    public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
 
     // Payments related error messages
     public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
@@ -74,6 +80,7 @@ public class ErrorConstants {
     public static final String CONSENT_ID_TYPE_MISMATCH = "The provided consent ID valid but belongs to a " +
             "different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
+    public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";

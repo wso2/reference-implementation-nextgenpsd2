@@ -14,7 +14,6 @@ package com.wso2.openbanking.berlin.consent.extensions.validate.validator.factor
 
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.AccountSubmissionValidator;
-import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.CardAccountSubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.FundsConfirmationSubmissionValidator;
 import org.junit.Test;
 import org.testng.Assert;
@@ -59,20 +58,19 @@ public class SubmissionValidatorFactoryTests {
                 .getSubmissionValidator("accounts/{account-id}/transactions?withBalance");
         Assert.assertTrue(submissionValidator instanceof AccountSubmissionValidator);
 
-        // Testing CardAccountSubmissionValidator instances
         submissionValidator = SubmissionValidatorFactory.getSubmissionValidator("card-accounts");
-        Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
+        Assert.assertTrue(submissionValidator instanceof AccountSubmissionValidator);
 
         submissionValidator = SubmissionValidatorFactory.getSubmissionValidator("card-accounts/{account-id}");
-        Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
+        Assert.assertTrue(submissionValidator instanceof AccountSubmissionValidator);
 
         submissionValidator = SubmissionValidatorFactory
                 .getSubmissionValidator("card-accounts/{account-id}/balances");
-        Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
+        Assert.assertTrue(submissionValidator instanceof AccountSubmissionValidator);
 
         submissionValidator = SubmissionValidatorFactory
                 .getSubmissionValidator("card-accounts/{account-id}/transactions");
-        Assert.assertTrue(submissionValidator instanceof CardAccountSubmissionValidator);
+        Assert.assertTrue(submissionValidator instanceof AccountSubmissionValidator);
 
         // Testing FundsConfirmationSubmissionValidator instances
         submissionValidator = SubmissionValidatorFactory.getSubmissionValidator("funds-confirmations");
