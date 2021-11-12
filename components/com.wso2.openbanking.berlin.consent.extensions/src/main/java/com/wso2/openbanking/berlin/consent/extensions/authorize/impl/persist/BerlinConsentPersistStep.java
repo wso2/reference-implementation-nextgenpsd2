@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist;
 
-
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
@@ -54,8 +53,6 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
             } else {
                 consentResource = consentData.getConsentResource();
             }
-
-
 
             if (consentData.getAuthResource() == null) {
                 log.error(ErrorConstants.AUTHORISATION_RESOURCE_NOT_FOUND_ERROR);
