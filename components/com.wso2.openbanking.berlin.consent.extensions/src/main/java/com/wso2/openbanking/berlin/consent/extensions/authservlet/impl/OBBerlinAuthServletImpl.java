@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * The Berlin implementation of servlet extension that handles Berlin scenarios.
  */
-public class OBBerlinAuthServletImpl  implements OBAuthServletInterface {
+public class OBBerlinAuthServletImpl implements OBAuthServletInterface {
 
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest httpServletRequest, JSONObject jsonObject,

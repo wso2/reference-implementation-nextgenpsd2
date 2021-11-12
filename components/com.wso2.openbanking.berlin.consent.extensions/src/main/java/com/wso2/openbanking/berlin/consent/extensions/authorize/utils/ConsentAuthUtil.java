@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import java.net.URI;
 
 /**
- * fasdf.
+ * Contains util methods need for authorization process.
  */
 public class ConsentAuthUtil {
 
