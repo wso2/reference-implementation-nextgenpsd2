@@ -44,10 +44,38 @@ public class ConsentExtensionConstants {
     public static final String START_AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String START_AUTH_LINK_TEMPLATE = "/%s/%s/%s/authorisations";
     public static final String AUTHORISATION_IDS = "authorisationIds";
+    public static final String IS_ERROR = "isError";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String UTC = "UTC";
     public static final String IMPLICIT = "implicit";
     public static final String EXPLICIT = "explicit";
+    public static final String CONSENT_DATA = "consentData";
+    public static final String TITLE = "title";
+    public static final String PAYMENT_TYPE_TITLE = "Payment Type";
+    public static final String DATA_SIMPLE = "data";
+    public static final String SINGLE_PAYMENT_TITLE = "Single Payments";
+    public static final String INSTRUCTED_AMOUNT_TITLE = "Instructed Amount";
+    public static final String CURRENCY_TITLE = "Instructed Currency";
+    public static final String DEBTOR_REFERENCE_TITLE = "Debtor Account %s Reference";
+    public static final String CREDITOR_NAME_TITLE = "Creditor Name";
+    public static final String CREDITOR_REFERENCE_TITLE = "Creditor Account %s Reference";
+    public static final String REMITTANCE_INFORMATION_UNSTRUCTURED_TITLE = "Remittance Information Unstructured";
+    public static final String END_TO_END_IDENTIFICATION_TITLE = "End to End Identification";
+    public static final String DEBTOR_ACCOUNT_TITLE = "Debtor Account";
+    public static final String START_DATE_TITLE = "Start Date";
+    public static final String END_DATE_TITLE = "End Date";
+    public static final String FREQUENCY_TITLE = "Frequency";
+    public static final String EXECUTION_RULE_TITLE = "Execution Rule";
+    public static final String REQUESTED_DATA_TITLE = "Requested Data: ";
+    public static final String CREDITOR_AGENT_TITLE = "Creditor Agent: ";
+    public static final String PAYMENT_TITLE = "Payment ";
+    public static final String DATA_REQUESTED = "data_requested";
+    public static final String CONSENT_TYPE = "consent_type";
+    public static final String TYPE = "type";
+    public static final String DEFAULT_PERMISSION = "n/a";
+    public static final String AIS_SCOPE = "ais";
+    public static final String PIS_SCOPE = "pis";
+    public static final String PIIS_SCOPE = "piis";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -114,6 +142,8 @@ public class ConsentExtensionConstants {
     public static final String IBAN = "iban";
     public static final String BBAN = "bban";
     public static final String PAN = "pan";
+    public static final String MASKED_PAN = "maskedPan";
+    public static final String MSISDN = "msisdn";
     public static final String PAYMENT_PRODUCT = "payment-product";
     public static final String PAYMENT_SERVICE = "payment-service";
     public static final String TRANSACTION_STATUS = "transactionStatus";

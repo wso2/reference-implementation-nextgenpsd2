@@ -421,6 +421,24 @@ public class CommonConfigParser {
         return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.AUTHORIZE_CANCELLATION));
     }
 
+    /**
+     * Get supported code challenge methods for Berlin authorization request.
+     *
+     * @return List of supported code challenge methods
+     */
+    public List<String> getSupportedCodeChallengeMethods() {
+
+        Object supportedCodeChallengeMethods =
+                getConfiguration().get(CommonConstants.SUPPORTED_CODE_CHALLENGE_METHODS);
+        List<String> codeChallengeMethods = new ArrayList<>();
+        if (supportedCodeChallengeMethods instanceof ArrayList) {
+            codeChallengeMethods.addAll((ArrayList) supportedCodeChallengeMethods);
+        } else if (supportedCodeChallengeMethods instanceof String) {
+            codeChallengeMethods.add((String) supportedCodeChallengeMethods);
+        }
+        return codeChallengeMethods;
+    }
+
     public boolean isAccountIdValidationEnabled() {
         return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.IS_ACCOUNT_ID_VALIDATION_ENABLED));
     }

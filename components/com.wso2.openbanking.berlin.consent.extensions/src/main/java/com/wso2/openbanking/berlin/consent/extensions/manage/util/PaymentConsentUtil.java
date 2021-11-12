@@ -171,6 +171,20 @@ public class PaymentConsentUtil {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.CREDITOR_ACCOUNT_MISSING));
+        } else {
+            JSONObject creditorAccountObject = (JSONObject) payload.get(ConsentExtensionConstants.CREDITOR_ACCOUNT);
+
+            if (!creditorAccountObject.containsKey(ConsentExtensionConstants.IBAN)
+                    && !creditorAccountObject.containsKey(ConsentExtensionConstants.BBAN)
+                    && !creditorAccountObject.containsKey(ConsentExtensionConstants.PAN)
+                    && !creditorAccountObject.containsKey(ConsentExtensionConstants.MASKED_PAN)
+                    && !creditorAccountObject.containsKey(ConsentExtensionConstants.MSISDN)) {
+
+                log.error(ErrorConstants.CREDITOR_ACCOUNT_REFERENCE_MISSING);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.CREDITOR_ACCOUNT_REFERENCE_MISSING));
+            }
         }
 
         log.debug("Validating payload for creditor name");
