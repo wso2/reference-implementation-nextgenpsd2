@@ -115,9 +115,7 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
         if (StringUtils.equals(consentResource.getConsentID(), currentAuthorisationResource.getConsentID())) {
 
             // Update the current authorization status before computing aggregated consent status
-//                consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
-            consentCoreService.bindUserAccountsToConsent(consentResource, psuId, authorisationId,
-                    accountIdMapWithPermissions, authStatus, TransactionStatusEnum.ACTC.name());
+            consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
 
             /* Get all the authorisation requests for the given consent Id and auth type to compute aggregated
             consent status */
