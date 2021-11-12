@@ -48,9 +48,9 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-//        if (!consentData.isRegulatory()) {
-//            return;
-//        }
+        if (!consentData.isRegulatory()) {
+            return;
+        }
 
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
 
