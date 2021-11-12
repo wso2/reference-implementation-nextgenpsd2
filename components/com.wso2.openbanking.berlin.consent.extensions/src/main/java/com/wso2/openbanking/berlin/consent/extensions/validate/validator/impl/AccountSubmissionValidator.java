@@ -73,10 +73,26 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
 
         String requestPath = consentValidateData.getRequestPath();
+        String validUntilDate = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
 
-        log.debug("Checking if consent is in expired state");
-        if (StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.EXPIRED.toString())) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Checking if consent id %s is expired", detailedConsentResource.getConsentID()));
+        }
+        boolean isConsentExpiredStatus = StringUtils.equals(detailedConsentResource.getCurrentStatus(),
+                ConsentStatusEnum.EXPIRED.toString());
+        if (isConsentExpiredStatus || AccountConsentUtil.isConsentExpired(validUntilDate,
+                detailedConsentResource.getUpdatedTime())) {
+            if (!isConsentExpiredStatus) {
+                try {
+                    coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
+                            ConsentStatusEnum.EXPIRED.name());
+                } catch (ConsentManagementException e) {
+                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            ErrorConstants.CONSENT_UPDATE_ERROR);
+                }
+            }
             log.error(ErrorConstants.CONSENT_EXPIRED);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
             consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
@@ -96,7 +112,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
 
         log.debug("Consent is Authorized by User");
-        String validUntilDate = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
         JSONObject consentInfo = new JSONObject();
 
         String permission = detailedConsentResource.getConsentAttributes().get(ConsentExtensionConstants.PERMISSION);
@@ -110,24 +125,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
 
         consentInfo.appendField(ConsentExtensionConstants.ACCOUNT_CONSENT_INFO, consentReceipt);
         consentValidationResult.setConsentInformation(consentInfo);
-
-        log.debug("Checking if consent is expired");
-        if (AccountConsentUtil.isConsentExpired(validUntilDate, detailedConsentResource.getUpdatedTime())) {
-            try {
-                coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
-                        ConsentStatusEnum.EXPIRED.name());
-            } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.CONSENT_UPDATE_ERROR);
-            }
-            log.error(ErrorConstants.CONSENT_EXPIRED);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_EXPIRED,
-                    ErrorConstants.CONSENT_EXPIRED));
-            return;
-        }
 
         boolean recurringIndicator = Boolean.parseBoolean(consentReceipt
                 .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR));

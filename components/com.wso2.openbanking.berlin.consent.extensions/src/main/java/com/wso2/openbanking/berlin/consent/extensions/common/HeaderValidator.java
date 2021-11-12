@@ -63,7 +63,8 @@ public class HeaderValidator {
     }
 
     /**
-     * Validates the PSU-IP-Address request header.
+     * Validates the PSU-IP-Address request header sent in a
+     * JSON object during consent validation.
      *
      * @param headersObject headers object
      */
@@ -103,7 +104,8 @@ public class HeaderValidator {
     }
 
     /**
-     * Validates the X-Request-ID request header.
+     * Validates the X-Request-ID request header sent in a
+     * JSON object during consent validation.
      *
      * @param headersObject headers object
      */
