@@ -126,9 +126,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         consentInfo.appendField(ConsentExtensionConstants.ACCOUNT_CONSENT_INFO, consentReceipt);
         consentValidationResult.setConsentInformation(consentInfo);
 
-        boolean recurringIndicator = Boolean.parseBoolean(consentReceipt
-                .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR));
-
         if (AccountValidationUtil.isSingleAccountRetrieveRequest(requestPath)) {
             log.debug("Validating single accounts retrieval");
             validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
@@ -137,6 +134,9 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             validateAccountPermissionsForBulkAccounts(consentValidateData, consentValidationResult, permission);
 
         }
+
+        boolean recurringIndicator = Boolean.parseBoolean(consentReceipt
+                .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR));
 
         log.debug("Expiring consent for one off consents after one time use");
         if (!recurringIndicator) {
