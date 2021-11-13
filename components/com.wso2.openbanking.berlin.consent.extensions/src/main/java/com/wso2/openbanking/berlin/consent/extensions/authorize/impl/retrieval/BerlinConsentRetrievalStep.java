@@ -106,9 +106,10 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                 if (!isApplicableStatus) {
                     log.error("The consent of Id: " + consentId + " is not in an applicable status for " +
                                 "authorization");
-                    jsonObject.put(ConsentExtensionConstants.IS_ERROR, "The consent is not " +
-                            "in an applicable status for authorization");
-                    return;
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.SERVER_ERROR,
+                                    "The consent is not in an applicable status for authorization",
+                                    consentData.getRedirectURI(), consentData.getState()));
                 }
             } else {
                 if (log.isDebugEnabled()) {

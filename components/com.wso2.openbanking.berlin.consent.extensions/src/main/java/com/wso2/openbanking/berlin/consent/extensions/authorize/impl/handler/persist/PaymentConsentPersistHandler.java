@@ -25,6 +25,7 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.common.Authorisa
 import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.AuthorisationAggregateStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -137,7 +138,8 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
                             .getAuthorisationStateChangeHook(consentResource.getConsentType());
                     String consentStatusToUpdate = stateChangeHook.onAuthorisationStateChange(consentId,
                             currentAuthorisationType, aggregatedStatus.get(), currentAuthorisationResource);
-                    consentCoreService.bindUserAccountsToConsent(consentResource, psuId, authorisationId,
+                    consentCoreService.bindUserAccountsToConsent(consentResource,
+                            ConsentExtensionUtil.appendSuperTenantDomain(psuId), authorisationId,
                             accountIdMapWithPermissions, authStatus, consentStatusToUpdate);
                 } else {
                     log.error(String.format(ErrorConstants.INVALID_PAYMENT_CONSENT_STATUS_UPDATE, consentId));
