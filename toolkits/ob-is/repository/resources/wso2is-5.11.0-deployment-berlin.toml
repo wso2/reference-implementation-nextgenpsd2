@@ -443,9 +443,8 @@ eligible_statuses="valid"
 client_certificate_encode=true
 
 [open_banking_berlin.consent]
-# Add backend service URLs when implemented
-payable_account_retrieval_endpoint = ""
-sharable_account_retrieval_endpoint = ""
+payable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/payable"
+shareable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/shareable"
 acc_ref_type = "iban"
 
 [open_banking_berlin.consent.accounts]

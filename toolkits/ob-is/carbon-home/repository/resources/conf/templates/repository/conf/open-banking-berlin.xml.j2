@@ -19,10 +19,10 @@
         <PayableAccountsRetrieveEndpoint></PayableAccountsRetrieveEndpoint>
         {% endif %}
 
-        {% if open_banking_berlin.consent.sharable_account_retrieval_endpoint is defined %}
-        <SharableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.sharable_account_retrieval_endpoint}}</SharableAccountsRetrieveEndpoint>
+        {% if open_banking_berlin.consent.shareable_account_retrieval_endpoint is defined %}
+        <ShareableAccountsRetrieveEndpoint>{{open_banking_berlin.consent.shareable_account_retrieval_endpoint}}</ShareableAccountsRetrieveEndpoint>
         {% else %}
-        <SharableAccountsRetrieveEndpoint></SharableAccountsRetrieveEndpoint>
+        <ShareableAccountsRetrieveEndpoint></ShareableAccountsRetrieveEndpoint>
         {% endif %}
 
         <!-- Configurations regarding the Strong Customer Authentication -->
