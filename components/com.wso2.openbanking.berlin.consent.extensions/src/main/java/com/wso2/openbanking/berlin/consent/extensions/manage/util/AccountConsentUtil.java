@@ -29,6 +29,7 @@ import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
+import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -54,6 +55,15 @@ import java.util.Map;
 public class AccountConsentUtil {
 
     private static final Log log = LogFactory.getLog(AccountConsentUtil.class);
+    private static String permission;
+
+    public static String getPermission() {
+        return permission;
+    }
+
+    public static void setPermission(String permission) {
+        AccountConsentUtil.permission = permission;
+    }
 
     /**
      * Method to validate account initiation payload.
@@ -105,7 +115,7 @@ public class AccountConsentUtil {
         // TODO: check for account ref type from config (account ref validation)
 
         log.debug("Validating account permissions");
-        validateAccountAccessAttribute(accessObject);
+        permission = getPermissionByValidatingAccountAccessAttribute(accessObject);
 
         log.debug("Validating frequency per day and recurring indicator");
         if ((int) payload.get(ConsentExtensionConstants.FREQUENCY_PER_DAY) < 1) {
@@ -150,11 +160,13 @@ public class AccountConsentUtil {
     }
 
     /**
-     * Validates the access attribute by checking the combinations of sub-attributes that can be present.
+     * Validates the access attribute by checking the combinations of sub-attributes that can be present
+     * and returns the permission only relevant for 'Account List of Available Accounts' and 'Global' type consents.
      *
      * @param accessObject access attribute of the request body
+     * @return permission
      */
-    public static void validateAccountAccessAttribute(JSONObject accessObject) {
+    public static String getPermissionByValidatingAccountAccessAttribute(JSONObject accessObject) {
         String availableAccounts = (String) accessObject.get(ConsentExtensionConstants.AVAILABLE_ACCOUNTS);
         String availableAccountsWithBalances = (String) accessObject
                 .get(ConsentExtensionConstants.AVAILABLE_ACCOUNTS_WITH_BALANCE);
@@ -171,6 +183,12 @@ public class AccountConsentUtil {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.INVALID_PERMISSION));
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Account permission is set to %s ",
+                                PermissionEnum.AVAILABLE_ACCOUNTS));
+                    }
+                    return PermissionEnum.AVAILABLE_ACCOUNTS.toString();
                 }
             }
             if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(availableAccountsWithBalances)
@@ -181,6 +199,12 @@ public class AccountConsentUtil {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.INVALID_PERMISSION));
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Account permission is set to %s ",
+                                PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES));
+                    }
+                    return PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString();
                 }
             }
             if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(allPsd2)
@@ -191,6 +215,12 @@ public class AccountConsentUtil {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.INVALID_PERMISSION));
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Account permission is set to %s ",
+                                PermissionEnum.ALL_PSD2));
+                    }
+                    return PermissionEnum.ALL_PSD2.toString();
                 }
             }
         } else {
@@ -239,6 +269,10 @@ public class AccountConsentUtil {
                         ErrorConstants.INVALID_PERMISSION));
             }
         }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Account permission is set to %s ", PermissionEnum.DEFAULT));
+        }
+        return PermissionEnum.DEFAULT.toString();
     }
 
     /**
