@@ -295,18 +295,13 @@ public class AccountConsentUtil {
     /**
      * Checks if consent is expired.
      *
-     * @param consent        retrieved consent
+     * @param validUntilDate valid until date
      * @param updatedTimeVal last updated tile
      * @return whether consent is expired or not
      */
-    public static boolean isConsentExpired(ConsentResource consent, long updatedTimeVal) throws ParseException {
+    public static boolean isConsentExpired(String validUntilDate, long updatedTimeVal) {
 
-        JSONObject consentReceipt =
-                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(consent.getReceipt());
-
-        String expDateVal = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
-
-        LocalDate expDate = ConsentExtensionUtil.parseDateToISO(expDateVal, TPPMessage.CodeEnum.FORMAT_ERROR,
+        LocalDate expDate = ConsentExtensionUtil.parseDateToISO(validUntilDate, TPPMessage.CodeEnum.FORMAT_ERROR,
                 ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDateTime updatedDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(updatedTimeVal),
                 ZoneId.of(ConsentExtensionConstants.UTC));

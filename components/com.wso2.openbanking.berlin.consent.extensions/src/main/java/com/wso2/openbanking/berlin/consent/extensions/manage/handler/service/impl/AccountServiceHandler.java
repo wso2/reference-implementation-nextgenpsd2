@@ -30,6 +30,7 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.fac
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -109,7 +110,12 @@ public class AccountServiceHandler implements ServiceHandler {
 
         ConsentResource updatedConsentResource = null;
         try {
-            if (AccountConsentUtil.isConsentExpired(consentResource, consentResource.getUpdatedTime())) {
+            JSONObject consentReceipt =
+                    (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(consentResource.getReceipt());
+
+            String validUntilDate = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
+
+            if (AccountConsentUtil.isConsentExpired(validUntilDate, consentResource.getUpdatedTime())) {
                 log.debug("The Consent is expired");
                 try {
                     updatedConsentResource = coreService.updateConsentStatus(consentId,

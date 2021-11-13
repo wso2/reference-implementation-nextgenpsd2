@@ -46,6 +46,8 @@ public class CommonConstants {
     public static final String TRANSACTION_FEE_AMOUNT = "ConsentManagement.Payments.TransactionFee.Amount";
     public static final String TRANSACTION_FEE_CURRENCY = "ConsentManagement.Payments.TransactionFee.Currency";
     public static final String AUTHORIZE_CANCELLATION = "ConsentManagement.Payments.AuthorizeCancellation";
+    public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED = "ConsentManagement.Accounts." +
+            "EnableAccountIDValidation";
 
     public static final String SCA_APPROACH_KEY = "SCA-Approach";
     public static final String SCA_METHODS_KEY = "SCA-Methods";
