@@ -39,9 +39,7 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
     @Override
     public void validateRequiredParameters(HttpServletRequest request) throws OAuthProblemException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Berlin request validation triggered for authorisation request");
-        }
+        log.debug("Berlin request validation triggered for authorisation request");
 
         /*
             Check if request qualifies as an berlin authorisation request.
@@ -56,9 +54,7 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
 
         // Skip validation if scopes not present
         if (!openIdScopes.isPresent()) {
-            if (log.isDebugEnabled()) {
-                log.debug("No scopes present for applicable validation");
-            }
+            log.debug("No scopes present for applicable validation");
             return;
         }
 
@@ -68,9 +64,7 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
 
         // if berlin qualified scopes are non present, halt validation.
         if (BERLIN_QUALIFIER_SCOPES.stream().noneMatch(partial -> openIdScopes.get().toLowerCase().contains(partial))) {
-            if (log.isDebugEnabled()) {
-                log.info("Request doesn't qualify as berlin authorisation flow");
-            }
+            log.info("Request doesn't qualify as berlin authorisation flow");
             return;
         }
 
@@ -79,10 +73,7 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
             NextGenPSD2 XS2A - Implementation Guide V1.3 - Section 13.1
          */
         String state = request.getParameter(STATE_PARAMETER);
-
-        if (log.isDebugEnabled()) {
-            log.info("Request qualifies as berlin authorisation flow mandating scope");
-        }
+        log.info("Request qualifies as berlin authorisation flow mandating scope");
 
         if (StringUtils.isBlank(state)) {
             throw OAuthProblemException

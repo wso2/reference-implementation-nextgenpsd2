@@ -67,6 +67,7 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
 
             consentPersistHandler.consentPersist(consentPersistData, consentResource);
         } catch (ConsentManagementException e) {
+            log.error(ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR);
         }

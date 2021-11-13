@@ -127,6 +127,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
             jsonObject.appendField(ConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
 
         } catch (ConsentManagementException e) {
+            log.error(ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR);
         }

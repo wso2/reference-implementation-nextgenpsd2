@@ -26,8 +26,6 @@ function validateBerlinFrm() {
             $(".acc-err").show();
             return false;
         } else {
-            console.log("Hello");
-            setTimeout(() => {  console.log("World!"); }, 2000);
             document.getElementById("oauth2_authz_confirm").submit();
         }
     }

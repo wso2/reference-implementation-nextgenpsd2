@@ -26,7 +26,6 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.Authorisat
 import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -81,7 +80,7 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
             persistAuthorisation(consentResource, accountIdMapWithPermissions, authorisationId, userId,
                     authStatus);
         } catch (ParseException e) {
-            log.error(ErrorConstants.CONSENT_PERSIST_ERROR);
+            log.error(ErrorConstants.CONSENT_PERSIST_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, ErrorConstants.CONSENT_PERSIST_ERROR);
         }
     }

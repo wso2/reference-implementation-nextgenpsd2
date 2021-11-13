@@ -42,6 +42,7 @@ public class ConsentAuthUtil {
 
         String[] scopeArray = null;
         if (scopeString != null) {
+            // The scopes string is split by a space here because the scopes are sent as space separated string
             scopeArray = scopeString.split(" ");
         }
 

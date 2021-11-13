@@ -59,7 +59,7 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
             }
             return consentDataJSON;
         } catch (ParseException e) {
-            log.error("Error while parsing retrieved consent data");
+            log.error("Error while parsing retrieved consent data", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR);
         }
