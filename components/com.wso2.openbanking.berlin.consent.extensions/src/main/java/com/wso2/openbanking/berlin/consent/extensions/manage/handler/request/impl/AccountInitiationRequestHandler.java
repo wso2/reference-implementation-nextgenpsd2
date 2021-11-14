@@ -178,6 +178,9 @@ public class AccountInitiationRequestHandler implements RequestHandler {
 
         Map<String, String> consentAttributesMap = new HashMap<>();
 
+        // Storing permission
+        consentAttributesMap.put(ConsentExtensionConstants.PERMISSION, AccountConsentUtil.getPermission());
+
         // Storing consent expire attribute to expire in background
         consentAttributesMap.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, validUntilUtcTimeStamp);
 

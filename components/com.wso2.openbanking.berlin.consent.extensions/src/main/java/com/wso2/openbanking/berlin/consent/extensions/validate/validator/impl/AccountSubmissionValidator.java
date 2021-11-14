@@ -54,10 +54,10 @@ public class AccountSubmissionValidator implements SubmissionValidator {
 
         /*
         The 'permission'(can contain AvailableAccounts, AvailableAccountsWithBalances, AllPsd2 or Default)
-        and 'access'(can contain allAccounts or allAccountsWithOwnerName) stored in the consent validation
+        and 'accessMethod'(can contain allAccounts or allAccountsWithOwnerName) stored in the consent validation
         result is only relevant for 'Account List of Available Accounts' and 'Global' consents.
 
-        The 'access'(can contain accounts, balances or transactions) inside the account of the account list
+        The 'accessMethod'(can contain accounts, balances or transactions) inside the account of the account list
         and this is only relevant for 'Consent Request on Dedicated Accounts' and 'Bank Offered Consent' consents.
          */
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();

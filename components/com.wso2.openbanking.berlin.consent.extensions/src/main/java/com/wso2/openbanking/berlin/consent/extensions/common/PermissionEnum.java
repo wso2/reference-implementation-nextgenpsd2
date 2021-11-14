@@ -18,7 +18,7 @@ package com.wso2.openbanking.berlin.consent.extensions.common;
 public enum PermissionEnum {
 
     AVAILABLE_ACCOUNTS("AvailableAccounts"),
-    AVAILABLE_ACCOUNTS_WITH_BALANCES("AvailableAccountsWithBalances"),
+    AVAILABLE_ACCOUNTS_WITH_BALANCES("AvailableAccountsWithBalance"),
     ALL_PSD2("AllPsd2"),
     DEFAULT("Default");
 
