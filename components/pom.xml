@@ -35,6 +35,6 @@
         <module>com.wso2.openbanking.berlin.identity</module>
         <module>com.wso2.openbanking.berlin.data.publisher</module>
         <module>com.wso2.openbanking.berlin.consent.extensions</module>
-<!--        <module>com.wso2.openbanking.berlin.demo.backend</module>-->
+        <module>com.wso2.openbanking.berlin.demo.backend</module>
     </modules>
 </project>
