@@ -12,6 +12,14 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -30,6 +38,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -127,5 +137,203 @@ public class DataRetrievalUtil {
         }
         String queries = URLEncodedUtils.format(pairs, StandardCharsets.UTF_8.name());
         return baseURL + "?" + queries;
+    }
+
+    /**
+     * Gets account details using the initiation payload.
+     *
+     * @param accessObject access object
+     * @param userId user id
+     * @return accounts array
+     */
+    public static JSONArray getAccountsFromPayload(JSONObject accessObject, String userId) {
+
+        JSONArray accountData = new JSONArray();
+        JSONArray bankOfferedAccounts = getAccountsFromEndpoint(userId);
+
+        if (bankOfferedAccounts == null) {
+            log.error("No accounts found");
+            return null;
+        }
+
+        JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.name());
+        JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.name());
+        JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.name());
+
+        JSONArray allAccounts = new JSONArray();
+
+        /*
+        Access methods 'balances' and 'transactions' includes 'accounts' permissions.
+        The access methods are added in scenarios where the accounts are finalised with
+        the access methods, not adding them for bank offered consent scenarios since the
+        accounts are yet to be given access methods.
+
+        If access method is an empty array then add bank offered accounts.
+        If not empty array then add the account details from initiation payload.
+         */
+        if (balances != null && balances.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_BALANCE);
+
+            accountData.add(object);
+        } else if (balances != null) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
+            accessMethodArray.add(AccessMethodEnum.BALANCES.name());
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, balances);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BALANCE);
+
+            accountData.add(object);
+            allAccounts.addAll(balances);
+        }
+
+        if (transactions != null && transactions.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_TRANSACTION);
+
+            accountData.add(object);
+        } else if (transactions != null) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
+            accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.name());
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, transactions);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_TRANSACTION);
+
+            accountData.add(object);
+            allAccounts.addAll(transactions);
+        }
+
+        if (accounts != null && accounts.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_ACCOUNT);
+
+            accountData.add(object);
+        } else if (accounts != null) {
+            JSONArray permissionArray = new JSONArray();
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+
+            JSONArray accessMethodArray = new JSONArray();
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_ACCOUNT);
+
+            accountData.add(object);
+            allAccounts.addAll(accounts);
+        }
+
+        if (allAccounts.stream().allMatch(bankOfferedAccounts::contains)) {
+            return accountData;
+        } else {
+            log.error("Consent accounts mismatch");
+            return null;
+        }
+    }
+
+    /**
+     * Get accounts array from endpoint.
+     *
+     * @param userId user id
+     * @return array of accounts
+     */
+    public static JSONArray getAccountsFromEndpoint(String userId) {
+
+        CommonConfigParser configParser = CommonConfigParser.getInstance();
+        String accountsURL = configParser.getShareableAccountsRetrieveEndpoint();
+
+        if (!accountsURL.endsWith("/")) {
+            accountsURL += "/";
+        }
+        accountsURL += userId;
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Getting accounts details from backend endpoint %s", accountsURL));
+        }
+        String accountData = DataRetrievalUtil.getAccountsFromEndpoint(accountsURL, new HashMap<>(), new HashMap<>());
+        if (accountData == null) {
+            log.error("No account details available");
+            return null;
+        }
+
+        JSONArray accountArray = new JSONArray();
+        try {
+            JSONObject accountJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(accountData);
+
+            String accountRefType = "iban";
+            JSONArray slideContent = (JSONArray) accountJson.get("accounts");
+            Iterator i = slideContent.iterator();
+
+            while (i.hasNext()) {
+                JSONObject slide = (JSONObject) i.next();
+                String account = (String) slide.get(accountRefType);
+
+                if (configParser.isMultiCurrencyEnabled()) {
+                    /*
+                     * account = iban:currency
+                     *
+                     * currency will be empty when bank response does not have "currency" key.
+                     * if currency is empty particular iBan will be available for any currency.
+                     * Same iBan can have more than one currency and consider them as separate accounts
+                     */
+                    if (slide.containsKey(ConsentExtensionConstants.CURRENCY)) {
+                        account = account + ":" + (String) slide.get(ConsentExtensionConstants.CURRENCY);
+                    }
+                }
+
+                JSONObject accountObject = new JSONObject();
+                accountObject.put(accountRefType, account);
+                accountArray.add(accountObject);
+            }
+
+            return accountArray;
+        } catch (ParseException e) {
+            log.error(ErrorConstants.JSON_PARSE_ERROR, e);
+            return null;
+        }
     }
 }
