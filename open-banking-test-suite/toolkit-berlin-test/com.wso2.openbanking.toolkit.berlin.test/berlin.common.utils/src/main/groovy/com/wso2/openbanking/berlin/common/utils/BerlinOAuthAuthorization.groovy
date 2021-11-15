@@ -53,7 +53,20 @@ class BerlinOAuthAuthorization {
                 .codeChallenge(verifier, CodeChallengeMethod.S256)
                 .state(params.state)
                 .build()
+    }
 
+    BerlinOAuthAuthorization(SCOPES scopes, String consentId, CodeChallengeMethod codeChallengeMethod) {
+
+        verifier = new CodeVerifier()
+
+        request = new AuthorizationRequest.Builder(params.response_type, params.client_id)
+                .responseType(ResponseType.parse("code"))
+                .endpointURI(params.endpoint)
+                .redirectionURI(params.redirect_uri)
+                .scope(new Scope(scopes.getConsentScope(consentId)))
+                .codeChallenge(verifier, codeChallengeMethod)
+                .state(params.state)
+                .build()
     }
 
     /**
