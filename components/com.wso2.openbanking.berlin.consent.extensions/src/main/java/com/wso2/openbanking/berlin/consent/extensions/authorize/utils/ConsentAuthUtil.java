@@ -79,7 +79,7 @@ public class ConsentAuthUtil {
         log.debug("Validating whether the provided consent Id matches with the scope type");
 
         if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)
-                && !StringUtils.contains(ConsentExtensionConstants.AIS_SCOPE, scopeString)) {
+                && !StringUtils.contains(scopeString, ConsentExtensionConstants.AIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_SCOPE,
@@ -97,7 +97,7 @@ public class ConsentAuthUtil {
         }
 
         if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), consentType)
-                && !StringUtils.contains(ConsentExtensionConstants.PIIS_SCOPE, scopeString)) {
+                && !StringUtils.contains(scopeString, ConsentExtensionConstants.PIIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_SCOPE,
