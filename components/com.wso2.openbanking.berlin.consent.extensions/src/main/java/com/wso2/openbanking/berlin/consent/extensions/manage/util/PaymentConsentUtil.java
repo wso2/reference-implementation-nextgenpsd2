@@ -200,31 +200,22 @@ public class PaymentConsentUtil {
     /**
      * Method to construct payment initiation response.
      *
-     * @param consentManageData       consent manage data
-     * @param createdConsent          the created consent
-     * @param isExplicitAuth          whether explicit authorisation or not
-     * @param isRedirectPreferred     whether redirect approach is preferred or not
-     * @param apiVersion              the configured API version to construct the self links
-     * @param isSCARequired           whether SCA is required or not as configured
-     * @param isTransactionFeeEnabled whether a transaction fee is charged or not as configured
-     * @param transactionFee          configured transaction fee
-     * @param transactionFeeCurrency  configured transaction fee currency
+     * @param consentManageData consent manage data
+     * @param createdConsent the created consent
+     * @param apiVersion the configured API version to construct the self links
+     * @param isSCARequired whether SCA is required or not as configured
      * @return the constructed initiation response
      */
     public static JSONObject constructPaymentInitiationResponse(ConsentManageData consentManageData,
                                                                 DetailedConsentResource createdConsent,
                                                                 boolean isExplicitAuth, boolean isRedirectPreferred,
-                                                                String apiVersion, boolean isSCARequired,
-                                                                boolean isTransactionFeeEnabled,
-                                                                int transactionFee, String transactionFeeCurrency) {
+                                                                String apiVersion, boolean isSCARequired) {
 
         String requestPath = consentManageData.getRequestPath();
         String locationString = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
                 apiVersion, requestPath, createdConsent.getConsentID());
         consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER,
                 locationString);
-        consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(isRedirectPreferred,
                 isSCARequired);
@@ -234,8 +225,7 @@ public class PaymentConsentUtil {
         consentManageData.setResponseHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH,
                 scaApproach.getApproach().toString());
 
-        JSONObject responseWithoutLinks = PaymentConsentUtil.getPaymentInitiationResponse(createdConsent, scaMethods,
-                transactionFee, transactionFeeCurrency, isTransactionFeeEnabled);
+        JSONObject responseWithoutLinks = PaymentConsentUtil.getPaymentInitiationResponse(createdConsent, scaMethods);
 
         String authId = null;
 
@@ -257,15 +247,10 @@ public class PaymentConsentUtil {
      *
      * @param createdConsent
      * @param scaMethods
-     * @param transactionFee
-     * @param transactionFeeCurrency
-     * @param isTransactionFeeEnabled
      * @return
      */
     private static JSONObject getPaymentInitiationResponse(DetailedConsentResource createdConsent,
-                                                           ArrayList<ScaMethod> scaMethods, int transactionFee,
-                                                           String transactionFeeCurrency,
-                                                           boolean isTransactionFeeEnabled) {
+                                                           ArrayList<ScaMethod> scaMethods) {
 
         JSONObject responseObject = new JSONObject();
         responseObject.appendField(ConsentExtensionConstants.TRANSACTION_STATUS, createdConsent.getCurrentStatus());
@@ -281,18 +266,6 @@ public class PaymentConsentUtil {
         } else {
             responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
         }
-
-        if (isTransactionFeeEnabled) {
-            responseObject.appendField(ConsentExtensionConstants.TRANSACTION_FEE_INDICATOR,
-                    true);
-
-            JSONObject transactionFees = new JSONObject();
-            transactionFees.appendField(ConsentExtensionConstants.AMOUNT, transactionFee);
-            transactionFees.appendField(ConsentExtensionConstants.CURRENCY,
-                    transactionFeeCurrency);
-            responseObject.appendField(ConsentExtensionConstants.TRANSACTION_FEES, transactionFees);
-        }
-
         return responseObject;
     }
 

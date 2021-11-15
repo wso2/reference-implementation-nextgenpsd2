@@ -110,14 +110,10 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             }
 
             String apiVersion = configParser.getApiVersion(consentResource.getConsentType());
-            boolean isTransactionFeeEnabled = configParser.isTransactionFeeEnabled();
-            int transactionFee = configParser.getTransactionFee();
-            String transactionFeeCurrency = configParser.getTransactionFeeCurrency();
 
             consentManageData.setResponsePayload(PaymentConsentUtil
                     .constructPaymentInitiationResponse(consentManageData, createdConsent, isExplicitAuth,
-                            true, apiVersion, isSCARequired, isTransactionFeeEnabled, transactionFee,
-                            transactionFeeCurrency));
+                            true, apiVersion, isSCARequired));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
         }
     }

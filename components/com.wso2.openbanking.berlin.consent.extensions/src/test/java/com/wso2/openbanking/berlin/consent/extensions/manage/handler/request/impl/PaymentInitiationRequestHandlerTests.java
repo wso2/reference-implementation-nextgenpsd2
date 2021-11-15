@@ -26,7 +26,6 @@ import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestUtil;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -81,9 +80,6 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
         doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
-        doReturn(false).when(commonConfigParserMock).isTransactionFeeEnabled();
-        doReturn(0).when(commonConfigParserMock).getTransactionFee();
-        doReturn(StringUtils.EMPTY).when(commonConfigParserMock).getTransactionFeeCurrency();
 
         scaMethods = new ArrayList<>();
         Map<String, String> scaMethod = new HashMap<>();

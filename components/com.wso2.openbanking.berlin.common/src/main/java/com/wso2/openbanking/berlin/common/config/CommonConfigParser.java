@@ -395,19 +395,6 @@ public class CommonConfigParser {
         return "";
     }
 
-    public boolean isTransactionFeeEnabled() {
-        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_ENABLED_PATH));
-    }
-
-    public int getTransactionFee() {
-        return Integer.parseInt((String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_AMOUNT));
-    }
-
-    public String getTransactionFeeCurrency() {
-        return (getConfiguration().get(CommonConstants.TRANSACTION_FEE_CURRENCY) == null) ? "" :
-                (String) getConfiguration().get(CommonConstants.TRANSACTION_FEE_CURRENCY);
-    }
-
     public String getMaxFuturePaymentDays() {
         return (getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS) == null) ? "" :
                 (String) getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS);
