@@ -67,6 +67,7 @@ public class ConsentExtensionConstants {
     public static final String FREQUENCY_TITLE = "Frequency";
     public static final String EXECUTION_RULE_TITLE = "Execution Rule";
     public static final String REQUESTED_DATA_TITLE = "Requested Data: ";
+    public static final String CONSENT_DETAILS_TITLE = "Consent Details: ";
     public static final String CREDITOR_AGENT_TITLE = "Creditor Agent: ";
     public static final String PAYMENT_TITLE = "Payment ";
     public static final String DATA_REQUESTED = "data_requested";
@@ -92,9 +93,13 @@ public class ConsentExtensionConstants {
     public static final String MAXIMUM_VALID_DATE = "9999-12-31";
     public static final String ACCESS = "access";
     public static final String RECURRING_INDICATOR = "recurringIndicator";
+    public static final String RECURRING_INDICATOR_TITLE = "Recurring Indicator";
     public static final String VALID_UNTIL = "validUntil";
+    public static final String VALID_UNTIL_TITLE = "Consent Expiry Date";
     public static final String FREQUENCY_PER_DAY = "frequencyPerDay";
+    public static final String FREQUENCY_PER_DAY_TITLE = "Frequency Per Day";
     public static final String COMBINED_SERVICE_INDICATOR = "combinedServiceIndicator";
+    public static final String COMBINED_SERVICE_INDICATOR_TITLE = "Combined Service Indicator";
     public static final String ACCOUNTS = "accounts";
     public static final String CARD_ACCOUNTS = "card-accounts";
     public static final String BALANCES = "balances";

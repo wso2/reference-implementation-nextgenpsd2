@@ -50,6 +50,11 @@ public class CommonConstants {
             ".Method";
     public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED = "ConsentManagement.Accounts." +
             "EnableAccountIDValidation";
+    public static final String SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +
+            "ShareableAccountsRetrieveEndpoint";
+    public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +
+            "PayableAccountsRetrieveEndpoint";
+    public static final String MULTI_CURRENCY_ENABLED = "ConsentManagement.MultiCurrency.Enable";
 
     public static final String SCA_APPROACH_KEY = "SCA-Approach";
     public static final String SCA_METHODS_KEY = "SCA-Methods";
