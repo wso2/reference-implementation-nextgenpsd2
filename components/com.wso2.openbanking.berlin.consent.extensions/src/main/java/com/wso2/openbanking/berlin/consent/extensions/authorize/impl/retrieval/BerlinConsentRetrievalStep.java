@@ -68,7 +68,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
         consentData.setConsentId(consentId);
 
         try {
-            ConsentResource consentResource = coreService.getConsent(consentId, false);
+            ConsentResource consentResource = coreService.getConsent(consentId, true);
             ConsentAuthUtil.validateConsentTypeWithId(consentResource.getConsentType(), scopeString,
                     consentData.getRedirectURI(), consentData.getState());
 
