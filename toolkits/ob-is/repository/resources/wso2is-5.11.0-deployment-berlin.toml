@@ -446,6 +446,7 @@ client_certificate_encode=true
 payable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/payable"
 shareable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/shareable"
 acc_ref_type = "iban"
+supported_challenge_methods = ["S256"]
 
 [open_banking_berlin.consent.accounts]
 single_acc_no_retrieval_validation.enable = false

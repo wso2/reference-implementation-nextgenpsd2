@@ -47,6 +47,16 @@ public class ErrorConstants {
             "authorisation resource";
     public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The consent is implicit therefore cannot " +
             "create authorisation resource";
+    public static final String CONSENT_DATA_RETRIEVE_ERROR = "Exception occurred while getting consent data";
+    public static final String LOGGED_IN_USER_MISMATCH = "The logged in user does not match with the " +
+            "user who initiated the consent";
+    public static final String INVALID_PAYMENT_CONSENT_STATUS_UPDATE = "Invalid payment consent update request for " +
+            "consent Id: %s";
+    public static final String CONSENT_PERSIST_ERROR = "Unable to persist authorisation";
+    public static final String CONSENT_ID_SCOPE_MISSING_ERROR = "Error while retrieving consent data. No consent " +
+            "Id provided with scope";
+    public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
+            "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
@@ -54,6 +64,8 @@ public class ErrorConstants {
     // Payments related error messages
     public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
     public static final String CREDITOR_ACCOUNT_MISSING = "Creditor account is missing in payments payload";
+    public static final String CREDITOR_ACCOUNT_REFERENCE_MISSING = "Creditor account reference is missing in " +
+            "payments payload";
     public static final String INSTRUCTED_AMOUNT_MISSING = "Instructed amount is missing in payments payload";
     public static final String AMOUNT_IS_MISSING = "Amount is missing in instructed amount";
     public static final String CURRENCY_CODE_MISSING = "Currency code is missing in instructed amount";
@@ -75,10 +87,13 @@ public class ErrorConstants {
     public static final String CONSENT_ATTRIBUTE_INITIATION_ERROR = "Error occurred while storing consent " +
             "attributes";
     public static final String CONSENT_NOT_FOUND_ERROR = "Matching consent not found for provided Id";
-    public static final String AUTHORISATION_RESOURCE_NOT_FOUND_ERROR = "Matching authorisation resource/s not found " +
-            "for provided consent Id";
+    public static final String CONSENT_ID_NOT_FOUND_ERROR = "The consent Id is not found in consent persist data";
+    public static final String AUTHORISATION_RESOURCE_NOT_FOUND_ERROR = "The authorisation resource is not found in " +
+            "consent persist data";
     public static final String CONSENT_ID_TYPE_MISMATCH = "The provided consent ID valid but belongs to a " +
             "different consent type";
+    public static final String AUTH_ID_CONSENT_ID_MISMATCH = "No available authorisation resource with given " +
+            "authorisation Id matched with the requested different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";

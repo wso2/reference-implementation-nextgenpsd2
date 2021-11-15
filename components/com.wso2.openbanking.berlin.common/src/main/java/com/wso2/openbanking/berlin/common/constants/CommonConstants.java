@@ -46,6 +46,8 @@ public class CommonConstants {
     public static final String TRANSACTION_FEE_AMOUNT = "ConsentManagement.Payments.TransactionFee.Amount";
     public static final String TRANSACTION_FEE_CURRENCY = "ConsentManagement.Payments.TransactionFee.Currency";
     public static final String AUTHORIZE_CANCELLATION = "ConsentManagement.Payments.AuthorizeCancellation";
+    public static final String SUPPORTED_CODE_CHALLENGE_METHODS = "ConsentManagement.SupportedCodeChallengeMethods" +
+            ".Method";
     public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED = "ConsentManagement.Accounts." +
             "EnableAccountIDValidation";
 

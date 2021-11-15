@@ -125,6 +125,13 @@
             {% endif %}
         </APIVersions>
 
+        <!-- Supported code challenge methods -->
+        <SupportedCodeChallengeMethods>
+            {%for method in open_banking_berlin.consent.supported_challenge_methods%}
+            <Method>{{method}}</Method>
+            {% endfor %}
+        </SupportedCodeChallengeMethods>
+
         <Accounts>
             <!--Enable IBAN validation for single accounts -->
             {% if open_banking_berlin.consent.accounts.single_acc_no_retrieval_validation.enable is defined %}
