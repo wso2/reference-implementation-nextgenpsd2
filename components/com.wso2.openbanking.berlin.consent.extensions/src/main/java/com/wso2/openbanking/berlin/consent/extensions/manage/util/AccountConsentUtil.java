@@ -26,6 +26,7 @@ import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
@@ -88,12 +89,12 @@ public class AccountConsentUtil {
 
         log.debug("Validating mandatory access object attributes");
         // At least one of these attributes must be there for the access object to be valid
-        if (!accessObject.containsKey(ConsentExtensionConstants.ACCOUNTS)
-                && !accessObject.containsKey(ConsentExtensionConstants.BALANCES)
-                && !accessObject.containsKey(ConsentExtensionConstants.TRANSACTIONS)
-                && !accessObject.containsKey(ConsentExtensionConstants.AVAILABLE_ACCOUNTS)
-                && !accessObject.containsKey(ConsentExtensionConstants.AVAILABLE_ACCOUNTS_WITH_BALANCE)
-                && !accessObject.containsKey(ConsentExtensionConstants.ALL_PSD2)) {
+        if (!accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString())
+                && !accessObject.containsKey(AccessMethodEnum.BALANCES.toString())
+                && !accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString())
+                && !accessObject.containsKey(PermissionEnum.AVAILABLE_ACCOUNTS.toString())
+                && !accessObject.containsKey(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())
+                && !accessObject.containsKey(PermissionEnum.ALL_PSD2.toString())) {
             log.error(ErrorConstants.ACCESS_OBJECT_MANDATORY_ELEMENTS_MISSING);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -103,9 +104,9 @@ public class AccountConsentUtil {
         log.debug("Validating additionalInformation attribute");
         //  it can only be present with at least one of the major access attributes (accounts, balances, transactions)
         if (accessObject.containsKey(ConsentExtensionConstants.ADDITIONAL_INFORMATION)
-                && (!accessObject.containsKey(ConsentExtensionConstants.ACCOUNTS)
-                || !accessObject.containsKey(ConsentExtensionConstants.BALANCES)
-                || !accessObject.containsKey(ConsentExtensionConstants.TRANSACTIONS))) {
+                && (!accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString())
+                || !accessObject.containsKey(AccessMethodEnum.BALANCES.toString())
+                || !accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString()))) {
             log.error(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -167,14 +168,14 @@ public class AccountConsentUtil {
      * @return permission
      */
     public static String getPermissionByValidatingAccountAccessAttribute(JSONObject accessObject) {
-        String availableAccounts = (String) accessObject.get(ConsentExtensionConstants.AVAILABLE_ACCOUNTS);
+        String availableAccounts = (String) accessObject.get(PermissionEnum.AVAILABLE_ACCOUNTS.toString());
         String availableAccountsWithBalances = (String) accessObject
-                .get(ConsentExtensionConstants.AVAILABLE_ACCOUNTS_WITH_BALANCE);
-        String allPsd2 = (String) accessObject.get(ConsentExtensionConstants.ALL_PSD2);
+                .get(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString());
+        String allPsd2 = (String) accessObject.get(PermissionEnum.ALL_PSD2.toString());
 
-        if (!accessObject.containsKey(ConsentExtensionConstants.ACCOUNTS)
-                && !accessObject.containsKey(ConsentExtensionConstants.BALANCES)
-                && !accessObject.containsKey(ConsentExtensionConstants.TRANSACTIONS)) {
+        if (!accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString())
+                && !accessObject.containsKey(AccessMethodEnum.BALANCES.toString())
+                && !accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString())) {
             if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(availableAccounts)
                     || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(availableAccounts)) {
                 if (availableAccountsWithBalances != null || allPsd2 != null) {
@@ -231,23 +232,23 @@ public class AccountConsentUtil {
             int numberOfProvidedAccessTypes = 0;
             int numberOfEmptyAccessMethodArrays = 0;
 
-            if (accessObject.get(ConsentExtensionConstants.ACCOUNTS) != null) {
+            if (accessObject.get(AccessMethodEnum.ACCOUNTS.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray accounts = (JSONArray) accessObject.get(ConsentExtensionConstants.ACCOUNTS);
+                JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.toString());
                 if (accounts != null && accounts.size() == 0) {
                     numberOfEmptyAccessMethodArrays++;
                 }
             }
-            if (accessObject.get(ConsentExtensionConstants.BALANCES) != null) {
+            if (accessObject.get(AccessMethodEnum.BALANCES.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray balances = (JSONArray) accessObject.get(ConsentExtensionConstants.BALANCES);
+                JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
                 if (balances != null && balances.size() == 0) {
                     numberOfEmptyAccessMethodArrays++;
                 }
             }
-            if (accessObject.get(ConsentExtensionConstants.TRANSACTIONS) != null) {
+            if (accessObject.get(AccessMethodEnum.TRANSACTIONS.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray transactions = (JSONArray) accessObject.get(ConsentExtensionConstants.TRANSACTIONS);
+                JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
                 if (transactions != null && transactions.size() == 0) {
                     numberOfEmptyAccessMethodArrays++;
                 }

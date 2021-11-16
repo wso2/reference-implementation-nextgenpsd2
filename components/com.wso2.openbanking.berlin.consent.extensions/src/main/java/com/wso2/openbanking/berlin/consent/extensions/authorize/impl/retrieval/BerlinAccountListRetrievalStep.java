@@ -17,7 +17,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
@@ -27,16 +26,12 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +65,8 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
         JSONObject accessObject = (JSONObject) consentDataObject.get(ConsentExtensionConstants.ACCESS_OBJECT);
 
         if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEFAULT.toString())) {
-            JSONArray accountDetailsArray = DataRetrievalUtil.getAccountsFromPayload(accessObject, consentData.getUserId());
+            JSONArray accountDetailsArray = DataRetrievalUtil
+                    .getAccountsFromPayload(accessObject, consentData.getUserId());
 
             if (accountDetailsArray == null) {
                 log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
@@ -92,19 +88,20 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
                 permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
                 permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
 
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.name());
-                accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.name());
+                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
+                accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
             } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS.toString())) {
                 permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
 
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
-            } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
+                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+            } else if (StringUtils.equalsIgnoreCase(permission,
+                    PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
                 permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
                 permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
 
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.name());
+                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
             }
 
             JSONArray accountArray = DataRetrievalUtil.getAccountsFromEndpoint(consentData.getUserId());
@@ -142,7 +139,7 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
 
             for (Object accountNumberJson : accountNumbersJsonArray) {
                 JSONObject obj = (JSONObject) accountNumberJson;
-                accountNumbers.add(obj.getAsString("iban"));
+                accountNumbers.add(obj.getAsString(ConsentExtensionConstants.IBAN));
             }
 
             Set<String> accountsAccNumberSet = new HashSet<>();
@@ -152,13 +149,13 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
             for (Object accessMethodJson : accessMethodsJsonArray) {
                 String accessMethod = (String) accessMethodJson;
 
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.ACCOUNTS.name())) {
+                if (StringUtils.equals(accessMethod, AccessMethodEnum.ACCOUNTS.toString())) {
                     accountsAccNumberSet.addAll(accountNumbers);
                 }
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.name())) {
+                if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.toString())) {
                     balancesAccNumberSet.addAll(accountNumbers);
                 }
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.name())) {
+                if (StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.toString())) {
                     transactionsAccNumberSet.addAll(accountNumbers);
                 }
             }

@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.authservlet.util;
 
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,8 +63,118 @@ public class AuthServletUtil {
 
     public static Map<String, Object> populateAccountsData(HttpServletRequest httpServletRequest, JSONObject dataSet) {
 
-        //todo: Implement for accounts flow
-        return new HashMap<>();
+        Map<String, Object> returnMaps = new HashMap<>();
+
+        // Setting the consent related details to display in the consent page
+        JSONArray consentDataJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
+        Map<String, List<String>> consentData = new LinkedHashMap<>();
+
+        for (int index = 0; index < consentDataJsonArray.length(); index++) {
+            JSONObject dataObj = consentDataJsonArray.getJSONObject(index);
+            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            ArrayList<String> listData = new ArrayList<>();
+
+            for (int i = 0; i < dataArray.length(); i++) {
+                listData.add(dataArray.getString(i));
+            }
+            consentData.put(title, listData);
+        }
+
+        // Setting the account details and permission to be displayed in the consent page
+        JSONArray accountDetailsJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.ACCOUNT_DETAILS);
+        Map<String, List<String>> staticDefaultMap = new HashMap<>();
+        boolean isStaticDefault = false;
+
+        Map<String, List<String>> selectBalanceMap = new HashMap<>();
+        boolean isSelectBalance = false;
+
+        Map<String, List<String>> staticBalanceMap = new HashMap<>();
+        boolean isStaticBalance = false;
+
+        Map<String, List<String>> selectAccountMap = new HashMap<>();
+        boolean isSelectAccount = false;
+
+        Map<String, List<String>> staticAccountMap = new HashMap<>();
+        boolean isStaticAccount = false;
+
+        Map<String, List<String>> selectTransactionMap = new HashMap<>();
+        boolean isSelectTransaction = false;
+
+        Map<String, List<String>> staticTransactionMap = new HashMap<>();
+        boolean isStaticTransaction = false;
+
+        for (int index = 0; index < accountDetailsJsonArray.length(); index++) {
+            JSONObject dataObj = accountDetailsJsonArray.getJSONObject(index);
+            String accountType = dataObj.getString(ConsentExtensionConstants.ACCOUNT_TYPE);
+            JSONArray accountNumbersJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.ACCOUNT_NUMBERS);
+            JSONArray permissionsJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
+
+            List<String> accountNumbers = new ArrayList<>();
+            List<String> permissions = new ArrayList<>();
+
+            for (int i = 0; i < accountNumbersJsonArray.length(); i++) {
+                JSONObject obj = accountNumbersJsonArray.getJSONObject(i);
+                accountNumbers.add(obj.getString(ConsentExtensionConstants.IBAN));
+            }
+
+            for (int i = 0; i < permissionsJsonArray.length(); i++) {
+                permissions.add(permissionsJsonArray.getString(i));
+            }
+
+            if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_DEFAULT)) {
+                isStaticDefault = true;
+                staticDefaultMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticDefaultMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_BALANCE)) {
+                isSelectBalance = true;
+                selectBalanceMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectBalanceMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_BALANCE)) {
+                isStaticBalance = true;
+                staticBalanceMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticBalanceMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_ACCOUNT)) {
+                isSelectAccount = true;
+                selectAccountMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectAccountMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_ACCOUNT)) {
+                isStaticAccount = true;
+                staticAccountMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticAccountMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_TRANSACTION)) {
+                isSelectTransaction = true;
+                selectTransactionMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectTransactionMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_TRANSACTION)) {
+                isStaticTransaction = true;
+                staticTransactionMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticTransactionMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            }
+        }
+
+        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, consentData);
+
+        returnMaps.put(ConsentExtensionConstants.STATIC_DEFAULT, staticDefaultMap);
+        returnMaps.put(ConsentExtensionConstants.SELECT_BALANCE, selectBalanceMap);
+        returnMaps.put(ConsentExtensionConstants.STATIC_BALANCE, staticBalanceMap);
+        returnMaps.put(ConsentExtensionConstants.SELECT_ACCOUNT, selectAccountMap);
+        returnMaps.put(ConsentExtensionConstants.STATIC_ACCOUNT, staticAccountMap);
+        returnMaps.put(ConsentExtensionConstants.SELECT_TRANSACTION, selectTransactionMap);
+        returnMaps.put(ConsentExtensionConstants.STATIC_TRANSACTION, staticTransactionMap);
+
+        returnMaps.put("isStaticDefault", isStaticDefault);
+        returnMaps.put("isSelectBalance", isSelectBalance);
+        returnMaps.put("isStaticBalance", isStaticBalance);
+        returnMaps.put("isSelectAccount", isSelectAccount);
+        returnMaps.put("isStaticAccount", isStaticAccount);
+        returnMaps.put("isSelectTransaction", isSelectTransaction);
+        returnMaps.put("isStaticTransaction", isStaticTransaction);
+
+        httpServletRequest.setAttribute(ConsentExtensionConstants.CONSENT_TYPE,
+                dataSet.getString(ConsentExtensionConstants.TYPE));
+
+        return returnMaps;
     }
 
     public static Map<String, Object> populateFundsConfirmationData(HttpServletRequest httpServletRequest,

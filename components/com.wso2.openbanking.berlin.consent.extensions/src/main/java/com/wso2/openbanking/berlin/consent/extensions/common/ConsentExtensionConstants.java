@@ -103,9 +103,6 @@ public class ConsentExtensionConstants {
     public static final String COMBINED_SERVICE_INDICATOR = "combinedServiceIndicator";
     public static final String COMBINED_SERVICE_INDICATOR_TITLE = "Combined Service Indicator";
     public static final String CARD_ACCOUNTS = "card-accounts";
-    public static final String AVAILABLE_ACCOUNTS = "availableAccounts";
-    public static final String AVAILABLE_ACCOUNTS_WITH_BALANCE = "availableAccountsWithBalance";
-    public static final String ALL_PSD2 = "allPsd2";
     public static final String ADDITIONAL_INFORMATION = "additionalInformation";
     public static final String ALL_ACCOUNTS = "allAccounts";
     public static final String ALL_ACCOUNTS_WITH_OWNER_NAME = "allAccountsWithOwnerName";
@@ -146,6 +143,9 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS_ACC_NUMBER_SET = "accountsAccNumberSet";
     public static final String BALANCES_ACC_NUMBER_SET = "balancesAccNumberSet";
     public static final String TRANSACTIONS_ACC_NUMBER_SET = "transactionsAccNumberSet";
+    public static final String CHECKED_ACCOUNTS = "checkedAccounts";
+    public static final String CHECKED_BALANCES = "checkedBalances";
+    public static final String CHECKED_TRANSACTIONS = "checkedTransactions";
     public static final String ACCOUNT_TYPE = "accountType";
     // Account types that are displayed in the consent page
     public static final String STATIC_DEFAULT = "static-default";

@@ -14,6 +14,7 @@ package com.wso2.openbanking.berlin.consent.extensions.validate.validator.util;
 
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -47,7 +48,7 @@ public class AccountValidationUtil {
         // Filtering only accounts access method mapping resources
         if (isOnlyAccounts) {
             for (ConsentMappingResource mappingResource : mappingResources) {
-                if (StringUtils.equals(mappingResource.getPermission(), ConsentExtensionConstants.ACCOUNTS)) {
+                if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.ACCOUNTS.toString())) {
                     filteredMappingResources.add(mappingResource);
                 }
             }
@@ -191,13 +192,13 @@ public class AccountValidationUtil {
     public static String getAccessMethod(List<String> pathList) {
 
         for (String path : pathList) {
-            if (path.contains(ConsentExtensionConstants.BALANCES)) {
-                return ConsentExtensionConstants.BALANCES;
-            } else if (path.contains(ConsentExtensionConstants.TRANSACTIONS)) {
-                return ConsentExtensionConstants.TRANSACTIONS;
+            if (path.contains(AccessMethodEnum.BALANCES.toString())) {
+                return AccessMethodEnum.BALANCES.toString();
+            } else if (path.contains(AccessMethodEnum.TRANSACTIONS.toString())) {
+                return AccessMethodEnum.TRANSACTIONS.toString();
             }
         }
-        return ConsentExtensionConstants.ACCOUNTS;
+        return AccessMethodEnum.ACCOUNTS.toString();
     }
 
     /**
@@ -208,7 +209,7 @@ public class AccountValidationUtil {
      */
     String getTransactionIdFromURL(List<String> pathList) {
 
-        int transactionsIndex = pathList.indexOf(ConsentExtensionConstants.TRANSACTIONS);
+        int transactionsIndex = pathList.indexOf(AccessMethodEnum.TRANSACTIONS.toString());
         int size = pathList.size();
 
         if (transactionsIndex == -1) {
@@ -232,8 +233,8 @@ public class AccountValidationUtil {
 
         int accountsIndex = -1;
 
-        if (pathList.contains(ConsentExtensionConstants.ACCOUNTS)) {
-            accountsIndex = pathList.indexOf(ConsentExtensionConstants.ACCOUNTS);
+        if (pathList.contains(AccessMethodEnum.ACCOUNTS.toString())) {
+            accountsIndex = pathList.indexOf(AccessMethodEnum.ACCOUNTS.toString());
         } else if (pathList.contains(ConsentExtensionConstants.CARD_ACCOUNTS)) {
             accountsIndex = pathList.indexOf(ConsentExtensionConstants.CARD_ACCOUNTS);
         }

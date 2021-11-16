@@ -24,6 +24,7 @@ import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
@@ -185,11 +186,11 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
 
         boolean isAccountAccess = AccountValidationUtil
-                .isWhichAccessMethod(ConsentExtensionConstants.ACCOUNTS, mappingResources);
+                .isWhichAccessMethod(AccessMethodEnum.ACCOUNTS.toString(), mappingResources);
         boolean isBalanceAccess = AccountValidationUtil
-                .isWhichAccessMethod(ConsentExtensionConstants.BALANCES, mappingResources);
+                .isWhichAccessMethod(AccessMethodEnum.BALANCES.toString(), mappingResources);
         boolean isTransactionAccess = AccountValidationUtil
-                .isWhichAccessMethod(ConsentExtensionConstants.TRANSACTIONS, mappingResources);
+                .isWhichAccessMethod(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
 
         if (StringUtils.isEmpty(accountId)) {
             log.debug("The Account ID can not be null or empty");
@@ -208,21 +209,21 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             }
         }
 
-        if (StringUtils.equals(accessMethod, ConsentExtensionConstants.BALANCES)) {
+        if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.toString())) {
             AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isBalanceAccess,
-                    isWithBalance, accountId, ConsentExtensionConstants.BALANCES);
+                    isWithBalance, accountId, AccessMethodEnum.BALANCES.toString());
             return;
         }
 
-        if (StringUtils.equals(accessMethod, ConsentExtensionConstants.ACCOUNTS)) {
+        if (StringUtils.equals(accessMethod, AccessMethodEnum.ACCOUNTS.toString())) {
             AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isAccountAccess,
-                    isWithBalance, accountId, ConsentExtensionConstants.ACCOUNTS);
+                    isWithBalance, accountId, AccessMethodEnum.ACCOUNTS.toString());
             return;
         }
 
-        if (StringUtils.equals(accessMethod, ConsentExtensionConstants.TRANSACTIONS)) {
+        if (StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.toString())) {
             AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isTransactionAccess,
-                    isWithBalance, accountId, ConsentExtensionConstants.TRANSACTIONS);
+                    isWithBalance, accountId, AccessMethodEnum.TRANSACTIONS.toString());
             return;
         }
 

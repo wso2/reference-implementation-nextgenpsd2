@@ -30,8 +30,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,6 +40,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Data retrieval util class
@@ -143,7 +143,7 @@ public class DataRetrievalUtil {
      * Gets account details using the initiation payload.
      *
      * @param accessObject access object
-     * @param userId user id
+     * @param userId       user id
      * @return accounts array
      */
     public static JSONArray getAccountsFromPayload(JSONObject accessObject, String userId) {
@@ -156,9 +156,9 @@ public class DataRetrievalUtil {
             return null;
         }
 
-        JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.name());
-        JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.name());
-        JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.name());
+        JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.toString());
+        JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
+        JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
 
         JSONArray allAccounts = new JSONArray();
 
@@ -191,8 +191,8 @@ public class DataRetrievalUtil {
             permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
 
             JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
-            accessMethodArray.add(AccessMethodEnum.BALANCES.name());
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+            accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
 
             JSONObject object = new JSONObject();
             object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
@@ -224,8 +224,8 @@ public class DataRetrievalUtil {
             permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
 
             JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
-            accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.name());
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+            accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
 
             JSONObject object = new JSONObject();
             object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
@@ -255,7 +255,7 @@ public class DataRetrievalUtil {
             permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
 
             JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.name());
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
 
             JSONObject object = new JSONObject();
             object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
@@ -304,7 +304,7 @@ public class DataRetrievalUtil {
         try {
             JSONObject accountJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(accountData);
 
-            String accountRefType = "iban";
+            String accountRefType = ConsentExtensionConstants.IBAN;
             JSONArray slideContent = (JSONArray) accountJson.get("accounts");
             Iterator i = slideContent.iterator();
 

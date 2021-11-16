@@ -17,6 +17,7 @@ import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authservlet.util.AuthServletUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -55,7 +56,25 @@ public class OBBerlinAuthServletImpl implements OBAuthServletInterface {
 
     @Override
     public Map<String, Object> updateConsentData(HttpServletRequest httpServletRequest) {
-        return null;
+
+        Map<String, Object> returnMaps = new HashMap<>();
+
+        String[] checkedAccounts = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_ACCOUNTS);
+        String[] checkedBalances = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_BALANCES);
+        String[] checkedTransactions = httpServletRequest
+                .getParameterValues(ConsentExtensionConstants.CHECKED_TRANSACTIONS);
+
+        if (checkedAccounts != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_ACCOUNTS, new JSONArray(checkedAccounts));
+        }
+        if (checkedBalances != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_BALANCES, new JSONArray(checkedBalances));
+        }
+        if (checkedTransactions != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_TRANSACTIONS, new JSONArray(checkedTransactions));
+        }
+
+        return returnMaps;
     }
 
     @Override

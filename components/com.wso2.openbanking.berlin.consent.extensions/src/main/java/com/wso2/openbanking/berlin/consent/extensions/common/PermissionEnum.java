@@ -17,10 +17,10 @@ package com.wso2.openbanking.berlin.consent.extensions.common;
  */
 public enum PermissionEnum {
 
-    AVAILABLE_ACCOUNTS("AvailableAccounts"),
-    AVAILABLE_ACCOUNTS_WITH_BALANCES("AvailableAccountsWithBalance"),
-    ALL_PSD2("AllPsd2"),
-    DEFAULT("Default");
+    AVAILABLE_ACCOUNTS("availableAccounts"),
+    AVAILABLE_ACCOUNTS_WITH_BALANCES("availableAccountsWithBalance"),
+    ALL_PSD2("allPsd2"),
+    DEFAULT("default");
 
     private String value;
 
