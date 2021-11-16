@@ -315,7 +315,7 @@ public class AccountConsentUtil {
      * @param date date in string format
      * @return date/time after converting to UTC timestamp
      */
-    public static String convertToUtcTimestamp(String date) {
+    public static long convertToUtcTimestamp(String date) {
 
         LocalDate localDate = ConsentExtensionUtil.parseDateToISO(date, TPPMessage.CodeEnum.FORMAT_ERROR,
                 ErrorConstants.VALID_UNTIL_DATE_INVALID);
@@ -323,8 +323,7 @@ public class AccountConsentUtil {
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(ConsentExtensionConstants.UTC));
 
         // Retrieve the UTC timestamp in long.
-        long utcTimestamp = Instant.from(zonedDateTime).getEpochSecond();
-        return Long.toString(utcTimestamp);
+        return Instant.from(zonedDateTime).getEpochSecond();
     }
 
     /**
@@ -334,10 +333,11 @@ public class AccountConsentUtil {
      * @param updatedTimeVal last updated tile
      * @return whether consent is expired or not
      */
-    public static boolean isConsentExpired(String validUntilDate, long updatedTimeVal) {
+    public static boolean isConsentExpired(long validUntilDate, long updatedTimeVal) {
 
-        LocalDate expDate = ConsentExtensionUtil.parseDateToISO(validUntilDate, TPPMessage.CodeEnum.FORMAT_ERROR,
-                ErrorConstants.VALID_UNTIL_DATE_INVALID);
+        LocalDateTime expDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(validUntilDate),
+                ZoneId.of(ConsentExtensionConstants.UTC));
+        LocalDate expDate = expDateTime.toLocalDate();
         LocalDateTime updatedDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(updatedTimeVal),
                 ZoneId.of(ConsentExtensionConstants.UTC));
         LocalDate updatedDate = updatedDateTime.toLocalDate();

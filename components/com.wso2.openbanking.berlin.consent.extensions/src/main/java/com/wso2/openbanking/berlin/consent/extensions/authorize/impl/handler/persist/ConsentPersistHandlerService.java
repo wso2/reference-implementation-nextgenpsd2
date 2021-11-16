@@ -17,12 +17,16 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.AuthorisationStateChangeHook;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.AuthorisationAggregateStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +66,7 @@ class ConsentPersistHandlerService {
         AuthorizationResource currentAuthorisationResource =
                 consentCoreService.getAuthorizationResource(authorisationId);
 
+        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(psuId);
         String consentId = consentResource.getConsentID();
         String currentAuthorisationType = currentAuthorisationResource.getAuthorizationType();
 
@@ -89,11 +95,18 @@ class ConsentPersistHandlerService {
                 if (aggregatedStatus.isPresent()) {
                     AuthorisationStateChangeHook stateChangeHook = AuthorizationHandlerFactory
                             .getAuthorisationStateChangeHook(consentResource.getConsentType());
+
+                    // Handling multiple recurring indicator for accounts
+                    if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
+                            && StringUtils.equals(aggregatedStatus.get().toString(),
+                            AuthorisationAggregateStatusEnum.FULLY_AUTHORISED.toString())) {
+                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant);
+                    }
+
                     String consentStatusToUpdate = stateChangeHook.onAuthorisationStateChange(consentId,
                             currentAuthorisationType, aggregatedStatus.get(), currentAuthorisationResource);
-                    consentCoreService.bindUserAccountsToConsent(consentResource,
-                            ConsentExtensionUtil.appendSuperTenantDomain(psuId), authorisationId,
-                            accountIdMapWithPermissions, authStatus, consentStatusToUpdate);
+                    consentCoreService.bindUserAccountsToConsent(consentResource, loggedInUserWithSuperTenant,
+                            authorisationId, accountIdMapWithPermissions, authStatus, consentStatusToUpdate);
                 } else {
                     log.error(String.format(ErrorConstants.INVALID_PAYMENT_CONSENT_STATUS_UPDATE, consentId));
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -104,6 +117,49 @@ class ConsentPersistHandlerService {
             log.error(ErrorConstants.AUTH_ID_CONSENT_ID_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.AUTH_ID_CONSENT_ID_MISMATCH);
+        }
+    }
+
+    private static void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
+            throws ConsentManagementException {
+
+        // Expire old recurring consents only if the recurringIndicator is set to true and
+        // EnableMultipleRecurringConsent is set to false.
+        if (CommonConfigParser.getInstance().isMultipleRecurringConsentEnabled()
+                || !currentConsentResource.isRecurringIndicator()) {
+            return;
+        }
+
+        List<DetailedConsentResource> detailedConsentResources;
+
+        /*
+        Filtering out the consent resource where;
+        it belongs to the same client as the current consent resource
+        and is an account consent type having a single authorisation resource
+        and belonging to the current logged in user
+         */
+        detailedConsentResources = consentCoreService.searchDetailedConsents(null,
+                        new ArrayList<>(Collections.singletonList(currentConsentResource.getClientID())),
+                        new ArrayList<>(Collections.singletonList(currentConsentResource.getConsentType())),
+                        new ArrayList<>(Collections.singletonList(ConsentStatusEnum.VALID.toString())),
+                        null, null, null, null, null)
+                .stream()
+                .filter(detailedConsentResource -> {
+                    if (detailedConsentResource.getAuthorizationResources().size() == 1) {
+                        AuthorizationResource authResource = detailedConsentResource
+                                .getAuthorizationResources().get(0);
+                        return StringUtils.equals(authResource.getUserID(), loggedInUserId);
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        // Expiring all the previous consents except the current one
+        for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
+            if (!StringUtils.equals(detailedConsentResource.getConsentID(), currentConsentResource.getConsentID())) {
+                consentCoreService.updateConsentStatus(detailedConsentResource.getConsentID(),
+                        ConsentStatusEnum.EXPIRED.toString());
+            }
         }
     }
 
