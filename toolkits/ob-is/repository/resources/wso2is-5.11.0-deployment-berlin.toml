@@ -394,27 +394,25 @@ max_connections_per_route = 1500
 
 #================Berlin Toolkit==============
 #================Identity==============
-
-# Add berlin AuthServletImpl when implemented
 [open_banking.identity.authentication_webapp]
-servlet_extension = ""
+servlet_extension = "com.wso2.openbanking.berlin.consent.extensions.authservlet.impl.OBBerlinAuthServletImpl"
 
 #================consent management==============
 [[open_banking.consent.authorize_steps.retrieve]]
-class = ""
+class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.NonRegulatoryConsentStep"
 priority = 1
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = ""
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinConsentRetrievalStep"
 priority = 2
 
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinAccountListRetrievalStep"
+priority = 3
+
 [[open_banking.consent.authorize_steps.persist]]
-class = ""
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
 priority = 1
-
-[[open_banking.consent.authorize_steps.persist]]
-class = ""
-priority = 2
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"

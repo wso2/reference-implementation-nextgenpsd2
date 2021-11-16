@@ -15,18 +15,37 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.common.impl;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.AuthorisationStateChangeHook;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.AuthorisationAggregateStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Authorisation state change hook implementation for Accounts service.
  */
 public class AccountsStateChangeHook implements AuthorisationStateChangeHook {
 
+    private static final Log log = LogFactory.getLog(AccountsStateChangeHook.class);
+
     @Override
     public String onAuthorisationStateChange(String consentId, String authType,
-                                           AuthorisationAggregateStatusEnum aggregatedStatus,
-                                           AuthorizationResource currentAuthorisation) {
+                                             AuthorisationAggregateStatusEnum aggregatedStatus,
+                                             AuthorizationResource currentAuthorisation) {
 
-        //todo: Implement for accounts flow
-        return null;
+        String consentStatus = null;
+
+        switch (aggregatedStatus) {
+            case FULLY_AUTHORISED:
+                consentStatus = ConsentStatusEnum.VALID.name();
+                break;
+            case REJECTED:
+                consentStatus = ConsentStatusEnum.REJECTED.name();
+                break;
+            case PARTIALLY_AUTHORISED:
+                consentStatus = ConsentStatusEnum.PARTIALLY_AUTHORISED.name();
+                break;
+            default:
+                log.warn("Unbindable authorisation state offered");
+        }
+        return consentStatus;
     }
 }

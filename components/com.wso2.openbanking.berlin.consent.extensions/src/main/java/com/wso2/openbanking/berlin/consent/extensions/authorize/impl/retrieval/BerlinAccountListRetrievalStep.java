@@ -159,9 +159,17 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
                     transactionsAccNumberSet.addAll(accountNumbers);
                 }
             }
-            metaDataMap.put(ConsentExtensionConstants.ACCOUNTS_ACC_NUMBER_SET, accountsAccNumberSet);
-            metaDataMap.put(ConsentExtensionConstants.BALANCES_ACC_NUMBER_SET, balancesAccNumberSet);
-            metaDataMap.put(ConsentExtensionConstants.TRANSACTIONS_ACC_NUMBER_SET, transactionsAccNumberSet);
+            metaDataMap.put(ConsentExtensionConstants.ACCOUNTS_ACC_NUMBER_SET, toJsonArray(accountsAccNumberSet));
+            metaDataMap.put(ConsentExtensionConstants.BALANCES_ACC_NUMBER_SET, toJsonArray(balancesAccNumberSet));
+            metaDataMap.put(ConsentExtensionConstants.TRANSACTIONS_ACC_NUMBER_SET,
+                    toJsonArray(transactionsAccNumberSet));
         }
+    }
+
+    private JSONArray toJsonArray(Set<String> set) {
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.addAll(set);
+        return jsonArray;
     }
 }

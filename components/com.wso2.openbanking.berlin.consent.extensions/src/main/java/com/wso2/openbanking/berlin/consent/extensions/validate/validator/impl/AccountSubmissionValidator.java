@@ -54,7 +54,7 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             throws ConsentException {
 
         /*
-        The 'permission'(can contain AvailableAccounts, AvailableAccountsWithBalances, AllPsd2 or Default)
+        The 'permission'(can contain availableAccounts, availableAccountsWithBalances, allPsd2 or default)
         and 'accessMethod'(can contain allAccounts or allAccountsWithOwnerName) stored in the consent validation
         result is only relevant for 'Account List of Available Accounts' and 'Global' consents.
 
