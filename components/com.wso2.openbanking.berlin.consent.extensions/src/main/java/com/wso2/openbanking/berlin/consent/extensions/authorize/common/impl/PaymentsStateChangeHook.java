@@ -38,27 +38,27 @@ public class PaymentsStateChangeHook implements AuthorisationStateChangeHook {
         if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(), authType)) {
             switch (aggregatedStatus) {
                 case FULLY_AUTHORISED:
-                    transactionStatus = TransactionStatusEnum.ACCP.name();
+                    transactionStatus = TransactionStatusEnum.ACCP.toString();
                     break;
                 case REJECTED:
-                    transactionStatus = TransactionStatusEnum.RJCT.name();
+                    transactionStatus = TransactionStatusEnum.RJCT.toString();
                     break;
                 case PARTIALLY_AUTHORISED:
-                    transactionStatus = TransactionStatusEnum.PATC.name();
+                    transactionStatus = TransactionStatusEnum.PATC.toString();
                     break;
                 default:
-                    log.warn("Unbindable authorisation state offered");
+                    log.warn(String.format("Unbindable authorisation state (%s) offered", aggregatedStatus));
             }
         } else {
             switch (aggregatedStatus) {
                 case FULLY_AUTHORISED:
-                    transactionStatus = TransactionStatusEnum.CANC.name();
+                    transactionStatus = TransactionStatusEnum.CANC.toString();
                     break;
                 case REJECTED:
-                    transactionStatus = TransactionStatusEnum.ACCP.name();
+                    transactionStatus = TransactionStatusEnum.ACCP.toString();
                     break;
                 default:
-                    log.warn("Unbindable authorisation state offered");
+                    log.warn(String.format("Unbindable authorisation state (%s) offered", aggregatedStatus));
             }
         }
         return transactionStatus;

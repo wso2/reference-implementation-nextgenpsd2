@@ -35,16 +35,16 @@ public class AccountsStateChangeHook implements AuthorisationStateChangeHook {
 
         switch (aggregatedStatus) {
             case FULLY_AUTHORISED:
-                consentStatus = ConsentStatusEnum.VALID.name();
+                consentStatus = ConsentStatusEnum.VALID.toString();
                 break;
             case REJECTED:
-                consentStatus = ConsentStatusEnum.REJECTED.name();
+                consentStatus = ConsentStatusEnum.REJECTED.toString();
                 break;
             case PARTIALLY_AUTHORISED:
-                consentStatus = ConsentStatusEnum.PARTIALLY_AUTHORISED.name();
+                consentStatus = ConsentStatusEnum.PARTIALLY_AUTHORISED.toString();
                 break;
             default:
-                log.warn("Unbindable authorisation state offered");
+                log.warn(String.format("Unbindable authorisation state (%s) offered", aggregatedStatus));
         }
         return consentStatus;
     }

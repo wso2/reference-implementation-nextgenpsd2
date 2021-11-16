@@ -128,6 +128,12 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
         }
     }
 
+    /**
+     * Appends the account details to the consent metadata to access it from the persist steps.
+     *
+     * @param metaDataMap consent metadata map
+     * @param accountDetailsArray map of account details
+     */
     private void addAccountDetailsToMetaData(Map<String, Object> metaDataMap, JSONArray accountDetailsArray) {
 
         for (Object accountDetails : accountDetailsArray) {

@@ -74,7 +74,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
 
         String requestPath = consentValidateData.getRequestPath();
-        String validUntilDate = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
 
         if (log.isDebugEnabled()) {
@@ -82,12 +81,12 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
         boolean isConsentExpiredStatus = StringUtils.equals(detailedConsentResource.getCurrentStatus(),
                 ConsentStatusEnum.EXPIRED.toString());
-        if (isConsentExpiredStatus || AccountConsentUtil.isConsentExpired(validUntilDate,
+        if (isConsentExpiredStatus || AccountConsentUtil.isConsentExpired(detailedConsentResource.getValidityPeriod(),
                 detailedConsentResource.getUpdatedTime())) {
             if (!isConsentExpiredStatus) {
                 try {
                     coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
-                            ConsentStatusEnum.EXPIRED.name());
+                            ConsentStatusEnum.EXPIRED.toString());
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -136,14 +135,11 @@ public class AccountSubmissionValidator implements SubmissionValidator {
 
         }
 
-        boolean recurringIndicator = Boolean.parseBoolean(consentReceipt
-                .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR));
-
         log.debug("Expiring consent for one off consents after one time use");
-        if (!recurringIndicator) {
+        if (!detailedConsentResource.isRecurringIndicator()) {
             try {
                 coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
-                        ConsentStatusEnum.EXPIRED.name());
+                        ConsentStatusEnum.EXPIRED.toString());
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,

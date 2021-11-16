@@ -173,8 +173,8 @@ public class PaymentServiceHandler implements ServiceHandler {
         ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
         log.debug("Send an error if the consent is already deleted");
-        if (StringUtils.equals(TransactionStatusEnum.CANC.name(), consentResource.getCurrentStatus())
-                || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), consentResource.getCurrentStatus())) {
+        if (StringUtils.equals(TransactionStatusEnum.CANC.toString(), consentResource.getCurrentStatus())
+                || StringUtils.equals(TransactionStatusEnum.REVOKED.toString(), consentResource.getCurrentStatus())) {
             log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INVALID_STATUS_VALUE,
@@ -194,7 +194,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                 log.debug("Update consent with ACTC status");
                 try {
                     updatedConsentResource = coreService.updateConsentStatus(paymentId,
-                            TransactionStatusEnum.ACTC.name());
+                            TransactionStatusEnum.ACTC.toString());
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -210,7 +210,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                         "an explicit authorisation");
                 try {
                     // TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/6875
-                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.name(),
+                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.toString(),
                             "Deleted Payment consent");
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);

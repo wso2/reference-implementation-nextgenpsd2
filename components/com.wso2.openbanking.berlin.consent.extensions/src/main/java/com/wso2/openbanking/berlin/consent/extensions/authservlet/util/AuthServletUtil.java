@@ -69,14 +69,14 @@ public class AuthServletUtil {
         JSONArray consentDataJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
         Map<String, List<String>> consentData = new LinkedHashMap<>();
 
-        for (int index = 0; index < consentDataJsonArray.length(); index++) {
-            JSONObject dataObj = consentDataJsonArray.getJSONObject(index);
+        for (int consentDataIndex = 0; consentDataIndex < consentDataJsonArray.length(); consentDataIndex++) {
+            JSONObject dataObj = consentDataJsonArray.getJSONObject(consentDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
             JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
             ArrayList<String> listData = new ArrayList<>();
 
-            for (int i = 0; i < dataArray.length(); i++) {
-                listData.add(dataArray.getString(i));
+            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
+                listData.add(dataArray.getString(dataIndex));
             }
             consentData.put(title, listData);
         }
@@ -104,8 +104,9 @@ public class AuthServletUtil {
         Map<String, List<String>> staticTransactionMap = new HashMap<>();
         boolean isStaticTransaction = false;
 
-        for (int index = 0; index < accountDetailsJsonArray.length(); index++) {
-            JSONObject dataObj = accountDetailsJsonArray.getJSONObject(index);
+        for (int accountDetailsIndex = 0; accountDetailsIndex < accountDetailsJsonArray.length();
+             accountDetailsIndex++) {
+            JSONObject dataObj = accountDetailsJsonArray.getJSONObject(accountDetailsIndex);
             String accountType = dataObj.getString(ConsentExtensionConstants.ACCOUNT_TYPE);
             JSONArray accountNumbersJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.ACCOUNT_NUMBERS);
             JSONArray permissionsJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
@@ -113,13 +114,13 @@ public class AuthServletUtil {
             List<String> accountNumbers = new ArrayList<>();
             List<String> permissions = new ArrayList<>();
 
-            for (int i = 0; i < accountNumbersJsonArray.length(); i++) {
-                JSONObject obj = accountNumbersJsonArray.getJSONObject(i);
+            for (int accNumberIndex = 0; accNumberIndex < accountNumbersJsonArray.length(); accNumberIndex++) {
+                JSONObject obj = accountNumbersJsonArray.getJSONObject(accNumberIndex);
                 accountNumbers.add(obj.getString(ConsentExtensionConstants.IBAN));
             }
 
-            for (int i = 0; i < permissionsJsonArray.length(); i++) {
-                permissions.add(permissionsJsonArray.getString(i));
+            for (int permissionIndex = 0; permissionIndex < permissionsJsonArray.length(); permissionIndex++) {
+                permissions.add(permissionsJsonArray.getString(permissionIndex));
             }
 
             if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_DEFAULT)) {

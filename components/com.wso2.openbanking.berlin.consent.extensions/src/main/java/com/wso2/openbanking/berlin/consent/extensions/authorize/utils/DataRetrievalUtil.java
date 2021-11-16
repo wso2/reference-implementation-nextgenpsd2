@@ -44,7 +44,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Data retrieval util class
+ * Data retrieval util class.
  */
 public class DataRetrievalUtil {
 
@@ -93,7 +93,7 @@ public class DataRetrievalUtil {
                 return null;
             } else {
                 reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),
-                        StandardCharsets.UTF_8.name()));
+                        StandardCharsets.UTF_8.toString()));
                 String inputLine;
                 StringBuffer buffer = new StringBuffer();
                 while ((inputLine = reader.readLine()) != null) {
@@ -135,7 +135,7 @@ public class DataRetrievalUtil {
                 pairs.add(new BasicNameValuePair(key.getKey(), key.getValue()));
             }
         }
-        String queries = URLEncodedUtils.format(pairs, StandardCharsets.UTF_8.name());
+        String queries = URLEncodedUtils.format(pairs, StandardCharsets.UTF_8.toString());
         return baseURL + "?" + queries;
     }
 
@@ -311,19 +311,6 @@ public class DataRetrievalUtil {
             while (i.hasNext()) {
                 JSONObject slide = (JSONObject) i.next();
                 String account = (String) slide.get(accountRefType);
-
-                if (configParser.isMultiCurrencyEnabled()) {
-                    /*
-                     * account = iban:currency
-                     *
-                     * currency will be empty when bank response does not have "currency" key.
-                     * if currency is empty particular iBan will be available for any currency.
-                     * Same iBan can have more than one currency and consider them as separate accounts
-                     */
-                    if (slide.containsKey(ConsentExtensionConstants.CURRENCY)) {
-                        account = account + ":" + (String) slide.get(ConsentExtensionConstants.CURRENCY);
-                    }
-                }
 
                 JSONObject accountObject = new JSONObject();
                 accountObject.put(accountRefType, account);

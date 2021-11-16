@@ -121,7 +121,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -157,7 +157,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
@@ -186,7 +186,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -220,7 +220,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -254,7 +254,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -288,7 +288,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -322,7 +322,7 @@ public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestC
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();

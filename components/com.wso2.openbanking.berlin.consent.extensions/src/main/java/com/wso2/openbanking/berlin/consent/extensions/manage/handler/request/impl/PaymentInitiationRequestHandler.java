@@ -79,7 +79,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
                     ConsentExtensionUtil.getConsentTypeFromRequestPath(consentManageData.getRequestPath());
 
             ConsentResource consentResource = new ConsentResource(consentManageData.getClientId(),
-                    requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.name());
+                    requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.toString());
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
                     .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
