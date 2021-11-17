@@ -112,19 +112,16 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
 
         log.debug("Consent is Authorized by User");
-        JSONObject consentInfo = new JSONObject();
+        JSONObject consentInfo = consentValidationResult.getConsentInformation();
 
         String permission = detailedConsentResource.getConsentAttributes().get(ConsentExtensionConstants.PERMISSION);
-        consentReceipt.appendField(ConsentExtensionConstants.CONSENT_ID, detailedConsentResource.getConsentID());
+        consentInfo.appendField(ConsentExtensionConstants.CONSENT_ID, detailedConsentResource.getConsentID());
+        consentInfo.appendField(ConsentExtensionConstants.VALIDATION_RESPONSE_PERMISSION, permission);
 
         if (!StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEFAULT.toString())) {
-            consentReceipt.appendField(ConsentExtensionConstants.VALIDATION_RESPONSE_PERMISSION, permission);
-            consentReceipt.appendField(ConsentExtensionConstants.ACCESS_METHOD,
+            consentInfo.appendField(ConsentExtensionConstants.ACCESS,
                     getAccessMethodForPermission(permission, consentReceipt));
         }
-
-        consentInfo.appendField(ConsentExtensionConstants.ACCOUNT_CONSENT_INFO, consentReceipt);
-        consentValidationResult.setConsentInformation(consentInfo);
 
         if (AccountValidationUtil.isSingleAccountRetrieveRequest(requestPath)) {
             log.debug("Validating single accounts retrieval");
@@ -132,7 +129,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         } else if (AccountValidationUtil.isBulkAccountRetrieveRequest(requestPath)) {
             log.debug("Validating bulk accounts retrieval");
             validateAccountPermissionsForBulkAccounts(consentValidateData, consentValidationResult, permission);
-
         }
 
         log.debug("Expiring consent for one off consents after one time use");
