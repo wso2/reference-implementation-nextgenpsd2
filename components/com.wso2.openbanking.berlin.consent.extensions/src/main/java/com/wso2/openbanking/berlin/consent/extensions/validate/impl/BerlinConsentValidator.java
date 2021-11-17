@@ -43,6 +43,9 @@ public class BerlinConsentValidator implements ConsentValidator {
             throws ConsentException {
 
         HeaderValidator.validateXRequestId(consentValidateData.getHeaders());
+        consentValidationResult.getConsentInformation()
+                .appendField(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                        consentValidateData.getHeaders().getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         if (consentValidateData.getHeaders().containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             HeaderValidator.validatePsuIpAddress(consentValidateData.getHeaders());

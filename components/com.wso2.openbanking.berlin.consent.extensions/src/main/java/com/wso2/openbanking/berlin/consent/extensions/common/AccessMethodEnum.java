@@ -13,18 +13,17 @@
 package com.wso2.openbanking.berlin.consent.extensions.common;
 
 /**
- * Permission enum.
+ * Access method enum.
  */
-public enum PermissionEnum {
+public enum AccessMethodEnum {
 
-    AVAILABLE_ACCOUNTS("availableAccounts"),
-    AVAILABLE_ACCOUNTS_WITH_BALANCES("availableAccountsWithBalance"),
-    ALL_PSD2("allPsd2"),
-    DEFAULT("default");
+    ACCOUNTS("accounts"),
+    BALANCES("balances"),
+    TRANSACTIONS("transactions");
 
     private String value;
 
-    PermissionEnum(String value) {
+    AccessMethodEnum(String value) {
         this.value = value;
     }
 
@@ -32,8 +31,8 @@ public enum PermissionEnum {
         return String.valueOf(value);
     }
 
-    public static PermissionEnum fromValue(String text) {
-        for (PermissionEnum b : PermissionEnum.values()) {
+    public static AccessMethodEnum fromValue(String text) {
+        for (AccessMethodEnum b : AccessMethodEnum.values()) {
             if (text.equals(String.valueOf(b.value))) {
                 return b;
             }

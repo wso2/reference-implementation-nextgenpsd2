@@ -78,9 +78,17 @@ public class AccountInitiationRequestHandler implements RequestHandler {
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
-            ConsentResource consentResource = new ConsentResource(clientId,
-                    requestPayload.toJSONString(), ConsentTypeEnum.ACCOUNTS.toString(),
-                    ConsentStatusEnum.RECEIVED.toString());
+            ConsentResource consentResource = new ConsentResource(clientId, requestPayload.toJSONString(),
+                    ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.RECEIVED.toString());
+
+            // Setting additional properties to consent resource
+            consentResource.setRecurringIndicator(Boolean.parseBoolean(requestPayload
+                    .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR)));
+            consentResource.setConsentFrequency((Integer) requestPayload
+                    .getAsNumber(ConsentExtensionConstants.FREQUENCY_PER_DAY));
+
+            String validUntilString = requestPayload.getAsString(ConsentExtensionConstants.VALID_UNTIL);
+            consentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
 
             String tenantEnsuredPSUId = ConsentExtensionUtil
                     .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
@@ -171,9 +179,6 @@ public class AccountInitiationRequestHandler implements RequestHandler {
                                                                 Map<String, Object> scaInfoMap,
                                                                 boolean isExplicitAuth) {
 
-        JSONObject requestObject = (JSONObject) consentManageData.getPayload();
-        String validUntilUtcTimeStamp = AccountConsentUtil.convertToUtcTimestamp(
-                (String) requestObject.get(ConsentExtensionConstants.VALID_UNTIL));
         Map<String, String> headersMap = consentManageData.getHeaders();
 
         Map<String, String> consentAttributesMap = new HashMap<>();
@@ -182,7 +187,8 @@ public class AccountInitiationRequestHandler implements RequestHandler {
         consentAttributesMap.put(ConsentExtensionConstants.PERMISSION, AccountConsentUtil.getPermission());
 
         // Storing consent expire attribute to expire in background
-        consentAttributesMap.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, validUntilUtcTimeStamp);
+        consentAttributesMap.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE,
+                Long.toString(createdConsent.getValidityPeriod()));
 
         if (!isExplicitAuth) {
             CommonConsentUtil.storeInitiationScaInfoToConsentAttributes(consentAttributesMap, createdConsent,

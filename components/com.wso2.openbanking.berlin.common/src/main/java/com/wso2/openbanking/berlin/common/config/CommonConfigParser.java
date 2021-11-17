@@ -429,4 +429,31 @@ public class CommonConfigParser {
     public boolean isAccountIdValidationEnabled() {
         return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.IS_ACCOUNT_ID_VALIDATION_ENABLED));
     }
+
+    public String getShareableAccountsRetrieveEndpoint() {
+        if (getConfiguration().get(CommonConstants.SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT) == null) {
+            log.error("Shareable accounts retrieve endpoint is not set");
+            return "";
+        } else {
+            return ((String) getConfiguration().get(CommonConstants.SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT)).trim();
+        }
+    }
+
+    public String getPayableAccountsRetrieveEndpoint() {
+        if (getConfiguration().get(CommonConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT) == null) {
+            log.error("Payable accounts retrieve endpoint is not set");
+            return "";
+        } else {
+            return ((String) getConfiguration().get(CommonConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT)).trim();
+        }
+    }
+
+    public boolean isMultiCurrencyEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.MULTI_CURRENCY_ENABLED));
+    }
+
+    public boolean isMultipleRecurringConsentEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration()
+                .get(CommonConstants.MULTIPLE_RECURRING_CONSENT_ENABLED));
+    }
 }

@@ -20,9 +20,18 @@ function approvedBerlinConsent() {
 // Submit data sharing from
 function validateBerlinFrm() {
     if (document.getElementById('type').value == "accounts") {
-        if (document.getElementById(isReauthAccountUpdateEnabled) === "false" &&
-                (document.getElementById('account').value === "" ||
-            document.getElementById('account').value === "default")) {
+
+        var checkedAccounts = $('[name="checkedAccounts"]').length;
+        var checkedBalances = $('[name="checkedBalances"]').length;
+        var checkedTransactions = $('[name="checkedTransactions"]').length;
+        var isAccountsChecked = $('input[name="checkedAccounts"]:checkbox').filter(':checked').length > 0;
+        var isBalancesChecked = $('input[name="checkedBalances"]:checkbox').filter(':checked').length > 0;
+        var isTransactionsChecked = $('input[name="checkedTransactions"]:checkbox').filter(':checked').length > 0;
+
+        // Checking if any of the checkable elements are present and if at least one is checked
+        // if they are present in the dom
+        if ((checkedAccounts && !isAccountsChecked) || (checkedBalances && !isBalancesChecked)
+            || (checkedTransactions && !isTransactionsChecked)) {
             $(".acc-err").show();
             return false;
         } else {

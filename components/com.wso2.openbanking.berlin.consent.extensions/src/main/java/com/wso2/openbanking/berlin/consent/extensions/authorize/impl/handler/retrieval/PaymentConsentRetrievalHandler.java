@@ -72,11 +72,11 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
         String consentStatus = consentResource.getCurrentStatus();
 
         if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(), authType)) {
-            isApplicable = StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+            isApplicable = StringUtils.equals(TransactionStatusEnum.RCVD.toString(), consentStatus);
         }
 
         if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
-            isApplicable = StringUtils.equals(TransactionStatusEnum.ACTC.name(), consentStatus);
+            isApplicable = StringUtils.equals(TransactionStatusEnum.ACTC.toString(), consentStatus);
         }
 
         if (log.isDebugEnabled()) {

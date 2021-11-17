@@ -30,7 +30,6 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.fac
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -109,39 +108,36 @@ public class AccountServiceHandler implements ServiceHandler {
         ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
         ConsentResource updatedConsentResource = null;
-        try {
-            JSONObject consentReceipt =
-                    (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(consentResource.getReceipt());
 
-            String validUntilDate = consentReceipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
-
-            if (AccountConsentUtil.isConsentExpired(validUntilDate, consentResource.getUpdatedTime())) {
-                log.debug("The Consent is expired");
-                try {
-                    updatedConsentResource = coreService.updateConsentStatus(consentId,
-                            ConsentStatusEnum.EXPIRED.name());
-                } catch (ConsentManagementException e) {
-                    log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            ErrorConstants.CONSENT_UPDATE_ERROR);
-                }
+        if (AccountConsentUtil.isConsentExpired(consentResource.getValidityPeriod(),
+                consentResource.getUpdatedTime())) {
+            log.debug("The Consent is expired");
+            try {
+                updatedConsentResource = coreService.updateConsentStatus(consentId,
+                        ConsentStatusEnum.EXPIRED.toString());
+            } catch (ConsentManagementException e) {
+                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ErrorConstants.CONSENT_UPDATE_ERROR);
             }
+        }
 
-            if (updatedConsentResource != null) {
-                consentResource = updatedConsentResource;
-            }
+        if (updatedConsentResource != null) {
+            consentResource = updatedConsentResource;
+        }
 
-            if (StringUtils.contains(requestPath, ConsentExtensionConstants.STATUS)) {
-                consentManageData.setResponsePayload(ConsentExtensionUtil.getConsentStatusResponse(consentResource,
-                        consentType));
-            } else {
+        if (StringUtils.contains(requestPath, ConsentExtensionConstants.STATUS)) {
+            consentManageData.setResponsePayload(ConsentExtensionUtil.getConsentStatusResponse(consentResource,
+                    consentType));
+        } else {
+            try {
                 consentManageData.setResponsePayload(AccountConsentUtil
                         .constructAccountConsentGetResponse(consentResource));
+            } catch (ParseException e) {
+                log.error(ErrorConstants.RESPONSE_CONSTRUCT_ERROR, e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ErrorConstants.RESPONSE_CONSTRUCT_ERROR);
             }
-        } catch (ParseException e) {
-            log.error(ErrorConstants.RESPONSE_CONSTRUCT_ERROR, e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    ErrorConstants.RESPONSE_CONSTRUCT_ERROR);
         }
         consentManageData.setResponseStatus(ResponseStatus.OK);
     }

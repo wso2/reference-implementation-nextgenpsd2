@@ -67,6 +67,7 @@ public class ConsentExtensionConstants {
     public static final String FREQUENCY_TITLE = "Frequency";
     public static final String EXECUTION_RULE_TITLE = "Execution Rule";
     public static final String REQUESTED_DATA_TITLE = "Requested Data: ";
+    public static final String CONSENT_DETAILS_TITLE = "Consent Details: ";
     public static final String CREDITOR_AGENT_TITLE = "Creditor Agent: ";
     public static final String PAYMENT_TITLE = "Payment ";
     public static final String DATA_REQUESTED = "data_requested";
@@ -91,17 +92,17 @@ public class ConsentExtensionConstants {
     public static final String CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "card-accounts";
     public static final String MAXIMUM_VALID_DATE = "9999-12-31";
     public static final String ACCESS = "access";
+    public static final String ACCESS_OBJECT = "accessObject";
+    public static final String ACCOUNT_DETAILS = "accountDetails";
     public static final String RECURRING_INDICATOR = "recurringIndicator";
+    public static final String RECURRING_INDICATOR_TITLE = "Recurring Indicator";
     public static final String VALID_UNTIL = "validUntil";
+    public static final String VALID_UNTIL_TITLE = "Consent Expiry Date";
     public static final String FREQUENCY_PER_DAY = "frequencyPerDay";
+    public static final String FREQUENCY_PER_DAY_TITLE = "Frequency Per Day";
     public static final String COMBINED_SERVICE_INDICATOR = "combinedServiceIndicator";
-    public static final String ACCOUNTS = "accounts";
+    public static final String COMBINED_SERVICE_INDICATOR_TITLE = "Combined Service Indicator";
     public static final String CARD_ACCOUNTS = "card-accounts";
-    public static final String BALANCES = "balances";
-    public static final String TRANSACTIONS = "transactions";
-    public static final String AVAILABLE_ACCOUNTS = "availableAccounts";
-    public static final String AVAILABLE_ACCOUNTS_WITH_BALANCE = "availableAccountsWithBalance";
-    public static final String ALL_PSD2 = "allPsd2";
     public static final String ADDITIONAL_INFORMATION = "additionalInformation";
     public static final String ALL_ACCOUNTS = "allAccounts";
     public static final String ALL_ACCOUNTS_WITH_OWNER_NAME = "allAccountsWithOwnerName";
@@ -112,8 +113,11 @@ public class ConsentExtensionConstants {
     public static final String IS_BALANCE_PERMISSION = "isBalancePermission";
     public static final String ACCOUNT_LIST = "accountList";
     public static final String PERMISSION = "Permission";
+    public static final String PERMISSIONS = "permissions";
     public static final String VALIDATION_RESPONSE_PERMISSION = "permission";
     public static final String ACCESS_METHOD = "accessMethod";
+    public static final String ACCESS_METHODS = "accessMethods";
+    public static final String ACCOUNT_NUMBERS = "accountNumbers";
     public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
@@ -131,6 +135,26 @@ public class ConsentExtensionConstants {
             "card-accounts/[^/?]*",
             "card-accounts/[^/?]*/balances",
             "card-accounts/[^/?]*/transactions"));
+
+    // Constants that are used in accounts authorize flow
+    public static final String ACCOUNTS_PERMISSION = "Read Account Information";
+    public static final String BALANCES_PERMISSION = "Read Account Balance Information";
+    public static final String TRANSACTIONS_PERMISSION = "Read Account Transaction Information";
+    public static final String ACCOUNTS_ACC_NUMBER_SET = "accountsAccNumberSet";
+    public static final String BALANCES_ACC_NUMBER_SET = "balancesAccNumberSet";
+    public static final String TRANSACTIONS_ACC_NUMBER_SET = "transactionsAccNumberSet";
+    public static final String CHECKED_ACCOUNTS = "checkedAccounts";
+    public static final String CHECKED_BALANCES = "checkedBalances";
+    public static final String CHECKED_TRANSACTIONS = "checkedTransactions";
+    public static final String ACCOUNT_TYPE = "accountType";
+    // Account types that are displayed in the consent page
+    public static final String STATIC_DEFAULT = "static-default";
+    public static final String SELECT_BALANCE = "select-balance";
+    public static final String STATIC_BALANCE = "static-balance";
+    public static final String SELECT_ACCOUNT = "select-account";
+    public static final String STATIC_ACCOUNT = "static-account";
+    public static final String SELECT_TRANSACTION = "select-transaction";
+    public static final String STATIC_TRANSACTION = "static-transaction";
 
     // Constants that are used by payments service
     public static final String PAYMENTS_SERVICE_PATH = "payments";
