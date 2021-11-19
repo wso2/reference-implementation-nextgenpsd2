@@ -48,7 +48,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
+        "jdk.internal.reflect.*"})
 public class PeriodicPaymentInitiationRequestHandlerTests extends PowerMockTestCase {
 
     private static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";

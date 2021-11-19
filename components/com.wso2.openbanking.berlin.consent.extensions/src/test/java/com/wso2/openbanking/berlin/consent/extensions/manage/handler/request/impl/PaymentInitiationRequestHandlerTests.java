@@ -29,6 +29,7 @@ import net.minidev.json.parser.ParseException;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Test class for Payment Initiation Request Handler class.
  */
+@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
 public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
 

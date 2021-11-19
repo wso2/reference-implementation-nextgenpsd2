@@ -34,7 +34,8 @@ import java.util.Optional;
  * This contains unit tests for HeaderValidator class.
  */
 @PrepareForTest({CommonUtil.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
+        "jdk.internal.reflect.*"})
 public class HeaderValidatorTests {
 
     private ScaApproach redirectScaApproach;

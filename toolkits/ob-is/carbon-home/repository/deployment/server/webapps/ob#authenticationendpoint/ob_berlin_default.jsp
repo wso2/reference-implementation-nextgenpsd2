@@ -260,13 +260,6 @@
                            value="Confirm"/>
                     <input class="btn btn-primary" type="reset" value="Deny"
                            onclick="javascript: deny(); return false;"/>
-                    <c:choose>
-                        <c:when test="${consent_type eq 'accounts'}">
-                           <input type="button" class="btn btn-primary" id="back" name="back"
-                                  onclick="history.back();"
-                                  value="Go Back"/>
-                        </c:when>
-                    </c:choose>
                     <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
                     <input type="hidden" name="consent" id="consent" value="deny"/>
                     <input type="hidden" name="app" id="app" value="${app}"/>

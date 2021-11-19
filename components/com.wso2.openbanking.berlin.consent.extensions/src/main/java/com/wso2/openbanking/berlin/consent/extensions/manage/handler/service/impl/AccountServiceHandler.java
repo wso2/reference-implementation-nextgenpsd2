@@ -16,7 +16,9 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
@@ -31,9 +33,12 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.Ser
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
 
 /**
  * Handle the Accounts service requests.
@@ -145,7 +150,7 @@ public class AccountServiceHandler implements ServiceHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
-        ConsentResource consentResource;
+        DetailedConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
         String consentId = ConsentExtensionUtil.getValidatedConsentIdFromRequestPath(consentManageData.getRequest()
@@ -154,7 +159,7 @@ public class AccountServiceHandler implements ServiceHandler {
         log.debug("Get existing consent resource for provided consent Id");
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
-            consentResource = coreService.getConsent(consentId, false);
+            consentResource = coreService.getDetailedConsent(consentId);
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
@@ -184,9 +189,19 @@ public class AccountServiceHandler implements ServiceHandler {
 
         log.debug("Deleting consent resource and updating status");
         try {
-            // TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/6875
-            coreService.revokeConsent(consentId, ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
-                    "Deleted Account consent");
+            coreService.revokeConsent(consentId, ConsentStatusEnum.TERMINATED_BY_TPP.toString());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Deactivating account mappings of revoked consent: " + consentId);
+            }
+            ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
+            ArrayList<String> mappingIds = new ArrayList<>();
+            for (ConsentMappingResource mappingResource : mappingResources) {
+                mappingIds.add(mappingResource.getMappingID());
+            }
+            if (CollectionUtils.isNotEmpty(mappingIds)) {
+                coreService.deactivateAccountMappings(mappingIds);
+            }
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,

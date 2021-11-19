@@ -21,6 +21,7 @@ import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
 import org.testng.IObjectFactory;
@@ -37,6 +38,7 @@ import java.util.Map;
 /**
  * This contains unit tests for CommonUtil class.
  */
+@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class})
 public class CommonUtilTests {
 

@@ -40,7 +40,8 @@ import static org.mockito.Mockito.mock;
  * Test class for Berlin Consent Manage Handler.
  */
 @PrepareForTest({CommonConfigParser.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
+        "jdk.internal.reflect.*"})
 public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
 
     BerlinConsentManageHandler berlinConsentManageHandler;

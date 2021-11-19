@@ -61,4 +61,7 @@ public class CommonConstants {
     public static final String SCA_APPROACH_KEY = "SCA-Approach";
     public static final String SCA_METHODS_KEY = "SCA-Methods";
     public static final String SCA_METHOD_KEY = "SCA-Method";
+    public static final String AIS_SCOPE = "ais";
+    public static final String PIS_SCOPE = "pis";
+    public static final String PIIS_SCOPE = "piis";
 }

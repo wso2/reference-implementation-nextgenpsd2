@@ -20,6 +20,7 @@ import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
 import org.testng.IObjectFactory;
@@ -34,6 +35,7 @@ import java.util.List;
 /**
  * This contains unit tests for LinksConstructor class.
  */
+@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class})
 public class LinksConstructorTests {
 

@@ -15,9 +15,9 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -79,7 +79,7 @@ public class ConsentAuthUtil {
         log.debug("Validating whether the provided consent Id matches with the scope type");
 
         if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)
-                && !StringUtils.contains(scopeString, ConsentExtensionConstants.AIS_SCOPE)) {
+                && !StringUtils.contains(scopeString, CommonConstants.AIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_SCOPE,
@@ -89,7 +89,7 @@ public class ConsentAuthUtil {
         if ((StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), consentType)
                 || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)
                 || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType))
-                && !StringUtils.contains(scopeString, ConsentExtensionConstants.PIS_SCOPE)) {
+                && !StringUtils.contains(scopeString, CommonConstants.PIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_SCOPE,
@@ -97,7 +97,7 @@ public class ConsentAuthUtil {
         }
 
         if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), consentType)
-                && !StringUtils.contains(scopeString, ConsentExtensionConstants.PIIS_SCOPE)) {
+                && !StringUtils.contains(scopeString, CommonConstants.PIIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_SCOPE,

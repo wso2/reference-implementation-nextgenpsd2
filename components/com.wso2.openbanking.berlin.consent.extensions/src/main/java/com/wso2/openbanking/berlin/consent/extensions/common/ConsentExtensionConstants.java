@@ -76,9 +76,6 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE = "auth_type";
     public static final String TYPE = "type";
     public static final String DEFAULT_PERMISSION = "n/a";
-    public static final String AIS_SCOPE = "ais";
-    public static final String PIS_SCOPE = "pis";
-    public static final String PIIS_SCOPE = "piis";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";

@@ -160,6 +160,15 @@ public class DataRetrievalUtil {
         JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
         JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
 
+        // Avoid collecting currency details if multi currency is not enabled
+        if (!CommonConfigParser.getInstance().isMultiCurrencyEnabled()) {
+            List<JSONArray> referencesList = new ArrayList<>();
+            referencesList.add(accounts);
+            referencesList.add(balances);
+            referencesList.add(transactions);
+            removeCurrencyType(referencesList);
+        }
+
         JSONArray allAccounts = new JSONArray();
 
         /*
@@ -321,6 +330,22 @@ public class DataRetrievalUtil {
         } catch (ParseException e) {
             log.error(ErrorConstants.JSON_PARSE_ERROR, e);
             return null;
+        }
+    }
+
+    /**
+     * Avoid collecting currency data if multi currency is disabled.
+     *
+     * @param referencesList account references json arrays list
+     */
+    private static void removeCurrencyType(List<JSONArray> referencesList) {
+
+        // Loops through accounts, balances, transactions json arrays
+        for (JSONArray reference : referencesList) {
+            for (Object referenceObject : reference) {
+                JSONObject referenceObjectJson = (JSONObject) referenceObject;
+                referenceObjectJson.remove(ConsentExtensionConstants.CURRENCY);
+            }
         }
     }
 }
