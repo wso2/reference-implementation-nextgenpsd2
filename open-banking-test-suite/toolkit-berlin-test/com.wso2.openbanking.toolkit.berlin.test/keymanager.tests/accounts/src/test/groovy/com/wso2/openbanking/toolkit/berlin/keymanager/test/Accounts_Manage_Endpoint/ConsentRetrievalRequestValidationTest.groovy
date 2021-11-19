@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Manage_Endpoint
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
+import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsConstants
@@ -29,6 +30,7 @@ import java.time.format.DateTimeFormatter
  */
 class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 
+	String url
 	String consentPath = AccountsConstants.ACCOUNTS_CONSENT_PATH
 
 	@BeforeClass (alwaysRun = true)
@@ -37,10 +39,11 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
 	void "OB-1434_Retrieve consent details"() {
 
 		doConsentRetrieval(consentPath, accountId)
@@ -52,10 +55,10 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("frequencyPerDay"))
 		Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("lastActionDate"))
 		Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("lastActionDate"),
-						LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+				LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"], dependsOnMethods = "OB-1434_Retrieve consent details")
+	@Test (groups = ["1.3.3", "1.3.6"], dependsOnMethods = "OB-1434_Retrieve consent details", priority = 2)
 	void "OB-1437_Retrieve status of a valid consent"() {
 
 		doStatusRetrieval(consentPath, accountId)
@@ -63,7 +66,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_RECEIVED)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 10)
 	void "OB-1435_Consent detail retrieval for invalid consent id"() {
 
 		def accountId = "1234"
@@ -74,7 +77,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 						BerlinConstants.CONSENT_UNKNOWN)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 3)
 	void "OB-1436_Consent details retrieval for a deleted consent"() {
 
 		//Delete the consent
@@ -95,7 +98,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1436_Consent details retrieval for a deleted consent")
+					dependsOnMethods = "OB-1436_Consent details retrieval for a deleted consent", priority = 4)
 	void "OB-1439_Retrieve status of a deleted consent"() {
 
 		doStatusRetrieval(consentPath, accountId)
@@ -103,7 +106,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_TERMINATEDBYTPP)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 5)
 	void "OB-1443_Consent details retrieval for terminated consent"() {
 
 		//Consent Initiation
@@ -111,8 +114,10 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
 		//Deny the consent
-		doConsentDenyFlow()
-		Assert.assertEquals(code, "User denied the consent")
+		BrowserAutomation.AutomationContext responseConsentDeny = doConsentDenyFlow()
+		url = responseConsentDeny.currentUrl.get()
+		def errorMessage = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+		Assert.assertEquals(errorMessage, "User denied the consent")
 
 		//Retrieve consent
 		doConsentRetrieval(consentPath, accountId)
@@ -128,7 +133,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1443_Consent details retrieval for terminated consent")
+					dependsOnMethods = "OB-1443_Consent details retrieval for terminated consent", priority = 6)
 	void "OB-1440_Retrieve status of a terminated consent"() {
 
 		doStatusRetrieval(consentPath, accountId)
@@ -136,7 +141,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 8)
 	void "OB-1444_Consent details retrieval for authorised consent"() {
 
 		//Consent Initiation
@@ -161,7 +166,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1444_Consent details retrieval for authorised consent")
+					dependsOnMethods = "OB-1444_Consent details retrieval for authorised consent", priority = 9)
 	void "OB-1441_Retrieve status of an authorised consent"() {
 
 		doStatusRetrieval(consentPath, accountId)
@@ -169,7 +174,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_VALID)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 7)
 	void "OB-1438_Retrieve status of a invalid consent"() {
 
 		def accountId = "1234"
@@ -180,7 +185,7 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 						BerlinConstants.CONSENT_UNKNOWN)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 11)
 	void "OB-1451_Consent detail retrieval without consent id"() {
 
 		def accountId = ""
@@ -194,11 +199,9 @@ class ConsentRetrievalRequestValidationTest extends AbstractAccountsFlow {
 	@Test (groups = ["1.3.3", "1.3.6"])
 	void "OB-1452_Retrieve consent status without consent id"() {
 
-		def accountId = ""
-
-		doStatusRetrieval(consentPath, accountId)
-		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_404)
+		doStatusRetrievalWithoutConsentId(consentPath)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_403)
 		Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
-						BerlinConstants.RESOURCE_UNKNOWN)
+						BerlinConstants.CONSENT_UNKNOWN)
 	}
 }

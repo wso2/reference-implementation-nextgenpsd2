@@ -44,7 +44,7 @@ class AccountsPayloads {
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
@@ -97,9 +97,9 @@ class AccountsPayloads {
                "access":{
                     "availableAccounts": "allAccounts"
                },
-               "recurringIndicator":false,
+               "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-               "frequencyPerDay":1,
+               "frequencyPerDay":4,
                "combinedServiceIndicator": false
                
         }

@@ -36,10 +36,11 @@ class AccountsInitiationRequestValidationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
 
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
+				.CONSENT_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
 						"SMS_OTP")
 	}
 
@@ -51,10 +52,11 @@ class AccountsInitiationRequestValidationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
 
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
 						"SMS_OTP")
 	}
 
@@ -66,10 +68,11 @@ class AccountsInitiationRequestValidationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
 
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
 						"SMS_OTP")
 	}
 
@@ -81,10 +84,11 @@ class AccountsInitiationRequestValidationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
 
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
 						"SMS_OTP")
 	}
 }

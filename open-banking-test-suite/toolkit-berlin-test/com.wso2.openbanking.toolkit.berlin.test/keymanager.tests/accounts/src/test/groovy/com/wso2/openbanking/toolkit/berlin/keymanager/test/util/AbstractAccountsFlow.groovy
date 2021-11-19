@@ -23,6 +23,7 @@ import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.response.Response
 import org.openqa.selenium.By
@@ -47,6 +48,7 @@ abstract class AbstractAccountsFlow {
     Response authorisationResponse
     String authorisationId
     String requestId
+    String appClientId
     BerlinOAuthAuthorization auth
     BrowserAutomation.AutomationContext automation
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.ACCOUNTS
@@ -58,6 +60,7 @@ abstract class AbstractAccountsFlow {
         def authToken = "${ConfigParser.getInstance().keyManagerAdminUsername}:" +
                 "${ConfigParser.getInstance().keyManagerAdminPassword}"
         accessToken = "${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset().toString()))}"
+        appClientId = ConfigParser.getInstance().getClientId().toString()
     }
 
     /**
@@ -70,6 +73,7 @@ abstract class AbstractAccountsFlow {
         //initiation
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -85,6 +89,7 @@ abstract class AbstractAccountsFlow {
 
         //initiation
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body(initiationPayload)
                 .post(consentPath)
     }
@@ -98,7 +103,23 @@ abstract class AbstractAccountsFlow {
 
         //Status Retrieval
         retrievalResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${accountId}/status")
+
+        consentStatus = TestUtil.parseResponseBody(retrievalResponse, "consentStatus")
+    }
+
+    /**
+     * Consent Status Retrieval Request.
+     * @param consentPath
+     * @param accountId
+     */
+    void doStatusRetrievalWithoutConsentId(String consentPath) {
+
+        //Status Retrieval
+        retrievalResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+                .get("${consentPath}/status")
 
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "consentStatus")
     }
@@ -112,6 +133,7 @@ abstract class AbstractAccountsFlow {
 
         //Status Retrieval
         retrievalResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${accountId}")
 
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "consentStatus")
@@ -126,6 +148,7 @@ abstract class AbstractAccountsFlow {
 
         // Delete the Consent
         consentDeleteResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .delete("${consentPath}/${accountId}")
     }
 
@@ -151,7 +174,7 @@ abstract class AbstractAccountsFlow {
     /**
      * Consent Deny.
      */
-    void doConsentDenyFlow() {
+    BrowserAutomation.AutomationContext doConsentDenyFlow() {
 
         // Initiate SCA flow.
         auth = new BerlinOAuthAuthorization(scopes, accountId)
@@ -163,9 +186,7 @@ abstract class AbstractAccountsFlow {
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
-        //Get Code from URL
-        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[1]
-                .replace("+", " ")
+        return automation
     }
 
     /**
@@ -217,6 +238,7 @@ abstract class AbstractAccountsFlow {
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -231,6 +253,7 @@ abstract class AbstractAccountsFlow {
     void createExplicitAuthorization(String consentPath, String consentId = accountId) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body("{}")
                 .post("${consentPath}/${consentId}/authorisations")
     }
@@ -242,6 +265,7 @@ abstract class AbstractAccountsFlow {
     void getExplicitAuthResources(String consentPath, String consentId = accountId) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${consentId}/authorisations")
     }
 
@@ -252,6 +276,7 @@ abstract class AbstractAccountsFlow {
     void getExplicitAuthResourceStatus(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${accountId}/authorisations/${authorisationId}")
     }
 }

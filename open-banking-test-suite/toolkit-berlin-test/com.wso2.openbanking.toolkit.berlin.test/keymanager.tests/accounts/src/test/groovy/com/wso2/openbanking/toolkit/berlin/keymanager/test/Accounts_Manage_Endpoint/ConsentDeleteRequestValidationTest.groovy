@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Manage_Endpoint
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
+import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsConstants
@@ -25,6 +26,7 @@ import org.testng.annotations.Test
  */
 class ConsentDeleteRequestValidationTest extends AbstractAccountsFlow {
 
+	String url
 	String consentPath = AccountsConstants.ACCOUNTS_CONSENT_PATH
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
@@ -33,7 +35,8 @@ class ConsentDeleteRequestValidationTest extends AbstractAccountsFlow {
 		//Consent Initiation
 		doDefaultInitiation(consentPath, AccountsPayloads.initiationPayloadForAllAccounts)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 
 		//Delete Consent
 		deleteConsent(consentPath, accountId)
@@ -50,7 +53,8 @@ class ConsentDeleteRequestValidationTest extends AbstractAccountsFlow {
 		//Consent Initiation
 		doDefaultInitiation(consentPath, AccountsPayloads.initiationPayloadForAllAccounts)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 
 		//Authorise Consent
 		doAuthorizationFlow()
@@ -82,17 +86,23 @@ class ConsentDeleteRequestValidationTest extends AbstractAccountsFlow {
 		//Consent Initiation
 		doDefaultInitiation(consentPath, AccountsPayloads.initiationPayloadForAllAccounts)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"),
+				AccountsConstants.CONSENT_STATUS_RECEIVED)
 
 		//Deny Consent
-		doConsentDenyFlow()
-		Assert.assertEquals(code, "User denied the consent")
+		BrowserAutomation.AutomationContext responseConsentDeny = doConsentDenyFlow()
+		url = responseConsentDeny.currentUrl.get()
+		def errorMessage = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+		Assert.assertEquals(errorMessage, "User denied the consent")
 
 		//Delete Consent
 		deleteConsent(consentPath, accountId)
-		Assert.assertEquals(consentDeleteResponse.statusCode(), BerlinConstants.STATUS_CODE_401)
+		Assert.assertEquals(consentDeleteResponse.statusCode(), BerlinConstants.STATUS_CODE_204)
+
+		deleteConsent(consentPath, accountId)
+		Assert.assertEquals(consentDeleteResponse.statusCode(), BerlinConstants.STATUS_CODE_400)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE),
-						BerlinConstants.CONSENT_INVALID)
+				BerlinConstants.INVALID_STATUS_VALUE)
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"])
