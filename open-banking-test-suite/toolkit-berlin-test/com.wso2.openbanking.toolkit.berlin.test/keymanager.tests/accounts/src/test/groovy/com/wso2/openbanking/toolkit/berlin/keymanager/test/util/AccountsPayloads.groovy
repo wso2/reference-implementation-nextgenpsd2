@@ -97,9 +97,9 @@ class AccountsPayloads {
                "access":{
                     "availableAccounts": "allAccounts"
                },
-               "recurringIndicator":true,
+               "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-               "frequencyPerDay":4,
+               "frequencyPerDay":1,
                "combinedServiceIndicator": false
                
         }
