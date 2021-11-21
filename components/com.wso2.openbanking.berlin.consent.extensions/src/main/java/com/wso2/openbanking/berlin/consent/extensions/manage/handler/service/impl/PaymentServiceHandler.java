@@ -150,9 +150,8 @@ public class PaymentServiceHandler implements ServiceHandler {
         Map<String, String> headersMap = consentManageData.getHeaders();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
 
-        // Payment cancellation not applicable for single and bulk payments
-        if (StringUtils.equals(consentType, ConsentTypeEnum.PAYMENTS.toString()) ||
-                StringUtils.equals(consentType, ConsentTypeEnum.BULK_PAYMENTS.toString())) {
+        // Payment cancellation not applicable for single payments
+        if (StringUtils.equals(consentType, ConsentTypeEnum.PAYMENTS.toString())) {
             log.error(ErrorConstants.CANCELLATION_NOT_APPLICABLE);
             throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CANCELLATION_INVALID,

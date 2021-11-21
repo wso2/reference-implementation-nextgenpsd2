@@ -106,7 +106,7 @@ public class ErrorConstants {
     public static final String EMPTY_PAYMENTS_ELEMENT = "Empty payment element found in request body";
     public static final String CANNOT_CREATE_PAYMENT_CANCELLATION = "Cannot create cancellation for payment in " +
             "status %s";
-    public static final String CANCELLATION_NOT_APPLICABLE = "Cancellation not applicable for Single and Bulk payments";
+    public static final String CANCELLATION_NOT_APPLICABLE = "Cancellation not applicable for Single payments";
 
     // Accounts related error messages
     public static final String MANDATORY_ELEMENTS_MISSING = "Invalid request payload, mandatory elements are missing";
