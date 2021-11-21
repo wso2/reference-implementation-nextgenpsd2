@@ -38,7 +38,7 @@ class PaymentInitiationRequestValidationTests extends AbstractPaymentsFlow {
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "scaMethods[0].authenticationType"),
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
 						"SMS_OTP")
 	}
 

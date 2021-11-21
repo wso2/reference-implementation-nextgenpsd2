@@ -18,6 +18,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.PaymentsConstants
@@ -31,19 +32,20 @@ import org.testng.annotations.Test
  */
 class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 
-	String consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
-	String initiationPayload = PaymentsInitiationPayloads.singlePaymentPayload
+	String consentPath = PaymentsConstants.PERIODIC_PAYMENTS_CONSENT_PATH
+	String initiationPayload = PaymentsInitiationPayloads.periodicPaymentPayload
 
 	//Authorisation Cancellation For Explicit Authorisation Flow
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
 	void "OB-1517_Consent Explicit Authorisation for Payment Cancellation"() {
 
 		//Consent Initiation
 		doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
-		Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisation"))
+		Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
 
 		//Create Explicit Authorisation Resources
 		createExplicitAuthorization(consentPath)
@@ -53,7 +55,7 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertNotNull(requestId)
 		Assert.assertNotNull(authorisationId)
 		Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-						PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+						PaymentsConstants.SCA_STATUS_RECEIVED)
 		Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
 
 		//Do Authorisation
@@ -66,26 +68,35 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 2,
 					dependsOnMethods = "OB-1517_Consent Explicit Authorisation for Payment Cancellation")
 	void "OB-1518_Delete payment Consent after Explicit Authorisation"() {
 
 		//Consent Delete
 		doConsentDelete(consentPath)
-		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_202)
-		Assert.assertEquals(deleteResponse.jsonPath().get("transactionStatus"),
-						PaymentsConstants.TRANSACTION_STATUS_ACTC)
-		Assert.assertNotNull(deleteResponse.jsonPath().get("_links.startAuthorisation.href"))
+		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_204)
 
 		//Consent Retrieval
 		doConsentRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACTC)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = ["OB-1518_Delete payment Consent after Explicit Authorisation"])
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 3)
 	void "OB-1519_Create Explicit Cancellation Sub-Resource"() {
+
+		//Payment Initiation
+		doDefaultInitiation(consentPath, initiationPayload)
+
+		//Do Authorisation
+		doAuthorizationFlow()
+
+		//Consent Delete
+		doConsentDeleteWithExplicitAuth(consentPath)
+		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_202)
+		Assert.assertEquals(deleteResponse.jsonPath().get("transactionStatus"), PaymentsConstants.TRANSACTION_STATUS_ACTC)
 
 		createExplicitCancellation(consentPath)
 		Assert.assertNotNull(authorisationId)
@@ -94,18 +105,21 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 4,
 					dependsOnMethods = ["OB-1519_Create Explicit Cancellation Sub-Resource"])
 	void "OB-1520_Get List of Authorisation Cancellation sub-resources"() {
 
 		authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.get("${consentPath}/${paymentId}/cancellation-authorisations")
 
 		def authIds = authorisationResponse.jsonPath().get("authorisationIds")
 		Assert.assertNotNull(authIds)
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 5,
 					dependsOnMethods = ["OB-1519_Create Explicit Cancellation Sub-Resource"])
 	void "OB-1521_Get Authorisation Cancellation sub-resource Details"() {
 
@@ -113,10 +127,10 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 
 		Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
 						PaymentsConstants.SCA_STATUS_RECEIVED)
-		Assert.assertEquals(authorisationResponse.jsonPath().get("trustedBeneficiaryFlag"), false)
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 6,
 					dependsOnMethods = ["OB-1519_Create Explicit Cancellation Sub-Resource"])
 	void "OB-1522_PSU Authorise Cancellation for Explicit Auth Consent"() {
 
@@ -125,7 +139,7 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 						.addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
 						.addStep {driver, context ->
 							Assert.assertTrue(driver.findElement(By.xpath(BerlinConstants.PAYMENTS_INTENT_TEXT_XPATH))
-											.getText().contains("cancel payment"))
+											.getText().contains("cancel a periodic payment"))
 							driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
 						}
 						.addStep(new WaitForRedirectAutomationStep())
@@ -146,14 +160,14 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 
 	//Authorisation Cancellation For Implicit Authorisation Flow
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 7)
 	void "OB-1523_Consent Implicit Authorisation for Payment Cancellation"() {
 
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
-		Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisation"))
 
 		//Do Authorisation
 		doAuthorizationFlow()
@@ -166,24 +180,26 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 8,
 					dependsOnMethods = "OB-1523_Consent Implicit Authorisation for Payment Cancellation")
 	void "OB-1524_Delete payment Consent after Implicit Authorisation"() {
 
 		//Consent Delete
-		doConsentDelete(consentPath)
+		doConsentDeleteWithExplicitAuth(consentPath)
 		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_202)
 		Assert.assertEquals(deleteResponse.jsonPath().get("transactionStatus"),
 						PaymentsConstants.TRANSACTION_STATUS_ACTC)
-		Assert.assertNotNull(deleteResponse.jsonPath().get("_links.startAuthorisation.href"))
+		Assert.assertNotNull(deleteResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification.href"))
 
 		//Consent Retrieval
 		doConsentRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACTC)
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 9,
 					dependsOnMethods = ["OB-1524_Delete payment Consent after Implicit Authorisation"])
 	void "OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"() {
 
@@ -194,7 +210,8 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
 	}
 
-	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+	// Need to config auth_cancellation.enable = true in deployment.toml
+	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 10,
 					dependsOnMethods = ["OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"])
 	void "OB-1526_PSU Authorise Cancellation for Implicit Auth Consent"() {
 
@@ -203,7 +220,7 @@ class CancellationAuthorisationTests extends AbstractPaymentsFlow {
 						.addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
 						.addStep {driver, context ->
 							Assert.assertTrue(driver.findElement(By.xpath(BerlinConstants.PAYMENTS_INTENT_TEXT_XPATH))
-											.getText().contains("cancel payment"))
+											.getText().contains("cancel a periodic payment"))
 							driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
 						}
 						.addStep(new WaitForRedirectAutomationStep())

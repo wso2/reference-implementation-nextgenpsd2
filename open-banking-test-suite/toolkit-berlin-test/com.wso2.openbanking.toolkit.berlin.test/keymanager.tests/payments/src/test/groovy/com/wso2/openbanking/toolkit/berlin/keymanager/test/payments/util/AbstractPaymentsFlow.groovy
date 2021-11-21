@@ -13,20 +13,16 @@
 package com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util
 
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
-import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
-import com.wso2.openbanking.berlin.common.utils.BerlinConstants
-import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
-import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
-import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
+import com.wso2.openbanking.berlin.common.utils.*
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.response.Response
 import org.openqa.selenium.By
-import org.testng.Assert
 import org.testng.annotations.BeforeClass
 
 import java.nio.charset.Charset
@@ -43,6 +39,7 @@ class AbstractPaymentsFlow {
     String consentStatus
     String authorisationId
     String requestId
+    String appClientId
     Response consentResponse
     Response retrievalResponse
     Response consentRetrievalResponse
@@ -60,6 +57,7 @@ class AbstractPaymentsFlow {
         def authToken = "${ConfigParser.getInstance().keyManagerAdminUsername}:" +
                 "${ConfigParser.getInstance().keyManagerAdminPassword}"
         accessToken = "${Base64.encoder.encodeToString(authToken.getBytes(Charset.defaultCharset().toString()))}"
+        appClientId = ConfigParser.getInstance().getClientId().toString()
     }
 
     /**
@@ -72,6 +70,8 @@ class AbstractPaymentsFlow {
         //initiation
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, ConfigParser.instance.clientId)
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -88,6 +88,7 @@ class AbstractPaymentsFlow {
 
         //initiation
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body(initiationPayload)
                 .post(consentPath)
     }
@@ -101,6 +102,7 @@ class AbstractPaymentsFlow {
 
         consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
                 .body(initiationPayload)
                 .post(consentPath)
@@ -117,6 +119,7 @@ class AbstractPaymentsFlow {
 
         //Status Retrieval
         retrievalResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get(consentPath + "/" + paymentId + "/status")
 
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "transactionStatus")
@@ -130,6 +133,7 @@ class AbstractPaymentsFlow {
 
         //Consent Retrieval
         consentRetrievalResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get(consentPath + "/" + paymentId)
 
         consentStatus = TestUtil.parseResponseBody(consentRetrievalResponse, "transactionStatus")
@@ -171,8 +175,7 @@ class AbstractPaymentsFlow {
                 .execute()
 
         //Get Code from URL
-        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[1]
-                .replace("+", " ")
+        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).replace("+", " ")
 
     }
 
@@ -189,7 +192,7 @@ class AbstractPaymentsFlow {
                 .post(consentPath)
 
         paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
-
+        consentStatus = TestUtil.parseResponseBody(consentResponse, "transactionStatus")
     }
 
     /**
@@ -199,6 +202,7 @@ class AbstractPaymentsFlow {
     void createExplicitAuthorization(String consentPath, String consentId = paymentId) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body("{}")
                 .post("${consentPath}/${consentId}/authorisations")
 
@@ -224,6 +228,7 @@ class AbstractPaymentsFlow {
     void createExplicitCancellation(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .body("{}")
                 .post("${consentPath}/${paymentId}/cancellation-authorisations")
 
@@ -238,6 +243,7 @@ class AbstractPaymentsFlow {
     void getAuthorisationCancellationResource(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${paymentId}/cancellation-authorisations/${authorisationId}")
     }
 
@@ -256,6 +262,15 @@ class AbstractPaymentsFlow {
     void doConsentDelete(String consentPath, String consentId = paymentId) {
 
         deleteResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+                .delete(consentPath + "/" + consentId)
+    }
+
+    void doConsentDeleteWithExplicitAuth(String consentPath, String consentId = paymentId) {
+
+        deleteResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
                 .delete(consentPath + "/" + consentId)
     }
 
@@ -266,17 +281,22 @@ class AbstractPaymentsFlow {
                 .execute()
     }
 
-    void consentAuthorizeErrorFlowToValidateScopes(AuthorizationRequest request) {
+    void consentAuthorizeErrorFlowToValidateScopes(AuthorizationRequest request, boolean isInvalidPaymentId) {
 
-        automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
-                .addStep {driver, context ->
-                    Assert.assertNotNull(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim())
-                }
-                .execute()
+        if (isInvalidPaymentId) {
+            automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                    .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
+                    .execute()
 
-        oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
-                "UTF8")
+            oauthErrorCode = URLDecoder.decode(automation.currentUrl.get(), "UTF8").split("=")[2]
+        } else {
+            automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                    .addStep(new AuthAutomationSteps(request.toURI().toString()))
+                    .execute()
+
+            oauthErrorCode = URLDecoder.decode(automation.currentUrl.get(), "UTF8").split("&")[0].split("=")[1]
+                    .split(",")[1].trim()
+        }
     }
 
     /**
@@ -286,7 +306,8 @@ class AbstractPaymentsFlow {
     void getExplicitAuthResources(String consentPath, String consentId = paymentId) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
-                .get("${consentPath}/${paymentId}/authorisations")
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+                .get("${consentPath}/${consentId}/authorisations")
     }
 
     /**
@@ -296,6 +317,7 @@ class AbstractPaymentsFlow {
     void getExplicitAuthResourceStatus(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+                .header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
                 .get("${consentPath}/${paymentId}/authorisations/${authorisationId}")
     }
 }
