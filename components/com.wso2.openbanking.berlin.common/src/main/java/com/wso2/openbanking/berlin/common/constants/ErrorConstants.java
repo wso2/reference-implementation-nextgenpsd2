@@ -43,9 +43,10 @@ public class ErrorConstants {
             "supported for payment cancellation";
     public static final String NO_CONSENT_FOR_CLIENT_ERROR = "No valid consent found for given client id";
     public static final String AUTHORISATIONS_NOT_FOUND = "No authorisations found for provided consent id";
+    public static final String INVALID_AUTHORISATION_ID = "No valid consent found for given authorisation id";
     public static final String START_AUTHORISATION_RESOURCE_CREATION_ERROR = "Error occurred while creating " +
             "authorisation resource";
-    public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The consent is implicit therefore cannot " +
+    public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The %s is implicit therefore cannot " +
             "create authorisation resource";
     public static final String CONSENT_DATA_RETRIEVE_ERROR = "Exception occurred while getting consent data";
     public static final String LOGGED_IN_USER_MISMATCH = "The logged in user does not match with the " +
@@ -103,6 +104,9 @@ public class ErrorConstants {
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";
     public static final String NO_PAYMENTS_IN_BODY = "No payments found in payments request body";
     public static final String EMPTY_PAYMENTS_ELEMENT = "Empty payment element found in request body";
+    public static final String CANNOT_CREATE_PAYMENT_CANCELLATION = "Cannot create cancellation for payment in " +
+            "status %s";
+    public static final String CANCELLATION_NOT_APPLICABLE = "Cancellation not applicable for Single and Bulk payments";
 
     // Accounts related error messages
     public static final String MANDATORY_ELEMENTS_MISSING = "Invalid request payload, mandatory elements are missing";

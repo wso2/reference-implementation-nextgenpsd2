@@ -44,7 +44,7 @@ public class TestUtil {
                 ScaApproachEnum.REDIRECT.toString());
         Assert.assertNotNull(mockHttpServletResponse
                 .getHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER).toString());
-        Assert.assertEquals(TransactionStatusEnum.RCVD.toString(),
+        Assert.assertEquals(TransactionStatusEnum.RCVD.name(),
                 response.get(ConsentExtensionConstants.TRANSACTION_STATUS));
         Assert.assertNotNull(response.get(ConsentExtensionConstants.PAYMENT_ID));
         Assert.assertNotNull(response.get(ConsentExtensionConstants.LINKS));

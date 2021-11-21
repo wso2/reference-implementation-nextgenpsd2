@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -34,6 +35,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import org.apache.commons.lang3.BooleanUtils;
@@ -101,12 +103,22 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 Boolean.parseBoolean(detailedConsentResource.getConsentAttributes()
                         .get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         String apiVersion = configParser.getApiVersion(detailedConsentResource.getConsentType());
+        String authType;
+        if (StringUtils.contains(requestPath,
+                ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END)) {
+            authType = AuthTypeEnum.CANCELLATION.toString();
+        } else {
+            authType = AuthTypeEnum.AUTHORISATION.toString();
+        }
+        boolean isAuthRequiredForCancellation = CommonConfigParser.getInstance()
+                .isAuthorizationRequiredForCancellation();
+        boolean isExplicit = isExplicit(isRetrievedConsentExplicit, isAuthRequiredForCancellation, authType);
 
         boolean shouldCreateAuthorisationResource = false;
         AuthorizationResource authorizationResource = null;
-        if (isRetrievedConsentExplicit) {
+        if (isExplicit) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("The consent of Id %s is explicit", consentId));
+                log.debug("Creating explicit authorisation resource");
             }
 
             if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
@@ -117,7 +129,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 if (explicitAuthResources.size() != 0) {
                     for (AuthorizationResource authResource : explicitAuthResources) {
                         if (!StringUtils.isEmpty(authResource.getUserID())
-                                && StringUtils.equals(tenantEnsuredPSUId, authResource.getUserID())) {
+                                && StringUtils.equals(tenantEnsuredPSUId, authResource.getUserID())
+                                && StringUtils.equals(authType, authResource.getAuthorizationType())) {
                             // Handling explicit idempotency scenario
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Authorisation resource for user %s already exists",
@@ -137,10 +150,10 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 }
             }
         } else {
-            log.error(ErrorConstants.IMPLICIT_CONSENT_START_AUTHORISATION);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
-                    ErrorConstants.IMPLICIT_CONSENT_START_AUTHORISATION));
+            log.error(String.format(ErrorConstants.IMPLICIT_CONSENT_START_AUTHORISATION, authType));
+            throw new ConsentException(ResponseStatus.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    String.format(ErrorConstants.IMPLICIT_CONSENT_START_AUTHORISATION, authType)));
         }
 
         if (shouldCreateAuthorisationResource) {
@@ -148,12 +161,17 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 log.debug(String.format("Creating new authorisation resource for consent Id %s", consentId));
             }
 
-            String authType;
-            if (StringUtils.contains(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
-                    requestPath)) {
-                authType = AuthTypeEnum.CANCELLATION.toString();
-            } else {
-                authType = AuthTypeEnum.AUTHORISATION.toString();
+            String retrievedConsentType = detailedConsentResource.getConsentType();
+
+            // Not letting to create an auth resource if the status is not ACTC and a periodic payment
+            if (StringUtils.equals(detailedConsentResource.getCurrentStatus(), TransactionStatusEnum.ACTC.name())
+                    && !StringUtils.equals(retrievedConsentType, ConsentTypeEnum.PERIODIC_PAYMENTS.toString())) {
+                log.error(String.format(ErrorConstants.CANNOT_CREATE_PAYMENT_CANCELLATION,
+                        detailedConsentResource.getCurrentStatus()));
+                throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CANCELLATION_INVALID,
+                        String.format(ErrorConstants.CANNOT_CREATE_PAYMENT_CANCELLATION,
+                                detailedConsentResource.getCurrentStatus())));
             }
 
             authorizationResource = new AuthorizationResource();
@@ -206,6 +224,23 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                             true, apiVersion, isSCARequired));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
         }
+    }
+
+    /**
+     * Checks if the request is eligible to create an explicit authorisation resource.
+     *
+     * @param isRetrievedConsentExplicit flag to determine if the retrieved consent is explicit
+     * @param authType                   authorisation type
+     * @return true if explicit authorisation resource needs to be created
+     */
+    private boolean isExplicit(boolean isRetrievedConsentExplicit, boolean isAuthRequiredForCancellation,
+                               String authType) {
+
+        if (StringUtils.equals(authType, AuthTypeEnum.CANCELLATION.toString())) {
+            return isAuthRequiredForCancellation;
+        }
+
+        return isRetrievedConsentExplicit;
     }
 
     /**

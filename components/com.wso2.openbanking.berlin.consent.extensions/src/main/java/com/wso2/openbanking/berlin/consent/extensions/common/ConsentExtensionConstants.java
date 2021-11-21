@@ -43,6 +43,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";
     public static final String START_AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String START_AUTH_LINK_TEMPLATE = "/%s/%s/%s/authorisations";
+    public static final String START_CANCELLATION_AUTH_LINK_TEMPLATE = "/%s/%s/%s/cancellation-authorisations";
     public static final String AUTHORISATION_IDS = "authorisationIds";
     public static final String IS_ERROR = "isError";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
@@ -72,6 +73,7 @@ public class ConsentExtensionConstants {
     public static final String PAYMENT_TITLE = "Payment ";
     public static final String DATA_REQUESTED = "data_requested";
     public static final String CONSENT_TYPE = "consent_type";
+    public static final String AUTH_TYPE = "auth_type";
     public static final String TYPE = "type";
     public static final String DEFAULT_PERMISSION = "n/a";
     public static final String AIS_SCOPE = "ais";

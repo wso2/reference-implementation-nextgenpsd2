@@ -16,7 +16,9 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
@@ -33,11 +35,13 @@ import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.Ser
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -141,10 +145,20 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
-        ConsentResource consentResource;
+        DetailedConsentResource consentResource;
         String requestPath = consentManageData.getRequestPath();
         Map<String, String> headersMap = consentManageData.getHeaders();
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
+
+        // Payment cancellation not applicable for single and bulk payments
+        if (StringUtils.equals(consentType, ConsentTypeEnum.PAYMENTS.toString()) ||
+                StringUtils.equals(consentType, ConsentTypeEnum.BULK_PAYMENTS.toString())) {
+            log.error(ErrorConstants.CANCELLATION_NOT_APPLICABLE);
+            throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CANCELLATION_INVALID,
+                    ErrorConstants.CANCELLATION_NOT_APPLICABLE));
+        }
+
         String paymentId = ConsentExtensionUtil.getValidatedConsentIdFromRequestPath(consentManageData.getRequest()
                 .getMethod(), requestPath, consentType);
 
@@ -154,7 +168,7 @@ public class PaymentServiceHandler implements ServiceHandler {
         log.debug("Get existing consent resource for provided payment Id");
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
-            consentResource = coreService.getConsent(paymentId, false);
+            consentResource = coreService.getDetailedConsent(paymentId);
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
@@ -173,8 +187,8 @@ public class PaymentServiceHandler implements ServiceHandler {
         ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
         log.debug("Send an error if the consent is already deleted");
-        if (StringUtils.equals(TransactionStatusEnum.CANC.toString(), consentResource.getCurrentStatus())
-                || StringUtils.equals(TransactionStatusEnum.REVOKED.toString(), consentResource.getCurrentStatus())) {
+        if (StringUtils.equals(TransactionStatusEnum.CANC.name(), consentResource.getCurrentStatus())
+                || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), consentResource.getCurrentStatus())) {
             log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INVALID_STATUS_VALUE,
@@ -194,7 +208,7 @@ public class PaymentServiceHandler implements ServiceHandler {
                 log.debug("Update consent with ACTC status");
                 try {
                     updatedConsentResource = coreService.updateConsentStatus(paymentId,
-                            TransactionStatusEnum.ACTC.toString());
+                            TransactionStatusEnum.ACTC.name());
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -209,9 +223,19 @@ public class PaymentServiceHandler implements ServiceHandler {
                 log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
                         "an explicit authorisation");
                 try {
-                    // TODO: https://github.com/wso2-enterprise/financial-open-banking/issues/6875
-                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.toString(),
-                            "Deleted Payment consent");
+                    coreService.revokeConsent(paymentId, TransactionStatusEnum.CANC.name());
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Deactivating account mappings of revoked payment: " + paymentId);
+                    }
+                    ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
+                    ArrayList<String> mappingIds = new ArrayList<>();
+                    for (ConsentMappingResource mappingResource : mappingResources) {
+                        mappingIds.add(mappingResource.getMappingID());
+                    }
+                    if (CollectionUtils.isNotEmpty(mappingIds)) {
+                        coreService.deactivateAccountMappings(mappingIds);
+                    }
                 } catch (ConsentManagementException e) {
                     log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
