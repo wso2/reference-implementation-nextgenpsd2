@@ -85,25 +85,25 @@ public class AuthServletUtil {
 
         // Setting the account details and permission to be displayed in the consent page
         JSONArray accountDetailsJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.ACCOUNT_DETAILS);
-        Map<String, List<String>> staticDefaultMap = new HashMap<>();
+        Map<String, Map<String, String>> staticDefaultMap = new HashMap<>();
         boolean isStaticDefault = false;
 
-        Map<String, List<String>> selectBalanceMap = new HashMap<>();
+        Map<String, Map<String, String>> selectBalanceMap = new HashMap<>();
         boolean isSelectBalance = false;
 
-        Map<String, List<String>> staticBalanceMap = new HashMap<>();
+        Map<String, Map<String, String>> staticBalanceMap = new HashMap<>();
         boolean isStaticBalance = false;
 
-        Map<String, List<String>> selectAccountMap = new HashMap<>();
+        Map<String, Map<String, String>> selectAccountMap = new HashMap<>();
         boolean isSelectAccount = false;
 
-        Map<String, List<String>> staticAccountMap = new HashMap<>();
+        Map<String, Map<String, String>> staticAccountMap = new HashMap<>();
         boolean isStaticAccount = false;
 
-        Map<String, List<String>> selectTransactionMap = new HashMap<>();
+        Map<String, Map<String, String>> selectTransactionMap = new HashMap<>();
         boolean isSelectTransaction = false;
 
-        Map<String, List<String>> staticTransactionMap = new HashMap<>();
+        Map<String, Map<String, String>> staticTransactionMap = new HashMap<>();
         boolean isStaticTransaction = false;
 
         for (int accountDetailsIndex = 0; accountDetailsIndex < accountDetailsJsonArray.length();
@@ -113,16 +113,19 @@ public class AuthServletUtil {
             JSONArray accountNumbersJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.ACCOUNT_NUMBERS);
             JSONArray permissionsJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
 
-            List<String> accountNumbers = new ArrayList<>();
-            List<String> permissions = new ArrayList<>();
+            Map<String, String> accountNumbers = new HashMap<>();
+            Map<String, String> permissions = new HashMap<>();
 
             for (int accNumberIndex = 0; accNumberIndex < accountNumbersJsonArray.length(); accNumberIndex++) {
                 JSONObject obj = accountNumbersJsonArray.getJSONObject(accNumberIndex);
-                accountNumbers.add(obj.getString(ConsentExtensionConstants.IBAN));
+                String currencyType = (StringUtils.isNotBlank(obj.getString(ConsentExtensionConstants.CURRENCY)) ?
+                        obj.getString(ConsentExtensionConstants.CURRENCY) : StringUtils.EMPTY);
+                accountNumbers.put(obj.getString(ConsentExtensionConstants.IBAN), currencyType);
             }
 
             for (int permissionIndex = 0; permissionIndex < permissionsJsonArray.length(); permissionIndex++) {
-                permissions.add(permissionsJsonArray.getString(permissionIndex));
+                permissions.put(ConsentExtensionConstants.PERMISSION,
+                        permissionsJsonArray.getString(permissionIndex));
             }
 
             if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_DEFAULT)) {

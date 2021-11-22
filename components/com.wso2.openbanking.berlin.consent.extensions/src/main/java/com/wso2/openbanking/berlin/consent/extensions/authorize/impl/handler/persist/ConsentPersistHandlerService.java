@@ -151,17 +151,13 @@ class ConsentPersistHandlerService {
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getClientID())),
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getConsentType())),
                         new ArrayList<>(Collections.singletonList(ConsentStatusEnum.VALID.toString())),
-                        null, null, null, null, null)
+                        new ArrayList<>(Collections.singletonList(ConsentExtensionUtil
+                                .appendSuperTenantDomain(loggedInUserId))), null, null, null,
+                null)
                 .stream()
                 .filter(detailedConsentResource -> {
                    //todo: https://github.com/wso2-enterprise/financial-open-banking/issues/6525#issuecomment-974151193
-                        if (detailedConsentResource.getAuthorizationResources().size() == 1) {
-                            AuthorizationResource authResource = detailedConsentResource
-                                    .getAuthorizationResources().get(0);
-                            return StringUtils.equals(authResource.getUserID(),
-                                    ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId));
-                        }
-                    return false;
+                    return detailedConsentResource.getAuthorizationResources().size() == 1;
                 })
                 .filter(DetailedConsentResource::isRecurringIndicator)
                 .collect(Collectors.toList());

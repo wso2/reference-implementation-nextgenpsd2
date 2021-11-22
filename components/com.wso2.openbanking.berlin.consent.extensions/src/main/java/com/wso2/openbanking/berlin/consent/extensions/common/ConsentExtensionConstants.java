@@ -176,6 +176,8 @@ public class ConsentExtensionConstants {
     public static final String TRANSACTION_FEES = "transactionFees";
     public static final String AMOUNT = "amount";
     public static final String CURRENCY = "currency";
+    public static final String CURRENCIES = "currencies";
+    public static final String CURRENCY_CODE_TITLE = "Currency Type: ";
     public static final String START_DATE = "startDate";
     public static final String FREQUENCY = "frequency";
     public static final String END_DATE = "endDate";
