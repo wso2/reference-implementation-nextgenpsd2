@@ -57,6 +57,8 @@ public class AuthServletUtil {
         returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
         httpServletRequest.setAttribute(ConsentExtensionConstants.CONSENT_TYPE,
                 dataSet.getString(ConsentExtensionConstants.TYPE));
+        httpServletRequest.setAttribute(ConsentExtensionConstants.AUTH_TYPE,
+                dataSet.getString(ConsentExtensionConstants.AUTH_TYPE));
 
         return returnMaps;
     }

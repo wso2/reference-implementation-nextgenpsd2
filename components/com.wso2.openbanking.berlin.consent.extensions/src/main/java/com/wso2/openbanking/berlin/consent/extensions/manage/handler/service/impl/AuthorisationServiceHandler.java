@@ -67,11 +67,11 @@ public class AuthorisationServiceHandler implements ServiceHandler {
                 .getValidatedConsentIdFromRequestPath(consentManageData.getRequest().getMethod(), requestPath,
                         consentType);
         boolean isCancellationRequest =
-                StringUtils.contains(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
-                        requestPath);
+                StringUtils.contains(requestPath,
+                        ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END);
 
         if (log.isDebugEnabled()) {
-            log.debug("Get " + consentType + " detailed consent");
+            log.debug(String.format("Get %s detailed consent", consentType));
         }
         ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
@@ -112,23 +112,40 @@ public class AuthorisationServiceHandler implements ServiceHandler {
                     AuthTypeEnum.AUTHORISATION);
         }
 
-        // At this point the request is exactly one of GET authorisations or GET cancellation authorisations
-        // If the request has an authorisation ID at the end, it is a status request
-        boolean isStatusPath = StringUtils.endsWith(requestPath, ConsentExtensionConstants.STATUS);
-
-        if (isStatusPath) {
-            // If an auth ID present in request
-            String[] pathElements = requestPath.split("/");
-            String providedAuthId = pathElements[pathElements.length - 2];
+        // Flag to check if request is a auth sub-resource status request
+        boolean isAuthSubResourceIdsListPath = StringUtils.endsWith(requestPath,
+                ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END)
+                || StringUtils.endsWith(requestPath,
+                ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END);
+        if (isAuthSubResourceIdsListPath) {
+            consentManageData.setResponsePayload(ConsentExtensionUtil
+                    .getAuthorisationGetResponse(authorizationResources));
+        } else {
+            String[] requestPathArray = requestPath.split("/");
+            String providedAuthId = requestPathArray[requestPathArray.length - 1];
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("The provided auth ID is %s", providedAuthId));
             }
+
+            // Validating if the authorisation Id belongs to the consent
+            boolean isAuthIdValid = false;
+            for (AuthorizationResource authorizationResource: authorizationResources) {
+                if (StringUtils.equals(authorizationResource.getAuthorizationID(), providedAuthId)) {
+                    isAuthIdValid = true;
+                    break;
+                }
+            }
+
+            if (!isAuthIdValid) {
+                log.error(ErrorConstants.INVALID_AUTHORISATION_ID);
+                throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
+                        ErrorConstants.INVALID_AUTHORISATION_ID));
+            }
+
             consentManageData.setResponsePayload(ConsentExtensionUtil
                     .getAuthorisationGetStatusResponse(authorizationResources, providedAuthId));
-        } else {
-            consentManageData.setResponsePayload(ConsentExtensionUtil
-                    .getAuthorisationGetResponse(authorizationResources));
         }
         consentManageData.setResponseStatus(ResponseStatus.OK);
     }

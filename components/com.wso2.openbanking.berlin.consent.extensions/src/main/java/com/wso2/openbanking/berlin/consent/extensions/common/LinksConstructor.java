@@ -162,9 +162,10 @@ public class LinksConstructor {
         links.appendField(ConsentExtensionConstants.STATUS, new JSONObject()
                 .appendField(ConsentExtensionConstants.HREF, statusLink));
 
-        String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_AUTH_LINK_TEMPLATE,
+        String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_CANCELLATION_AUTH_LINK_TEMPLATE,
                 apiVersion, requestPath, paymentId);
-        links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, startAuthorisationsLink);
+        links.appendField(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION, new JSONObject()
+                .appendField(ConsentExtensionConstants.HREF, startAuthorisationsLink));
         return links;
     }
 

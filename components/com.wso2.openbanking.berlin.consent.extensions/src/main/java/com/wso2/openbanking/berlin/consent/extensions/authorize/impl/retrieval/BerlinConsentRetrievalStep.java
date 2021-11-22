@@ -25,9 +25,11 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,8 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
 
         String scopeString = consentData.getScopeString();
         String consentId = ConsentAuthUtil.getConsentId(scopeString);
+        String loggedInUserId = consentData.getUserId();
+        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId);
 
         if (StringUtils.isBlank(consentId)) {
             log.error(ErrorConstants.CONSENT_ID_SCOPE_MISSING_ERROR);
@@ -78,21 +82,39 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                 log.debug("Retrieve applicable authorization for the consent ID: " + consentId);
             }
             List<AuthorizationResource> authorizationsList = coreService.searchAuthorizations(consentId);
-            Optional<AuthorizationResource> firstUnauthorizedAuthorization =
-                    authorizationsList.stream()
-                            .filter(authorization -> StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
-                                    authorization.getAuthorizationStatus())).findFirst();
 
-            if (firstUnauthorizedAuthorization.isPresent()) {
-                if (firstUnauthorizedAuthorization.get().getUserID() != null) {
+            String authType;
+            if (StringUtils.equals(consentResource.getCurrentStatus(), TransactionStatusEnum.ACTC.name())) {
+                authType = AuthTypeEnum.CANCELLATION.toString();
+            } else {
+                authType = AuthTypeEnum.AUTHORISATION.toString();
+            }
+
+            // Finding the auth resource relevant to the user if the user Id already exists
+            Optional<AuthorizationResource> unauthorizedAuthResource = authorizationsList.stream()
+                            .filter(authorization -> StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
+                                    authorization.getAuthorizationStatus()) &&
+                                    StringUtils.equals(loggedInUserWithSuperTenant, authorization.getUserID()) &&
+                                    StringUtils.equals(authType, authorization.getAuthorizationType()))
+                            .findFirst();
+
+            // Finding first unauthorized auth resource if no user specific auth resource is found
+            if (!unauthorizedAuthResource.isPresent()) {
+                unauthorizedAuthResource = authorizationsList.stream()
+                                .filter(authorization -> StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
+                                        authorization.getAuthorizationStatus()) &&
+                                        StringUtils.equals(authType, authorization.getAuthorizationType()))
+                                .findFirst();
+            }
+
+            if (unauthorizedAuthResource.isPresent()) {
+                if (unauthorizedAuthResource.get().getUserID() != null) {
 
                     if (log.isDebugEnabled()) {
                         log.debug("Validating whether the logged in user matches with the user who initiated the " +
                                 "consent of Id:" + consentId);
                     }
-                    String initiationPsuId = firstUnauthorizedAuthorization.get().getUserID();
-                    String loggedInUserId = consentData.getUserId();
-                    String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId);
+                    String initiationPsuId = unauthorizedAuthResource.get().getUserID();
 
                     if (!StringUtils.equals(initiationPsuId, loggedInUserWithSuperTenant)) {
                         log.error(ErrorConstants.LOGGED_IN_USER_MISMATCH);
@@ -101,7 +123,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                 }
 
                 boolean isApplicableStatus = validateAuthorizationStatus(consentResource,
-                        firstUnauthorizedAuthorization.get().getAuthorizationType());
+                        unauthorizedAuthResource.get().getAuthorizationType());
 
                 if (!isApplicableStatus) {
                     log.error("The consent of Id: " + consentId + " is not in an applicable status for " +
@@ -121,10 +143,14 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                                 consentData.getRedirectURI(), consentData.getState()));
             }
 
-            consentData.setAuthResource(firstUnauthorizedAuthorization.get());
+            consentData.setAuthResource(unauthorizedAuthResource.get());
             consentData.setConsentResource(consentResource);
 
             JSONArray consentDataJSON = getConsentDataSet(consentResource);
+
+            // Appending the auth type to differentiate in the consent page
+            jsonObject.appendField(ConsentExtensionConstants.AUTH_TYPE, unauthorizedAuthResource.get()
+                    .getAuthorizationType());
             jsonObject.appendField(ConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
 
         } catch (ConsentManagementException e) {

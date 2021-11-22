@@ -120,7 +120,7 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -156,7 +156,7 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
 
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
@@ -184,7 +184,7 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -217,7 +217,7 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -250,7 +250,7 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.toString());
+        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
