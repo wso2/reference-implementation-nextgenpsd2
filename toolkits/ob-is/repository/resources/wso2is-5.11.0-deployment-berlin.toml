@@ -387,6 +387,9 @@ class = "com.wso2.openbanking.accelerator.identity.token.TokenFilter"
 name = "TokenFilter"
 url_pattern = "/token"
 
+[open_banking.identity.extensions]
+response_type_handler="com.wso2.openbanking.berlin.identity.response.type.handlers.BerlinResponseTypeHandlerImpl"
+
 #===================for Connection pool====================
 [open_banking.http_connection_pool]
 max_connections = 2000
