@@ -37,7 +37,8 @@ class AccountsPayloads {
                 ],
                 "transactions":[  
                     {  
-                        "iban":"DE12345678901234567890"
+                        "iban":"DE12345678901234567890",
+                        "currency": "USD"
                     }
                 ]
             },
