@@ -203,29 +203,35 @@ public class ConsentExtensionUtil {
                                                               String consentType) {
 
         String consentId;
-
-        if (StringUtils.equals(HttpMethod.GET, requestMethod) || StringUtils.equals(HttpMethod.DELETE, requestMethod)) {
-            // Consent Id of accounts always situated in 1st position. Consent Id of payments and funds confirmation
-            // always situated in 2nd position
-            consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
-                    requestPath.split("/")[1] : requestPath.split("/")[2];
-            if (CommonUtil.isValidUuid(consentId)) {
-                return consentId;
-            }
-        } else if (StringUtils.equals(HttpMethod.POST, requestMethod)) {
-            String[] requestPathElements = requestPath.split("/");
-            String lastElement = requestPathElements[requestPathElements.length - 1];
-            if (StringUtils.equals(ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END, lastElement)
-                    || StringUtils
-                    .equals(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
-                            lastElement)) {
-
+        try {
+            if (StringUtils.equals(HttpMethod.GET, requestMethod) || StringUtils.equals(HttpMethod.DELETE,
+                    requestMethod)) {
+                // Consent Id of accounts always situated in 1st position. Consent Id of payments and funds confirmation
+                // always situated in 2nd position
                 consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
-                        requestPathElements[1] : requestPathElements[2];
+                        requestPath.split("/")[1] : requestPath.split("/")[2];
                 if (CommonUtil.isValidUuid(consentId)) {
                     return consentId;
                 }
+            } else if (StringUtils.equals(HttpMethod.POST, requestMethod)) {
+                String[] requestPathElements = requestPath.split("/");
+                String lastElement = requestPathElements[requestPathElements.length - 1];
+                if (StringUtils.equals(ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END, lastElement)
+                        || StringUtils
+                        .equals(ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END,
+                                lastElement)) {
+
+                    consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
+                            requestPathElements[1] : requestPathElements[2];
+                    if (CommonUtil.isValidUuid(consentId)) {
+                        return consentId;
+                    }
+                }
             }
+        } catch (IndexOutOfBoundsException e) {
+            log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN, ErrorConstants.PATH_INVALID));
         }
         return StringUtils.EMPTY;
     }

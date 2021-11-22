@@ -156,7 +156,9 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR);
+                    ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
+                            ErrorConstants.CONSENT_NOT_FOUND_ERROR,
+                            consentData.getRedirectURI(), consentData.getState()));
         }
     }
 

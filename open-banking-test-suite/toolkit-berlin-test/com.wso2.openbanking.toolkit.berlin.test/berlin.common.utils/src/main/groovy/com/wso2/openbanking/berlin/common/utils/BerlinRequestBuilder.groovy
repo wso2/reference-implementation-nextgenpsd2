@@ -168,7 +168,7 @@ class BerlinRequestBuilder {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic ${accessToken}")
-                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.instance.authorisationServerURL)

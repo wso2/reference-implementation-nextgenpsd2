@@ -23,13 +23,13 @@
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
     Map<String, List<String>> consentData = (Map<String, List<String>>) request.getAttribute("data_requested");
 
-    Map<String, List<String>> staticDefaultMap = null;
-    Map<String, List<String>> selectBalanceMap = null;
-    Map<String, List<String>> staticBalanceMap = null;
-    Map<String, List<String>> selectAccountMap = null;
-    Map<String, List<String>> staticAccountMap = null;
-    Map<String, List<String>> selectTransactionMap = null;
-    Map<String, List<String>> staticTransactionMap = null;
+    Map<String, Map<String, String>> staticDefaultMap = null;
+    Map<String, Map<String, String>> selectBalanceMap = null;
+    Map<String, Map<String, String>> staticBalanceMap = null;
+    Map<String, Map<String, String>> selectAccountMap = null;
+    Map<String, Map<String, String>> staticAccountMap = null;
+    Map<String, Map<String, String>> selectTransactionMap = null;
+    Map<String, Map<String, String>> staticTransactionMap = null;
 
     boolean isStaticDefault = false;
     boolean isSelectBalance = false;
@@ -39,14 +39,14 @@
     boolean isSelectTransaction = false;
     boolean isStaticTransaction = false;
 
-    if (request.getAttribute("consent_type").equals("accounts")) {
-        staticDefaultMap = (Map<String, List<String>>) request.getAttribute("static-default");
-        selectBalanceMap = (Map<String, List<String>>) request.getAttribute("select-balance");
-        staticBalanceMap = (Map<String, List<String>>) request.getAttribute("static-balance");
-        selectAccountMap = (Map<String, List<String>>) request.getAttribute("select-account");
-        staticAccountMap = (Map<String, List<String>>) request.getAttribute("static-account");
-        selectTransactionMap = (Map<String, List<String>>) request.getAttribute("select-transaction");
-        staticTransactionMap = (Map<String, List<String>>) request.getAttribute("static-transaction");
+    if(request.getAttribute("consent_type").equals("accounts")) {
+        staticDefaultMap = (Map<String, Map<String, String>>) request.getAttribute("static-default");
+        selectBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("select-balance");
+        staticBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("static-balance");
+        selectAccountMap = (Map<String, Map<String, String>>) request.getAttribute("select-account");
+        staticAccountMap = (Map<String, Map<String, String>>) request.getAttribute("static-account");
+        selectTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("select-transaction");
+        staticTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("static-transaction");
 
         isStaticDefault = Boolean.parseBoolean(request.getAttribute("isStaticDefault").toString());
         isSelectBalance = Boolean.parseBoolean(request.getAttribute("isSelectBalance").toString());
@@ -78,7 +78,16 @@
                             <strong>${app}</strong> requests consent to do a single payment transaction ${intentSubText}
                         </c:when>
                         <c:when test="${consent_type eq 'bulk-payments'}">
-                            <strong>${app}</strong> requests consent to do a bulk payment transaction ${intentSubText}
+                            <c:choose>
+                                <c:when test="${auth_type eq 'cancellation'}">
+                                    <strong>${app}</strong> requests consent to cancel a bulk payment transaction
+                                    ${intentSubText}
+                                </c:when>
+                                <c:otherwise>
+                                    <strong>${app}</strong> requests consent to do a bulk payment transaction
+                                    ${intentSubText}
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:when test="${consent_type eq 'periodic-payments'}">
                             <c:choose>
@@ -112,13 +121,17 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticDefaultMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>On following accounts:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticDefaultMap.get("accountNumbers")%>' var="accountNumber">
-                                    <li>${accountNumber}</li>
+                                    <li>Account Reference: ${accountNumber.key}</li>
+                                    <c:if test="${not empty accountNumber.value}">
+                                        <li>Currency Type: ${accountNumber.value}</li>
+                                    </c:if>
+                                    <br>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -129,7 +142,7 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=selectAccountMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>Select the accounts you wish to authorise:</b>
@@ -137,10 +150,14 @@
                                 <c:forEach items='<%=selectAccountMap.get("accountNumbers")%>' var="accountNumber">
                                     <label for="${accountNumber}:selectAccount">
                                         <input type="checkbox" id="${accountNumber}:selectAccount"
-                                            name="checkedAccounts" value="${accountNumber}"
+                                            name="checkedAccounts" value="${accountNumber.key}"
                                         />
-                                        ${accountNumber}
-                                    </label><br/>
+                                        ${accountNumber.key}
+                                            <c:if test="${not empty accountNumber.value}">:
+                                                ${accountNumber.value}
+                                            </c:if>
+                                        </label>
+                                        <br/>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -151,13 +168,17 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticAccountMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>On following accounts:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticAccountMap.get("accountNumbers")%>' var="accountNumber">
-                                    <li>${accountNumber}</li>
+                                    <li>Account Reference: ${accountNumber.key}</li>
+                                    <c:if test="${not empty accountNumber.value}">
+                                        <li>Currency Type: ${accountNumber.value}</li>
+                                    </c:if>
+                                    <br>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -168,7 +189,7 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=selectBalanceMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>Select the accounts you wish to authorise:</b>
@@ -176,10 +197,14 @@
                                 <c:forEach items='<%=selectBalanceMap.get("accountNumbers")%>' var="accountNumber">
                                     <label for="${accountNumber}:selectBalance">
                                         <input type="checkbox" id="${accountNumber}:selectBalance"
-                                            name="checkedBalances" value="${accountNumber}"
+                                            name="checkedBalances" value="${accountNumber.key}"
                                         />
-                                        ${accountNumber}
-                                    </label><br/>
+                                        ${accountNumber.key}
+                                        <c:if test="${not empty accountNumber.value}">:
+                                            ${accountNumber.value}
+                                        </c:if>
+                                    </label>
+                                    <br/>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -190,13 +215,17 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticBalanceMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>On following accounts:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticBalanceMap.get("accountNumbers")%>' var="accountNumber">
-                                    <li>${accountNumber}</li>
+                                    <li>Account Reference: ${accountNumber.key}</li>
+                                    <c:if test="${not empty accountNumber.value}">
+                                        <li>Currency Type: ${accountNumber.value}</li>
+                                    </c:if>
+                                    <br>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -207,7 +236,7 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=selectTransactionMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>Select the accounts you wish to authorise:</b>
@@ -215,10 +244,14 @@
                                 <c:forEach items='<%=selectTransactionMap.get("accountNumbers")%>' var="accountNumber">
                                     <label for="${accountNumber}:selectTransaction">
                                         <input type="checkbox" id="${accountNumber}:selectTransaction"
-                                            name="checkedTransactions" value="${accountNumber}"
+                                            name="checkedTransactions" value="${accountNumber.key}"
                                         />
-                                        ${accountNumber}
-                                    </label><br/>
+                                        ${accountNumber.key}
+                                        <c:if test="${not empty accountNumber.value}">:
+                                            ${accountNumber.value}
+                                        </c:if>
+                                    </label>
+                                    <br/>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -229,18 +262,21 @@
                             <b>Requested Permissions:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticTransactionMap.get("permissions")%>' var="permission">
-                                    <li>${permission}</li>
+                                    <li>${permission.value}</li>
                                 </c:forEach>
                             </ul>
                             <b>On following accounts:</b>
                             <ul class="scopes-list padding">
                                 <c:forEach items='<%=staticTransactionMap.get("accountNumbers")%>' var="accountNumber">
-                                    <li>${accountNumber}</li>
+                                    <li>Account Reference: ${accountNumber.key}</li>
+                                    <c:if test="${not empty accountNumber.value}">
+                                        <li>Currency Type: ${accountNumber.value}</li>
+                                    </c:if>
+                                    <br>
                                 </c:forEach>
                             </ul>
                         </div>
                     </c:if>
-
                 </div>
             </div>
     
@@ -260,13 +296,6 @@
                            value="Confirm"/>
                     <input class="btn btn-primary" type="reset" value="Deny"
                            onclick="javascript: deny(); return false;"/>
-                    <c:choose>
-                        <c:when test="${consent_type eq 'accounts'}">
-                           <input type="button" class="btn btn-primary" id="back" name="back"
-                                  onclick="history.back();"
-                                  value="Go Back"/>
-                        </c:when>
-                    </c:choose>
                     <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
                     <input type="hidden" name="consent" id="consent" value="deny"/>
                     <input type="hidden" name="app" id="app" value="${app}"/>

@@ -62,7 +62,7 @@ public class ErrorConstants {
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
     public static final String INCORRECT_CONSENT_DATA = "Received invalid consent data";
-    public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "User does not have any accounts";
+    public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "Provided account references do not exist or not valid";
 
     // Payments related error messages
     public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";

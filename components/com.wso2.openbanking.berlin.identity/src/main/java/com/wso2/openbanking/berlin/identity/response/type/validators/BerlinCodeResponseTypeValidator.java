@@ -41,6 +41,24 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
 
         log.debug("Berlin request validation triggered for authorisation request");
 
+        if (!StringUtils.contains(request.getQueryString(), "scope")) {
+            throw OAuthProblemException
+                    .error("invalid_request")
+                    .description("Scopes are not present or invalid");
+        } else {
+            String[] scopesString = request.getQueryString().split("&");
+            for (int queryParamIndex = 0; queryParamIndex < scopesString.length; queryParamIndex++) {
+                if (StringUtils.contains(scopesString[queryParamIndex], "scope")) {
+                    String[] scopes = scopesString[queryParamIndex].split("=");
+                    if (scopes.length < 2) {
+                        throw OAuthProblemException
+                                .error("invalid_request")
+                                .description("Scopes are not present or invalid");
+                    }
+                }
+            }
+        }
+
         /*
             Check if request qualifies as an berlin authorisation request.
              NextGenPSD2 XS2A - Implementation Guide V1.3 - Section 13.1
@@ -80,9 +98,6 @@ public class BerlinCodeResponseTypeValidator extends OBCodeResponseTypeValidator
                     .error("invalid_request")
                     .description("'state' parameter is required");
         }
-
-        // Perform super class validation
-        super.validateRequiredParameters(request);
     }
 
     /**

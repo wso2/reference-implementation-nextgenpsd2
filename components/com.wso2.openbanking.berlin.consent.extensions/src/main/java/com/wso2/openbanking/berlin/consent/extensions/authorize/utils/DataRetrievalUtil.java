@@ -20,6 +20,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -200,6 +201,8 @@ public class DataRetrievalUtil {
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BALANCE);
 
+            setAvailableCurrencies(balances, object);
+
             accountData.add(object);
             allAccounts.addAll(balances);
         }
@@ -233,6 +236,8 @@ public class DataRetrievalUtil {
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_TRANSACTION);
 
+            setAvailableCurrencies(transactions, object);
+
             accountData.add(object);
             allAccounts.addAll(transactions);
         }
@@ -263,11 +268,13 @@ public class DataRetrievalUtil {
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_ACCOUNT);
 
+            setAvailableCurrencies(accounts, object);
+
             accountData.add(object);
             allAccounts.addAll(accounts);
         }
 
-        if (allAccounts.stream().allMatch(bankOfferedAccounts::contains)) {
+        if (bankOfferedAccounts.containsAll(allAccounts)) {
             return accountData;
         } else {
             log.error("Consent accounts mismatch");
@@ -314,6 +321,12 @@ public class DataRetrievalUtil {
 
                 JSONObject accountObject = new JSONObject();
                 accountObject.put(accountRefType, account);
+
+                if (slide.containsKey(ConsentExtensionConstants.CURRENCY)
+                        && StringUtils.isNotBlank(slide.getAsString(ConsentExtensionConstants.CURRENCY))) {
+                    accountObject.put(ConsentExtensionConstants.CURRENCY,
+                            slide.get(ConsentExtensionConstants.CURRENCY));
+                }
                 accountArray.add(accountObject);
             }
 
@@ -321,6 +334,21 @@ public class DataRetrievalUtil {
         } catch (ParseException e) {
             log.error(ErrorConstants.JSON_PARSE_ERROR, e);
             return null;
+        }
+    }
+
+    /**
+     * Set currency codes if available to json to be displayed on consent page.
+     *
+     * @param accessMethod access method
+     * @param jsonObject json object
+     */
+    private static void setAvailableCurrencies(JSONArray accessMethod, JSONObject jsonObject) {
+
+        if (accessMethod.contains(ConsentExtensionConstants.CURRENCY)) {
+            JSONArray currencyArray = new JSONArray();
+            currencyArray.add(ConsentExtensionConstants.CURRENCY_CODE_TITLE);
+            jsonObject.put(ConsentExtensionConstants.CURRENCIES, currencyArray);
         }
     }
 }

@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
@@ -120,6 +121,14 @@ class ConsentPersistHandlerService {
         }
     }
 
+    /**
+     * Expires old recurring consents based on the recurring indicator and configuration of multiple recurring
+     * consent support. Also deactivating connected accounts of the consents which are expired in the process.
+     *
+     * @param currentConsentResource the current consent resource
+     * @param loggedInUserId the logged in user for authorization
+     * @throws ConsentManagementException thrown if an error occur while using consent core service
+     */
     private static void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
             throws ConsentManagementException {
 
@@ -142,16 +151,15 @@ class ConsentPersistHandlerService {
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getClientID())),
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getConsentType())),
                         new ArrayList<>(Collections.singletonList(ConsentStatusEnum.VALID.toString())),
-                        null, null, null, null, null)
+                        new ArrayList<>(Collections.singletonList(ConsentExtensionUtil
+                                .appendSuperTenantDomain(loggedInUserId))), null, null, null,
+                null)
                 .stream()
                 .filter(detailedConsentResource -> {
-                    if (detailedConsentResource.getAuthorizationResources().size() == 1) {
-                        AuthorizationResource authResource = detailedConsentResource
-                                .getAuthorizationResources().get(0);
-                        return StringUtils.equals(authResource.getUserID(), loggedInUserId);
-                    }
-                    return false;
+                   //todo: https://github.com/wso2-enterprise/financial-open-banking/issues/6525#issuecomment-974151193
+                    return detailedConsentResource.getAuthorizationResources().size() == 1;
                 })
+                .filter(DetailedConsentResource::isRecurringIndicator)
                 .collect(Collectors.toList());
 
         // Expiring all the previous consents except the current one
@@ -159,6 +167,17 @@ class ConsentPersistHandlerService {
             if (!StringUtils.equals(detailedConsentResource.getConsentID(), currentConsentResource.getConsentID())) {
                 consentCoreService.updateConsentStatus(detailedConsentResource.getConsentID(),
                         ConsentStatusEnum.EXPIRED.toString());
+
+                // Deactivate relative mapping resources after expiration
+                ArrayList<ConsentMappingResource> mappingResources =
+                        detailedConsentResource.getConsentMappingResources();
+                ArrayList<String> mappingIds = new ArrayList<>();
+                for (ConsentMappingResource mappingResource : mappingResources) {
+                    mappingIds.add(mappingResource.getMappingID());
+                }
+                if (CollectionUtils.isNotEmpty(mappingIds)) {
+                    consentCoreService.deactivateAccountMappings(mappingIds);
+                }
             }
         }
     }

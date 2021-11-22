@@ -76,9 +76,6 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE = "auth_type";
     public static final String TYPE = "type";
     public static final String DEFAULT_PERMISSION = "n/a";
-    public static final String AIS_SCOPE = "ais";
-    public static final String PIS_SCOPE = "pis";
-    public static final String PIIS_SCOPE = "piis";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -179,6 +176,8 @@ public class ConsentExtensionConstants {
     public static final String TRANSACTION_FEES = "transactionFees";
     public static final String AMOUNT = "amount";
     public static final String CURRENCY = "currency";
+    public static final String CURRENCIES = "currencies";
+    public static final String CURRENCY_CODE_TITLE = "Currency Type: ";
     public static final String START_DATE = "startDate";
     public static final String FREQUENCY = "frequency";
     public static final String END_DATE = "endDate";

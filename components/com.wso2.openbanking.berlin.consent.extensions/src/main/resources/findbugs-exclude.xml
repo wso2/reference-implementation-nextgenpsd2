@@ -12,4 +12,8 @@
 -->
 
 <FindBugsFilter>
+    <Match>
+        <Class name="com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil" />
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+    </Match>
 </FindBugsFilter>

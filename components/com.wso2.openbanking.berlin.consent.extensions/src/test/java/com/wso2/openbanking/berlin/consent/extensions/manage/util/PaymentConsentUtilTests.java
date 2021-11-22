@@ -41,7 +41,8 @@ import static org.mockito.Mockito.mock;
  * Test class for PaymentConsentUtil class.
  */
 @PrepareForTest({CommonConfigParser.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
+        "jdk.internal.reflect.*"})
 public class PaymentConsentUtilTests extends PowerMockTestCase {
 
     private static JSONParser parser;

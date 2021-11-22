@@ -30,13 +30,13 @@ class BerlinConstants {
     static final String PAYMENTS_SUBMIT_XPATH = """//*[@id="approve"]"""
     static final String PAYMENTS_DENY_XPATH = """//input[@value='Deny']"""
     static final String PAYMENTS_INTENT_TEXT_XPATH = "/html/body/div/div/div/div/div[2]/div/form/div/div[1]/div/h3"
-    static final String ACCOUNTS_SUBMIT_XPATH = """//*[@id="approveAcc"]"""
-    static final String ACCOUNTS_DENY_XPATH = """//input[@value='Deny']"""
+    static final String ACCOUNTS_SUBMIT_XPATH = """//*[@id="approve"]"""
+    static final String ACCOUNTS_DENY_XPATH = """//*[@id="oauth2_authz_confirm"]/div/div[3]/div/input[2]"""
     static final String COF_SUBMIT_XPATH = """//*[@id="approve"]"""
     static final String COF_DENY_XPATH = """//input[@value='Deny']"""
     static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR = "//body[1]"
     static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200 ="//body[1]//div[@class='ui visible negative message']"
-    static final String LBL_CONSENT_PAGE_ERROR = "//form[@id='oauth2_authz']//div/p"
+    static final String LBL_CONSENT_PAGE_ERROR = "/html/body/div/div/div/div/div/div[3]/div/form/div/div/p"
     static final String PSU_EMAIL_ID = "mark@gold.com"
 
     static final String TPPMESSAGE_CODE = "tppMessages[0].code"
@@ -54,6 +54,7 @@ class BerlinConstants {
     static final String QUERY_DATEFROM = "Query.dateFrom"
     static final String PRODUCT_UNKNOWN = "PRODUCT_UNKNOWN"
     static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
+    static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE";
 
 
     static final int STATUS_CODE_204 = 204
