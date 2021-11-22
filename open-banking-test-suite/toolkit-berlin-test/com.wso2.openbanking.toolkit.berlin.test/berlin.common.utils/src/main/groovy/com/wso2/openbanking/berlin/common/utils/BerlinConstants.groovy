@@ -37,7 +37,6 @@ class BerlinConstants {
     static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR = "//body[1]"
     static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200 ="//body[1]//div[@class='ui visible negative message']"
     static final String LBL_CONSENT_PAGE_ERROR = "/html/body/div/div/div/div/div/div[3]/div/form/div/div/p"
-//    static final String LBL_CONSENT_PAGE_ERROR = "//form[@id='oauth2_authz']//div/p"
     static final String PSU_EMAIL_ID = "mark@gold.com"
 
     static final String TPPMESSAGE_CODE = "tppMessages[0].code"
