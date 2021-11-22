@@ -21,6 +21,7 @@ import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsConstants
@@ -35,6 +36,7 @@ import org.testng.annotations.Test
  */
 class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
+	String url
 	String consentPath = AccountsConstants.ACCOUNTS_CONSENT_PATH
 	String initiationPayload = AccountsPayloads.defaultInitiationPayload
 
@@ -43,6 +45,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.body(initiationPayload)
 						.post(consentPath)
@@ -56,7 +59,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(automation.currentUrl.get().contains("state"))
 		Assert.assertNotNull(code)
 
-		doStatusRetrieval(consentPath)
+		doStatusRetrieval(consentPath, accountId)
 		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_VALID)
 	}
@@ -66,6 +69,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
@@ -81,7 +85,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(code)
 
 		//Check Consent Status
-		doStatusRetrieval(consentPath)
+		doStatusRetrieval(consentPath, accountId)
 		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_VALID)
 	}
@@ -91,13 +95,18 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-						"Decoupled Approach is not supported.")
+		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
+				.CONSENT_STATUS_RECEIVED)
+		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
+		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
+				"SMS_OTP")
 	}
 
 	@Test(groups = ["1.3.3", "1.3.6"])
@@ -105,6 +114,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
@@ -115,12 +125,14 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(accountId)
 
 		//Consent Deny
-		doConsentDenyFlow()
-		Assert.assertNotNull(automation.currentUrl.get().contains("state"))
-		Assert.assertEquals(code, "User denied the consent")
+		BrowserAutomation.AutomationContext responseConsentDeny = doConsentDenyFlow()
+		url = responseConsentDeny.currentUrl.get()
+		def errorMessage = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+		Assert.assertEquals(errorMessage, "User denied the consent")
+		Assert.assertNotNull(url.contains("state"))
 
 		//Check consent status
-		doStatusRetrieval(consentPath)
+		doStatusRetrieval(consentPath, accountId)
 		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
 	}
 
@@ -129,6 +141,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
@@ -152,6 +165,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, "1234")
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
@@ -177,6 +191,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
@@ -184,12 +199,15 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		//Do Authorization
 		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-		consentAuthorizeErrorFlowToValidateScopes(request)
+		consentAuthorizeErrorFlow(request)
 
-		Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+		String authUrl = automation.currentUrl.get()
+		def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+		Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+//	@Test (groups = ["1.3.3", "1.3.6"])
 	void "OB-1418_Send Authorisation request with incorrect consent append to the scope"() {
 
 		def accountId = "1234"
@@ -243,25 +261,14 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 
-		accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertNotNull(accountId)
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutCodeChallenge(scopes, accountId)
+		consentAuthorizeErrorFlow(request)
 
-		//Consent Authorisation
-		auth = new BerlinOAuthAuthorization(scopes, accountId)
-		automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-						.addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-						.addStep { driver, context ->
-							driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
-						}
-						.addStep(new WaitForRedirectAutomationStep())
-						.execute()
+		String authUrl = automation.currentUrl.get()
+		def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-		//Get Code from URL
-		code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get())
-
-		Assert.assertNotNull(automation.currentUrl.get().contains("state"))
-		Assert.assertNotNull(code)
+		Assert.assertEquals(oauthErrorCode, "PKCE is mandatory for this application. PKCE Challenge is not provided " +
+				"or is not upto RFC 7636 specification.")
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"])

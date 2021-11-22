@@ -44,7 +44,7 @@ class AccountsPayloads {
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
