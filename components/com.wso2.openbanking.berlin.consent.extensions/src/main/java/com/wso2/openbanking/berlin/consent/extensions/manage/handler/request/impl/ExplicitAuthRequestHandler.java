@@ -164,9 +164,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
             String retrievedConsentType = detailedConsentResource.getConsentType();
 
             // Not letting to create an auth resource if the status is not ACTC and a periodic or bulk payment
-            if (StringUtils.equals(detailedConsentResource.getCurrentStatus(), TransactionStatusEnum.ACTC.name())
-                    && (!StringUtils.equals(retrievedConsentType, ConsentTypeEnum.PERIODIC_PAYMENTS.toString())
-                    || !StringUtils.equals(retrievedConsentType, ConsentTypeEnum.BULK_PAYMENTS.toString()))) {
+            if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), TransactionStatusEnum.ACTC.name())
+                    || StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), retrievedConsentType)) {
                 log.error(String.format(ErrorConstants.CANNOT_CREATE_PAYMENT_CANCELLATION,
                         detailedConsentResource.getCurrentStatus()));
                 throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorUtil.constructBerlinError(null,

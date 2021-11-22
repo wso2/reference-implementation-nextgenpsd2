@@ -118,8 +118,12 @@ public class AuthServletUtil {
 
             for (int accNumberIndex = 0; accNumberIndex < accountNumbersJsonArray.length(); accNumberIndex++) {
                 JSONObject obj = accountNumbersJsonArray.getJSONObject(accNumberIndex);
-                String currencyType = (StringUtils.isNotBlank(obj.getString(ConsentExtensionConstants.CURRENCY)) ?
-                        obj.getString(ConsentExtensionConstants.CURRENCY) : StringUtils.EMPTY);
+
+                String currencyType = StringUtils.EMPTY;
+                if (obj.has(ConsentExtensionConstants.CURRENCY)) {
+                    currencyType = (StringUtils.isNotBlank(obj.getString(ConsentExtensionConstants.CURRENCY)) ?
+                            obj.getString(ConsentExtensionConstants.CURRENCY) : StringUtils.EMPTY);
+                }
                 accountNumbers.put(obj.getString(ConsentExtensionConstants.IBAN), currencyType);
             }
 
