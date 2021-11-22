@@ -33,7 +33,11 @@ class BerlinTestUtil {
      */
     static String getCodeFromURL(String codeURL) {
 
-        return codeURL.split("\\?")[1].split("&")[0].substring(5)
+        if (codeURL.contains("#")) {
+            return codeURL.split("#")[1].split("&")[1].substring(18)
+        } else {
+            return codeURL.split("\\?")[1].split("&")[0].substring(5)
+        }
     }
 
     /**

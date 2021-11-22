@@ -64,3 +64,6 @@ node_modules/
 **/node_modules
 **/dist
 **/package-lock.json
+
+# Config files
+open-banking-test-suite/toolkit-berlin-test/resources/test-config.xml

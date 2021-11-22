@@ -27,7 +27,7 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 	String consentPath
 	String initiationPayload
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
 	void "OB-1498_Retrieve Single Payment Consent Details"() {
 
 		consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
@@ -44,20 +44,20 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 		String retrievalPath = consentPath + "/$paymentId"
 
 		doConsentRetrieval(retrievalPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1498_Retrieve Single Payment Consent Details")
+					dependsOnMethods = "OB-1498_Retrieve Single Payment Consent Details", priority = 2)
 	void "OB-1501_Retrieve Single Payment Consent Status"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 3)
 	void "OB-1499_Retrieve Bulk Payment Consent Details"() {
 
 		consentPath = PaymentsConstants.BULK_PAYMENTS_CONSENT_PATH
@@ -74,20 +74,20 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 		String retrievalPath = consentPath + "/$paymentId"
 
 		doConsentRetrieval(retrievalPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1499_Retrieve Bulk Payment Consent Details")
+					dependsOnMethods = "OB-1499_Retrieve Bulk Payment Consent Details", priority = 4)
 	void "OB-1502_Retrieve Bulk Payment Consent Status"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 5)
 	void "OB-1500_Retrieve Periodic Payment Consent Details"() {
 
 		consentPath = PaymentsConstants.PERIODIC_PAYMENTS_CONSENT_PATH
@@ -104,20 +104,20 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 		String retrievalPath = consentPath + "/$paymentId"
 
 		doConsentRetrieval(retrievalPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1500_Retrieve Periodic Payment Consent Details")
+					dependsOnMethods = "OB-1500_Retrieve Periodic Payment Consent Details", priority = 6)
 	void "OB-1503_Retrieve Periodic Payment Consent Status"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 7)
 	void "OB-1504_Retrieve Consent Details for Authorised Consent"() {
 
 		consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
@@ -137,20 +137,20 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 		String retrievalPath = consentPath + "/$paymentId"
 
 		doConsentRetrieval(retrievalPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1504_Retrieve Consent Details for Authorised Consent")
+					dependsOnMethods = "OB-1504_Retrieve Consent Details for Authorised Consent", priority = 8)
 	void "OB-1505_Retrieve Consent status from Authorised Consent"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 9)
 	void "OB-1506_Retrieve Consent Details from Rejected Consent"() {
 
 		consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
@@ -170,24 +170,24 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 		//Consent Retrieval
 		def retrievalConsentPath = consentPath + "/$paymentId"
 		doConsentRetrieval(retrievalConsentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1506_Retrieve Consent Details from Rejected Consent")
+					dependsOnMethods = "OB-1506_Retrieve Consent Details from Rejected Consent", priority = 10)
 	void "OB-1507_Retrieve Consent status from Rejected Consent"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 11)
 	void "OB-1508_Retrieve Consent Details from Revoked Consent"() {
 
-		consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
-		initiationPayload = PaymentsInitiationPayloads.singlePaymentPayload
+		consentPath = PaymentsConstants.PERIODIC_PAYMENTS_CONSENT_PATH
+		initiationPayload = PaymentsInitiationPayloads.periodicPaymentPayload
 
 		//Payment Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
@@ -204,16 +204,16 @@ class PaymentConsentRetrievalValidationTests extends AbstractPaymentsFlow {
 
 		//Consent Retrieval
 		doConsentRetrieval(retrievalConsentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
 	}
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-					dependsOnMethods = "OB-1508_Retrieve Consent Details from Revoked Consent")
+					dependsOnMethods = "OB-1508_Retrieve Consent Details from Revoked Consent", priority = 12)
 	void "OB-1509_Retrieve Consent Status from Revoked Consent"() {
 
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
 	}
 }

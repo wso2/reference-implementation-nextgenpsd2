@@ -25,10 +25,11 @@ import org.testng.annotations.Test
  */
 class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 
-	String consentPath = PaymentsConstants.SINGLE_PAYMENTS_CONSENT_PATH
-	String initiationPayload = PaymentsInitiationPayloads.singlePaymentPayload
+	String consentPath = PaymentsConstants.PERIODIC_PAYMENTS_CONSENT_PATH
+	String initiationPayload = PaymentsInitiationPayloads.periodicPaymentPayload
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
 	void "OB-1510_Delete consent in received state"() {
 
 		//Payment Initiation
@@ -44,11 +45,12 @@ class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 
 		//Consent Retrieval
 		doConsentRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
 	}
 
-	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 2)
 	void "OB-1511_Delete consent in authorised state"() {
 
 		//Payment Initiation
@@ -64,7 +66,7 @@ class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 
 		//Consent Retrieval
 		doConsentRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 
 		//Consent Delete
@@ -73,11 +75,12 @@ class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 
 		//Consent Retrieval
 		doConsentRetrieval(consentPath)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentRetrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 3)
 	void "OB-1448_Delete consent request with invalid consent id"() {
 
 		def payment_Id = "1234"
@@ -89,13 +92,14 @@ class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 						BerlinConstants.CONSENT_UNKNOWN)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 4)
 	void "OB-1514_Send delete consent request for already terminated consent"() {
 
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse, AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
 		//Deny Consent
 		doConsentDenyFlow()
@@ -103,12 +107,11 @@ class PaymentConsentDeleteValidationTests extends AbstractPaymentsFlow {
 
 		//Delete Consent
 		doConsentDelete(consentPath)
-		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_401)
-		Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_CODE),
-						BerlinConstants.CONSENT_INVALID)
+		Assert.assertEquals(deleteResponse.statusCode(), BerlinConstants.STATUS_CODE_204)
 	}
 
-	@Test (groups = ["1.3.3", "1.3.6"])
+	// Need to config auth_cancellation.enable = false in deployment.toml
+	@Test (groups = ["1.3.3", "1.3.6"], priority = 5)
 	void "OB-1515_Send delete consent request without consent id"() {
 
 		def payment_Id = ""

@@ -22,6 +22,8 @@ import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.payments.util.PaymentsConstants
@@ -64,11 +66,15 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+		paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+		consentStatus = TestUtil.parseResponseBody(consentResponse, "transactionStatus")
 		Assert.assertNotNull(paymentId)
 		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
@@ -87,12 +93,11 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.body(initiationPayload)
 						.post(consentPath)
 
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-						"Decoupled Approach is not supported.")
+		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 	}
 
 	@Test(groups = ["SmokeTest", "1.3.3", "1.3.6"])
@@ -101,11 +106,12 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
-		paymentId = TestUtil.parseResponseBody(consentResponse, "consentId")
+		paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
 
@@ -116,7 +122,7 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 
 		//Check consent status
 		doStatusRetrieval(consentPath)
-		Assert.assertEquals(retrievalResponse, PaymentsConstants.TRANSACTION_STATUS_ACCP)
+		Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
 	}
 
 	@Test(groups = ["1.3.3", "1.3.6"])
@@ -125,11 +131,12 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
-		paymentId = TestUtil.parseResponseBody(consentResponse, "consentId")
+		paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
 
@@ -148,11 +155,12 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
-		paymentId = TestUtil.parseResponseBody(consentResponse, "consentId")
+		paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
 
@@ -173,13 +181,14 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		consentResponse = BerlinRequestBuilder.buildKeyManagerRequest(accessToken)
 						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
 						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
 						.body(initiationPayload)
 						.post(consentPath)
 
 		//Do Authorization
 		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-		consentAuthorizeErrorFlowToValidateScopes(request)
+		consentAuthorizeErrorFlowToValidateScopes(request, false)
 
 		Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
 	}
@@ -194,9 +203,9 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 
 		//Do Authorization
 		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, paymentId)
-		consentAuthorizeErrorFlowToValidateScopes(request)
+		consentAuthorizeErrorFlowToValidateScopes(request, true)
 
-		Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+		Assert.assertEquals(oauthErrorCode, "Retrieving consent data failed")
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"])
@@ -238,25 +247,19 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 
-		paymentId = TestUtil.parseResponseBody(consentResponse, "consentId")
+		paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
 
 		//Consent Authorisation
 		auth = new BerlinOAuthAuthorization(scopes, paymentId, CodeChallengeMethod.PLAIN)
 		automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-						.addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-						.addStep { driver, context ->
-							driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
-						}
+						.addStep(new AuthAutomationSteps(auth.authoriseUrl))
 						.addStep(new WaitForRedirectAutomationStep())
 						.execute()
 
-		//Get Code from URL
-		code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get())
-
 		Assert.assertNotNull(automation.currentUrl.get().contains("state"))
-		Assert.assertNotNull(code)
+		Assert.assertFalse(automation.currentUrl.get().contains("code="))
 	}
 
 	@Test (groups = ["1.3.3", "1.3.6"])

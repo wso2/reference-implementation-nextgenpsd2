@@ -29,7 +29,7 @@ class BerlinConstants {
 
     static final String PAYMENTS_SUBMIT_XPATH = """//*[@id="approve"]"""
     static final String PAYMENTS_DENY_XPATH = """//input[@value='Deny']"""
-    static final String PAYMENTS_INTENT_TEXT_XPATH = "/html/body/div[1]/div/div/div/div/div[2]/form/div/div[1]/div/h3"
+    static final String PAYMENTS_INTENT_TEXT_XPATH = "/html/body/div/div/div/div/div[2]/div/form/div/div[1]/div/h3"
     static final String ACCOUNTS_SUBMIT_XPATH = """//*[@id="approveAcc"]"""
     static final String ACCOUNTS_DENY_XPATH = """//input[@value='Deny']"""
     static final String COF_SUBMIT_XPATH = """//*[@id="approve"]"""
