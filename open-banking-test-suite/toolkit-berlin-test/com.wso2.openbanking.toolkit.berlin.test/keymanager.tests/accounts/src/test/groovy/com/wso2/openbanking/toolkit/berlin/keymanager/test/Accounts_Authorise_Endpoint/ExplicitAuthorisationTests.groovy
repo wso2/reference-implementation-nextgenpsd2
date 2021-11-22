@@ -90,7 +90,6 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		doDefaultInitiationWithoutRedirectPreffered(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
@@ -111,8 +110,6 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 
 		accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
 
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
