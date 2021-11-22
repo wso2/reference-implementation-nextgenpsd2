@@ -89,13 +89,16 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		//Consent Initiation
 		doDefaultInitiationWithoutRedirectPreffered(consentPath, initiationPayload)
 
+		accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
+
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
-		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"),
+				"https://localhost:8243/.well-known/openid-configuration")
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0].authenticationType"),
-				"SMS_OTP")
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0]" +
+				".authenticationType"), "SMS_OTP")
 	}
 
 	@Test(groups = ["1.3.3", "1.3.6"])
@@ -113,11 +116,14 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
-		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.self.href"))
-		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.status.href"))
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "_links.self.href"), "/v1/consents/"
+				+ accountId)
+		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "_links.status.href"), "/v1/consents/" +
+				accountId + "/status")
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0]" +
 				".authenticationType"), "SMS_OTP")
-		Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification.href"))
+		Assert.assertEquals(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification.href"),
+				"/v1/consents/" + accountId +"/authorisations")
 
 		//Create Explicit Authorisation Resources
 		createExplicitAuthorization(consentPath)
