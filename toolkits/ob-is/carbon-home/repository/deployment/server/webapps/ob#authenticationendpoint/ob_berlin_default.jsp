@@ -23,21 +23,39 @@
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
     Map<String, List<String>> consentData = (Map<String, List<String>>) request.getAttribute("data_requested");
 
-    Map<String, Map<String, String>> staticDefaultMap = (Map<String, Map<String, String>>) request.getAttribute("static-default");
-    Map<String, Map<String, String>> selectBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("select-balance");
-    Map<String, Map<String, String>> staticBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("static-balance");
-    Map<String, Map<String, String>> selectAccountMap = (Map<String, Map<String, String>>) request.getAttribute("select-account");
-    Map<String, Map<String, String>> staticAccountMap = (Map<String, Map<String, String>>) request.getAttribute("static-account");
-    Map<String, Map<String, String>> selectTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("select-transaction");
-    Map<String, Map<String, String>> staticTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("static-transaction");
+    Map<String, Map<String, String>> staticDefaultMap = null;
+    Map<String, Map<String, String>> selectBalanceMap = null;
+    Map<String, Map<String, String>> staticBalanceMap = null;
+    Map<String, Map<String, String>> selectAccountMap = null;
+    Map<String, Map<String, String>> staticAccountMap = null;
+    Map<String, Map<String, String>> selectTransactionMap = null;
+    Map<String, Map<String, String>> staticTransactionMap = null;
 
-    boolean isStaticDefault = Boolean.parseBoolean(request.getAttribute("isStaticDefault").toString());
-    boolean isSelectBalance = Boolean.parseBoolean(request.getAttribute("isSelectBalance").toString());
-    boolean isStaticBalance = Boolean.parseBoolean(request.getAttribute("isStaticBalance").toString());
-    boolean isSelectAccount = Boolean.parseBoolean(request.getAttribute("isSelectAccount").toString());
-    boolean isStaticAccount = Boolean.parseBoolean(request.getAttribute("isStaticAccount").toString());
-    boolean isSelectTransaction = Boolean.parseBoolean(request.getAttribute("isSelectTransaction").toString());
-    boolean isStaticTransaction = Boolean.parseBoolean(request.getAttribute("isStaticTransaction").toString());
+    boolean isStaticDefault = false;
+    boolean isSelectBalance = false;
+    boolean isStaticBalance = false;
+    boolean isSelectAccount = false;
+    boolean isStaticAccount = false;
+    boolean isSelectTransaction = false;
+    boolean isStaticTransaction = false;
+
+    if(request.getAttribute("consent_type").equals("accounts")) {
+        staticDefaultMap = (Map<String, Map<String, String>>) request.getAttribute("static-default");
+        selectBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("select-balance");
+        staticBalanceMap = (Map<String, Map<String, String>>) request.getAttribute("static-balance");
+        selectAccountMap = (Map<String, Map<String, String>>) request.getAttribute("select-account");
+        staticAccountMap = (Map<String, Map<String, String>>) request.getAttribute("static-account");
+        selectTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("select-transaction");
+        staticTransactionMap = (Map<String, Map<String, String>>) request.getAttribute("static-transaction");
+
+        isStaticDefault = Boolean.parseBoolean(request.getAttribute("isStaticDefault").toString());
+        isSelectBalance = Boolean.parseBoolean(request.getAttribute("isSelectBalance").toString());
+        isStaticBalance = Boolean.parseBoolean(request.getAttribute("isStaticBalance").toString());
+        isSelectAccount = Boolean.parseBoolean(request.getAttribute("isSelectAccount").toString());
+        isStaticAccount = Boolean.parseBoolean(request.getAttribute("isStaticAccount").toString());
+        isSelectTransaction = Boolean.parseBoolean(request.getAttribute("isSelectTransaction").toString());
+        isStaticTransaction = Boolean.parseBoolean(request.getAttribute("isStaticTransaction").toString());
+    }
 %>
 <div class="row data-container">
     <div class="clearfix"></div>
@@ -60,7 +78,16 @@
                             <strong>${app}</strong> requests consent to do a single payment transaction ${intentSubText}
                         </c:when>
                         <c:when test="${consent_type eq 'bulk-payments'}">
-                            <strong>${app}</strong> requests consent to do a bulk payment transaction ${intentSubText}
+                            <c:choose>
+                                <c:when test="${auth_type eq 'cancellation'}">
+                                    <strong>${app}</strong> requests consent to cancel a bulk payment transaction
+                                    ${intentSubText}
+                                </c:when>
+                                <c:otherwise>
+                                    <strong>${app}</strong> requests consent to do a bulk payment transaction
+                                    ${intentSubText}
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:when test="${consent_type eq 'periodic-payments'}">
                             <c:choose>
