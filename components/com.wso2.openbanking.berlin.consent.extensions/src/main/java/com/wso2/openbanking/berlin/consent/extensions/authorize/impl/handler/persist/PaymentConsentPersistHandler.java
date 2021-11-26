@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -39,7 +40,8 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
     private static final Log log = LogFactory.getLog(PaymentConsentPersistHandler.class);
 
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
+                               ConsentCoreServiceImpl coreService)
             throws ConsentManagementException {
 
         String authorisationId = consentPersistData.getConsentData().getAuthResource().getAuthorizationID();
@@ -66,8 +68,9 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
             permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
             accountIdMapWithPermissions.put(debtorAccountReference, permissionDefault);
 
-            ConsentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                    authorisationId, userId, authStatus);
+            ConsentPersistHandlerService consentPersistHandlerService = new ConsentPersistHandlerService();
+            consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+                    authorisationId, userId, authStatus, coreService);
         } catch (ParseException e) {
             log.error(ErrorConstants.CONSENT_PERSIST_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, ErrorConstants.CONSENT_PERSIST_ERROR);

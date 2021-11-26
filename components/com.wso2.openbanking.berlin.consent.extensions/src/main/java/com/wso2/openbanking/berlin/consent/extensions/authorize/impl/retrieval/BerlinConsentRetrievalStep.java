@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
@@ -54,7 +55,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
             return;
         }
 
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl coreService = getConsentService();
 
         String scopeString = consentData.getScopeString();
         String consentId = ConsentAuthUtil.getConsentId(scopeString);
@@ -186,5 +187,11 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
         consentRetrievalHandler =
                 AuthorizationHandlerFactory.getConsentRetrievalHandler(consentResource.getConsentType());
         return consentRetrievalHandler.validateAuthorizationStatus(consentResource, authType);
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentCoreServiceImpl getConsentService() {
+
+        return new ConsentCoreServiceImpl();
     }
 }

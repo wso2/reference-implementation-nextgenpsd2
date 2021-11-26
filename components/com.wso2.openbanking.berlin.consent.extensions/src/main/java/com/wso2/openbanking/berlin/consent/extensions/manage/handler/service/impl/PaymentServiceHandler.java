@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -97,7 +98,7 @@ public class PaymentServiceHandler implements ServiceHandler {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get %s consent using core service", consentType));
         }
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl coreService = getConsentService();
         try {
             consentResource = coreService.getConsent(paymentId, false);
         } catch (ConsentManagementException e) {
@@ -165,7 +166,7 @@ public class PaymentServiceHandler implements ServiceHandler {
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
 
         log.debug("Get existing consent resource for provided payment Id");
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl coreService = getConsentService();
         try {
             consentResource = coreService.getDetailedConsent(paymentId);
         } catch (ConsentManagementException e) {
@@ -196,8 +197,6 @@ public class PaymentServiceHandler implements ServiceHandler {
 
         ConsentResource updatedConsentResource;
 
-        // TPP-Explicit-Authorisation-Preferred header true in payment cancellation request means an explicit
-        // authorisation is needed for payment cancellation, otherwise the payment will be cancelled implicitly.
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("Payment cancellation SCA approach is Redirect SCA (OAuth2)");
 
@@ -252,5 +251,11 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentCoreServiceImpl getConsentService() {
+
+        return new ConsentCoreServiceImpl();
     }
 }

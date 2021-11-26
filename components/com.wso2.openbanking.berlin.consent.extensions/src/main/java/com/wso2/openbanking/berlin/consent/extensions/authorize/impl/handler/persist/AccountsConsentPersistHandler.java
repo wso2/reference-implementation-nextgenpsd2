@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
@@ -33,7 +34,8 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
     private Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
 
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
+                               ConsentCoreServiceImpl coreService)
             throws ConsentManagementException {
 
         String authorisationId = consentPersistData.getConsentData().getAuthResource().getAuthorizationID();
@@ -81,8 +83,9 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
             mapAccountIdWithPermissions(checkedTransactions, AccessMethodEnum.TRANSACTIONS.toString());
         }
 
-        ConsentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                authorisationId, userId, authStatus);
+        ConsentPersistHandlerService consentPersistHandlerService = new ConsentPersistHandlerService();
+        consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+                authorisationId, userId, authStatus, coreService);
     }
 
     private void mapAccountIdWithPermissions(JSONArray accountNumbers, String accessMethod) {

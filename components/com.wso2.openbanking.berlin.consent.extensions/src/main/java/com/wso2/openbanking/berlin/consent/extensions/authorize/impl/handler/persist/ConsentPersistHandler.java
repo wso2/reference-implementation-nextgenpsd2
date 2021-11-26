@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.util.Map;
 
@@ -30,8 +31,8 @@ public interface ConsentPersistHandler {
      * @param consentResource       Consent Resource Object
      * @throws ConsentManagementException
      */
-    void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
-            throws ConsentManagementException;
+    void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
+                        ConsentCoreServiceImpl coreService) throws ConsentManagementException;
 
     /**
      * Abstract method defined to populate data to publish for data reporting in consent persistence.

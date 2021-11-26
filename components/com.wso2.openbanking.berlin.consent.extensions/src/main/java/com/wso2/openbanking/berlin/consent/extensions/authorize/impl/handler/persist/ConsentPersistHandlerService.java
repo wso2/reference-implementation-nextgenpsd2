@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 class ConsentPersistHandlerService {
 
     private static final Log log = LogFactory.getLog(ConsentPersistHandlerService.class);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
     /**
      * Method to perform authorisation persistence related functions.
@@ -59,9 +58,10 @@ class ConsentPersistHandlerService {
      * @param authStatus                  the auth status to be updated
      * @throws ConsentException thrown if an error occur while persisting authorisation
      */
-    public static void persistAuthorisation(ConsentResource consentResource,
+    public void persistAuthorisation(ConsentResource consentResource,
                                             Map<String, ArrayList<String>> accountIdMapWithPermissions,
-                                            String authorisationId, String psuId, String authStatus)
+                                            String authorisationId, String psuId, String authStatus,
+                                     ConsentCoreServiceImpl consentCoreService)
             throws ConsentManagementException {
 
         AuthorizationResource currentAuthorisationResource =
@@ -101,7 +101,8 @@ class ConsentPersistHandlerService {
                     if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
                             && StringUtils.equals(aggregatedStatus.get().toString(),
                             AuthorisationAggregateStatusEnum.FULLY_AUTHORISED.toString())) {
-                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant);
+                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant,
+                                consentCoreService);
                     }
 
                     String consentStatusToUpdate = stateChangeHook.onAuthorisationStateChange(consentId,
@@ -129,7 +130,8 @@ class ConsentPersistHandlerService {
      * @param loggedInUserId the logged in user for authorization
      * @throws ConsentManagementException thrown if an error occur while using consent core service
      */
-    private static void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
+    private void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId,
+                                                ConsentCoreServiceImpl consentCoreService)
             throws ConsentManagementException {
 
         // Expire old recurring consents only if the recurringIndicator is set to true and
@@ -189,7 +191,7 @@ class ConsentPersistHandlerService {
      *                          authorisation object
      * @return the enum of aggregated authorisation status
      */
-    private static Optional<AuthorisationAggregateStatusEnum> computeAggregatedConsentStatus(List<AuthorizationResource>
+    private Optional<AuthorisationAggregateStatusEnum> computeAggregatedConsentStatus(List<AuthorizationResource>
                                                                                                  authorisationList) {
 
         // Has at least one authorisation failed

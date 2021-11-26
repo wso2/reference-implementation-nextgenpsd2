@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.util.Map;
 
@@ -24,8 +25,8 @@ import java.util.Map;
 public class FundsConfirmationsConsentPersistHandler implements ConsentPersistHandler {
 
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
-            throws ConsentManagementException {
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
+                               ConsentCoreServiceImpl coreService) throws ConsentManagementException {
 
         // todo: Implement for funds confirmation flow
     }

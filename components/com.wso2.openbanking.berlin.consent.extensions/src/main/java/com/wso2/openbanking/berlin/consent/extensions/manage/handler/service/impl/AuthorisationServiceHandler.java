@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
@@ -41,12 +42,11 @@ import java.util.ArrayList;
 public class AuthorisationServiceHandler implements ServiceHandler {
 
     private static final Log log = LogFactory.getLog(AuthorisationServiceHandler.class);
-    private RequestHandler requestHandler;
 
     @Override
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
-        requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
+        RequestHandler requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
 
         if (requestHandler != null) {
             requestHandler.handle(consentManageData);
@@ -73,7 +73,7 @@ public class AuthorisationServiceHandler implements ServiceHandler {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get %s detailed consent", consentType));
         }
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl coreService = getConsentService();
         try {
             detailedConsentResource = coreService.getDetailedConsent(consentId);
         } catch (ConsentManagementException e) {
@@ -159,5 +159,11 @@ public class AuthorisationServiceHandler implements ServiceHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentCoreServiceImpl getConsentService() {
+
+        return new ConsentCoreServiceImpl();
     }
 }
