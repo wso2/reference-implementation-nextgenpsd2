@@ -363,7 +363,7 @@ public class CommonConfigParser {
         return (String) getConfiguration().get(CommonConstants.OAUTH_METADATA_ENDPOINT);
     }
 
-    public int getConfiguredFreqPerDay() {
+    public int getConfiguredMinimumFreqPerDay() {
         return getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE) == null ? 4 :
                 Integer.parseInt((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE));
     }
@@ -373,7 +373,7 @@ public class CommonConfigParser {
                 && Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.VALID_UNTIL_DATE_CAP_ENABLED));
     }
 
-    public long validUntilDays() {
+    public int validUntilDaysCap() {
         return Integer.parseInt(getConfiguration().get(CommonConstants.VALID_UNTIL_DAYS).toString());
     }
 

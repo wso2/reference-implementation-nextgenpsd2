@@ -21,6 +21,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
@@ -134,8 +135,8 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
         bulkPaymentInitiationRequestHandler.handle(bulkPaymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(bulkPaymentConsentManageData, authorizationResource,
-                true, mockHttpServletRequest, mockHttpServletResponse);
+        TestUtil.assertConsentResponse(bulkPaymentConsentManageData, authorizationResource,
+                true, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.BULK_PAYMENTS);
     }
 
     @Test (priority = 2)
@@ -163,8 +164,8 @@ public class BulkPaymentInitiationRequestHandlerTests extends PowerMockTestCase 
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
         bulkPaymentInitiationRequestHandler.handle(bulkPaymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(bulkPaymentConsentManageData, null,
-                false, mockHttpServletRequest, mockHttpServletResponse);
+        TestUtil.assertConsentResponse(bulkPaymentConsentManageData, null,
+                false, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.BULK_PAYMENTS);
     }
 
     @Test (expectedExceptions = ConsentException.class, priority = 3)

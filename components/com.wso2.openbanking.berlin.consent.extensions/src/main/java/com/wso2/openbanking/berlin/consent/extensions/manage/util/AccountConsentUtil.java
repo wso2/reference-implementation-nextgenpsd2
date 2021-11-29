@@ -71,8 +71,8 @@ public class AccountConsentUtil {
      *
      * @param payload
      */
-    public static void validateAccountInitiationPayload(JSONObject payload, int configuredFreqPerDay,
-                                                        boolean isValidUntilDateCapEnabled, long validUntilDays) {
+    public static void validateAccountInitiationPayload(JSONObject payload, int configuredMinimumFreqPerDay,
+                                                        boolean isValidUntilDateCapEnabled, int validUntilDaysCap) {
         JSONObject accessObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCESS);
 
         log.debug("Validating mandatory request body elements");
@@ -104,9 +104,9 @@ public class AccountConsentUtil {
         log.debug("Validating additionalInformation attribute");
         //  it can only be present with at least one of the major access attributes (accounts, balances, transactions)
         if (accessObject.containsKey(ConsentExtensionConstants.ADDITIONAL_INFORMATION)
-                && (!accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString())
-                || !accessObject.containsKey(AccessMethodEnum.BALANCES.toString())
-                || !accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString()))) {
+                && !(accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString())
+                || accessObject.containsKey(AccessMethodEnum.BALANCES.toString())
+                || accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString()))) {
             log.error(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -134,21 +134,21 @@ public class AccountConsentUtil {
                     ErrorConstants.INVALID_FREQ_PER_DAY_COUNT));
         }
 
-        if ((boolean) payload.get(ConsentExtensionConstants.RECURRING_INDICATOR) && configuredFreqPerDay >
+        if ((boolean) payload.get(ConsentExtensionConstants.RECURRING_INDICATOR) && configuredMinimumFreqPerDay >
                 (int) payload.get(ConsentExtensionConstants.FREQUENCY_PER_DAY)) {
             String errorMessageTemplate = "Frequency per day for recurring consent is lesser than the supported " +
                     "minimum value %s";
             if (log.isDebugEnabled()) {
-                log.debug(String.format(errorMessageTemplate, configuredFreqPerDay));
+                log.debug(String.format(errorMessageTemplate, configuredMinimumFreqPerDay));
             }
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    String.format(errorMessageTemplate, configuredFreqPerDay)));
+                    String.format(errorMessageTemplate, configuredMinimumFreqPerDay)));
         }
 
         log.debug("Validating valid until");
         payload.replace(ConsentExtensionConstants.VALID_UNTIL, getValidatedValidUntil((String) payload
-                .get(ConsentExtensionConstants.VALID_UNTIL), isValidUntilDateCapEnabled, validUntilDays));
+                .get(ConsentExtensionConstants.VALID_UNTIL), isValidUntilDateCapEnabled, validUntilDaysCap));
 
         log.debug("Validating combined service indicator");
         // (Not supported)
@@ -284,7 +284,7 @@ public class AccountConsentUtil {
      * @return allowed valid until date
      */
     public static String getValidatedValidUntil(String validUntil, boolean isValidUntilDateCapEnabled,
-                                                long validUntilDays) {
+                                                int validUntilDaysCap) {
 
         LocalDate validUntilDate = ConsentExtensionUtil.parseDateToISO(validUntil, TPPMessage.CodeEnum.FORMAT_ERROR,
                 ErrorConstants.VALID_UNTIL_DATE_INVALID);
@@ -299,9 +299,14 @@ public class AccountConsentUtil {
         LocalDate maximumValidUntil = LocalDate.parse(ConsentExtensionConstants.MAXIMUM_VALID_DATE);
         if (isValidUntilDateCapEnabled &&
                 (validUntil.compareTo(LocalDateTime.now().
-                        plusDays(validUntilDays).
+                        plusDays(validUntilDaysCap).
                         format(DateTimeFormatter.ISO_LOCAL_DATE)) > 0)) {
-            validUntil = LocalDateTime.now().plusDays(validUntilDays).
+            /*
+            If the valid until date cap is enabled;
+            and if now plus the valid until days cap(now + valid until days cap) is still a valid date;
+            the new valid until date will be now plus the valid until days cap(now + valid until days cap)
+             */
+            validUntil = LocalDateTime.now().plusDays(validUntilDaysCap).
                     format(DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (validUntilDate.isAfter(maximumValidUntil)) {
             validUntil = ConsentExtensionConstants.MAXIMUM_VALID_DATE;
@@ -329,8 +334,8 @@ public class AccountConsentUtil {
     /**
      * Checks if consent is expired.
      *
-     * @param validUntilDate valid until date
-     * @param updatedTimeVal last updated tile
+     * @param validUntilDate valid until time
+     * @param updatedTimeVal last updated time
      * @return whether consent is expired or not
      */
     public static boolean isConsentExpired(long validUntilDate, long updatedTimeVal) {
@@ -345,6 +350,8 @@ public class AccountConsentUtil {
         LocalDate currDate = LocalDate.now();
         LocalDate expTimeAfter90Days = updatedDate.plusDays(90);
         if (currDate.isBefore(expDate) || currDate.isEqual(expDate)) {
+
+            // Expired if the last updated date is 90 days before the current date
             return expTimeAfter90Days.isBefore(currDate);
         } else {
             return true;

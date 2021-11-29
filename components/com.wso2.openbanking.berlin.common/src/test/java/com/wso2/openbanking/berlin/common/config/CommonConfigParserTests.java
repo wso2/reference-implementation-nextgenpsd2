@@ -127,11 +127,11 @@ public class CommonConfigParserTests {
         Assert.assertEquals(commonConfigParser.getOauthMetadataEndpoint(),
                 "https://localhost:8243/.well-known/openid-configuration");
 
-        Assert.assertEquals(commonConfigParser.getConfiguredFreqPerDay(), 4);
+        Assert.assertEquals(commonConfigParser.getConfiguredMinimumFreqPerDay(), 4);
 
         Assert.assertFalse(commonConfigParser.isValidUntilDateCapEnabled());
 
-        Assert.assertEquals(commonConfigParser.validUntilDays(), 0);
+        Assert.assertEquals(commonConfigParser.validUntilDaysCap(), 0);
 
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.ACCOUNTS.toString()), "v1");
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.PAYMENTS.toString()), "v1");

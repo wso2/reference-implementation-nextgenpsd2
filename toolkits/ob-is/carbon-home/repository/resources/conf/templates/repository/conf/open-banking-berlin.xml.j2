@@ -141,7 +141,7 @@
             {% endif %}
 
             <!-- Enable frequency per day throttling for eligible API GET calls -->
-            <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->
+            <!--Minimum value is 4 unless agreed bilaterally between TPP and ASPSP-->
             <FrequencyPerDay>
                 {% if open_banking_berlin.consent.accounts.freq_per_day.enable is defined %}
                 <Enable>{{open_banking_berlin.consent.accounts.freq_per_day.enable}}</Enable>

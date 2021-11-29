@@ -32,6 +32,17 @@ public class TestPayloads {
         return implicitInitiationHeadersMap;
     }
 
+    public static Map<String, String> getMandatoryStartAuthHeadersMap() {
+
+        Map<String, String> startAuthHeadersMap = new HashMap<>();
+        startAuthHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        startAuthHeadersMap.put(ConsentExtensionConstants.PSU_ID_HEADER, "admin@wso2.com");
+        startAuthHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
+        startAuthHeadersMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER, "127.0.0.1");
+
+        return startAuthHeadersMap;
+    }
+
     public static final String VALID_PAYMENTS_PAYLOAD = "{\n" +
             "    \"instructedAmount\": {\n" +
             "        \"currency\": \"EUR\",\n" +
@@ -692,5 +703,213 @@ public class TestPayloads {
             "  \"paymentInformationId\": \"my-bulk-identification-1234\",\n" +
             "  \"requestedExecutionDate\": \"2025-08-01\",\n" +
             "  \"payments\": []\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITHOUT_MANDATORY_ACCESS_OBJECT = "{\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITHOUT_MANDATORY_RECURRING_INDICATOR = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITHOUT_MANDATORY_VALID_UNTIL = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITHOUT_MANDATORY_FREQ_PER_DAY = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITHOUT_MANDATORY_COMBINED_SERVICE = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_ACCESS_OBJECT_WITHOUT_ANY_ELEMENTS = "{\n" +
+            "   \"access\":{ },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_ACCESS_OBJECT_INVALID_BANK_OFFERED_CONSENT = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "      \"balances\":[\n" +
+            "         \n" +
+            "      ]\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_ACCESS_OBJECT_INVALID_ALL_ACCOUNTS_CONSENT = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\",\n" +
+            "      \"availableAccounts\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_ACCESS_OBJECT_INVALID_USE_OF_ADDITIONAL_INFO = "{\n" +
+            "   \"access\":{\n" +
+            "      \"additionalInformation\":{\n" +
+            "         \"ownerName\":[\n" +
+            "            {\n" +
+            "               \"iban\":\"DE40100100103307118608\"\n" +
+            "            }\n" +
+            "         ]\n" +
+            "      }\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITH_FREQ_PER_DAY_LESS_THAN_1 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":0,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_WITH_INVALID_USE_OF_RECURRING_INDICATOR = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":false,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_ACCOUNTS_PAYLOAD_ALL_PSD2 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"allPsd2\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS = "{\n" +
+            "   \"access\":{\n" +
+            "      \"availableAccounts\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE = "{\n" +
+            "   \"access\":{\n" +
+            "      \"availableAccountsWithBalance\":\"allAccounts\"\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_ACCOUNTS_PAYLOAD_BANK_OFFERED_CONSENT = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         \n" +
+            "      ],\n" +
+            "      \"balances\":[\n" +
+            "         \n" +
+            "      ],\n" +
+            "      \"transactions\":[\n" +
+            "         \n" +
+            "      ]\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_ACCOUNTS_PAYLOAD_DEDICATED_ACCOUNTS_CONSENT = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "      \"balances\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "      \"transactions\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "         }\n" +
+            "      ]\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String ACCOUNTS_PAYLOAD_ACCESS_OBJECT_VALID_USE_OF_ADDITIONAL_INFO = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "      \"additionalInformation\":{\n" +
+            "         \"ownerName\":[\n" +
+            "            {\n" +
+            "               \"iban\":\"DE40100100103307118608\"\n" +
+            "            }\n" +
+            "         ]\n" +
+            "      }\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
             "}";
 }
