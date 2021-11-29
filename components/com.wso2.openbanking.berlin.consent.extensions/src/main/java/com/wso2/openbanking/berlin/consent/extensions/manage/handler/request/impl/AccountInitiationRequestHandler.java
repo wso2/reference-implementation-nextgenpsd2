@@ -161,8 +161,8 @@ public class AccountInitiationRequestHandler implements RequestHandler {
     protected void validateRequestPayload(JSONObject payload) {
 
         CommonConfigParser configParser = CommonConfigParser.getInstance();
-        AccountConsentUtil.validateAccountInitiationPayload(payload, configParser.getConfiguredFreqPerDay(),
-                configParser.isValidUntilDateCapEnabled(), configParser.validUntilDays());
+        AccountConsentUtil.validateAccountInitiationPayload(payload, configParser.getConfiguredMinimumFreqPerDay(),
+                configParser.isValidUntilDateCapEnabled(), configParser.validUntilDaysCap());
     }
 
     /**

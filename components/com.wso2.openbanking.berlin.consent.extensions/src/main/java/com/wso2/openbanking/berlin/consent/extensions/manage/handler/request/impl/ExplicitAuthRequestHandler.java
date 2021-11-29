@@ -78,9 +78,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         String tenantEnsuredPSUId = ConsentExtensionUtil.appendSuperTenantDomain(psuIdOfRequest);
 
         log.debug("Get detailed consent for the provided id");
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
         try {
-            detailedConsentResource = coreService.getDetailedConsent(consentId);
+            detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_NOT_FOUND_ERROR, e);
             throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
@@ -163,9 +162,18 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
 
             String retrievedConsentType = detailedConsentResource.getConsentType();
 
-            // Not letting to create an auth resource if the status is not ACTC and a periodic or bulk payment
-            if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), TransactionStatusEnum.ACTC.name())
-                    || StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), retrievedConsentType)) {
+            boolean isBulkOrPeriodic = StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(),
+                    retrievedConsentType) || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(),
+                    retrievedConsentType);
+            boolean isCancellation = StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType);
+
+            /*
+            Not letting to create an auth resource if the status is not ACTC and a periodic or bulk payment
+            during payment cancellation
+             */
+            if (isCancellation && (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), retrievedConsentType) ||
+                    (isBulkOrPeriodic && !StringUtils.equals(detailedConsentResource.getCurrentStatus(),
+                            TransactionStatusEnum.ACTC.name())))) {
                 log.error(String.format(ErrorConstants.CANNOT_CREATE_PAYMENT_CANCELLATION,
                         detailedConsentResource.getCurrentStatus()));
                 throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorUtil.constructBerlinError(null,
