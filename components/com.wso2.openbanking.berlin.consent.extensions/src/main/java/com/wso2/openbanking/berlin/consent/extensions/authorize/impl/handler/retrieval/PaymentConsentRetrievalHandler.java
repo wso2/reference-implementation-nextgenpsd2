@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import net.minidev.json.JSONArray;
@@ -69,10 +70,14 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         String consentStatus = consentResource.getCurrentStatus();
         if (log.isDebugEnabled()) {
-            log.debug("The consent with Id: " + consentResource.getConsentID() + "is in an applicable status("
-                    + consentStatus + ") to authorize");
+            log.debug("Checking whether the consent with Id: " + consentResource.getConsentID() + "is in an " +
+                    "applicable status to authorize");
         }
-        return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+        if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
+            return true;
+        } else {
+            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+        }
     }
 
     @Override
