@@ -15,42 +15,67 @@ package com.wso2.openbanking.berlin.consent.extensions.util;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.testng.Assert;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Class with util classes for tests.
  */
 public class TestUtil {
 
-    public static void assertImplicitConsentResponse(ConsentManageData paymentConsentManageData,
-                                              AuthorizationResource authorizationResource, boolean isImplicit,
-                                              MockHttpServletRequest mockHttpServletRequest,
-                                              MockHttpServletResponse mockHttpServletResponse) {
+    public static void assertConsentResponse(ConsentManageData consentManageData,
+                                             AuthorizationResource authorizationResource, boolean isImplicit,
+                                             MockHttpServletRequest mockHttpServletRequest,
+                                             MockHttpServletResponse mockHttpServletResponse,
+                                             ConsentTypeEnum consentType) {
 
-        Assert.assertNotNull(paymentConsentManageData.getResponsePayload());
-        Assert.assertTrue(paymentConsentManageData.getResponsePayload() instanceof JSONObject);
+        Assert.assertNotNull(consentManageData.getResponsePayload());
+        Assert.assertTrue(consentManageData.getResponsePayload() instanceof JSONObject);
+        Assert.assertEquals(ResponseStatus.CREATED, consentManageData.getResponseStatus());
 
-        JSONObject response = (JSONObject) paymentConsentManageData.getResponsePayload();
+        JSONObject response = (JSONObject) consentManageData.getResponsePayload();
+        Assert.assertNotNull(response.get(ConsentExtensionConstants.LINKS));
 
-        Assert.assertEquals(ResponseStatus.CREATED, paymentConsentManageData.getResponseStatus());
+        if (ConsentTypeEnum.ACCOUNTS.equals(consentType)) {
+            Assert.assertEquals(ConsentStatusEnum.RECEIVED.toString(),
+                    response.get(ConsentExtensionConstants.CONSENT_STATUS));
+            Assert.assertNotNull(response.get(ConsentExtensionConstants.CONSENT_ID));
+        } else if (ConsentTypeEnum.PAYMENTS.equals(consentType)) {
+            Assert.assertEquals(TransactionStatusEnum.RCVD.name(),
+                    response.get(ConsentExtensionConstants.TRANSACTION_STATUS));
+            Assert.assertNotNull(response.get(ConsentExtensionConstants.PAYMENT_ID));
+        }
+
         Assert.assertEquals(mockHttpServletResponse.getHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH).toString(),
                 ScaApproachEnum.REDIRECT.toString());
         Assert.assertNotNull(mockHttpServletResponse
                 .getHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER).toString());
-        Assert.assertEquals(TransactionStatusEnum.RCVD.name(),
-                response.get(ConsentExtensionConstants.TRANSACTION_STATUS));
-        Assert.assertNotNull(response.get(ConsentExtensionConstants.PAYMENT_ID));
-        Assert.assertNotNull(response.get(ConsentExtensionConstants.LINKS));
 
         JSONObject linksObject = (JSONObject) response.get(ConsentExtensionConstants.LINKS);
-
         Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.SELF));
 
         if (isImplicit) {
@@ -62,5 +87,206 @@ public class TestUtil {
         } else {
             Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
         }
+    }
+
+    public static void assertStartAuthResponse(ConsentManageData consentManageData,
+                                               AuthorizationResource authorizationResource,
+                                               MockHttpServletRequest mockHttpServletRequest,
+                                               MockHttpServletResponse mockHttpServletResponse) {
+
+        Assert.assertEquals(ResponseStatus.CREATED, consentManageData.getResponseStatus());
+
+        JSONObject response = (JSONObject) consentManageData.getResponsePayload();
+        Assert.assertNotNull(response.get(ConsentExtensionConstants.LINKS));
+        Assert.assertNotNull(response.get(ConsentExtensionConstants.AUTH_ID));
+        Assert.assertEquals(response.get(ConsentExtensionConstants.SCA_STATUS), ScaStatusEnum.RECEIVED.toString());
+
+        Assert.assertEquals(mockHttpServletResponse.getHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH).toString(),
+                ScaApproachEnum.REDIRECT.toString());
+        Assert.assertNotNull(mockHttpServletResponse
+                .getHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER).toString());
+
+        JSONObject linksObject = (JSONObject) response.get(ConsentExtensionConstants.LINKS);
+        Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.SCA_STATUS));
+        Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.SCA_OAUTH));
+    }
+
+    public static String getCurrentDate(int addDays) {
+
+        return LocalDate.parse(LocalDate.now().plusDays(addDays).toString(), DateTimeFormatter.ISO_DATE).toString();
+    }
+
+    public static List<Map<String, String>> getSampleSupportedScaApproaches() {
+
+        List<Map<String, String>> scaApproaches = new ArrayList<>();
+        Map<String, String> scaApproach = new HashMap<>();
+        scaApproach.put(CommonConstants.SCA_NAME, "REDIRECT");
+        scaApproach.put(CommonConstants.SCA_DEFAULT, "true");
+        scaApproaches.add(scaApproach);
+
+        return scaApproaches;
+    }
+
+    public static List<Map<String, String>> getSampleSupportedScaMethods() {
+
+        List<Map<String, String>> scaMethods = new ArrayList<>();
+        Map<String, String> scaMethod = new HashMap<>();
+        scaMethod.put(CommonConstants.SCA_TYPE, "SMS_OTP");
+        scaMethod.put(CommonConstants.SCA_VERSION, "1.0");
+        scaMethod.put(CommonConstants.SCA_ID, "sms-otp");
+        scaMethod.put(CommonConstants.SCA_NAME, "SMS OTP on Mobile");
+        scaMethod.put(CommonConstants.SCA_MAPPED_APPROACH, "REDIRECT");
+        scaMethod.put(CommonConstants.SCA_DESCRIPTION, "SMS based one time password");
+        scaMethod.put(CommonConstants.SCA_DEFAULT, "true");
+        scaMethods.add(scaMethod);
+
+        return scaMethods;
+    }
+
+    public static DetailedConsentResource getSampleDetailedStoredTestConsentResource(String consentId,
+                                                                                     String clientId,
+                                                                                     String consentType,
+                                                                                     String consentStatus,
+                                                                                     String authId, String authType,
+                                                                                     String userId) {
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentID(consentId);
+        detailedConsentResource.setReceipt(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD);
+        detailedConsentResource.setClientID(clientId);
+        detailedConsentResource.setConsentType(consentType);
+        detailedConsentResource.setCurrentStatus(consentStatus);
+        detailedConsentResource.setConsentFrequency(0);
+        detailedConsentResource.setValidityPeriod(0);
+        detailedConsentResource.setRecurringIndicator(false);
+        detailedConsentResource.setCreatedTime(System.currentTimeMillis() / 1000);
+
+        if (StringUtils.isNotBlank(authId)) {
+            ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+            authorizationResources.add(getSampleStoredTestAuthorizationResource(consentId,
+                    authType, ScaStatusEnum.PSU_AUTHENTICATED.toString(), authId, userId));
+            detailedConsentResource.setAuthorizationResources(authorizationResources);
+        }
+
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+        consentMappingResources.add(getSampleTestConsentMappingResource(authId));
+        detailedConsentResource.setConsentMappingResources(consentMappingResources);
+
+        return detailedConsentResource;
+    }
+
+    public static AuthorizationResource getSampleStoredTestAuthorizationResource(String consentId,
+                                                                                 String authorizationType,
+                                                                                 String authStatus, String authId,
+                                                                                 String userId) {
+
+        AuthorizationResource authorizationResource = new AuthorizationResource();
+        authorizationResource.setConsentID(consentId);
+        authorizationResource.setAuthorizationID(authId);
+        authorizationResource.setAuthorizationType(authorizationType);
+        authorizationResource.setUserID(userId);
+        authorizationResource.setAuthorizationStatus(authStatus);
+        authorizationResource.setUpdatedTime(System.currentTimeMillis() / 1000);
+
+        return authorizationResource;
+    }
+
+    public static ConsentMappingResource getSampleTestConsentMappingResource(String authorizationID) {
+
+        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+        consentMappingResource.setMappingID("MappingId");
+        consentMappingResource.setAuthorizationID(authorizationID);
+        consentMappingResource.setAccountID("1234567");
+        consentMappingResource.setPermission("samplePermission");
+        consentMappingResource.setMappingStatus("active");
+
+        return consentMappingResource;
+    }
+
+    public static ArrayList<ConsentMappingResource> getSampleTestConsentMappingResourcesWithPermissions(
+            String authorizationID) {
+
+        ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
+
+        ConsentMappingResource accountMappingResource = new ConsentMappingResource();
+        accountMappingResource.setMappingID(UUID.randomUUID().toString());
+        accountMappingResource.setAuthorizationID(authorizationID);
+        accountMappingResource.setAccountID("DE12345678901234567890");
+        accountMappingResource.setPermission(AccessMethodEnum.ACCOUNTS.toString());
+        accountMappingResource.setMappingStatus("active");
+
+        ConsentMappingResource accountWithBalanceMappingResource = new ConsentMappingResource();
+        accountWithBalanceMappingResource.setMappingID(UUID.randomUUID().toString());
+        accountWithBalanceMappingResource.setAuthorizationID(authorizationID);
+        accountWithBalanceMappingResource.setAccountID("DE12345678901234567890");
+        accountWithBalanceMappingResource.setPermission(AccessMethodEnum.BALANCES.toString());
+        accountWithBalanceMappingResource.setMappingStatus("active");
+
+        ConsentMappingResource balanceMappingResource = new ConsentMappingResource();
+        balanceMappingResource.setMappingID(UUID.randomUUID().toString());
+        balanceMappingResource.setAuthorizationID(authorizationID);
+        balanceMappingResource.setAccountID("DE12345678901234567891");
+        balanceMappingResource.setPermission(AccessMethodEnum.BALANCES.toString());
+        balanceMappingResource.setMappingStatus("active");
+
+        ConsentMappingResource transactionMappingResource = new ConsentMappingResource();
+        transactionMappingResource.setMappingID(UUID.randomUUID().toString());
+        transactionMappingResource.setAuthorizationID(authorizationID);
+        transactionMappingResource.setAccountID("DE12345678901234567892");
+        transactionMappingResource.setPermission(AccessMethodEnum.TRANSACTIONS.toString());
+        transactionMappingResource.setMappingStatus("active");
+
+        ConsentMappingResource transactionWithBalanceMappingResource = new ConsentMappingResource();
+        transactionWithBalanceMappingResource.setMappingID(UUID.randomUUID().toString());
+        transactionWithBalanceMappingResource.setAuthorizationID(authorizationID);
+        transactionWithBalanceMappingResource.setAccountID("DE12345678901234567892");
+        transactionWithBalanceMappingResource.setPermission(AccessMethodEnum.BALANCES.toString());
+        transactionWithBalanceMappingResource.setMappingStatus("active");
+
+        mappingResources.add(accountMappingResource);
+        mappingResources.add(balanceMappingResource);
+        mappingResources.add(transactionMappingResource);
+        mappingResources.add(accountWithBalanceMappingResource);
+        mappingResources.add(transactionWithBalanceMappingResource);
+
+        return mappingResources;
+    }
+
+    public static ConsentManageData getSampleConsentManageData(Map<String, String> headersMap, String path,
+                                                               MockHttpServletRequest mockHttpServletRequest,
+                                                               MockHttpServletResponse mockHttpServletResponse,
+                                                               String clientId, String httpMethod, String payload)
+            throws ParseException {
+
+        mockHttpServletRequest.setMethod(httpMethod);
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        ConsentManageData consentManageData = new ConsentManageData(headersMap, parser.parse(payload), new HashMap(),
+                path, mockHttpServletRequest, mockHttpServletResponse);
+        consentManageData.setClientId(clientId);
+        return consentManageData;
+    }
+
+    public static ConsentResource getSampleConsentResource(String currentStatus, String consentType,
+                                                           String receipt) {
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setReceipt(receipt);
+        consentResource.setCurrentStatus(currentStatus);
+        consentResource.setConsentType(consentType);
+
+        return consentResource;
+    }
+
+    public static ConsentResource getSampleConsentResource(String currentStatus, String consentType,
+                                                           String receipt, String consentId, String clientId) {
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setReceipt(receipt);
+        consentResource.setCurrentStatus(currentStatus);
+        consentResource.setConsentType(consentType);
+        consentResource.setClientID(clientId);
+        consentResource.setConsentID(consentId);
+
+        return consentResource;
     }
 }

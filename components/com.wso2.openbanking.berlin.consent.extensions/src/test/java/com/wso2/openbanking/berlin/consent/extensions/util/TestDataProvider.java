@@ -199,4 +199,39 @@ public class TestDataProvider {
         };
     }
 
+    @DataProvider(name = "BulkAccountsSubmissionTestDataProvider")
+    Object[][] getBulkAccountsSubmissionTestDataProvider() {
+
+        return new Object[][]{
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2, "accounts"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE, "accounts?withBalance"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS, "card-accounts"}
+        };
+    }
+
+    @DataProvider(name = "SingleAccountSubmissionTestDataProvider")
+    Object[][] getSingleAccountSubmissionTestDataProvider() {
+
+        return new Object[][]{
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567890"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567890?withBalance"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567891/balances"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567892/transactions"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567892/transactions?withBalance"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "accounts/DE12345678901234567892/transactions/1234"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "card-accounts/DE12345678901234567890"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "card-accounts/DE12345678901234567891/balances"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        "card-accounts/DE12345678901234567892/transactions"}
+        };
+    }
+
 }
