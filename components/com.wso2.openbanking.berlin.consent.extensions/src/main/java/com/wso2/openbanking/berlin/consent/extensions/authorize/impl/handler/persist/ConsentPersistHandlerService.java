@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -44,10 +45,15 @@ import java.util.stream.Collectors;
 /**
  * Consent persist handler service class for common service level persist handler methods.
  */
-class ConsentPersistHandlerService {
+public class ConsentPersistHandlerService {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private static final Log log = LogFactory.getLog(ConsentPersistHandlerService.class);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+
+    public ConsentPersistHandlerService(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
 
     /**
      * Method to perform authorisation persistence related functions.
@@ -59,7 +65,7 @@ class ConsentPersistHandlerService {
      * @param authStatus                  the auth status to be updated
      * @throws ConsentException thrown if an error occur while persisting authorisation
      */
-    public static void persistAuthorisation(ConsentResource consentResource,
+    public void persistAuthorisation(ConsentResource consentResource,
                                             Map<String, ArrayList<String>> accountIdMapWithPermissions,
                                             String authorisationId, String psuId, String authStatus)
             throws ConsentManagementException {
@@ -94,8 +100,8 @@ class ConsentPersistHandlerService {
                         computeAggregatedConsentStatus(authorisationsList);
 
                 if (aggregatedStatus.isPresent()) {
-                    AuthorisationStateChangeHook stateChangeHook = AuthorizationHandlerFactory
-                            .getAuthorisationStateChangeHook(consentResource.getConsentType());
+                    AuthorisationStateChangeHook stateChangeHook =
+                            getAuthorisationStateChangeHook(consentResource.getConsentType());
 
                     // Handling multiple recurring indicator for accounts
                     if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
@@ -129,7 +135,7 @@ class ConsentPersistHandlerService {
      * @param loggedInUserId the logged in user for authorization
      * @throws ConsentManagementException thrown if an error occur while using consent core service
      */
-    private static void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
+    private void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
             throws ConsentManagementException {
 
         // Expire old recurring consents only if the recurringIndicator is set to true and
@@ -189,7 +195,7 @@ class ConsentPersistHandlerService {
      *                          authorisation object
      * @return the enum of aggregated authorisation status
      */
-    private static Optional<AuthorisationAggregateStatusEnum> computeAggregatedConsentStatus(List<AuthorizationResource>
+    private Optional<AuthorisationAggregateStatusEnum> computeAggregatedConsentStatus(List<AuthorizationResource>
                                                                                                  authorisationList) {
 
         // Has at least one authorisation failed
@@ -219,4 +225,9 @@ class ConsentPersistHandlerService {
         return Optional.empty();
     }
 
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    AuthorisationStateChangeHook getAuthorisationStateChangeHook(String consentType) {
+
+        return AuthorizationHandlerFactory.getAuthorisationStateChangeHook(consentType);
+    }
 }

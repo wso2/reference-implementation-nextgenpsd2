@@ -14,6 +14,7 @@ package com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.fa
 
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.AccountServiceHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.AuthorisationServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.FundsConfirmationServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.impl.PaymentServiceHandler;
 import org.junit.Test;
@@ -43,6 +44,10 @@ public class ServiceHandlerFactoryTests {
         // Testing FundsConfirmationServiceHandler instances
         serviceHandler = ServiceHandlerFactory.getServiceHandler("consents/confirmation-of-funds");
         Assert.assertTrue(serviceHandler instanceof FundsConfirmationServiceHandler);
+
+        // Testing Explicit authorisation instances
+        serviceHandler = ServiceHandlerFactory.getServiceHandler("consents/{consent-id}/authorisations");
+        Assert.assertTrue(serviceHandler instanceof AuthorisationServiceHandler);
 
         // Exceptional scenarios
         serviceHandler = ServiceHandlerFactory.getServiceHandler(null);

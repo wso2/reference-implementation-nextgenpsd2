@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
@@ -32,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 public class BerlinConsentPersistStep implements ConsentPersistStep {
 
     private static final Log log = LogFactory.getLog(BerlinConsentPersistStep.class);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
@@ -46,6 +46,8 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ErrorConstants.CONSENT_ID_NOT_FOUND_ERROR);
             }
+
+            ConsentCoreServiceImpl consentCoreService = getConsentService();
 
             //Retrieve consent details from database if not exists
             if (consentData.getConsentResource() == null) {
@@ -62,8 +64,7 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
 
             //Bind the user and accounts with the consent
             String type = consentResource.getConsentType();
-            ConsentPersistHandler consentPersistHandler = AuthorizationHandlerFactory
-                    .getConsentPersistHandler(type);
+            ConsentPersistHandler consentPersistHandler = getConsentPersistHandler(type);
 
             consentPersistHandler.consentPersist(consentPersistData, consentResource);
         } catch (ConsentManagementException e) {
@@ -71,5 +72,17 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR);
         }
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentCoreServiceImpl getConsentService() {
+
+        return new ConsentCoreServiceImpl();
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentPersistHandler getConsentPersistHandler(String type) {
+
+        return AuthorizationHandlerFactory.getConsentPersistHandler(type);
     }
 }

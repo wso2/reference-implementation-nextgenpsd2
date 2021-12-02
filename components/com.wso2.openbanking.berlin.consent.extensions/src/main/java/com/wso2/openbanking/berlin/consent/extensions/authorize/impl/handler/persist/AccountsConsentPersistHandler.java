@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
@@ -30,7 +31,13 @@ import java.util.Map;
  */
 public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
+
+    public AccountsConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
 
     @Override
     public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
@@ -81,7 +88,9 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
             mapAccountIdWithPermissions(checkedTransactions, AccessMethodEnum.TRANSACTIONS.toString());
         }
 
-        ConsentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+        ConsentPersistHandlerService consentPersistHandlerService =
+                new ConsentPersistHandlerService(consentCoreService);
+        consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
                 authorisationId, userId, authStatus);
     }
 

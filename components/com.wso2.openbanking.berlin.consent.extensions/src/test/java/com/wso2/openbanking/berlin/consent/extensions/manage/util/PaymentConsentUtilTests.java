@@ -13,15 +13,19 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.util;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -31,8 +35,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -64,6 +71,8 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         configMap.put(CommonConstants.MAX_FUTURE_PAYMENT_DAYS, StringUtils.EMPTY);
 
         commonConfigParserMock = mock(CommonConfigParser.class);
+        PowerMockito.mockStatic(CommonConfigParser.class);
+        PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
         doReturn(configMap).when(commonConfigParserMock).getConsentMgtConfigs();
 
         PowerMockito.mockStatic(CommonConfigParser.class);
@@ -159,5 +168,103 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
                 PaymentConsentUtil.getPaymentProduct(samplePath));
     }
 
+    @Test
+    public void testGetConstructedPaymentsGetResponse() throws ParseException {
 
+        ConsentResource sampleConsentResource = new ConsentResource();
+        sampleConsentResource.setReceipt(TestPayloads.VALID_PAYMENTS_PAYLOAD);
+        sampleConsentResource.setCurrentStatus(TransactionStatusEnum.ACCP.name());
+
+        JSONObject paymentGetResponse = PaymentConsentUtil.getConstructedPaymentsGetResponse(sampleConsentResource);
+        Assert.assertEquals(paymentGetResponse.get(ConsentExtensionConstants.TRANSACTION_STATUS),
+                TransactionStatusEnum.ACCP.name());
+        Assert.assertNotNull(paymentGetResponse.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+        Assert.assertNotNull(paymentGetResponse.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT));
+        Assert.assertNotNull(paymentGetResponse.get(ConsentExtensionConstants.CREDITOR_ACCOUNT));
+        Assert.assertNotNull(paymentGetResponse.get(ConsentExtensionConstants.CREDITOR_NAME));
+    }
+
+    @Test
+    public void testGetConstructedPeriodicPaymentGetResponse() throws ParseException {
+
+        ConsentResource sampleConsentResource = new ConsentResource();
+        sampleConsentResource.setReceipt(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD);
+        sampleConsentResource.setCurrentStatus(TransactionStatusEnum.ACCP.name());
+
+        JSONObject periodicPaymentGetResponse =
+                PaymentConsentUtil.getConstructedPeriodicPaymentGetResponse(sampleConsentResource);
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT));
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.CREDITOR_ACCOUNT));
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.CREDITOR_NAME));
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.START_DATE));
+        Assert.assertNotNull(periodicPaymentGetResponse.get(ConsentExtensionConstants.FREQUENCY));
+    }
+
+    @Test
+    public void testGetConstructedBulkPaymentGetResponse() throws ParseException {
+
+        ConsentResource sampleConsentResource = new ConsentResource();
+        sampleConsentResource.setReceipt(TestPayloads.VALID_BULK_PAYMENTS_PAYLOAD);
+        sampleConsentResource.setCurrentStatus(TransactionStatusEnum.ACCP.name());
+
+        JSONObject bulkPaymentGetResponse =
+                PaymentConsentUtil.getConstructedBulkPaymentGetResponse(sampleConsentResource);
+        Assert.assertNotNull(bulkPaymentGetResponse.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+        Assert.assertNotNull(bulkPaymentGetResponse.get(ConsentExtensionConstants.PAYMENTS));
+        JSONArray paymentsArray = (JSONArray) bulkPaymentGetResponse.get(ConsentExtensionConstants.PAYMENTS);
+
+        for (Object payment : paymentsArray) {
+            JSONObject paymentJson = (JSONObject) payment;
+            Assert.assertNotNull(paymentJson.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT));
+            Assert.assertNotNull(paymentJson.get(ConsentExtensionConstants.CREDITOR_ACCOUNT));
+            Assert.assertNotNull(paymentJson.get(ConsentExtensionConstants.CREDITOR_NAME));
+            Assert.assertNotNull(paymentJson.get(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED));
+        }
+    }
+
+    @Test
+    public void testGetPaymentCancellationResponse() {
+
+        List<Map<String, String>> scaMethods = new ArrayList<>();
+        Map<String, String> scaMethod = new HashMap<>();
+        scaMethod.put(CommonConstants.SCA_TYPE, "SMS_OTP");
+        scaMethod.put(CommonConstants.SCA_VERSION, "1.0");
+        scaMethod.put(CommonConstants.SCA_ID, "sms-otp");
+        scaMethod.put(CommonConstants.SCA_NAME, "SMS OTP on Mobile");
+        scaMethod.put(CommonConstants.SCA_MAPPED_APPROACH, "REDIRECT");
+        scaMethod.put(CommonConstants.SCA_DESCRIPTION, "SMS based one time password");
+        scaMethod.put(CommonConstants.SCA_DEFAULT, "true");
+        scaMethods.add(scaMethod);
+        doReturn(scaMethods).when(commonConfigParserMock).getSupportedScaMethods();
+        doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setCurrentStatus(TransactionStatusEnum.CANC.name());
+        String consentId = UUID.randomUUID().toString();
+        consentResource.setConsentID(consentId);
+
+        String sampleRequestPath = "/payments/sepa-credit-transfers";
+        JSONObject paymentCancellationResponse = PaymentConsentUtil.getPaymentCancellationResponse(consentResource,
+                sampleRequestPath, true);
+        Assert.assertEquals(TransactionStatusEnum.CANC.name(),
+                paymentCancellationResponse.get(ConsentExtensionConstants.TRANSACTION_STATUS));
+        Assert.assertNotNull(paymentCancellationResponse.get(ConsentExtensionConstants.CHOSEN_SCA_METHOD));
+        Assert.assertNotNull(paymentCancellationResponse.get(ConsentExtensionConstants.LINKS));
+        JSONArray chosenSCAMethods =
+                (JSONArray) paymentCancellationResponse.get(ConsentExtensionConstants.CHOSEN_SCA_METHOD);
+        JSONObject chosenScaMethod = (JSONObject) chosenSCAMethods.get(0);
+        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_TYPE), scaMethod.get(CommonConstants.SCA_TYPE));
+        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_VERSION),
+                scaMethod.get(CommonConstants.SCA_VERSION));
+        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_ID), scaMethod.get(CommonConstants.SCA_ID));
+        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_NAME), scaMethod.get(CommonConstants.SCA_NAME));
+        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_DESCRIPTION),
+                scaMethod.get(CommonConstants.SCA_DESCRIPTION));
+
+        JSONObject links = (JSONObject) paymentCancellationResponse.get(ConsentExtensionConstants.LINKS);
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.SELF));
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
+        Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
+    }
 }

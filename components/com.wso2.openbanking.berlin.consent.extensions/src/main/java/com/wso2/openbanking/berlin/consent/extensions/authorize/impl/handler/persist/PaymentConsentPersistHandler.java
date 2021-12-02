@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -36,7 +37,13 @@ import java.util.Map;
  */
 public class PaymentConsentPersistHandler implements ConsentPersistHandler {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private static final Log log = LogFactory.getLog(PaymentConsentPersistHandler.class);
+
+    public PaymentConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
 
     @Override
     public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
@@ -66,7 +73,9 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
             permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
             accountIdMapWithPermissions.put(debtorAccountReference, permissionDefault);
 
-            ConsentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+            ConsentPersistHandlerService consentPersistHandlerService =
+                    new ConsentPersistHandlerService(consentCoreService);
+            consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
                     authorisationId, userId, authStatus);
         } catch (ParseException e) {
             log.error(ErrorConstants.CONSENT_PERSIST_ERROR, e);

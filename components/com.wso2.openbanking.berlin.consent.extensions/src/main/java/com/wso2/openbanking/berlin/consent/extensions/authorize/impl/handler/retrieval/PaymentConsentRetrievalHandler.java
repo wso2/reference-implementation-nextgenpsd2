@@ -68,22 +68,16 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
     @Override
     public boolean validateAuthorizationStatus(ConsentResource consentResource, String authType) {
 
-        boolean isApplicable = false;
         String consentStatus = consentResource.getCurrentStatus();
-
-        if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(), authType)) {
-            isApplicable = StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
-        }
-
-        if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
-            isApplicable = StringUtils.equals(TransactionStatusEnum.ACTC.name(), consentStatus);
-        }
-
         if (log.isDebugEnabled()) {
-            log.debug("The consent with Id: " + consentResource.getConsentID() + "is in an applicable status("
-                    + consentStatus + ") to authorize");
+            log.debug("Checking whether the consent with Id: " + consentResource.getConsentID() + "is in an " +
+                    "applicable status to authorize");
         }
-        return isApplicable;
+        if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
+            return true;
+        } else {
+            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+        }
     }
 
     @Override

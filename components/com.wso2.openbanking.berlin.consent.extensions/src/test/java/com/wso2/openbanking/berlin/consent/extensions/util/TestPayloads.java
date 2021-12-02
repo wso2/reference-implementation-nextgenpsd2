@@ -47,6 +47,84 @@ public class TestPayloads {
             "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
             "}";
 
+    public static final String VALID_PAYMENTS_PAYLOAD_BBAN = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"bban\": \"DE12345678901234567890\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"bban\": \"DE98765432109876543210\"\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+            "}";
+
+    public static final String VALID_PAYMENTS_PAYLOAD_PAN = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"pan\": \"DE12345678901234567890\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"pan\": \"DE98765432109876543210\"\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+            "}";
+
+    public static final String VALID_PAYMENTS_PAYLOAD_MASKED_PAN = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"maskedPan\": \"DE123**********\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"maskedPan\": \"DE987**********\"\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+            "}";
+
+    public static final String VALID_PAYMENTS_PAYLOAD_MSISDN = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"msisdn\": \"DE12345678901234567890\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"msisdn\": \"DE98765432109876543210\"\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+            "}";
+
+    public static final String FULL_VALID_PAYMENTS_PAYLOAD = "{\n" +
+            "    \"instructedAmount\": {\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "        \"amount\": \"123.50\"\n" +
+            "    },\n" +
+            "    \"debtorAccount\": {\n" +
+            "        \"iban\": \"DE12345678901234567890\"\n" +
+            "    },\n" +
+            "    \"creditorName\": \"Merchant123\",\n" +
+            "    \"creditorAgent\": \"Creditor Agent\",\n" +
+            "    \"creditorAccount\": {\n" +
+            "        \"iban\": \"DE98765432109876543210\",\n" +
+            "        \"currency\": \"EUR\",\n" +
+            "    },\n" +
+            "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\",\n" +
+            "    \"endToEndIdentification\": \"end to end identification\"\n" +
+            "}";
+
     public static final String PAYMENTS_PAYLOAD_WITH_INVALID_REFERENCE = "{\n" +
             "    \"instructedAmount\": {\n" +
             "        \"currency\": \"EUR\",\n" +
