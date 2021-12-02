@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.factory;
 
+import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.AuthorisationStateChangeHook;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.impl.AccountsStateChangeHook;
@@ -65,13 +67,13 @@ public class AuthorizationHandlerFactory {
         ConsentPersistHandler consentPersistHandler = null;
 
         if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), type)) {
-            consentPersistHandler = new AccountsConsentPersistHandler();
+            consentPersistHandler = new AccountsConsentPersistHandler(getConsentService());
         } else if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), type)
                 || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
                 || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
-            consentPersistHandler = new PaymentConsentPersistHandler();
+            consentPersistHandler = new PaymentConsentPersistHandler(getConsentService());
         } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
-            consentPersistHandler = new FundsConfirmationsConsentPersistHandler();
+            consentPersistHandler = new FundsConfirmationsConsentPersistHandler(getConsentService());
         }
         return consentPersistHandler;
     }
@@ -97,5 +99,11 @@ public class AuthorizationHandlerFactory {
         }
         return authorisationStateChangeHook;
 
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    public static ConsentCoreServiceImpl getConsentService() {
+
+        return new ConsentCoreServiceImpl();
     }
 }

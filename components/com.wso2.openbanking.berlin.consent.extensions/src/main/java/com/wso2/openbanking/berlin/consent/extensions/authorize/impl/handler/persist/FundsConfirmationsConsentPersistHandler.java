@@ -24,9 +24,16 @@ import java.util.Map;
  */
 public class FundsConfirmationsConsentPersistHandler implements ConsentPersistHandler {
 
+    private ConsentCoreServiceImpl consentCoreService;
+
+    public FundsConfirmationsConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
+
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
-                               ConsentCoreServiceImpl coreService) throws ConsentManagementException {
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
+            throws ConsentManagementException {
 
         // todo: Implement for funds confirmation flow
     }

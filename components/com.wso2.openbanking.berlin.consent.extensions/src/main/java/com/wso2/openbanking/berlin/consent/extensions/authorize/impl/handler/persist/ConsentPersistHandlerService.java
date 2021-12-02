@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -44,9 +45,15 @@ import java.util.stream.Collectors;
 /**
  * Consent persist handler service class for common service level persist handler methods.
  */
-class ConsentPersistHandlerService {
+public class ConsentPersistHandlerService {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private static final Log log = LogFactory.getLog(ConsentPersistHandlerService.class);
+
+    public ConsentPersistHandlerService(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
 
     /**
      * Method to perform authorisation persistence related functions.
@@ -60,8 +67,7 @@ class ConsentPersistHandlerService {
      */
     public void persistAuthorisation(ConsentResource consentResource,
                                             Map<String, ArrayList<String>> accountIdMapWithPermissions,
-                                            String authorisationId, String psuId, String authStatus,
-                                     ConsentCoreServiceImpl consentCoreService)
+                                            String authorisationId, String psuId, String authStatus)
             throws ConsentManagementException {
 
         AuthorizationResource currentAuthorisationResource =
@@ -94,8 +100,8 @@ class ConsentPersistHandlerService {
                         computeAggregatedConsentStatus(authorisationsList);
 
                 if (aggregatedStatus.isPresent()) {
-                    AuthorisationStateChangeHook stateChangeHook = AuthorizationHandlerFactory
-                            .getAuthorisationStateChangeHook(consentResource.getConsentType());
+                    AuthorisationStateChangeHook stateChangeHook =
+                            getAuthorisationStateChangeHook(consentResource.getConsentType());
 
                     // Handling multiple recurring indicator for accounts
                     if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
@@ -221,4 +227,9 @@ class ConsentPersistHandlerService {
         return Optional.empty();
     }
 
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    AuthorisationStateChangeHook getAuthorisationStateChangeHook(String consentType) {
+
+        return AuthorizationHandlerFactory.getAuthorisationStateChangeHook(consentType);
+    }
 }

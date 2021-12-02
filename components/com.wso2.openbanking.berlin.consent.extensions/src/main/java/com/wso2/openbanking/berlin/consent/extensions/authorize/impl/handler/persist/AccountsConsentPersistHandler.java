@@ -31,11 +31,16 @@ import java.util.Map;
  */
 public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
 
+    public AccountsConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
+
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
-                               ConsentCoreServiceImpl coreService)
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
             throws ConsentManagementException {
 
         String authorisationId = consentPersistData.getConsentData().getAuthResource().getAuthorizationID();
@@ -83,9 +88,10 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
             mapAccountIdWithPermissions(checkedTransactions, AccessMethodEnum.TRANSACTIONS.toString());
         }
 
-        ConsentPersistHandlerService consentPersistHandlerService = new ConsentPersistHandlerService();
+        ConsentPersistHandlerService consentPersistHandlerService =
+                new ConsentPersistHandlerService(consentCoreService);
         consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                authorisationId, userId, authStatus, coreService);
+                authorisationId, userId, authStatus);
     }
 
     private void mapAccountIdWithPermissions(JSONArray accountNumbers, String accessMethod) {

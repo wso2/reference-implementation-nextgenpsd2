@@ -16,4 +16,9 @@
         <Class name="com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil" />
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
     </Match>
+    <Match>
+        <!-- todo: this is skipped temporarily and should be removed after funds confirmation feature is implemented -->
+        <Class name="com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.FundsConfirmationsConsentPersistHandler" />
+        <Bug pattern="URF_UNREAD_FIELD" />
+    </Match>
 </FindBugsFilter>

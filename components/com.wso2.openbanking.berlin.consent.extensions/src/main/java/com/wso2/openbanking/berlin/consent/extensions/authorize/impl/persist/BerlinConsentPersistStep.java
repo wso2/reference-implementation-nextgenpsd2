@@ -64,10 +64,9 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
 
             //Bind the user and accounts with the consent
             String type = consentResource.getConsentType();
-            ConsentPersistHandler consentPersistHandler = AuthorizationHandlerFactory
-                    .getConsentPersistHandler(type);
+            ConsentPersistHandler consentPersistHandler = getConsentPersistHandler(type);
 
-            consentPersistHandler.consentPersist(consentPersistData, consentResource, getConsentService());
+            consentPersistHandler.consentPersist(consentPersistData, consentResource);
         } catch (ConsentManagementException e) {
             log.error(ErrorConstants.CONSENT_DATA_RETRIEVE_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -79,5 +78,11 @@ public class BerlinConsentPersistStep implements ConsentPersistStep {
     ConsentCoreServiceImpl getConsentService() {
 
         return new ConsentCoreServiceImpl();
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentPersistHandler getConsentPersistHandler(String type) {
+
+        return AuthorizationHandlerFactory.getConsentPersistHandler(type);
     }
 }

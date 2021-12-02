@@ -37,11 +37,16 @@ import java.util.Map;
  */
 public class PaymentConsentPersistHandler implements ConsentPersistHandler {
 
+    private ConsentCoreServiceImpl consentCoreService;
     private static final Log log = LogFactory.getLog(PaymentConsentPersistHandler.class);
 
+    public PaymentConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
+
+        this.consentCoreService = consentCoreService;
+    }
+
     @Override
-    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource,
-                               ConsentCoreServiceImpl coreService)
+    public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
             throws ConsentManagementException {
 
         String authorisationId = consentPersistData.getConsentData().getAuthResource().getAuthorizationID();
@@ -68,9 +73,10 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
             permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
             accountIdMapWithPermissions.put(debtorAccountReference, permissionDefault);
 
-            ConsentPersistHandlerService consentPersistHandlerService = new ConsentPersistHandlerService();
+            ConsentPersistHandlerService consentPersistHandlerService =
+                    new ConsentPersistHandlerService(consentCoreService);
             consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                    authorisationId, userId, authStatus, coreService);
+                    authorisationId, userId, authStatus);
         } catch (ParseException e) {
             log.error(ErrorConstants.CONSENT_PERSIST_ERROR, e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, ErrorConstants.CONSENT_PERSIST_ERROR);

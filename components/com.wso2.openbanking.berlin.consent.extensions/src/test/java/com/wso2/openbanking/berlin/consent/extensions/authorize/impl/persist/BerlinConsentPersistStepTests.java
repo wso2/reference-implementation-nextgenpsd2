@@ -21,6 +21,9 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.common.impl.PaymentsStateChangeHook;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.PaymentConsentPersistHandler;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
@@ -49,7 +52,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-@PrepareForTest({CommonConfigParser.class})
+@PrepareForTest({CommonConfigParser.class, AuthorizationHandlerFactory.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
         "jdk.internal.reflect.*"})
 public class BerlinConsentPersistStepTests extends PowerMockTestCase {
@@ -65,6 +68,9 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
 
     @Mock
     CommonConfigParser commonConfigParserMock;
+
+    @Mock
+    AuthorizationHandlerFactory authorizationHandlerFactory;
 
     @BeforeClass
     public void initClass() {
@@ -87,10 +93,19 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
 
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         doReturn(consentCoreServiceMock).when(berlinConsentPersistStep).getConsentService();
+
+        authorizationHandlerFactory = PowerMockito.mock(AuthorizationHandlerFactory.class);
+        PowerMockito.mockStatic(AuthorizationHandlerFactory.class);
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentService()).thenReturn(consentCoreServiceMock);
     }
 
     @Test
     public void testConsentPersistWithValidData() throws URISyntaxException, ConsentManagementException {
+
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentPersistHandler(Mockito.anyString()))
+                .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
+        PowerMockito.when(AuthorizationHandlerFactory.getAuthorisationStateChangeHook(Mockito.anyString()))
+                .thenReturn(new PaymentsStateChangeHook());
 
         ConsentResource consentResource =
                 TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.toString(),
@@ -162,6 +177,9 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
     public void testConsentPersistWithMismatchingConsentIdsData() throws URISyntaxException,
             ConsentManagementException {
 
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentPersistHandler(Mockito.anyString()))
+                .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
+
         ConsentResource consentResource =
                 TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD, consentId, clientId);
@@ -195,6 +213,11 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
     @Test
     public void testConsentPersistWithFailedAuthData() throws URISyntaxException,
             ConsentManagementException {
+
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentPersistHandler(Mockito.anyString()))
+                .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
+        PowerMockito.when(AuthorizationHandlerFactory.getAuthorisationStateChangeHook(Mockito.anyString()))
+                .thenReturn(new PaymentsStateChangeHook());
 
         ConsentResource consentResource = new ConsentResource(clientId, TestPayloads.VALID_PAYMENTS_PAYLOAD,
                 ConsentTypeEnum.PAYMENTS.toString(), TransactionStatusEnum.RCVD.toString());
@@ -233,6 +256,11 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
     @Test
     public void testConsentPersistPartialAuthData() throws URISyntaxException,
             ConsentManagementException {
+
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentPersistHandler(Mockito.anyString()))
+                .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
+        PowerMockito.when(AuthorizationHandlerFactory.getAuthorisationStateChangeHook(Mockito.anyString()))
+                .thenReturn(new PaymentsStateChangeHook());
 
         ConsentResource consentResource = new ConsentResource(clientId, TestPayloads.VALID_PAYMENTS_PAYLOAD,
                 ConsentTypeEnum.PAYMENTS.toString(), TransactionStatusEnum.RCVD.toString());
@@ -278,6 +306,9 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
     @Test (expectedExceptions = ConsentException.class)
     public void testConsentPersistEmptyAggregatedStatusData() throws URISyntaxException,
             ConsentManagementException {
+
+        PowerMockito.when(AuthorizationHandlerFactory.getConsentPersistHandler(Mockito.anyString()))
+                .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
 
         ConsentResource consentResource = new ConsentResource(clientId, TestPayloads.VALID_PAYMENTS_PAYLOAD,
                 ConsentTypeEnum.PAYMENTS.toString(), TransactionStatusEnum.RCVD.toString());
