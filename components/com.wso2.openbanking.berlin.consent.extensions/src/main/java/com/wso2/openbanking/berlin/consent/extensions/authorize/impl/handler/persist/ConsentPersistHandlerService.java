@@ -107,8 +107,7 @@ public class ConsentPersistHandlerService {
                     if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
                             && StringUtils.equals(aggregatedStatus.get().toString(),
                             AuthorisationAggregateStatusEnum.FULLY_AUTHORISED.toString())) {
-                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant,
-                                consentCoreService);
+                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant);
                     }
 
                     String consentStatusToUpdate = stateChangeHook.onAuthorisationStateChange(consentId,
@@ -136,8 +135,7 @@ public class ConsentPersistHandlerService {
      * @param loggedInUserId the logged in user for authorization
      * @throws ConsentManagementException thrown if an error occur while using consent core service
      */
-    private void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId,
-                                                ConsentCoreServiceImpl consentCoreService)
+    private void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
             throws ConsentManagementException {
 
         // Expire old recurring consents only if the recurringIndicator is set to true and
