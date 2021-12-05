@@ -288,6 +288,20 @@ public class TestUtil {
         return consentData;
     }
 
+    public static ConsentManageData getSampleConsentManageData(Map<String, String> headersMap, String path,
+                                                               MockHttpServletRequest mockHttpServletRequest,
+                                                               MockHttpServletResponse mockHttpServletResponse,
+                                                               String clientId, String httpMethod, String payload)
+            throws ParseException {
+
+        mockHttpServletRequest.setMethod(httpMethod);
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        ConsentManageData consentManageData = new ConsentManageData(headersMap, parser.parse(payload), new HashMap(),
+                path, mockHttpServletRequest, mockHttpServletResponse);
+        consentManageData.setClientId(clientId);
+        return consentManageData;
+    }
+
     public static ConsentResource getSampleConsentResource(String currentStatus, String consentType,
                                                            String receipt) {
 
@@ -317,19 +331,5 @@ public class TestUtil {
         return getSampleConsentDataObject(TestConstants.USER_ID,
                 TestConstants.SAMPLE_QUERY_PARAMS, scopeString, TestConstants.SAMPLE_APP_NAME,
                 new HashMap<>(), true);
-    }
-
-    public static ConsentManageData getSampleConsentManageData(Map<String, String> headersMap, String path,
-                                                               MockHttpServletRequest mockHttpServletRequest,
-                                                               MockHttpServletResponse mockHttpServletResponse,
-                                                               String clientId, String httpMethod, String payload)
-            throws ParseException {
-
-        mockHttpServletRequest.setMethod(httpMethod);
-        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-        ConsentManageData consentManageData = new ConsentManageData(headersMap, parser.parse(payload), new HashMap(),
-                path, mockHttpServletRequest, mockHttpServletResponse);
-        consentManageData.setClientId(clientId);
-        return consentManageData;
     }
 }
