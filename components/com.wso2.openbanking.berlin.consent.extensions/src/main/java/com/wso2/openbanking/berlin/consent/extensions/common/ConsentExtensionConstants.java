@@ -121,15 +121,15 @@ public class ConsentExtensionConstants {
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
             "accounts",
-            "accounts?withBalance",
+            "accounts\\?withBalance",
             "card-accounts"));
     public static final List<String> SINGLE_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
             "accounts/[^/?]*",
-            "accounts/[^/?]*?withBalance",
+            "accounts/[^/?]*\\?withBalance",
             "accounts/[^/?]*/balances",
             "accounts/[^/?]*/transactions",
-            "accounts/[^/?]*/transactions?withBalance",
+            "accounts/[^/?]*/transactions\\?withBalance",
             "accounts/[^/?]*/transactions/[^/?]*",
             "card-accounts/[^/?]*",
             "card-accounts/[^/?]*/balances",

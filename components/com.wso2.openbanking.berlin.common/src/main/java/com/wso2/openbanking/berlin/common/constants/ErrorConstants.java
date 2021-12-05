@@ -59,6 +59,12 @@ public class ErrorConstants {
     public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
             "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
+    public static final String NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS = "No matching accounts found for " +
+            "requested permissions";
+    public static final String NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID = "No matching account found for " +
+            "requested account id";
+    public static final String ACCOUNT_ID_CANNOT_BE_EMPTY = "Account id cannot be empty";
+    public static final String NO_VALID_ACCOUNTS_FOR_CONSENT = "No valid accounts for this consent";
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
     public static final String INCORRECT_CONSENT_DATA = "Received invalid consent data";
