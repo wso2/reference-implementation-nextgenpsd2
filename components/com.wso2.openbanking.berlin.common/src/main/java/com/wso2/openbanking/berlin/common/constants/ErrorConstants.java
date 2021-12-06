@@ -25,6 +25,7 @@ public class ErrorConstants {
 
     // Error messages
     public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
+    public static final String DATE_MISSING = "Date header is missing in the request";
     public static final String CONSENT_ID_MISSING = "Consent-ID header is missing in the request";
     public static final String PATCH_NOT_SUPPORTED = "The PATCH method is not supported";
     public static final String DELETE_NOT_SUPPORTED = "The DELETE method is not supported";
@@ -107,6 +108,8 @@ public class ErrorConstants {
     public static final String CANNOT_CREATE_PAYMENT_CANCELLATION = "Cannot create cancellation for payment in " +
             "status %s";
     public static final String CANCELLATION_NOT_APPLICABLE = "Cancellation not applicable for Single payments";
+    public static final String PAYMENT_INITIATION_HANDLE_ERROR = "Error occurred while handling the payment " +
+            "initiation request";
 
     // Accounts related error messages
     public static final String MANDATORY_ELEMENTS_MISSING = "Invalid request payload, mandatory elements are missing";
@@ -127,5 +130,19 @@ public class ErrorConstants {
     public static final String CATEGORY = "category";
     public static final String CODE = "code";
     public static final String TEXT = "text";
+
+    // path of fields in request
+    public static final String PATH_IDEM_KEY = "Header.X-Request-ID";
+
+    //low level textual error code
+    public static final String HEADER_MISSING = "Header Missing";
+    public static final String HEADER_INVALID = "Header Invalid";
+
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT = "Idempotency check failed.:" +
+            ErrorConstants.PATH_IDEM_KEY;
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_ERROR = "Error while handling Idempotency check.:" +
+            ErrorConstants.PATH_IDEM_KEY;
+
+
 
 }

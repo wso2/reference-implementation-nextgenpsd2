@@ -12,6 +12,14 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
+    <Gateway>
+        <Cache>
+            <IdempotencyValidationCache>
+                <CacheAccessExpiry>3600</CacheAccessExpiry>
+                <CacheModifiedExpiry>3600</CacheModifiedExpiry>
+            </IdempotencyValidationCache>
+        </Cache>
+    </Gateway>
     <ConsentManagement>
 
         <!-- Enable frequency per day throttling for eligible API GET calls -->
@@ -21,9 +29,10 @@
             <Frequency>4</Frequency>
         </FrequencyPerDay>
 
-        <Idempotency>
+       <Idempotency>
             <!-- Allowed idempotency duration in hours -->
-            <AllowedDuration>1</AllowedDuration>
+            <AllowedTimeDurationForIdempotency>1</AllowedTimeDurationForIdempotency>
+            <PaymentSubmissionIdempotencyEnabled>true</PaymentSubmissionIdempotencyEnabled>
         </Idempotency>
     </ConsentManagement>
 </Server>
