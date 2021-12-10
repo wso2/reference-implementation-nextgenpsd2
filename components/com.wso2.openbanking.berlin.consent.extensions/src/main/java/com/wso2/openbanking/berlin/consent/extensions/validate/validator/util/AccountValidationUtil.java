@@ -51,19 +51,18 @@ public class AccountValidationUtil {
             }
         }
 
-        for (ConsentMappingResource mappingResource : mappingResources) {
-            if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())
-                    && StringUtils.equals(mappingResource.getAccountID(), accountId)) {
-                isValidBalanceAccessMethodForAccount = true;
-                break;
+        if (isWithBalance) {
+            for (ConsentMappingResource mappingResource : mappingResources) {
+                if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())
+                        && StringUtils.equals(mappingResource.getAccountID(), accountId)) {
+                    isValidBalanceAccessMethodForAccount = true;
+                    break;
+                }
             }
+            return isValidAccessMethodForAccount && isValidBalanceAccessMethodForAccount;
         }
 
-        if (isWithBalance) {
-            return isValidAccessMethodForAccount && isValidBalanceAccessMethodForAccount;
-        } else {
-            return isValidAccessMethodForAccount;
-        }
+        return isValidAccessMethodForAccount;
     }
 
     /**
