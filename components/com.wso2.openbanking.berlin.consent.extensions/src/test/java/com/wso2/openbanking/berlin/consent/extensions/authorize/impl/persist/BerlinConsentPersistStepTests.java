@@ -108,7 +108,7 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 .thenReturn(new PaymentsStateChangeHook());
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD, consentId, clientId);
 
         AuthorizationResource authorizationResource = TestUtil.getSampleStoredTestAuthorizationResource(consentId,
@@ -144,7 +144,7 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
     public void testConsentPersistWithoutConsentId() throws URISyntaxException, ConsentManagementException {
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), "{\"key\":\"value\"123}", consentId, clientId);
 
         AuthorizationResource authorizationResource = TestUtil.getSampleStoredTestAuthorizationResource(consentId,
@@ -181,7 +181,7 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 .thenReturn(new PaymentConsentPersistHandler(consentCoreServiceMock));
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD, consentId, clientId);
 
         AuthorizationResource authorizationResource = new AuthorizationResource();

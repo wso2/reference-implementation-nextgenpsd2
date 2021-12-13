@@ -163,7 +163,7 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
                 TestPayloads.VALID_PAYMENTS_PAYLOAD);
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD, consentId, clientId);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
@@ -194,7 +194,7 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
                 TestPayloads.VALID_PAYMENTS_PAYLOAD);
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.toString(),
                         ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD,
                         consentId, clientId);
 
@@ -227,7 +227,7 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
                 TestPayloads.VALID_PAYMENTS_PAYLOAD);
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.toString(),
                         ConsentTypeEnum.BULK_PAYMENTS.toString(), TestPayloads.VALID_BULK_PAYMENTS_PAYLOAD,
                         consentId, clientId);
 
@@ -266,7 +266,7 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
                 TestPayloads.VALID_PAYMENTS_PAYLOAD);
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD,
                         consentId, clientId);
 
@@ -293,7 +293,7 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
                 TestPayloads.VALID_PAYMENTS_PAYLOAD);
 
         ConsentResource consentResource =
-                TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.toString(),
+                TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.toString(),
                         ConsentTypeEnum.PAYMENTS.toString(), "{\"key\":\"value\"123}",
                         consentId, clientId);
 

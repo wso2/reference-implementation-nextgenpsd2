@@ -101,7 +101,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -118,7 +118,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_BBAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.BBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -135,7 +135,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_PAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.PAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -152,7 +152,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_MASKED_PAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.MASKED_PAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -169,7 +169,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_MSISDN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.MSISDN).when(commonConfigParserMock).getAccountReferenceType();
@@ -187,7 +187,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -205,7 +205,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataWithoutScopesString =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.BULK_PAYMENTS.toString(), TestPayloads.VALID_BULK_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -235,7 +235,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
         consentDataObject.setState(UUID.randomUUID().toString());
         consentDataObject.setRedirectURI(new URI(TestConstants.REDIRECT_URI));
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -279,7 +279,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
         consentDataObject.setState(UUID.randomUUID().toString());
         consentDataObject.setRedirectURI(new URI(TestConstants.REDIRECT_URI));
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -297,7 +297,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
         consentDataObject.setState(UUID.randomUUID().toString());
         consentDataObject.setRedirectURI(new URI(TestConstants.REDIRECT_URI));
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -316,7 +316,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
         consentDataObject.setState(UUID.randomUUID().toString());
         consentDataObject.setRedirectURI(new URI(TestConstants.REDIRECT_URI));
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.ACCP.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
@@ -332,7 +332,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
 
         ConsentData consentDataObject =
                 TestUtil.getSampleRegulatoryConsentDataResource("pis:" + consentId);
-        doReturn(TestUtil.getSamplePaymentConsentResource(TransactionStatusEnum.RCVD.name(),
+        doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.FULL_VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();

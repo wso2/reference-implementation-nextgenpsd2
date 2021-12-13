@@ -19,10 +19,9 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestUtil;
 import net.minidev.json.parser.JSONParser;
@@ -39,23 +38,21 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.ws.rs.HttpMethod;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test class for Payment Initiation Request Handler class.
+ * Test class for Account Initiation Request Handler class.
  */
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
-public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
+public class AccountInitiationRequestHandlerTests extends PowerMockTestCase {
 
-    private static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
-    private static final String PAYMENTS_PATH = "payments/sepa-credit-transfers";
+    private static final String ACCOUNTS_PATH = "consents";
 
     @Mock
     CommonConfigParser commonConfigParserMock;
@@ -64,66 +61,48 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
     ConsentCoreServiceImpl consentCoreServiceMock;
 
     private final JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-    List<Map<String, String>> scaMethods;
-    List<Map<String, String>> scaApproaches;
     MockHttpServletRequest mockHttpServletRequest;
     MockHttpServletResponse mockHttpServletResponse;
     String clientId;
+    String consentId;
 
     @BeforeMethod
     public void init() {
 
         clientId = UUID.randomUUID().toString();
+        consentId = UUID.randomUUID().toString();
         mockHttpServletRequest = new MockHttpServletRequest();
         mockHttpServletResponse = new MockHttpServletResponse();
 
         commonConfigParserMock = PowerMockito.mock(CommonConfigParser.class);
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
         doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
-
-        scaMethods = new ArrayList<>();
-        Map<String, String> scaMethod = new HashMap<>();
-        scaMethod.put(CommonConstants.SCA_TYPE, "SMS_OTP");
-        scaMethod.put(CommonConstants.SCA_VERSION, "1.0");
-        scaMethod.put(CommonConstants.SCA_ID, "sms-otp");
-        scaMethod.put(CommonConstants.SCA_NAME, "SMS OTP on Mobile");
-        scaMethod.put(CommonConstants.SCA_MAPPED_APPROACH, "REDIRECT");
-        scaMethod.put(CommonConstants.SCA_DESCRIPTION, "SMS based one time password");
-        scaMethod.put(CommonConstants.SCA_DEFAULT, "true");
-        scaMethods.add(scaMethod);
-        doReturn(scaMethods).when(commonConfigParserMock).getSupportedScaMethods();
-
-        scaApproaches = new ArrayList<>();
-        Map<String, String> scaApproach = new HashMap<>();
-        scaApproach.put(CommonConstants.SCA_NAME, "REDIRECT");
-        scaApproach.put(CommonConstants.SCA_DEFAULT, "true");
-        scaApproaches.add(scaApproach);
-        doReturn(scaApproaches).when(commonConfigParserMock).getSupportedScaApproaches();
-        doReturn(WELL_KNOWN_ENDPOINT).when(commonConfigParserMock).getOauthMetadataEndpoint();
+        doReturn(TestUtil.getSampleSupportedScaMethods()).when(commonConfigParserMock).getSupportedScaMethods();
+        doReturn(TestUtil.getSampleSupportedScaApproaches()).when(commonConfigParserMock).getSupportedScaApproaches();
+        doReturn(TestConstants.WELL_KNOWN_ENDPOINT).when(commonConfigParserMock).getOauthMetadataEndpoint();
     }
 
-    @Test (priority = 1)
-    public void testHandleForPaymentImplicitRedirectInitiation() throws ConsentManagementException, ParseException {
+    @Test
+    public void testValidAccountHandleImplicitRedirectInitiation() throws ConsentManagementException, ParseException {
 
         Map<String, String> validHeadersMap = TestPayloads.getMandatoryInitiationHeadersMap("false");
-        ConsentManageData paymentConsentManageData = new ConsentManageData(validHeadersMap,
-                parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD), new HashMap(),
-                PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
-        paymentConsentManageData.setClientId(clientId);
 
-        PaymentInitiationRequestHandler paymentInitiationRequestHandler =
-                Mockito.spy(PaymentInitiationRequestHandler.class);
+        ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(validHeadersMap,
+                ACCOUNTS_PATH, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.POST,
+                TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2);
+
+        AccountInitiationRequestHandler accountInitiationRequestHandler =
+                Mockito.spy(AccountInitiationRequestHandler.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentInitiationRequestHandler).getConsentService();
+        doReturn(consentCoreServiceMock).when(accountInitiationRequestHandler).getConsentService();
         doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
                 Mockito.anyMap());
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(ConsentStatusEnum.RECEIVED.toString());
 
         ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         AuthorizationResource authorizationResource = new AuthorizationResource();
@@ -135,36 +114,37 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
-        paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertConsentResponse(paymentConsentManageData, authorizationResource,
-                true, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.PAYMENTS);
+        accountInitiationRequestHandler.handle(accountConsentManageData);
+        TestUtil.assertConsentResponse(accountConsentManageData, authorizationResource,
+                true, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.ACCOUNTS);
     }
 
-    @Test (priority = 2)
-    public void testHandlePaymentExplicitRedirectInitiationFlow() throws ConsentManagementException, ParseException {
+    @Test
+    public void testValidAccountHandleExplicitRedirectInitiation() throws ConsentManagementException, ParseException {
 
         Map<String, String> validHeadersMap = TestPayloads.getMandatoryInitiationHeadersMap("true");
-        ConsentManageData paymentConsentManageData = new ConsentManageData(validHeadersMap,
-                parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD), new HashMap(),
-                PAYMENTS_PATH, mockHttpServletRequest, mockHttpServletResponse);
-        paymentConsentManageData.setClientId(clientId);
 
-        PaymentInitiationRequestHandler paymentInitiationRequestHandler =
-                Mockito.spy(PaymentInitiationRequestHandler.class);
+        ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(validHeadersMap,
+                ACCOUNTS_PATH, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.POST,
+                TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2);
+
+        AccountInitiationRequestHandler accountInitiationRequestHandler =
+                Mockito.spy(AccountInitiationRequestHandler.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentInitiationRequestHandler).getConsentService();
+        doReturn(consentCoreServiceMock).when(accountInitiationRequestHandler).getConsentService();
         doReturn(true).when(consentCoreServiceMock).storeConsentAttributes(Mockito.anyString(),
                 Mockito.anyMap());
 
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID(UUID.randomUUID().toString());
-        detailedConsentResource.setCurrentStatus(TransactionStatusEnum.RCVD.name());
+        detailedConsentResource.setCurrentStatus(ConsentStatusEnum.RECEIVED.toString());
 
         doReturn(detailedConsentResource).when(consentCoreServiceMock).createAuthorizableConsent(Mockito.anyObject(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
-        paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertConsentResponse(paymentConsentManageData, null,
-                false, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.PAYMENTS);
+        accountInitiationRequestHandler.handle(accountConsentManageData);
+        TestUtil.assertConsentResponse(accountConsentManageData, null,
+                false, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.ACCOUNTS);
     }
+
 }

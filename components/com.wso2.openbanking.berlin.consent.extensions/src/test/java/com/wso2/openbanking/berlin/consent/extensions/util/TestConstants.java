@@ -18,6 +18,7 @@ package com.wso2.openbanking.berlin.consent.extensions.util;
 public class TestConstants {
 
     public static final String VALID_PAYMENT_INITIATION_PATH = "payments/sepa-credit-transfers";
+    public static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
     public static final String USER_ID = "admin@wso2.com@carbon.super";
     public static final String DIFFERENT_USER_ID = "psu@wso2.com@carbon.super";
     public static final String REDIRECT_URI = "https://www.wso2.com";
