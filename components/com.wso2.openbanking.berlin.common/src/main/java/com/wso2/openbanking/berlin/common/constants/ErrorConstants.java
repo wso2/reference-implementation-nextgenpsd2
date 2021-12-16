@@ -128,6 +128,9 @@ public class ErrorConstants {
     public static final String INVALID_PERMISSION = "Requested permissions in the Payload are invalid";
     public static final String VALID_UNTIL_DATE_INVALID = "Valid until date is invalid";
 
+    // Funds confirmation related error messages
+    public static final String CARD_EXPIRY_DATE_INVALID = "Card expiry date is invalid";
+
     // Error object related constants
     public static final String PATH = "path";
     public static final String CATEGORY = "category";

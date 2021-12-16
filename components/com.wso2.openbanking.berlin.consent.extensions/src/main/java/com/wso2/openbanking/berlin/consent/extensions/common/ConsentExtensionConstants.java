@@ -22,6 +22,9 @@ import java.util.List;
 public class ConsentExtensionConstants {
 
     // Constants that are common to all request types
+    public static final String ACCOUNT_REF_OBJECTS = "accountRefObjects";
+    public static final String CURRENCY = "currency";
+    public static final String IS_DEFAULT = "isDefault";
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
     public static final String CONSENT_ID_HEADER = "consent-id";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
@@ -85,6 +88,16 @@ public class ConsentExtensionConstants {
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
             "]{12}";
 
+    // Constants that are used by funds confirmation service
+    public static final String  ACCOUNT_REF_OBJECT = "accountRefObject";
+    public static final String CARD_EXPIRY_DATE = "cardExpiryDate";
+    public static final String CARD_NUMBER = "cardNumber";
+    public static final String CARD_INFORMATION = "cardInformation";
+    public static final String CARD_NUMBER_TITLE = "Card Number";
+    public static final String  CARD_EXPIRY_DATE_TITLE = "Card Expiry Date";
+    public static final String  CARD_INFORMATION_TITLE = "Card Information";
+    public static final String ACCOUNT_REFERENCE_TITLE = "Account Reference";
+
     // Constants that are used by accounts service
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
     public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
@@ -116,7 +129,6 @@ public class ConsentExtensionConstants {
     public static final String VALIDATION_RESPONSE_PERMISSION = "permission";
     public static final String ACCESS_METHOD = "accessMethod";
     public static final String ACCESS_METHODS = "accessMethods";
-    public static final String ACCOUNT_NUMBERS = "accountNumbers";
     public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
@@ -175,7 +187,6 @@ public class ConsentExtensionConstants {
     public static final String TRANSACTION_FEE_INDICATOR = "transactionFeeIndicator";
     public static final String TRANSACTION_FEES = "transactionFees";
     public static final String AMOUNT = "amount";
-    public static final String CURRENCY = "currency";
     public static final String CURRENCIES = "currencies";
     public static final String CURRENCY_CODE_TITLE = "Currency Type: ";
     public static final String START_DATE = "startDate";
