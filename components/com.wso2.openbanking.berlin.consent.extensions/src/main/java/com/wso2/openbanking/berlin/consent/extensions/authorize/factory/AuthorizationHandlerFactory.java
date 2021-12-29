@@ -23,9 +23,13 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.per
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.ConsentPersistHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.FundsConfirmationsConsentPersistHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.PaymentConsentPersistHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountConsentRetrievalHandler;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.COFConsentRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationAccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentConsentRetrievalHandler;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +37,28 @@ import org.apache.commons.lang3.StringUtils;
  * Factory class to get the class based in request type.
  */
 public class AuthorizationHandlerFactory {
+
+    /**
+     * Method to get the account list authorize handler.
+     *
+     * @param type consent type of the request
+     * @return the selected account list retrieval handler
+     */
+    public static AccountListRetrievalHandler getAccountListRetrievalHandler(String type) {
+
+        AccountListRetrievalHandler accountListRetrievalHandler = null;
+
+        if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), type)) {
+            accountListRetrievalHandler = new AccountAccountListRetrievalHandler();
+        } else if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), type)
+                || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
+                || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
+            accountListRetrievalHandler = new PaymentAccountListRetrievalHandler();
+        } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
+            accountListRetrievalHandler = new FundsConfirmationAccountListRetrievalHandler();
+        }
+        return accountListRetrievalHandler;
+    }
 
     /**
      * Method to get the consent authorize handler.
@@ -51,7 +77,7 @@ public class AuthorizationHandlerFactory {
                 || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
             consentRetrievalHandler = new PaymentConsentRetrievalHandler();
         } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
-            consentRetrievalHandler = new COFConsentRetrievalHandler();
+            consentRetrievalHandler = new FundsConfirmationConsentRetrievalHandler();
         }
         return consentRetrievalHandler;
     }

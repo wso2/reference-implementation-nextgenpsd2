@@ -35,6 +35,7 @@ public class ConsentExtensionConstants {
     public static final String LAST_ACTION_DATE = "lastActionDate";
     public static final String CONSENT_STATUS = "consentStatus";
     public static final String CONSENT_ID = "consentId";
+    public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String AUTH_ID = "authorisationId";
     public static final String CHOSEN_SCA_METHOD = "chosenScaMethod";
     public static final String SCA_METHODS = "scaMethods";
@@ -54,6 +55,8 @@ public class ConsentExtensionConstants {
     public static final String IMPLICIT = "implicit";
     public static final String EXPLICIT = "explicit";
     public static final String CONSENT_DATA = "consentData";
+    public static final String ACCOUNT_DATA = "accountData";
+    public static final String CONSENT_DETAILS = "consentDetails";
     public static final String TITLE = "title";
     public static final String PAYMENT_TYPE_TITLE = "Payment Type";
     public static final String DATA_SIMPLE = "data";
@@ -79,6 +82,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE = "auth_type";
     public static final String TYPE = "type";
     public static final String DEFAULT_PERMISSION = "n/a";
+    public static final String ACTIVE = "active";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -97,6 +101,7 @@ public class ConsentExtensionConstants {
     public static final String  CARD_EXPIRY_DATE_TITLE = "Card Expiry Date";
     public static final String  CARD_INFORMATION_TITLE = "Card Information";
     public static final String ACCOUNT_REFERENCE_TITLE = "Account Reference";
+    public static final String PAYLOAD = "payload";
 
     // Constants that are used by accounts service
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
@@ -195,7 +200,6 @@ public class ConsentExtensionConstants {
     public static final String EXECUTION_RULE = "executionRule";
     public static final String REQUESTED_EXECUTION_DATE = "requestedExecutionDate";
     public static final String DEBTOR_ACCOUNT = "debtorAccount";
-    public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";
     public static final String CREDITOR_AGENT = "creditorAgent";
