@@ -62,10 +62,12 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
     private final JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
     String clientId;
     String consentId;
+    String futureDate;
 
     @BeforeMethod
     public void init() {
 
+        futureDate = TestUtil.getCurrentDate(2);
         commonConfigParserMock = PowerMockito.mock(CommonConfigParser.class);
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
@@ -88,7 +90,7 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
         DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 UUID.randomUUID().toString(), AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
-        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp("2021-12-31"));
+        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
         detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
 
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
@@ -114,7 +116,7 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
         DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 authId, AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
-        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp("2021-12-31"));
+        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
         detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
         detailedConsentResource.setConsentMappingResources(TestUtil
                 .getSampleTestConsentMappingResourcesWithPermissions(authId));
@@ -142,7 +144,7 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
         DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 authId, AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
-        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp("2021-12-31"));
+        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
         detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
         detailedConsentResource.setConsentMappingResources(TestUtil
                 .getSampleTestConsentMappingResourcesWithPermissions(authId));
