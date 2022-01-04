@@ -21,12 +21,12 @@ function approvedBerlinConsent() {
 function validateBerlinFrm() {
     if (document.getElementById('type').value == "accounts") {
 
-        var checkedAccounts = $('[name="checkedAccounts"]').length;
-        var checkedBalances = $('[name="checkedBalances"]').length;
-        var checkedTransactions = $('[name="checkedTransactions"]').length;
-        var isAccountsChecked = $('input[name="checkedAccounts"]:checkbox').filter(':checked').length > 0;
-        var isBalancesChecked = $('input[name="checkedBalances"]:checkbox').filter(':checked').length > 0;
-        var isTransactionsChecked = $('input[name="checkedTransactions"]:checkbox').filter(':checked').length > 0;
+        var checkedAccounts = $('[name="checkedAccountsAccountRefs"]').length;
+        var checkedBalances = $('[name="checkedBalancesAccountRefs"]').length;
+        var checkedTransactions = $('[name="checkedTransactionsAccountRefs"]').length;
+        var isAccountsChecked = $('input[name="checkedAccountsAccountRefs"]:checkbox').filter(':checked').length > 0;
+        var isBalancesChecked = $('input[name="checkedBalancesAccountRefs"]:checkbox').filter(':checked').length > 0;
+        var isTransactionsChecked = $('input[name="checkedTransactionsAccountRefs"]:checkbox').filter(':checked').length > 0;
 
         // Checking if any of the checkable elements are present and if at least one is checked
         // if they are present in the dom
@@ -39,8 +39,10 @@ function validateBerlinFrm() {
         }
     }
 
-    if (document.getElementById('type').value === "payments" || document.getElementById('type').value ===
-    "bulk-payments" || document.getElementById('type').value === "periodic-payments") {
+    if (document.getElementById('type').value === "payments"
+    || document.getElementById('type').value === "bulk-payments"
+    || document.getElementById('type').value === "periodic-payments"
+    || document.getElementById('type').value === "funds-confirmations") {
         document.getElementById("oauth2_authz_confirm").submit();
     }
 }

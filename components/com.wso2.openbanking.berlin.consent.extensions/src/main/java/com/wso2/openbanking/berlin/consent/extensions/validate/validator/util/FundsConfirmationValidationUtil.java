@@ -21,6 +21,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -71,11 +72,11 @@ public class FundsConfirmationValidationUtil {
         log.debug("Validating account");
         boolean isAccountMappingValid = false;
         JSONObject accountRefObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
-        Map<String, String> consentAttributes = detailedConsentResource.getConsentAttributes();
+//        Map<String, String> consentAttributes = detailedConsentResource.getConsentAttributes();
         ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
         if (CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
             ConsentMappingResource mappingResource = mappingResources.get(0);
-            if (isAccountMappingValid(accountRefObject, mappingResource, consentAttributes)) {
+            if (isAccountMappingValid(accountRefObject, mappingResource)) {
                 isAccountMappingValid = true;
             }
         }
@@ -92,26 +93,14 @@ public class FundsConfirmationValidationUtil {
         return true;
     }
 
-    private static boolean isAccountMappingValid(JSONObject accountRefObject, ConsentMappingResource mappingResource,
-                                                 Map<String, String> consentAttributes) {
+    private static boolean isAccountMappingValid(JSONObject accountRefObject, ConsentMappingResource mappingResource) {
 
         if (!StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
             return false;
         }
 
-        String configuredAccReferenceType = CommonConfigParser.getInstance().getAccountReferenceType();
-        String accountNumber = accountRefObject.getAsString(configuredAccReferenceType);
-        String accountCurrency = accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY);
-        boolean hasCurrency = StringUtils.isNotBlank(accountCurrency);
-        boolean isAccountNumberMatching = StringUtils.equals(accountNumber, mappingResource.getAccountID());
-
-        if (hasCurrency) {
-            String mappedCurrency = consentAttributes.get(mappingResource.getMappingID());
-            boolean isMappedCurrencyMatching = StringUtils.equals(accountCurrency, mappedCurrency);
-            return isAccountNumberMatching && isMappedCurrencyMatching;
-        } else {
-            return isAccountNumberMatching;
-        }
+        String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
+        return StringUtils.equals(mappingResource.getMappingID(), accountIdWithCurrency);
     }
 
 }

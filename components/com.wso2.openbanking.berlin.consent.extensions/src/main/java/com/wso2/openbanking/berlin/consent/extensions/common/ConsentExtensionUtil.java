@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -43,6 +44,22 @@ import javax.ws.rs.HttpMethod;
 public class ConsentExtensionUtil {
 
     private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
+
+    /**
+     * Returns the string after appending the currency to it if available.
+     *
+     * @param accountRefObject account reference object
+     * @return account id or account id with currency
+     */
+    public static String getAccountIdWithCurrency(JSONObject accountRefObject) {
+
+        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
+        String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
+        if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
+            accountIdWithCurrency += String.format(":%s", accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY));
+        }
+        return accountIdWithCurrency;
+    }
 
     /**
      * Returns the part of the path that differentiates the request path into

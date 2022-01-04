@@ -15,9 +15,12 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -120,5 +123,29 @@ public class ConsentAuthUtil {
         errorObject.appendField("redirect_uri", redirectUri.toString());
         errorObject.appendField("state", state);
         return errorObject;
+    }
+
+    /**
+     * Retrieves all the accounts for a particular account number in multi-currency scenarios.
+     *
+     * @param accountRefObject single account json object
+     * @param accountArray all the accounts json array
+     * @return accounts array
+     */
+    public static JSONArray getFilteredAccountsForAccountNumber(JSONObject accountRefObject, JSONArray accountArray) {
+
+        String configuredAccountRefType = CommonConfigParser.getInstance().getAccountReferenceType();
+        String accountNumber = accountRefObject.getAsString(configuredAccountRefType);
+        JSONArray filteredAccountRefObjects = new JSONArray();
+
+        // Filtering the accounts with the same account number
+        for (Object object : accountArray) {
+            JSONObject accountObject = (JSONObject) object;
+            if (accountObject.getAsString(configuredAccountRefType).equalsIgnoreCase(accountNumber)) {
+                filteredAccountRefObjects.add(accountObject);
+            }
+        }
+
+        return filteredAccountRefObjects;
     }
 }

@@ -125,7 +125,7 @@ public class AccountValidationUtil {
 
         for (ConsentMappingResource mappingResource : mappingResources) {
             if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
-                    && StringUtils.equals(mappingResource.getAccountID(), accountId)
+                    && mappingResource.getAccountID().contains(accountId)
                     && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
                 isValidAccessMethodForAccount = true;
                 break;
@@ -135,7 +135,7 @@ public class AccountValidationUtil {
         if (isWithBalance) {
             for (ConsentMappingResource mappingResource : mappingResources) {
                 if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())
-                        && StringUtils.equals(mappingResource.getAccountID(), accountId)
+                        && mappingResource.getAccountID().contains(accountId)
                         && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
                     isValidBalanceAccessMethodForAccount = true;
                     break;

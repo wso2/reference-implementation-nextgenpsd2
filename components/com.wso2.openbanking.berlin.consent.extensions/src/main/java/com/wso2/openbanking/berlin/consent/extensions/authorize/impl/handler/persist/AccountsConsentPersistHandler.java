@@ -14,13 +14,19 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +39,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
     private ConsentCoreServiceImpl consentCoreService;
     private Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
+    private HashMap<String, String> currencyConsentAttributes = new HashMap<>();
 
     public AccountsConsentPersistHandler(ConsentCoreServiceImpl consentCoreService) {
 
@@ -56,36 +63,29 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
         // Data if bank offered consent
         JSONObject payload = consentPersistData.getPayload();
-        JSONArray checkedAccounts = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_ACCOUNTS);
-        JSONArray checkedBalances = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_BALANCES);
-        JSONArray checkedTransactions = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_TRANSACTIONS);
+        JSONArray checkedAccountsAccountRefObjects = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_ACCOUNTS_ACCOUNT_REFS);
+        JSONArray checkedBalancesAccountRefObjects = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_BALANCES_ACCOUNT_REFS);
+        JSONArray checkedTransactionsAccountRefObjects = (JSONArray) payload.get(ConsentExtensionConstants.CHECKED_TRANSACTIONS_ACCOUNT_REFS);
 
         // Data if not bank offered consent
         Map<String, Object> metaDataMap = consentPersistData.getConsentData().getMetaDataMap();
-        JSONArray staticAccountsAccNumbers = (JSONArray) metaDataMap
-                .get(ConsentExtensionConstants.ACCOUNTS_ACC_NUMBER_SET);
-        JSONArray staticBalancesAccNumbers = (JSONArray) metaDataMap
-                .get(ConsentExtensionConstants.BALANCES_ACC_NUMBER_SET);
-        JSONArray staticTransactionsAccNumbers = (JSONArray) metaDataMap
-                .get(ConsentExtensionConstants.TRANSACTIONS_ACC_NUMBER_SET);
+        JSONArray staticAccountsAccountRefObjects = (JSONArray) metaDataMap
+                .get(ConsentExtensionConstants.ACCOUNTS_ACCOUNT_REF_OBJECTS);
+        JSONArray staticBalancesAccountRefObjects = (JSONArray) metaDataMap
+                .get(ConsentExtensionConstants.BALANCES_ACCOUNT_REF_OBJECTS);
+        JSONArray staticTransactionsAccountRefObjects = (JSONArray) metaDataMap
+                .get(ConsentExtensionConstants.TRANSACTIONS_ACCOUNT_REF_OBJECTS);
 
         // Mapping account Ids with permissions
-        if (checkedAccounts == null || checkedAccounts.isEmpty()) {
-            mapAccountIdWithPermissions(staticAccountsAccNumbers, AccessMethodEnum.ACCOUNTS.toString());
-        } else {
-            mapAccountIdWithPermissions(checkedAccounts, AccessMethodEnum.ACCOUNTS.toString());
-        }
+        mapAccountIdAndCurrencyWithPermissions(staticAccountsAccountRefObjects, AccessMethodEnum.ACCOUNTS.toString());
+        mapAccountIdAndCurrencyWithPermissions(checkedAccountsAccountRefObjects, AccessMethodEnum.ACCOUNTS.toString());
+        mapAccountIdAndCurrencyWithPermissions(staticBalancesAccountRefObjects, AccessMethodEnum.BALANCES.toString());
+        mapAccountIdAndCurrencyWithPermissions(checkedBalancesAccountRefObjects, AccessMethodEnum.BALANCES.toString());
+        mapAccountIdAndCurrencyWithPermissions(staticTransactionsAccountRefObjects, AccessMethodEnum.TRANSACTIONS.toString());
+        mapAccountIdAndCurrencyWithPermissions(checkedTransactionsAccountRefObjects, AccessMethodEnum.TRANSACTIONS.toString());
 
-        if (checkedBalances == null || checkedBalances.isEmpty()) {
-            mapAccountIdWithPermissions(staticBalancesAccNumbers, AccessMethodEnum.BALANCES.toString());
-        } else {
-            mapAccountIdWithPermissions(checkedBalances, AccessMethodEnum.BALANCES.toString());
-        }
-
-        if (checkedTransactions == null || checkedTransactions.isEmpty()) {
-            mapAccountIdWithPermissions(staticTransactionsAccNumbers, AccessMethodEnum.TRANSACTIONS.toString());
-        } else {
-            mapAccountIdWithPermissions(checkedTransactions, AccessMethodEnum.TRANSACTIONS.toString());
+        if (accountIdMapWithPermissions.isEmpty()) {
+            return;
         }
 
         ConsentPersistHandlerService consentPersistHandlerService =
@@ -94,13 +94,31 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 authorisationId, userId, authStatus);
     }
 
-    private void mapAccountIdWithPermissions(JSONArray accountNumbers, String accessMethod) {
+    /**
+     * Mapping account Ids and currency info with permissions.
+     *
+     * @param accountRefObjects account reference objects
+     * @param accessMethod access method
+     */
+    private void mapAccountIdAndCurrencyWithPermissions(JSONArray accountRefObjects, String accessMethod) {
+
+        if (accountRefObjects == null || accountRefObjects.isEmpty()) {
+            return;
+        }
 
         ArrayList<String> permission = new ArrayList<>();
         permission.add(accessMethod);
 
-        for (Object accountNumberObject : accountNumbers) {
-            accountIdMapWithPermissions.put(accountNumberObject.toString(), permission);
+        for (Object object : accountRefObjects) {
+            JSONObject accountRefObject = (JSONObject) object;
+            String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
+            if (accountIdMapWithPermissions.containsKey(accountIdWithCurrency)) {
+                ArrayList<String> permissions = accountIdMapWithPermissions.get(accountIdWithCurrency);
+                permissions.addAll(permission);
+                accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
+            } else {
+                accountIdMapWithPermissions.put(accountIdWithCurrency, permission);
+            }
         }
     }
 

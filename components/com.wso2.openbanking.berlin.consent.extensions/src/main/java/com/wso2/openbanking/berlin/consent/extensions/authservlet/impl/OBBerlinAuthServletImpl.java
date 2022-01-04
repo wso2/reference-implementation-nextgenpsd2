@@ -17,7 +17,6 @@ import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authservlet.util.AuthServletUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -59,19 +58,22 @@ public class OBBerlinAuthServletImpl implements OBAuthServletInterface {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        String[] checkedAccounts = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_ACCOUNTS);
-        String[] checkedBalances = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_BALANCES);
-        String[] checkedTransactions = httpServletRequest
-                .getParameterValues(ConsentExtensionConstants.CHECKED_TRANSACTIONS);
+        String[] checkedAccountsRefs = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_ACCOUNTS_ACCOUNT_REFS);
+        String[] checkedBalancesRefs = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_BALANCES_ACCOUNT_REFS);
+        String[] checkedTransactionsRefs = httpServletRequest
+                .getParameterValues(ConsentExtensionConstants.CHECKED_TRANSACTIONS_ACCOUNT_REFS);
 
-        if (checkedAccounts != null) {
-            returnMaps.put(ConsentExtensionConstants.CHECKED_ACCOUNTS, new JSONArray(checkedAccounts));
+        if (checkedAccountsRefs != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_ACCOUNTS_ACCOUNT_REFS, AuthServletUtil
+                    .convertToAccountRefObjectsArray(checkedAccountsRefs));
         }
-        if (checkedBalances != null) {
-            returnMaps.put(ConsentExtensionConstants.CHECKED_BALANCES, new JSONArray(checkedBalances));
+        if (checkedBalancesRefs != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_BALANCES_ACCOUNT_REFS, AuthServletUtil
+                    .convertToAccountRefObjectsArray(checkedBalancesRefs));
         }
-        if (checkedTransactions != null) {
-            returnMaps.put(ConsentExtensionConstants.CHECKED_TRANSACTIONS, new JSONArray(checkedTransactions));
+        if (checkedTransactionsRefs != null) {
+            returnMaps.put(ConsentExtensionConstants.CHECKED_TRANSACTIONS_ACCOUNT_REFS, AuthServletUtil
+                    .convertToAccountRefObjectsArray(checkedTransactionsRefs));
         }
 
         return returnMaps;

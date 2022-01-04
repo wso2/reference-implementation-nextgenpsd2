@@ -12,15 +12,12 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -37,7 +34,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,26 +50,26 @@ public class DataRetrievalUtil {
     /**
      * Returns the account list string after fetching from the bank backend.
      *
-     * @param shareableAccountsRetrieveUrl shareable accounts retrieval URL
-     * @param parameters                   URL params
-     * @param headers                      request headers
-     * @return retrieved accounts
+     * @param accountsURL shareable accounts retrieval URL
+     * @param parameters  URL params
+     * @param headers     request headers
+     * @return retrieved accounts string from endpoint
      */
-    public static String getAccountsFromEndpoint(String shareableAccountsRetrieveUrl, Map<String, String> parameters,
+    public static String getAccountsFromEndpoint(String accountsURL, Map<String, String> parameters,
                                                  Map<String, String> headers) {
 
         String retrieveUrl = "";
-        if (!shareableAccountsRetrieveUrl.endsWith("/")) {
-            retrieveUrl = shareableAccountsRetrieveUrl + "/";
+        if (!accountsURL.endsWith("/")) {
+            retrieveUrl = accountsURL + "/";
         } else {
-            retrieveUrl = shareableAccountsRetrieveUrl;
+            retrieveUrl = accountsURL;
         }
         if (!parameters.isEmpty()) {
             retrieveUrl = buildRequestURL(retrieveUrl, parameters);
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Sharable accounts retrieve endpoint : %s", retrieveUrl));
+            log.debug(String.format("Accounts retrieve endpoint : %s", retrieveUrl));
         }
 
         BufferedReader reader = null;
@@ -141,157 +137,16 @@ public class DataRetrievalUtil {
     }
 
     /**
-     * Gets account details using the initiation payload.
-     *
-     * @param accessObject access object
-     * @param userId       user id
-     * @return accounts array
-     */
-    public static JSONArray getAccountsFromPayload(JSONObject accessObject, String userId) {
-
-        JSONArray accountData = new JSONArray();
-        JSONArray bankOfferedAccounts = getAccountsFromEndpoint(userId);
-
-        if (bankOfferedAccounts == null) {
-            log.error("No accounts found");
-            return null;
-        }
-
-        JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.toString());
-        JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
-        JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
-
-        JSONArray allAccounts = new JSONArray();
-
-        /*
-        Access methods 'balances' and 'transactions' includes 'accounts' permissions.
-        The access methods are added in scenarios where the accounts are finalised with
-        the access methods, not adding them for bank offered consent scenarios since the
-        accounts are yet to be given access methods.
-
-        If access method is an empty array then add bank offered accounts.
-        If not empty array then add the account details from initiation payload.
-         */
-        if (balances != null && balances.isEmpty()) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_BALANCE);
-
-            accountData.add(object);
-        } else if (balances != null) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-            accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, balances);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BALANCE);
-
-            setAvailableCurrencies(balances, object);
-
-            accountData.add(object);
-            allAccounts.addAll(balances);
-        }
-
-        if (transactions != null && transactions.isEmpty()) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_TRANSACTION);
-
-            accountData.add(object);
-        } else if (transactions != null) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-            accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, transactions);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_TRANSACTION);
-
-            setAvailableCurrencies(transactions, object);
-
-            accountData.add(object);
-            allAccounts.addAll(transactions);
-        }
-
-        if (accounts != null && accounts.isEmpty()) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_ACCOUNT);
-
-            accountData.add(object);
-        } else if (accounts != null) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
-            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_ACCOUNT);
-
-            setAvailableCurrencies(accounts, object);
-
-            accountData.add(object);
-            allAccounts.addAll(accounts);
-        }
-
-        if (bankOfferedAccounts.containsAll(allAccounts)) {
-            return accountData;
-        } else {
-            log.error("Consent accounts mismatch");
-            return null;
-        }
-    }
-
-    /**
      * Get accounts array from endpoint.
      *
-     * @param userId user id
+     * @param userId      user id
+     * @param accountsURL accounts base URL
+     * @param parameters  URL parameters
+     * @param headers     request headers
      * @return array of accounts
      */
-    public static JSONArray getAccountsFromEndpoint(String userId) {
-
-        CommonConfigParser configParser = CommonConfigParser.getInstance();
-        String accountsURL = configParser.getShareableAccountsRetrieveEndpoint();
+    public static JSONArray getAccountsFromEndpoint(String userId, String accountsURL, Map<String, String> parameters,
+                                                    Map<String, String> headers) {
 
         if (!accountsURL.endsWith("/")) {
             accountsURL += "/";
@@ -301,7 +156,7 @@ public class DataRetrievalUtil {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Getting accounts details from backend endpoint %s", accountsURL));
         }
-        String accountData = DataRetrievalUtil.getAccountsFromEndpoint(accountsURL, new HashMap<>(), new HashMap<>());
+        String accountData = DataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters, headers);
         if (accountData == null) {
             log.error("No account details available");
             return null;
@@ -321,16 +176,18 @@ public class DataRetrievalUtil {
 
                 JSONObject accountObject = new JSONObject();
                 accountObject.put(accountRefType, account);
+                accountObject.put(ConsentExtensionConstants.CURRENCY,
+                        slide.get(ConsentExtensionConstants.CURRENCY));
+                accountObject.put(ConsentExtensionConstants.IS_DEFAULT,
+                        slide.get(ConsentExtensionConstants.IS_DEFAULT));
 
-                if (slide.containsKey(ConsentExtensionConstants.CURRENCY)
-                        && StringUtils.isNotBlank(slide.getAsString(ConsentExtensionConstants.CURRENCY))) {
-                    accountObject.put(ConsentExtensionConstants.CURRENCY,
-                            slide.get(ConsentExtensionConstants.CURRENCY));
-                }
                 accountArray.add(accountObject);
             }
 
-            return accountArray;
+            // Remove currency information from non multi-currency accounts
+            return removeCurrencyInfoFromSingleCurrencyAccounts(accountArray);
+
+//            return accountArray;
         } catch (ParseException e) {
             log.error(ErrorConstants.JSON_PARSE_ERROR, e);
             return null;
@@ -338,17 +195,20 @@ public class DataRetrievalUtil {
     }
 
     /**
-     * Set currency codes if available to json to be displayed on consent page.
+     * Returns the accounts array provided after removing the currency information from single currency accounts.
      *
-     * @param accessMethod access method
-     * @param jsonObject json object
+     * @param accountArray JSON array containing account info from bank back end
+     * @return accounts array without currency information for single currency accounts
      */
-    private static void setAvailableCurrencies(JSONArray accessMethod, JSONObject jsonObject) {
+    private static JSONArray removeCurrencyInfoFromSingleCurrencyAccounts(JSONArray accountArray) {
 
-        if (accessMethod.contains(ConsentExtensionConstants.CURRENCY)) {
-            JSONArray currencyArray = new JSONArray();
-            currencyArray.add(ConsentExtensionConstants.CURRENCY_CODE_TITLE);
-            jsonObject.put(ConsentExtensionConstants.CURRENCIES, currencyArray);
+        for (Object object : accountArray) {
+            JSONObject accountObject = (JSONObject) object;
+            if (ConsentAuthUtil.getFilteredAccountsForAccountNumber(accountObject, accountArray).size() == 1) {
+                accountObject.remove(ConsentExtensionConstants.CURRENCY);
+            }
         }
+
+        return accountArray;
     }
 }

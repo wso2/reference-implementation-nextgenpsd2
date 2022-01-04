@@ -14,9 +14,25 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +51,31 @@ public class FundsConfirmationsConsentPersistHandler implements ConsentPersistHa
     public void consentPersist(ConsentPersistData consentPersistData, ConsentResource consentResource)
             throws ConsentManagementException {
 
-        // todo: Implement for funds confirmation flow
+        String authorisationId = consentPersistData.getConsentData().getAuthResource().getAuthorizationID();
+        boolean isApproved = consentPersistData.getApproval();
+        String userId = consentPersistData.getConsentData().getUserId();
+
+        String authStatus;
+        if (isApproved) {
+            authStatus = ScaStatusEnum.PSU_AUTHENTICATED.toString();
+        } else {
+            authStatus = ScaStatusEnum.FAILED.toString();
+        }
+
+        Map<String, Object> metaDataMap = consentPersistData.getConsentData().getMetaDataMap();
+        JSONObject accountRefObject = (JSONObject) metaDataMap.get(ConsentExtensionConstants.ACCOUNT_REF_OBJECT);
+
+        // Adding default permission since a funds confirmation consent doesn't have any permissions
+        Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
+        ArrayList<String> permissionDefault = new ArrayList<>();
+        permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
+        String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
+        accountIdMapWithPermissions.put(accountIdWithCurrency, permissionDefault);
+
+        ConsentPersistHandlerService consentPersistHandlerService =
+                new ConsentPersistHandlerService(consentCoreService);
+        consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+                authorisationId, userId, authStatus);
     }
 
     @Override

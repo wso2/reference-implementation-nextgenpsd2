@@ -23,6 +23,7 @@ public class ConsentExtensionConstants {
 
     // Constants that are common to all request types
     public static final String ACCOUNT_REF_OBJECTS = "accountRefObjects";
+    public static final String ACCOUNT_REFS = "accountRefs";
     public static final String CURRENCY = "currency";
     public static final String IS_DEFAULT = "isDefault";
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
@@ -104,6 +105,7 @@ public class ConsentExtensionConstants {
     public static final String PAYLOAD = "payload";
 
     // Constants that are used by accounts service
+    public static final String ACCOUNT_DETAILS_LIST = "accountDetailsList";
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
     public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
     public static final String CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "card-accounts";
@@ -156,15 +158,15 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS_PERMISSION = "Read Account Information";
     public static final String BALANCES_PERMISSION = "Read Account Balance Information";
     public static final String TRANSACTIONS_PERMISSION = "Read Account Transaction Information";
-    public static final String ACCOUNTS_ACC_NUMBER_SET = "accountsAccNumberSet";
-    public static final String BALANCES_ACC_NUMBER_SET = "balancesAccNumberSet";
-    public static final String TRANSACTIONS_ACC_NUMBER_SET = "transactionsAccNumberSet";
-    public static final String CHECKED_ACCOUNTS = "checkedAccounts";
-    public static final String CHECKED_BALANCES = "checkedBalances";
-    public static final String CHECKED_TRANSACTIONS = "checkedTransactions";
+    public static final String ACCOUNTS_ACCOUNT_REF_OBJECTS = "accountsAccountRefObjects";
+    public static final String BALANCES_ACCOUNT_REF_OBJECTS = "balancesAccountRefObjects";
+    public static final String TRANSACTIONS_ACCOUNT_REF_OBJECTS = "transactionsAccountRefObjects";
+    public static final String CHECKED_ACCOUNTS_ACCOUNT_REFS = "checkedAccountsAccountRefs";
+    public static final String CHECKED_BALANCES_ACCOUNT_REFS = "checkedBalancesAccountRefs";
+    public static final String CHECKED_TRANSACTIONS_ACCOUNT_REFS = "checkedTransactionsAccountRefs";
     public static final String ACCOUNT_TYPE = "accountType";
     // Account types that are displayed in the consent page
-    public static final String STATIC_DEFAULT = "static-default";
+    public static final String STATIC_BULK = "static-bulk";
     public static final String SELECT_BALANCE = "select-balance";
     public static final String STATIC_BALANCE = "static-balance";
     public static final String SELECT_ACCOUNT = "select-account";

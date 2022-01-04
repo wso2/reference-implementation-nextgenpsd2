@@ -14,40 +14,32 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.re
 
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import net.minidev.json.JSONObject;
 
 import java.util.Map;
 
 /**
- * Interface to handle Consent data retrieval for Authorize.
+ * Interface to handle account list retrieval for Authorize.
  */
-public interface ConsentRetrievalHandler {
+public interface AccountListRetrievalHandler {
 
     /**
-     * Abstract method defined to retrieve the consent related data in the authorization flow to send them to the
+     * Abstract method defined to retrieve the accounts related data in the authorization flow to send them to the
      * consent page to get PSU consent.
      *
-     * @param consentResource Consent Resource parameter containing consent related information retrieved from database
-     * @return
+     * @param consentData     consent related data
+     * @param consentDataJSON consent data appended from the previous steps
+     * @return accounts details to be shown in the consent page
      * @throws ConsentException
      */
-    JSONObject getConsentData(ConsentResource consentResource) throws ConsentException;
+    JSONObject getAccountData(ConsentData consentData, JSONObject consentDataJSON) throws ConsentException;
 
     /**
-     * Abstract method defined to validate the authorization status.
+     * Appends the account related data to the metadata map to retrieve during persisting steps.
      *
-     * @param consentResource
-     * @param authType
-     * @return
+     * @param metaDataMap     meta data map
+     * @param accountDataJSON account data to store in the metadata map
      */
-    boolean validateAuthorizationStatus(ConsentResource consentResource, String authType);
+    void appendAccountDetailsToMetadata(Map<String, Object> metaDataMap, JSONObject accountDataJSON);
 
-    /**
-     * Abstract method defined to populate data to publish for data reporting in consent retrieval.
-     *
-     * @param consentData   ConsentData
-     * @return Data map containing values to publish
-     */
-    Map<String, Object> populateReportingData(ConsentData consentData);
 }
