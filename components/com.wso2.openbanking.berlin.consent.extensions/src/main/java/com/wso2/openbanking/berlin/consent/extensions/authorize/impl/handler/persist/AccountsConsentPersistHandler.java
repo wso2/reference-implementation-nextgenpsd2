@@ -14,11 +14,15 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -26,7 +30,11 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUti
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +44,8 @@ import java.util.Map;
  * Class to handle Account Consent data persistence for Authorize.
  */
 public class AccountsConsentPersistHandler implements ConsentPersistHandler {
+
+    private static final Log log = LogFactory.getLog(AccountsConsentPersistHandler.class);
 
     private ConsentCoreServiceImpl consentCoreService;
     private Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
@@ -92,6 +102,24 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 new ConsentPersistHandlerService(consentCoreService);
         consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
                 authorisationId, userId, authStatus);
+
+        // Updating the consent receipt after authorizing bank offered consent
+        if ((checkedAccountsAccountRefObjects != null && !checkedAccountsAccountRefObjects.isEmpty())
+                || (checkedBalancesAccountRefObjects != null && !checkedBalancesAccountRefObjects.isEmpty())
+                || (checkedTransactionsAccountRefObjects != null && !checkedTransactionsAccountRefObjects.isEmpty())) {
+            String consentId = consentResource.getConsentID();
+            DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+
+            String updatedReceipt = null;
+            try {
+                updatedReceipt = getUpdatedConsentReceipt(detailedConsentResource.getReceipt(), detailedConsentResource.getConsentMappingResources());
+            } catch (ParseException e) {
+                log.error(ErrorConstants.JSON_PARSE_ERROR, e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ErrorConstants.JSON_PARSE_ERROR);
+            }
+            consentCoreService.amendConsentData(consentId, updatedReceipt, null, null);
+        }
     }
 
     /**
@@ -128,6 +156,78 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
             }
         }
+    }
+
+    /**
+     * Returns the updated consent receipt for bank offered consents after authorizing accounts.
+     *
+     * @param receipt consent receipt
+     * @param mappingResources mapping resources
+     * @return updated receipt with authorized account details
+     * @throws ParseException
+     */
+    private String getUpdatedConsentReceipt(String receipt, ArrayList<ConsentMappingResource> mappingResources) throws ParseException {
+
+        JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receipt);
+        JSONObject accessObject = (JSONObject) receiptJSON.get(ConsentExtensionConstants.ACCESS);
+
+        ArrayList<ConsentMappingResource> accountsMappingResources = new ArrayList<>();
+        ArrayList<ConsentMappingResource> balancesMappingResources = new ArrayList<>();
+        ArrayList<ConsentMappingResource> transactionsMappingResources = new ArrayList<>();
+
+        for (ConsentMappingResource mappingResource : mappingResources) {
+            if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.ACCOUNTS.toString())) {
+                accountsMappingResources.add(mappingResource);
+            } else if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())) {
+                balancesMappingResources.add(mappingResource);
+            } else if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.TRANSACTIONS.toString())) {
+                transactionsMappingResources.add(mappingResource);
+            }
+        }
+
+        JSONObject updatedAccessObject = new JSONObject();
+        if (accessObject.containsKey(AccessMethodEnum.ACCOUNTS.toString()) && !accountsMappingResources.isEmpty()) {
+            updatedAccessObject.appendField(AccessMethodEnum.ACCOUNTS.toString(), getAccountRefObjectsForMappingResources(accountsMappingResources));
+        }
+
+        if (accessObject.containsKey(AccessMethodEnum.BALANCES.toString()) && !balancesMappingResources.isEmpty()) {
+            updatedAccessObject.appendField(AccessMethodEnum.BALANCES.toString(), getAccountRefObjectsForMappingResources(balancesMappingResources));
+        }
+
+        if (accessObject.containsKey(AccessMethodEnum.TRANSACTIONS.toString()) && !transactionsMappingResources.isEmpty()) {
+            updatedAccessObject.appendField(AccessMethodEnum.TRANSACTIONS.toString(), getAccountRefObjectsForMappingResources(transactionsMappingResources));
+        }
+
+        receiptJSON.appendField(ConsentExtensionConstants.ACCESS, updatedAccessObject);
+        return receiptJSON.toString();
+    }
+
+    /**
+     * Converts the mapping resources to account ref objects.
+     *
+     * @param mappingResources mapping resources
+     * @return account reference objects
+     */
+    private JSONArray getAccountRefObjectsForMappingResources(ArrayList<ConsentMappingResource> mappingResources) {
+
+        JSONArray accountRefObjects = new JSONArray();
+        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
+
+        for (ConsentMappingResource mappingResource : mappingResources) {
+            JSONObject accountRefObject = new JSONObject();
+            String accountId = mappingResource.getAccountID();
+            if (accountId.contains(":")) {
+                String[] accountDetails = accountId.split(":");
+                String accountNumber = accountDetails[0].trim();
+                String currencyString = accountDetails[1].trim();
+                accountRefObject.put(configuredAccountReference, accountNumber);
+                accountRefObject.put(ConsentExtensionConstants.CURRENCY, currencyString);
+            } else {
+                accountRefObject.put(configuredAccountReference, accountId);
+            }
+            accountRefObjects.appendElement(accountRefObject);
+        }
+        return accountRefObjects;
     }
 
     @Override
