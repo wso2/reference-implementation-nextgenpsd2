@@ -106,18 +106,26 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
             return;
         }
 
-        ArrayList<String> permission = new ArrayList<>();
-        permission.add(accessMethod);
-
         for (Object object : accountRefObjects) {
             JSONObject accountRefObject = (JSONObject) object;
             String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
             if (accountIdMapWithPermissions.containsKey(accountIdWithCurrency)) {
-                ArrayList<String> permissions = accountIdMapWithPermissions.get(accountIdWithCurrency);
-                permissions.addAll(permission);
-                accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
+                ArrayList<String> currentPermissions = accountIdMapWithPermissions.get(accountIdWithCurrency);
+                if (!currentPermissions.contains(accessMethod)) {
+                    currentPermissions.add(accessMethod);
+                    accountIdMapWithPermissions.put(accountIdWithCurrency, currentPermissions);
+                }
             } else {
-                accountIdMapWithPermissions.put(accountIdWithCurrency, permission);
+                ArrayList<String> permissions = new ArrayList<>();
+                permissions.add(accessMethod);
+
+                // Account permission with "balances" or "transactions" implicitly has "accounts" permission as well
+                if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.toString())
+                        || StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.toString())) {
+                    permissions.add(AccessMethodEnum.ACCOUNTS.toString());
+                }
+
+                accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
             }
         }
     }

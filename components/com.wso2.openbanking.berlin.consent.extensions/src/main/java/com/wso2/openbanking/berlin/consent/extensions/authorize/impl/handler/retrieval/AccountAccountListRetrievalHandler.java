@@ -114,14 +114,15 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
     public void appendAccountDetailsToMetadata(Map<String, Object> metaDataMap, JSONObject accountDataJSON) {
 
         JSONArray accountDetailsArray = (JSONArray) accountDataJSON.get(ConsentExtensionConstants.ACCOUNT_DETAILS_LIST);
+
+        JSONArray accountsAccountRefObjects = new JSONArray();
+        JSONArray balancesAccountRefObjects = new JSONArray();
+        JSONArray transactionsAccountRefObjects = new JSONArray();
+
         for (Object accountDetails : accountDetailsArray) {
             JSONObject accountDetailsObj = (JSONObject) accountDetails;
             JSONArray accountRefObjects = (JSONArray) accountDetailsObj.get(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS);
             JSONArray accessMethods = (JSONArray) accountDetailsObj.get(ConsentExtensionConstants.ACCESS_METHODS);
-
-            JSONArray accountsAccountRefObjects = new JSONArray();
-            JSONArray balancesAccountRefObjects = new JSONArray();
-            JSONArray transactionsAccountRefObjects = new JSONArray();
 
             for (Object accessMethodJson : accessMethods) {
                 String accessMethod = (String) accessMethodJson;
@@ -136,10 +137,10 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
                     transactionsAccountRefObjects.addAll(accountRefObjects);
                 }
             }
-            metaDataMap.put(ConsentExtensionConstants.ACCOUNTS_ACCOUNT_REF_OBJECTS, accountsAccountRefObjects);
-            metaDataMap.put(ConsentExtensionConstants.BALANCES_ACCOUNT_REF_OBJECTS, balancesAccountRefObjects);
-            metaDataMap.put(ConsentExtensionConstants.TRANSACTIONS_ACCOUNT_REF_OBJECTS, transactionsAccountRefObjects);
         }
+        metaDataMap.put(ConsentExtensionConstants.ACCOUNTS_ACCOUNT_REF_OBJECTS, accountsAccountRefObjects);
+        metaDataMap.put(ConsentExtensionConstants.BALANCES_ACCOUNT_REF_OBJECTS, balancesAccountRefObjects);
+        metaDataMap.put(ConsentExtensionConstants.TRANSACTIONS_ACCOUNT_REF_OBJECTS, transactionsAccountRefObjects);
     }
 
     /**
