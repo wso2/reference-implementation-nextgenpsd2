@@ -56,7 +56,8 @@ public class ConsentExtensionUtil {
         String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
         String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
         if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-            accountIdWithCurrency += String.format(":%s", accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY));
+            accountIdWithCurrency += String.format(":%s", accountRefObject
+                    .getAsString(ConsentExtensionConstants.CURRENCY));
         }
         return accountIdWithCurrency;
     }
@@ -223,8 +224,8 @@ public class ConsentExtensionUtil {
         try {
             if (StringUtils.equals(HttpMethod.GET, requestMethod) || StringUtils.equals(HttpMethod.DELETE,
                     requestMethod)) {
-                // Consent Id of accounts always situated in 1st position. Consent Id of payments and funds confirmation
-                // always situated in 2nd position
+                // Consent Id of accounts always situated in 1st position. Consent Id of payments and
+                // funds confirmation always situated in 2nd position
                 consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
                         requestPath.split("/")[1] : requestPath.split("/")[2];
                 if (CommonUtil.isValidUuid(consentId)) {

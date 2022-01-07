@@ -26,9 +26,9 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.per
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationConsentRetrievalHandler;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentConsentRetrievalHandler;
 import org.apache.commons.lang3.StringUtils;

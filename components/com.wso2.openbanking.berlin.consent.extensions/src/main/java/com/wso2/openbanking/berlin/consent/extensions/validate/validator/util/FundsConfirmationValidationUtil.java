@@ -16,7 +16,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
@@ -28,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Funds confirmation validation util class.
@@ -42,7 +40,7 @@ public class FundsConfirmationValidationUtil {
      *
      * @param detailedConsentResource detailed consent resource
      * @param consentValidationResult validation result
-     * @param payload JSON payload
+     * @param payload                 JSON payload
      * @return true if payload is valid
      */
     public static boolean isPayloadValid(DetailedConsentResource detailedConsentResource,

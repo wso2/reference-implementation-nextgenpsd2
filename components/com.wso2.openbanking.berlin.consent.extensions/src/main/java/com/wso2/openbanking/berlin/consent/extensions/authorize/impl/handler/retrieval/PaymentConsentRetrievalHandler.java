@@ -16,7 +16,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
@@ -257,30 +256,5 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
             paymentDataArray.add(ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE + " : "
                     + receipt.getAsString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION));
         }
-    }
-
-    /**
-     * Method to populate debtor account data for payments data.
-     *
-     * @param receipt Consent Receipt
-     * @param paymentDataArray Consent Data JSON
-     * @return a JSON array with debtor account data in it
-     */
-    private static void populateDebtorAccountData(JSONObject receipt, JSONArray paymentDataArray) {
-
-        String debtorAccountReference;
-        JSONObject debtorAccountElement = (JSONObject) receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT);
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
-
-        if (StringUtils.equals(ConsentExtensionConstants.IBAN, configuredAccountReference)) {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.IBAN);
-        } else if (StringUtils.equals(ConsentExtensionConstants.BBAN, configuredAccountReference)) {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.BBAN);
-        } else {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.PAN);
-        }
-
-        paymentDataArray.add(String.format(ConsentExtensionConstants.DEBTOR_REFERENCE_TITLE,
-                configuredAccountReference) + " : " + debtorAccountReference);
     }
 }

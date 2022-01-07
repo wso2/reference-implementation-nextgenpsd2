@@ -19,7 +19,6 @@ import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +71,7 @@ public class ConsentAuthUtil {
      * @param consentType the consent type
      * @param scopeString the scope string sent in request
      * @param redirectUri the redirect URI of the request
-     * @param state the state of the request
+     * @param state       the state of the request
      * @throws ConsentException thrown if a validation failure happen
      */
     public static void validateConsentTypeWithId(String consentType, String scopeString, URI redirectUri,
@@ -129,7 +128,7 @@ public class ConsentAuthUtil {
      * Retrieves all the accounts for a particular account number in multi-currency scenarios.
      *
      * @param accountRefObject single account json object
-     * @param accountArray all the accounts json array
+     * @param accountArray     all the accounts json array
      * @return accounts array
      */
     public static JSONArray getFilteredAccountsForAccountNumber(JSONObject accountRefObject, JSONArray accountArray) {

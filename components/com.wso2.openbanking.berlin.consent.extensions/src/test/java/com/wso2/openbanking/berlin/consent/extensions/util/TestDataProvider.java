@@ -69,7 +69,8 @@ public class TestDataProvider {
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE,
                         PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString()},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_BANK_OFFERED_CONSENT, PermissionEnum.BANK_OFFERED.toString()},
-                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_DEDICATED_ACCOUNTS_CONSENT, PermissionEnum.DEDICATED_ACCOUNTS.toString()}
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_DEDICATED_ACCOUNTS_CONSENT,
+                        PermissionEnum.DEDICATED_ACCOUNTS.toString()}
         };
     }
 

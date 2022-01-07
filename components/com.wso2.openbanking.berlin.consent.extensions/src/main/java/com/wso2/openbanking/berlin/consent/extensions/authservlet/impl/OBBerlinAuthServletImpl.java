@@ -58,8 +58,10 @@ public class OBBerlinAuthServletImpl implements OBAuthServletInterface {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        String[] checkedAccountsRefs = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_ACCOUNTS_ACCOUNT_REFS);
-        String[] checkedBalancesRefs = httpServletRequest.getParameterValues(ConsentExtensionConstants.CHECKED_BALANCES_ACCOUNT_REFS);
+        String[] checkedAccountsRefs = httpServletRequest
+                .getParameterValues(ConsentExtensionConstants.CHECKED_ACCOUNTS_ACCOUNT_REFS);
+        String[] checkedBalancesRefs = httpServletRequest
+                .getParameterValues(ConsentExtensionConstants.CHECKED_BALANCES_ACCOUNT_REFS);
         String[] checkedTransactionsRefs = httpServletRequest
                 .getParameterValues(ConsentExtensionConstants.CHECKED_TRANSACTIONS_ACCOUNT_REFS);
 

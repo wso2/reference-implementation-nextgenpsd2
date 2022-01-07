@@ -63,11 +63,11 @@ public class ConsentPersistHandlerService {
      * @param authorisationId             current authorisation Id
      * @param psuId                       the logged in user
      * @param authStatus                  the auth status to be updated
-     * @throws ConsentException thrown if an error occur while persisting authorisation
+     * @throws ConsentManagementException thrown if an error occur while persisting authorisation
      */
     public void persistAuthorisation(ConsentResource consentResource,
-                                            Map<String, ArrayList<String>> accountIdMapWithPermissions,
-                                            String authorisationId, String psuId, String authStatus, boolean isApproved)
+                                     Map<String, ArrayList<String>> accountIdMapWithPermissions,
+                                     String authorisationId, String psuId, String authStatus, boolean isApproved)
             throws ConsentManagementException {
 
         AuthorizationResource currentAuthorisationResource =
@@ -153,7 +153,7 @@ public class ConsentPersistHandlerService {
      * consent support. Also deactivating connected accounts of the consents which are expired in the process.
      *
      * @param currentConsentResource the current consent resource
-     * @param loggedInUserId the logged in user for authorization
+     * @param loggedInUserId         the logged in user for authorization
      * @throws ConsentManagementException thrown if an error occur while using consent core service
      */
     private void handleMultipleRecurringConsent(ConsentResource currentConsentResource, String loggedInUserId)
@@ -180,10 +180,10 @@ public class ConsentPersistHandlerService {
                         new ArrayList<>(Collections.singletonList(ConsentStatusEnum.VALID.toString())),
                         new ArrayList<>(Collections.singletonList(ConsentExtensionUtil
                                 .appendSuperTenantDomain(loggedInUserId))), null, null, null,
-                null)
+                        null)
                 .stream()
                 .filter(detailedConsentResource -> {
-                   //todo: https://github.com/wso2-enterprise/financial-open-banking/issues/6525#issuecomment-974151193
+                    //todo: https://github.com/wso2-enterprise/financial-open-banking/issues/6525#issuecomment-974151193
                     return detailedConsentResource.getAuthorizationResources().size() == 1;
                 })
                 .filter(DetailedConsentResource::isRecurringIndicator)
@@ -217,7 +217,7 @@ public class ConsentPersistHandlerService {
      * @return the enum of aggregated authorisation status
      */
     private Optional<AuthorisationAggregateStatusEnum> computeAggregatedConsentStatus(List<AuthorizationResource>
-                                                                                                 authorisationList) {
+                                                                                              authorisationList) {
 
         // Has at least one authorisation failed
         boolean hasFailed = authorisationList.stream().anyMatch(authorisation -> authorisation.getAuthorizationStatus()

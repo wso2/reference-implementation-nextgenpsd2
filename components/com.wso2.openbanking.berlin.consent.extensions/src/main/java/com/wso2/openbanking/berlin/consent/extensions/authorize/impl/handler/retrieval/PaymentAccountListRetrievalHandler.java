@@ -118,7 +118,8 @@ public class PaymentAccountListRetrievalHandler implements AccountListRetrievalH
             dataWithAccountInfo.addAll(data);
 
             consentDetail.put(ConsentExtensionConstants.DATA_SIMPLE, dataWithAccountInfo);
-            consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(consentDetail));
+            consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS,
+                    new JSONArray().appendElement(consentDetail));
         }
     }
 

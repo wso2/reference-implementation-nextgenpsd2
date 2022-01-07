@@ -30,9 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class to handle Account account list data retrieval for Authorize.
@@ -122,8 +120,10 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
 
         for (Object accountDetails : accountDetailsArray) {
             JSONObject accountDetailsObj = (JSONObject) accountDetails;
-            JSONArray accountRefObjects = (JSONArray) accountDetailsObj.get(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS);
-            JSONArray accessMethods = (JSONArray) accountDetailsObj.get(ConsentExtensionConstants.ACCESS_METHODS);
+            JSONArray accountRefObjects = (JSONArray) accountDetailsObj
+                    .get(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS);
+            JSONArray accessMethods = (JSONArray) accountDetailsObj
+                    .get(ConsentExtensionConstants.ACCESS_METHODS);
 
             for (Object accessMethodJson : accessMethods) {
                 String accessMethod = (String) accessMethodJson;
@@ -164,9 +164,12 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
             return null;
         }
 
-        JSONArray accountsAccountRefObjects = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.toString());
-        JSONArray balancesAccountRefObjects = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
-        JSONArray transactionsAccountRefObjects = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
+        JSONArray accountsAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.ACCOUNTS.toString());
+        JSONArray balancesAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.BALANCES.toString());
+        JSONArray transactionsAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.TRANSACTIONS.toString());
 
         boolean areAccountsInvalid = false;
         if (accountsAccountRefObjects != null && !accountsAccountRefObjects.isEmpty()) {
@@ -184,7 +187,8 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
         }
 
         if (transactionsAccountRefObjects != null && !transactionsAccountRefObjects.isEmpty()) {
-            transactionsAccountRefObjects = getValidatedAccountRefObjects(transactionsAccountRefObjects, bankOfferedAccounts);
+            transactionsAccountRefObjects = getValidatedAccountRefObjects(transactionsAccountRefObjects,
+                    bankOfferedAccounts);
             if (transactionsAccountRefObjects == null || transactionsAccountRefObjects.isEmpty()) {
                 areAccountsInvalid = true;
             }
@@ -305,7 +309,7 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
      * considering accounts service related multi-currency validations.
      *
      * @param accountRefObjects account reference objects array from initiation payload
-     * @param accountArray accounts array retrieved from bank backend
+     * @param accountArray      accounts array retrieved from bank backend
      * @return validated account ref objects array
      */
     private JSONArray getValidatedAccountRefObjects(JSONArray accountRefObjects, JSONArray accountArray) {
