@@ -51,6 +51,19 @@ import java.util.UUID;
  */
 public class TestUtil {
 
+    public static JSONObject getSampleAccountRefObject(String accountRefIdentifier, String accountNumber,
+                                                       String currency) {
+
+        JSONObject accountRefObject = new JSONObject();
+        accountRefObject.put(accountRefIdentifier, accountNumber);
+
+        if (StringUtils.isNotBlank(currency)) {
+            accountRefObject.put(ConsentExtensionConstants.CURRENCY, currency);
+        }
+
+        return accountRefObject;
+    }
+
     public static void assertConsentResponse(ConsentManageData consentManageData,
                                              AuthorizationResource authorizationResource, boolean isImplicit,
                                              MockHttpServletRequest mockHttpServletRequest,
@@ -96,14 +109,14 @@ public class TestUtil {
     public static void assertConsentRetrieval(JSONObject jsonObject) {
 
         Assert.assertNotNull(jsonObject.get(ConsentExtensionConstants.CONSENT_DATA));
-        JSONArray consentData = (JSONArray) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
-        for (Object element : consentData) {
+        JSONObject consentData = (JSONObject) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
+        JSONArray consentDetails = (JSONArray) consentData.get(ConsentExtensionConstants.CONSENT_DETAILS);
+        for (Object element : consentDetails) {
             JSONObject jsonElement = (JSONObject) element;
             if (jsonElement.containsKey(ConsentExtensionConstants.DATA_SIMPLE)) {
                 Assert.assertNotNull(jsonElement.get(ConsentExtensionConstants.DATA_SIMPLE));
                 Assert.assertNotNull(jsonElement.get(ConsentExtensionConstants.TITLE));
-                Assert.assertTrue(org.codehaus.plexus.util.StringUtils
-                        .contains(jsonElement.getAsString(ConsentExtensionConstants.TITLE),
+                Assert.assertTrue(StringUtils.contains(jsonElement.getAsString(ConsentExtensionConstants.TITLE),
                                 ConsentExtensionConstants.REQUESTED_DATA_TITLE));
                 JSONArray data = (JSONArray) jsonElement.get(ConsentExtensionConstants.DATA_SIMPLE);
                 Assert.assertNotNull(data);

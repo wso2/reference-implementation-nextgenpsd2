@@ -216,8 +216,9 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
 
         Assert.assertNotNull(jsonObject.get(ConsentExtensionConstants.CONSENT_DATA));
-        JSONArray consentData = (JSONArray) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
-        for (Object element : consentData) {
+        JSONObject consentData = (JSONObject) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
+        JSONArray consentDetails = (JSONArray) consentData.get(ConsentExtensionConstants.CONSENT_DETAILS);
+        for (Object element : consentDetails) {
             JSONObject jsonElement = (JSONObject) element;
             if (jsonElement.containsKey(ConsentExtensionConstants.DATA_SIMPLE)) {
                 Assert.assertNotNull(jsonElement.get(ConsentExtensionConstants.DATA_SIMPLE));
