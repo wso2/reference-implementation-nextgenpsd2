@@ -47,7 +47,8 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
         String permission = consentDataJSON.getAsString(ConsentExtensionConstants.PERMISSION);
         JSONObject accessObject = (JSONObject) consentDataJSON.get(ConsentExtensionConstants.ACCESS_OBJECT);
 
-        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEFAULT.toString())) {
+        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEDICATED_ACCOUNTS.toString())
+                || StringUtils.equalsIgnoreCase(permission, PermissionEnum.BANK_OFFERED.toString())) {
             JSONArray accountDetailsArray = getAccountsFromPayload(accessObject, consentData.getUserId());
 
             if (accountDetailsArray == null) {
