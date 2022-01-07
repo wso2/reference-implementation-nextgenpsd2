@@ -67,7 +67,7 @@ public class ConsentPersistHandlerService {
      */
     public void persistAuthorisation(ConsentResource consentResource,
                                             Map<String, ArrayList<String>> accountIdMapWithPermissions,
-                                            String authorisationId, String psuId, String authStatus)
+                                            String authorisationId, String psuId, String authStatus, boolean isApproved)
             throws ConsentManagementException {
 
         AuthorizationResource currentAuthorisationResource =
@@ -114,6 +114,11 @@ public class ConsentPersistHandlerService {
                             currentAuthorisationType, aggregatedStatus.get(), currentAuthorisationResource);
                     consentCoreService.bindUserAccountsToConsent(consentResource, loggedInUserWithSuperTenant,
                             authorisationId, accountIdMapWithPermissions, authStatus, consentStatusToUpdate);
+
+                    // Deactivate the account mappings created for the relevant consent ID when consent is denied
+                    if (!isApproved) {
+                        deactivateAccountMapping(consentResource);
+                    }
                 } else {
                     log.error(String.format(ErrorConstants.INVALID_PAYMENT_CONSENT_STATUS_UPDATE, consentId));
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -125,6 +130,22 @@ public class ConsentPersistHandlerService {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ErrorConstants.AUTH_ID_CONSENT_ID_MISMATCH);
         }
+    }
+
+    /**
+     * Method to deactivate account mapping when user deny the consent.
+     *
+     * @param consentResource
+     * @throws ConsentManagementException
+     */
+    private void deactivateAccountMapping(ConsentResource consentResource) throws ConsentManagementException {
+        DetailedConsentResource consentResourceAfterUpdate = consentCoreService
+                .getDetailedConsent(consentResource.getConsentID());
+        ArrayList<String> mappingIdList = new ArrayList<>();
+        for (ConsentMappingResource mappingResource : consentResourceAfterUpdate.getConsentMappingResources()) {
+            mappingIdList.add(mappingResource.getMappingID());
+        }
+        consentCoreService.deactivateAccountMappings(mappingIdList);
     }
 
     /**

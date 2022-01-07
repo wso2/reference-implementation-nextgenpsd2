@@ -75,7 +75,7 @@ public class FundsConfirmationsConsentPersistHandler implements ConsentPersistHa
         ConsentPersistHandlerService consentPersistHandlerService =
                 new ConsentPersistHandlerService(consentCoreService);
         consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                authorisationId, userId, authStatus);
+                authorisationId, userId, authStatus, isApproved);
     }
 
     @Override

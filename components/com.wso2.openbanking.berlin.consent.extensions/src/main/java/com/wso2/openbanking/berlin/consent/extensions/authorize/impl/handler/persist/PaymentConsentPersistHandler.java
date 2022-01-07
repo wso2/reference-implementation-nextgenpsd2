@@ -77,7 +77,7 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
         ConsentPersistHandlerService consentPersistHandlerService =
                 new ConsentPersistHandlerService(consentCoreService);
         consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                authorisationId, userId, authStatus);
+                authorisationId, userId, authStatus, isApproved);
     }
 
     @Override
