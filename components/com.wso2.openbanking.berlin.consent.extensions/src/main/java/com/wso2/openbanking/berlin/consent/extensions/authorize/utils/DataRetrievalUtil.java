@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONArray;
@@ -25,7 +27,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
@@ -73,7 +74,7 @@ public class DataRetrievalUtil {
         }
 
         BufferedReader reader = null;
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
             HttpGet request = new HttpGet(retrieveUrl);
             request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
             if (!headers.isEmpty()) {
@@ -101,7 +102,7 @@ public class DataRetrievalUtil {
                 }
                 return buffer.toString();
             }
-        } catch (IOException e) {
+        } catch (IOException | OpenBankingException e) {
             log.error("Exception occurred while retrieving sharable accounts", e);
         } finally {
             if (reader != null) {
@@ -186,8 +187,6 @@ public class DataRetrievalUtil {
 
             // Remove currency information from non multi-currency accounts
             return removeCurrencyInfoFromSingleCurrencyAccounts(accountArray);
-
-//            return accountArray;
         } catch (ParseException e) {
             log.error(ErrorConstants.JSON_PARSE_ERROR, e);
             return null;

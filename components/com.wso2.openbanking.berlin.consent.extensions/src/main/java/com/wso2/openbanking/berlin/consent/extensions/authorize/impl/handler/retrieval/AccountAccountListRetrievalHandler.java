@@ -49,7 +49,7 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
                 || StringUtils.equalsIgnoreCase(permission, PermissionEnum.BANK_OFFERED.toString())) {
             JSONArray accountDetailsArray = getAccountsFromPayload(accessObject, consentData.getUserId());
 
-            if (accountDetailsArray == null) {
+            if (accountDetailsArray == null || accountDetailsArray.isEmpty()) {
                 log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST,
                         ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,

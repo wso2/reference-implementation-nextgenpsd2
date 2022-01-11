@@ -157,4 +157,51 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
         Assert.assertTrue(consentValidationResult.isValid());
     }
 
+    @Test
+    public void testBulkAccountsSubmissionValidatorExpiredScenario() throws ParseException {
+
+        JSONObject headers = TestPayloads.getMandatoryValidateHeadersMap(consentId, true);
+
+        ConsentValidateData consentValidateData = new ConsentValidateData(headers,
+                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "accounts",
+                consentId, TestConstants.USER_ID, clientId, new HashMap<>());
+
+        DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
+                clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
+                UUID.randomUUID().toString(), AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
+        detailedConsentResource.setValidityPeriod(AccountConsentUtil
+                .convertToUtcTimestamp(TestUtil.getCurrentDate(-2)));
+        detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
+
+        consentValidateData.setComprehensiveConsent(detailedConsentResource);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+
+        accountSubmissionValidator.validate(consentValidateData, consentValidationResult);
+        Assert.assertFalse(consentValidationResult.isValid());
+    }
+
+    @Test
+    public void testBulkAccountsSubmissionValidatorInvalidStatusScenario() throws ParseException {
+
+        JSONObject headers = TestPayloads.getMandatoryValidateHeadersMap(consentId, true);
+
+        ConsentValidateData consentValidateData = new ConsentValidateData(headers,
+                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "accounts",
+                consentId, TestConstants.USER_ID, clientId, new HashMap<>());
+
+        DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
+                clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
+                UUID.randomUUID().toString(), AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
+        detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
+        detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
+
+        consentValidateData.setComprehensiveConsent(detailedConsentResource);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+
+        accountSubmissionValidator.validate(consentValidateData, consentValidationResult);
+        Assert.assertFalse(consentValidationResult.isValid());
+    }
+
 }

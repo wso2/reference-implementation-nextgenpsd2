@@ -106,7 +106,7 @@ public class TestUtil {
         }
     }
 
-    public static void assertConsentRetrieval(JSONObject jsonObject) {
+    public static void assertConsentRetrieval(JSONObject jsonObject, String consentType) {
 
         Assert.assertNotNull(jsonObject.get(ConsentExtensionConstants.CONSENT_DATA));
         JSONObject consentData = (JSONObject) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
@@ -116,11 +116,25 @@ public class TestUtil {
             if (jsonElement.containsKey(ConsentExtensionConstants.DATA_SIMPLE)) {
                 Assert.assertNotNull(jsonElement.get(ConsentExtensionConstants.DATA_SIMPLE));
                 Assert.assertNotNull(jsonElement.get(ConsentExtensionConstants.TITLE));
-                Assert.assertTrue(StringUtils.contains(jsonElement.getAsString(ConsentExtensionConstants.TITLE),
-                                ConsentExtensionConstants.REQUESTED_DATA_TITLE));
+
+                if (StringUtils.equals(consentType, ConsentTypeEnum.ACCOUNTS.toString())
+                        || StringUtils.equals(consentType, ConsentTypeEnum.FUNDS_CONFIRMATION.toString())) {
+                    Assert.assertTrue(StringUtils.contains(jsonElement.getAsString(ConsentExtensionConstants.TITLE),
+                            ConsentExtensionConstants.CONSENT_DETAILS_TITLE));
+                } else {
+                    Assert.assertTrue(StringUtils.contains(jsonElement.getAsString(ConsentExtensionConstants.TITLE),
+                            ConsentExtensionConstants.REQUESTED_DATA_TITLE));
+                }
                 JSONArray data = (JSONArray) jsonElement.get(ConsentExtensionConstants.DATA_SIMPLE);
                 Assert.assertNotNull(data);
             }
+        }
+
+        if (StringUtils.equals(consentType, ConsentTypeEnum.ACCOUNTS.toString())) {
+            Assert.assertNotNull(consentData.get(ConsentExtensionConstants.ACCESS_OBJECT));
+            Assert.assertNotNull(consentData.get(ConsentExtensionConstants.PERMISSION));
+        } else {
+            Assert.assertNotNull(consentData.get(ConsentExtensionConstants.ACCOUNT_REF_OBJECT));
         }
     }
 
@@ -238,6 +252,35 @@ public class TestUtil {
         return consentMappingResource;
     }
 
+    public static ConsentMappingResource getSampleTestConsentMappingResource(String mappingId, String authorizationID,
+                                                                             String accountID, String permission,
+                                                                             String mappingStatus) {
+
+        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+
+        if (StringUtils.isNotBlank(mappingId)) {
+            consentMappingResource.setMappingID(mappingId);
+        }
+
+        if (StringUtils.isNotBlank(authorizationID)) {
+            consentMappingResource.setAuthorizationID(authorizationID);
+        }
+
+        if (StringUtils.isNotBlank(accountID)) {
+            consentMappingResource.setAccountID(accountID);
+        }
+
+        if (StringUtils.isNotBlank(permission)) {
+            consentMappingResource.setPermission(permission);
+        }
+
+        if (StringUtils.isNotBlank(mappingStatus)) {
+            consentMappingResource.setMappingStatus(mappingStatus);
+        }
+
+        return consentMappingResource;
+    }
+
     public static ArrayList<ConsentMappingResource> getSampleTestConsentMappingResourcesWithPermissions(
             String authorizationID) {
 
@@ -344,5 +387,78 @@ public class TestUtil {
         return getSampleConsentDataObject(TestConstants.USER_ID,
                 TestConstants.SAMPLE_QUERY_PARAMS, scopeString, TestConstants.SAMPLE_APP_NAME,
                 new HashMap<>(), true);
+    }
+
+    public static JSONObject getSampleFundsConfirmationConsentDataJSONObject(JSONObject accountRefObject) {
+
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDetails = new JSONArray();
+        JSONObject dataElement = new JSONObject();
+        JSONArray consentDataArray = new JSONArray();
+
+        consentDataArray.add("data: 1");
+        consentDataArray.add("data: 2");
+        consentDataArray.add("data: 3");
+
+        dataElement.appendField(ConsentExtensionConstants.TITLE,
+                ConsentExtensionConstants.CONSENT_DETAILS_TITLE);
+        dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
+        consentDetails.add(dataElement);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ConsentExtensionConstants.CONSENT_DETAILS, consentDetails);
+        jsonObject.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, accountRefObject);
+
+        consentData.put(ConsentExtensionConstants.CONSENT_DATA, jsonObject);
+        return consentData;
+    }
+
+    public static JSONObject getSamplePaymentConsentDataJSONObject(JSONObject accountRefObject) {
+
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDetails = new JSONArray();
+        JSONObject dataElement = new JSONObject();
+        JSONArray consentDataArray = new JSONArray();
+
+        consentDataArray.add("data: 1");
+        consentDataArray.add("data: 2");
+        consentDataArray.add("data: 3");
+
+        dataElement.appendField(ConsentExtensionConstants.TITLE,
+                ConsentExtensionConstants.CONSENT_DETAILS_TITLE);
+        dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
+        consentDetails.add(dataElement);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ConsentExtensionConstants.CONSENT_DETAILS, consentDetails);
+        jsonObject.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, accountRefObject);
+
+        consentData.put(ConsentExtensionConstants.CONSENT_DATA, jsonObject);
+        return consentData;
+    }
+
+    public static JSONObject getSampleAccountsConsentDataJSONObject(JSONObject accessObject, String permission) {
+
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDetails = new JSONArray();
+        JSONObject dataElement = new JSONObject();
+        JSONArray consentDataArray = new JSONArray();
+
+        consentDataArray.add("data: 1");
+        consentDataArray.add("data: 2");
+        consentDataArray.add("data: 3");
+
+        dataElement.appendField(ConsentExtensionConstants.TITLE,
+                ConsentExtensionConstants.CONSENT_DETAILS_TITLE);
+        dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
+        consentDetails.add(dataElement);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ConsentExtensionConstants.CONSENT_DETAILS, consentDetails);
+        jsonObject.put(ConsentExtensionConstants.ACCESS_OBJECT, accessObject);
+        jsonObject.put(ConsentExtensionConstants.PERMISSION, permission);
+
+        consentData.put(ConsentExtensionConstants.CONSENT_DATA, jsonObject);
+        return consentData;
     }
 }

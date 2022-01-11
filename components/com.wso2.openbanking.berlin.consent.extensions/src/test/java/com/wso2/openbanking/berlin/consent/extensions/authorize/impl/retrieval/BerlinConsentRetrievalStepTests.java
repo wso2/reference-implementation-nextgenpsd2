@@ -16,11 +16,14 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
@@ -42,6 +45,7 @@ import org.testng.annotations.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -110,7 +114,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
     }
 
     @Test
@@ -127,7 +131,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
     }
 
     @Test
@@ -144,7 +148,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
     }
 
     @Test
@@ -161,7 +165,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
     }
 
     @Test
@@ -178,7 +182,142 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidDedicatedAccountsData() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("ais:" + consentId);
+        ConsentResource consentResource = TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_DEDICATED_ACCOUNTS_CONSENT);
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.PERMISSION, PermissionEnum.DEDICATED_ACCOUNTS.toString());
+        consentResource.setConsentAttributes(consentAttributes);
+
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.ACCOUNTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidBankOfferedAccountsData() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("ais:" + consentId);
+        ConsentResource consentResource = TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_BANK_OFFERED_CONSENT);
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.PERMISSION, PermissionEnum.BANK_OFFERED.toString());
+        consentResource.setConsentAttributes(consentAttributes);
+
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.ACCOUNTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidAvailableAccountsData() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("ais:" + consentId);
+        ConsentResource consentResource = TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS);
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.PERMISSION, PermissionEnum.AVAILABLE_ACCOUNTS.toString());
+        consentResource.setConsentAttributes(consentAttributes);
+
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.ACCOUNTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidAvailableAccountsWithBalanceData() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("ais:" + consentId);
+        ConsentResource consentResource = TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.ACCOUNTS.toString(),
+                TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE);
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.PERMISSION,
+                PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString());
+        consentResource.setConsentAttributes(consentAttributes);
+
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.ACCOUNTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidAllPsd2Data() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("ais:" + consentId);
+        ConsentResource consentResource = TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2);
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(ConsentExtensionConstants.PERMISSION, PermissionEnum.ALL_PSD2.toString());
+        consentResource.setConsentAttributes(consentAttributes);
+
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.ACCOUNTS.toString());
+    }
+
+    @Test
+    public void testConsentRetrievalWithValidFundsConfirmationData() throws URISyntaxException,
+            ConsentManagementException {
+
+        ConsentData consentDataWithoutScopesString =
+                TestUtil.getSampleRegulatoryConsentDataResource("piis:" + consentId);
+        doReturn(TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), TestPayloads.VALID_FUNDS_CONFIRMATION_PAYLOAD))
+                .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
+                TestConstants.USER_ID));
+        doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
+        berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
     }
 
     @Test
@@ -196,7 +335,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PERIODIC_PAYMENTS.toString());
     }
 
     @Test
@@ -342,6 +481,6 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataObject, jsonObject);
-        TestUtil.assertConsentRetrieval(jsonObject);
+        TestUtil.assertConsentRetrieval(jsonObject, ConsentTypeEnum.PAYMENTS.toString());
     }
 }

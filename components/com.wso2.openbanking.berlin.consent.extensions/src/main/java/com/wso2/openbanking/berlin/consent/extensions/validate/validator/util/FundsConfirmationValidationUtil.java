@@ -97,7 +97,7 @@ public class FundsConfirmationValidationUtil {
         }
 
         String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
-        return StringUtils.equals(mappingResource.getMappingID(), accountIdWithCurrency);
+        return StringUtils.equals(mappingResource.getAccountID(), accountIdWithCurrency);
     }
 
 }

@@ -57,7 +57,8 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
     public boolean validateAuthorizationStatus(ConsentResource consentResource, String authType) {
 
         String consentStatus = consentResource.getCurrentStatus();
-        boolean isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus);
+        boolean isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus)
+                || StringUtils.equals(ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(), consentStatus);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("The consent with Id: %s is in %s status. It is %s to authorize",

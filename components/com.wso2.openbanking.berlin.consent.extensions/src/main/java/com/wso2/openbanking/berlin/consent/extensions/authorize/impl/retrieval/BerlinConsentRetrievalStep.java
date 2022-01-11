@@ -92,11 +92,23 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Finding the auth resource relevant to the user if the user Id already exists
             Optional<AuthorizationResource> unauthorizedAuthResource = authorizationsList.stream()
-                            .filter(authorization -> StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
-                                    authorization.getAuthorizationStatus()) &&
-                                    StringUtils.equals(loggedInUserWithSuperTenant, authorization.getUserID()) &&
-                                    StringUtils.equals(authType, authorization.getAuthorizationType()))
+                            .filter(authorization -> StringUtils.equals(loggedInUserWithSuperTenant,
+                                    authorization.getUserID())
+                                    && StringUtils.equals(authType, authorization.getAuthorizationType()))
                             .findFirst();
+
+            // Checking if this auth resource has already been authorised by the currently logged-in user
+            if (unauthorizedAuthResource.isPresent()
+                    && !StringUtils.equals(unauthorizedAuthResource.get().getAuthorizationStatus(),
+                    ScaStatusEnum.RECEIVED.toString())) {
+                log.error(String.format("The consent of Id: %s has already been authorised by %s", consentId,
+                        loggedInUserWithSuperTenant));
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
+                                String.format("This consent has already been authorised by %s",
+                                        loggedInUserWithSuperTenant),
+                                consentData.getRedirectURI(), consentData.getState()));
+            }
 
             // Finding first unauthorized auth resource if no user specific auth resource is found
             if (!unauthorizedAuthResource.isPresent()) {

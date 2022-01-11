@@ -47,7 +47,7 @@ public class PaymentAccountListRetrievalHandler implements AccountListRetrievalH
         JSONArray userAccountsArray = DataRetrievalUtil.getAccountsFromEndpoint(consentData.getUserId(),
                 payableAccountsEndpoint, new HashMap<>(), new HashMap<>());
 
-        if (userAccountsArray == null) {
+        if (userAccountsArray == null || userAccountsArray.isEmpty()) {
             log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,

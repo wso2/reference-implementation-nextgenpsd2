@@ -72,10 +72,13 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
             log.debug("Checking whether the consent with Id: " + consentResource.getConsentID() + "is in an " +
                     "applicable status to authorize");
         }
+
+        // TODO: clarify why the auth type is checked
         if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
             return true;
         } else {
-            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.PATC.name(), consentStatus);
         }
     }
 
