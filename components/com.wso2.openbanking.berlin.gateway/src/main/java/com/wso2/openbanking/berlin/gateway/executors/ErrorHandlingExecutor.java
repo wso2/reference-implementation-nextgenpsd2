@@ -63,7 +63,8 @@ public class ErrorHandlingExecutor implements OpenBankingGatewayExecutor {
 
         if (obapiRequestContext.isError()) {
 
-            // There will be only one error everytime since all accelerators check for errors
+            // If an error occurs in a single executor, all the other executors will not execute, therefore,
+            // there will always be only one error.
             OpenBankingExecutorError error = obapiRequestContext.getErrors().get(0);
 
             String statusCode;
