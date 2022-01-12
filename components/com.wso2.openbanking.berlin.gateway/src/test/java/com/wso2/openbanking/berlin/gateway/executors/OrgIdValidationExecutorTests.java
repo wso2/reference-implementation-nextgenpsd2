@@ -37,7 +37,7 @@ import javax.security.cert.X509Certificate;
  */
 @PrepareForTest({CertificateValidationUtils.class, CertificateContentExtractor.class})
 @PowerMockIgnore({"net.minidev.*", "jdk.internal.reflect.*", "javax.security.auth.x500.*"})
-public class MTLSValidationExecutorTests extends PowerMockTestCase {
+public class OrgIdValidationExecutorTests extends PowerMockTestCase {
 
     @Mock
     OBAPIRequestContext obapiRequestContextMock;
@@ -69,7 +69,7 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
         APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
         apiRequestInfoDTO.setConsumerKey("PSDGB-OB-Unknown0015800001HQQrZAAX");
         Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
 
         javax.security.cert.X509Certificate[] x509Certificates = {};
         Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
         javax.security.cert.X509Certificate[] x509Certificates = {transportCertificate};
         Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
         PowerMockito.when(CertificateValidationUtils.convert(Mockito.any())).thenReturn(Optional.empty());
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn("");
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn(null);
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -135,6 +135,6 @@ public class MTLSValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn("mismatchingOrgId");
-        new MTLSValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new OrgIdValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 }

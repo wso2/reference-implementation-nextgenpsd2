@@ -16,7 +16,7 @@
 <suite name="consent-base-test-suite">
     <test name="consent-common-tests">
         <classes>
-            <class name="com.wso2.openbanking.berlin.gateway.executors.MTLSValidationExecutorTests"/>
+            <class name="com.wso2.openbanking.berlin.gateway.executors.OrgIdValidationExecutorTests"/>
         </classes>
     </test>
 </suite>

@@ -31,9 +31,9 @@ import javax.security.cert.X509Certificate;
 /**
  * This class does the organization ID validation for the transport certificate.
  */
-public class MTLSValidationExecutor implements OpenBankingGatewayExecutor {
+public class OrgIdValidationExecutor implements OpenBankingGatewayExecutor {
 
-    private static final Log log = LogFactory.getLog(MTLSValidationExecutor.class);
+    private static final Log log = LogFactory.getLog(OrgIdValidationExecutor.class);
 
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
