@@ -14,6 +14,16 @@
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
 
+    <Gateway>
+        <SupportedHashAlgorithms>
+            <Name>SHA-256</Name>
+        </SupportedHashAlgorithms>
+
+        <SupportedSignatureAlgorithms>
+            <Name>SHA256withRSA</Name>
+        </SupportedSignatureAlgorithms>
+    </Gateway>
+
     <ConsentManagement>
         <PayableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/payable-acounts</PayableAccountsRetrieveEndpoint>
         <SharableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/sharable-accounts</SharableAccountsRetrieveEndpoint>
@@ -82,6 +92,10 @@
             <PIS>v1</PIS>
             <PIIS>v2</PIIS>
         </APIVersions>
+
+        <SupportedCodeChallengeMethods>
+            <Method>S256</Method>
+        </SupportedCodeChallengeMethods>
 
         <Accounts>
             <!--Enable IBAN validation for single accounts -->

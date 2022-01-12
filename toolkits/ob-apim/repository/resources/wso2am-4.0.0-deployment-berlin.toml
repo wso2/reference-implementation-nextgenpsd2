@@ -533,3 +533,7 @@ enable = true
 [open_banking_berlin.consent.idempotency]
 allowed_time=1
 submission.enable=false
+
+[open_banking_berlin.gateway]
+supported_hash_algorithms = ["SHA-256", "SHA-512"]
+supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
