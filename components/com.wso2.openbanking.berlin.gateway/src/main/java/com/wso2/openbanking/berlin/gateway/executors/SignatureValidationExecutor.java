@@ -86,14 +86,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
 
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
-
-        // expiry validation
-        // revocation validation - do only for signing cert
-        // issuer validation
-        // Digest validation
-        // organization ID validation - do only for transport cert in EIDAS executor, not in this
-        // Role validation - already done for transport cert in accelerator, so no need
-
+        
         Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
         String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
         String requestPayload = obapiRequestContext.getRequestPayload();
