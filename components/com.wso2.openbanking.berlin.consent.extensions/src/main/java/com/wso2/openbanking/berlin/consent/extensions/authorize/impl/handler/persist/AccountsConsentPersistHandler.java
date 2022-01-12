@@ -21,6 +21,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -119,10 +120,10 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
             String updatedReceipt = null;
             try {
-                updatedReceipt = getUpdatedConsentReceipt(detailedConsentResource.getReceipt(),
+                updatedReceipt = getBankOfferedConsentReceipt(detailedConsentResource.getReceipt(),
                         detailedConsentResource.getConsentMappingResources());
             } catch (ParseException e) {
-                log.error(ErrorConstants.JSON_PARSE_ERROR, e);
+                log.error(ErrorConstants.BANK_OFFERED_CONSENT_UPDATE_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ErrorConstants.JSON_PARSE_ERROR);
             }
@@ -174,7 +175,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
      * @return updated receipt with authorized account details
      * @throws ParseException
      */
-    private String getUpdatedConsentReceipt(String receipt, ArrayList<ConsentMappingResource> mappingResources)
+    private String getBankOfferedConsentReceipt(String receipt, ArrayList<ConsentMappingResource> mappingResources)
             throws ParseException {
 
         JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receipt);
@@ -231,8 +232,8 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
         for (ConsentMappingResource mappingResource : mappingResources) {
             JSONObject accountRefObject = new JSONObject();
             String accountId = mappingResource.getAccountID();
-            if (accountId.contains(":")) {
-                String[] accountDetails = accountId.split(":");
+            if (accountId.contains(CommonConstants.DELIMITER)) {
+                String[] accountDetails = accountId.split(CommonConstants.DELIMITER);
                 String accountNumber = accountDetails[0].trim();
                 String currencyString = accountDetails[1].trim();
                 accountRefObject.put(configuredAccountReference, accountNumber);

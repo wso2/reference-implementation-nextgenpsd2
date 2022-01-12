@@ -53,8 +53,8 @@ public class ConsentAuthUtil {
                 if (StringUtils.startsWithIgnoreCase(parameter, "ais:") ||
                         StringUtils.startsWithIgnoreCase(parameter, "pis:") ||
                         StringUtils.startsWithIgnoreCase(parameter, "piis:")) {
-                    if (parameter.split(":").length == 2) {
-                        return parameter.split(":")[1];
+                    if (parameter.split(CommonConstants.DELIMITER).length == 2) {
+                        return parameter.split(CommonConstants.DELIMITER)[1];
                     } else {
                         return StringUtils.EMPTY;
                     }

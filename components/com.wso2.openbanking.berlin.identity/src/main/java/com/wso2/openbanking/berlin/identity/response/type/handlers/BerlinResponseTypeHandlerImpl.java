@@ -61,7 +61,7 @@ public class BerlinResponseTypeHandlerImpl implements OBResponseTypeHandler {
 
             String consentIdClaim = OpenBankingConfigParser.getInstance().getConfiguration().get(
                     IdentityCommonConstants.CONSENT_ID_CLAIM_NAME).toString();
-            String consentId = scope.split(":")[1];
+            String consentId = scope.split(CommonConstants.DELIMITER)[1];
             String consentScope = consentIdClaim + consentId;
             updatedScopes = (String[]) ArrayUtils.add(scopes, consentScope);
             updatedScopes = (String[]) ArrayUtils.add(updatedScopes, newScope);

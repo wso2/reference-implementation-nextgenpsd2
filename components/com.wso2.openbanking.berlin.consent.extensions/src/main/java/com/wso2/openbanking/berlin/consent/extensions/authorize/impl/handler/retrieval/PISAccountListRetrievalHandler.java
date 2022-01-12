@@ -18,11 +18,13 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,11 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class to handle Funds confirmation account list data retrieval for Authorize.
+ * Class to handle Payment account list data retrieval for Authorize.
  */
-public class FundsConfirmationAccountListRetrievalHandler implements AccountListRetrievalHandler {
+public class PISAccountListRetrievalHandler implements AccountListRetrievalHandler {
 
-    private static final Log log = LogFactory.getLog(FundsConfirmationAccountListRetrievalHandler.class);
+    private static final Log log = LogFactory.getLog(PISAccountListRetrievalHandler.class);
 
     @Override
     public JSONObject getAccountData(ConsentData consentData, JSONObject consentDataJSON) throws ConsentException {
@@ -63,8 +65,8 @@ public class FundsConfirmationAccountListRetrievalHandler implements AccountList
                             consentData.getState()));
         }
 
-        // Appending account data to the consent data to display in the consent page
-        appendAccountDataToConsentData(validatedAccountRefObject, consentDataJSON);
+        String paymentType = consentData.getConsentResource().getConsentType();
+        appendAccountDataToConsentData(validatedAccountRefObject, consentDataJSON, paymentType);
 
         JSONObject accountDataJSON = new JSONObject();
         accountDataJSON.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS,
@@ -80,7 +82,8 @@ public class FundsConfirmationAccountListRetrievalHandler implements AccountList
         metaDataMap.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, accountRefObjects.get(0));
     }
 
-    private void appendAccountDataToConsentData(JSONObject validatedAccountRefObject, JSONObject consentDataJSON) {
+    private void appendAccountDataToConsentData(JSONObject validatedAccountRefObject, JSONObject consentDataJSON,
+                                                String paymentType) {
 
         String configuredAccountRefType = CommonConfigParser.getInstance().getAccountReferenceType();
         JSONArray dataWithAccountInfo = new JSONArray();
@@ -93,20 +96,36 @@ public class FundsConfirmationAccountListRetrievalHandler implements AccountList
             accountReference += String.format(" (%s)", currency);
         }
 
-        dataWithAccountInfo.add(ConsentExtensionConstants.ACCOUNT_REFERENCE_TITLE + " : " + accountReference);
-
+        dataWithAccountInfo.add(String.format(ConsentExtensionConstants.DEBTOR_REFERENCE_TITLE,
+                configuredAccountRefType) + " : " + accountReference);
         JSONArray consentDetails = (JSONArray) consentDataJSON.get(ConsentExtensionConstants.CONSENT_DETAILS);
-        JSONObject consentDetail = (JSONObject) consentDetails.get(0);
-        JSONArray data = (JSONArray) consentDetail.get(ConsentExtensionConstants.DATA_SIMPLE);
-        dataWithAccountInfo.addAll(data);
 
-        consentDetail.put(ConsentExtensionConstants.DATA_SIMPLE, dataWithAccountInfo);
-        consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(consentDetail));
+        if (StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), paymentType)) {
+            JSONObject debtorAccountElement = new JSONObject();
+
+            debtorAccountElement.appendField(ConsentExtensionConstants.TITLE,
+                    ConsentExtensionConstants.DEBTOR_ACCOUNT_TITLE);
+            debtorAccountElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, dataWithAccountInfo);
+
+            JSONArray newConsentDetails = new JSONArray();
+            newConsentDetails.appendElement(debtorAccountElement);
+            newConsentDetails.addAll(consentDetails);
+
+            consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS, newConsentDetails);
+        } else {
+            JSONObject consentDetail = (JSONObject) consentDetails.get(0);
+            JSONArray data = (JSONArray) consentDetail.get(ConsentExtensionConstants.DATA_SIMPLE);
+            dataWithAccountInfo.addAll(data);
+
+            consentDetail.put(ConsentExtensionConstants.DATA_SIMPLE, dataWithAccountInfo);
+            consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS,
+                    new JSONArray().appendElement(consentDetail));
+        }
     }
 
     /**
      * Returns the validated account reference object after
-     * considering funds confirmation service related multi-currency validations.
+     * considering payments service related multi-currency validations.
      *
      * @param accountRefObject account reference object from initiation payload
      * @param accountArray accounts array retrieved from bank backend
@@ -120,23 +139,16 @@ public class FundsConfirmationAccountListRetrievalHandler implements AccountList
         if (filteredAccountRefObjects.size() > 1) {
             // Multi currency account
             if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-                for (Object object : filteredAccountRefObjects) {
-                    JSONObject accountObject = (JSONObject) object;
-                    if (Boolean.parseBoolean(accountObject.getAsString(ConsentExtensionConstants.IS_DEFAULT))) {
-                        // Returning default currency account when it is a multi-currency account
-                        // and the currency is not provided
-                        return accountObject;
-                    }
-                }
-            } else {
-                for (Object object : filteredAccountRefObjects) {
-                    JSONObject accountObject = (JSONObject) object;
-                    if (accountObject.getAsString(ConsentExtensionConstants.CURRENCY)
-                            .equalsIgnoreCase(accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY))) {
-                        return accountObject;
-                    }
+                return null;
+            }
+            for (Object object : filteredAccountRefObjects) {
+                JSONObject accountObject = (JSONObject) object;
+                if (accountObject.getAsString(ConsentExtensionConstants.CURRENCY)
+                        .equalsIgnoreCase(accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY))) {
+                    return accountObject;
                 }
             }
+            return null;
         } else if (filteredAccountRefObjects.size() == 1) {
             if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
                 return accountRefObject;

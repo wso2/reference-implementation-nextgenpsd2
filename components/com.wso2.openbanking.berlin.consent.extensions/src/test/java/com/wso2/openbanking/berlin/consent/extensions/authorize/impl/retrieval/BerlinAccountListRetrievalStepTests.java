@@ -112,7 +112,7 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
         berlinAccountListRetrievalStep.execute(consentData, jsonObject);
     }
 
-    // FundsConfirmationAccountListRetrievalHandler related tests
+    // PIISAccountListRetrievalHandler related tests
     @Test
     public void testValidAccountDataSetForFundsConfirmation() throws URISyntaxException, OpenBankingException,
             IOException {
@@ -231,7 +231,7 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
         berlinAccountListRetrievalStep.execute(consentData, jsonObject);
     }
 
-    // PaymentAccountListRetrievalHandler related test
+    // PISAccountListRetrievalHandler related test
     @Test
     public void testValidAccountDataSetForPayments() throws URISyntaxException, OpenBankingException,
             IOException {
@@ -349,7 +349,7 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
         berlinAccountListRetrievalStep.execute(consentData, jsonObject);
     }
 
-    // AccountAccountListRetrievalHandler related tests
+    // AISAccountListRetrievalHandler related tests
     @Test
     public void testValidAccountDataSetForDedicatedAccounts() throws URISyntaxException, OpenBankingException,
             IOException, ParseException {

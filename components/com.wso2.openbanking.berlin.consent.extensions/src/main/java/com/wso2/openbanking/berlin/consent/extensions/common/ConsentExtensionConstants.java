@@ -42,7 +42,6 @@ public class ConsentExtensionConstants {
     public static final String SCA_METHODS = "scaMethods";
     public static final String LINKS = "_links";
     public static final String HREF = "href";
-    public static final String CONSENT_ATTR_KEY_DELIMITER = ":";
     public static final String SELF_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String STATUS_LINK_TEMPLATE = "/%s/%s/%s/status";
     public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";

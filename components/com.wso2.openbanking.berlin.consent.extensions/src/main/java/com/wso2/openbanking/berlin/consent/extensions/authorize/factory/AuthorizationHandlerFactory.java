@@ -23,13 +23,13 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.per
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.ConsentPersistHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.FundsConfirmationsConsentPersistHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.persist.PaymentConsentPersistHandler;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountAccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AISAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountConsentRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.ConsentRetrievalHandler;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.FundsConfirmationConsentRetrievalHandler;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentAccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PIISAccountListRetrievalHandler;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PISAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PaymentConsentRetrievalHandler;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,13 +49,13 @@ public class AuthorizationHandlerFactory {
         AccountListRetrievalHandler accountListRetrievalHandler = null;
 
         if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), type)) {
-            accountListRetrievalHandler = new AccountAccountListRetrievalHandler();
+            accountListRetrievalHandler = new AISAccountListRetrievalHandler();
         } else if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), type)
                 || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
                 || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
-            accountListRetrievalHandler = new PaymentAccountListRetrievalHandler();
+            accountListRetrievalHandler = new PISAccountListRetrievalHandler();
         } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
-            accountListRetrievalHandler = new FundsConfirmationAccountListRetrievalHandler();
+            accountListRetrievalHandler = new PIISAccountListRetrievalHandler();
         }
         return accountListRetrievalHandler;
     }

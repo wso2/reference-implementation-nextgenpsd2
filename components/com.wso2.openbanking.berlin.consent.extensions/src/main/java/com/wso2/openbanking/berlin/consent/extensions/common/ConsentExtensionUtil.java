@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -56,7 +57,7 @@ public class ConsentExtensionUtil {
         String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
         String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
         if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-            accountIdWithCurrency += String.format(":%s", accountRefObject
+            accountIdWithCurrency += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
                     .getAsString(ConsentExtensionConstants.CURRENCY));
         }
         return accountIdWithCurrency;
@@ -202,7 +203,7 @@ public class ConsentExtensionUtil {
             if (i == keys.length - 1) {
                 consentAttributeKey.append(keys[i]);
             } else {
-                consentAttributeKey.append(keys[i]).append(ConsentExtensionConstants.CONSENT_ATTR_KEY_DELIMITER);
+                consentAttributeKey.append(keys[i]).append(CommonConstants.DELIMITER);
             }
         }
 

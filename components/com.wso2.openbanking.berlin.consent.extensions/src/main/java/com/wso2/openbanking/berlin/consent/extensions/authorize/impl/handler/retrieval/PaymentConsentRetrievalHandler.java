@@ -73,7 +73,6 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
                     "applicable status to authorize");
         }
 
-        // TODO: clarify why the auth type is checked
         if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
             return true;
         } else {

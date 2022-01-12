@@ -105,6 +105,8 @@ public class ErrorConstants {
             "authorisation Id matched with the requested different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
+    public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +
+            "with bank offered accounts";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";

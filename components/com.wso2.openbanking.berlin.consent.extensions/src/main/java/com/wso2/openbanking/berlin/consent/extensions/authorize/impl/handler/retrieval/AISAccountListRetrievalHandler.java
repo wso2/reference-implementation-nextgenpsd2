@@ -35,9 +35,9 @@ import java.util.Map;
 /**
  * Class to handle Account account list data retrieval for Authorize.
  */
-public class AccountAccountListRetrievalHandler implements AccountListRetrievalHandler {
+public class AISAccountListRetrievalHandler implements AccountListRetrievalHandler {
 
-    private static final Log log = LogFactory.getLog(AccountAccountListRetrievalHandler.class);
+    private static final Log log = LogFactory.getLog(AISAccountListRetrievalHandler.class);
 
     @Override
     public JSONObject getAccountData(ConsentData consentData, JSONObject consentDataJSON) throws ConsentException {
@@ -45,68 +45,41 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
         String permission = consentDataJSON.getAsString(ConsentExtensionConstants.PERMISSION);
         JSONObject accessObject = (JSONObject) consentDataJSON.get(ConsentExtensionConstants.ACCESS_OBJECT);
 
-        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEDICATED_ACCOUNTS.toString())
-                || StringUtils.equalsIgnoreCase(permission, PermissionEnum.BANK_OFFERED.toString())) {
-            JSONArray accountDetailsArray = getAccountsFromPayload(accessObject, consentData.getUserId());
+        JSONArray accountDetailsArray = null;
 
-            if (accountDetailsArray == null || accountDetailsArray.isEmpty()) {
-                log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
-                                ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER, consentData.getRedirectURI(),
-                                consentData.getState()));
-            }
+        /*
+        Access methods 'balances' and 'transactions' includes 'accounts' permission implicitly.
 
-            return new JSONObject().appendField(ConsentExtensionConstants.ACCOUNT_DETAILS_LIST, accountDetailsArray);
-        } else {
+        For dedicated accounts and bank offered accounts consents
+        ---------------------------------------------------------
+        The access methods are added in scenarios where the accounts are finalised with
+        the access methods, not adding them for bank offered consent scenarios since the
+        accounts are yet to be given access methods.
 
-            JSONArray permissionArray = new JSONArray();
-            JSONArray accessMethodArray = new JSONArray();
-
-            if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.ALL_PSD2.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
-                accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
-            } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-            } else if (StringUtils.equalsIgnoreCase(permission,
-                    PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
-            }
-
-            String shareableAccountsEndpoint = CommonConfigParser.getInstance().getShareableAccountsRetrieveEndpoint();
-            JSONArray bankOfferedAccounts = DataRetrievalUtil.getAccountsFromEndpoint(consentData.getUserId(),
-                    shareableAccountsEndpoint, new HashMap<>(), new HashMap<>());
-
-            if (bankOfferedAccounts == null) {
-                log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
-                                ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER, consentData.getRedirectURI(),
-                                consentData.getState()));
-            }
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BULK);
-
-            JSONArray accountDetailsArray = new JSONArray();
-            accountDetailsArray.add(object);
-
-            return new JSONObject().appendField(ConsentExtensionConstants.ACCOUNT_DETAILS_LIST, accountDetailsArray);
+        If access method is an empty array then add bank offered accounts.
+        If not empty array then add the validated account details from initiation payload.
+         */
+        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEDICATED_ACCOUNTS.toString())) {
+            accountDetailsArray = getDedicatedAccountDetails(accessObject, consentData.getUserId());
+        } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.BANK_OFFERED.toString())) {
+            accountDetailsArray = getBankOfferedAccountDetails(accessObject, consentData.getUserId());
+        } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.ALL_PSD2.toString())) {
+            accountDetailsArray = getAllPsd2AccountDetails(consentData.getUserId());
+        } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS.toString())
+                || StringUtils.equalsIgnoreCase(permission,
+                PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
+            accountDetailsArray = getListOfAvailableAccountDetails(permission, consentData.getUserId());
         }
+
+        if (accountDetailsArray == null || accountDetailsArray.isEmpty()) {
+            log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
+                            ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER, consentData.getRedirectURI(),
+                            consentData.getState()));
+        }
+
+        return new JSONObject().appendField(ConsentExtensionConstants.ACCOUNT_DETAILS_LIST, accountDetailsArray);
     }
 
     @Override
@@ -145,15 +118,15 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
     }
 
     /**
-     * Gets account details using the initiation payload.
+     * Gets the validated account details using the initiation payload.
      *
      * @param accessObject access object
      * @param userId       user id
      * @return accounts array
      */
-    private JSONArray getAccountsFromPayload(JSONObject accessObject, String userId) {
+    private JSONArray getDedicatedAccountDetails(JSONObject accessObject, String userId) {
 
-        JSONArray accountData = new JSONArray();
+        JSONArray accountDetailsArray = new JSONArray();
 
         String shareableAccountsEndpoint = CommonConfigParser.getInstance().getShareableAccountsRetrieveEndpoint();
         JSONArray bankOfferedAccounts = DataRetrievalUtil.getAccountsFromEndpoint(userId, shareableAccountsEndpoint,
@@ -199,35 +172,13 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
             return null;
         }
 
-        /*
-        Access methods 'balances' and 'transactions' includes 'accounts' permissions.
-        The access methods are added in scenarios where the accounts are finalised with
-        the access methods, not adding them for bank offered consent scenarios since the
-        accounts are yet to be given access methods.
-
-        If access method is an empty array then add bank offered accounts.
-        If not empty array then add the account details from initiation payload.
-         */
-        if (balancesAccountRefObjects != null && balancesAccountRefObjects.isEmpty()) {
+        if (balancesAccountRefObjects != null) {
             JSONArray permissionArray = new JSONArray();
+            JSONArray accessMethodArray = new JSONArray();
+
             permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
             permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
 
-            JSONArray accessMethodArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_BALANCE);
-
-            accountData.add(object);
-        } else if (balancesAccountRefObjects != null) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
             accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
             accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
 
@@ -237,29 +188,16 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BALANCE);
 
-            accountData.add(object);
+            accountDetailsArray.add(object);
         }
 
-        if (transactionsAccountRefObjects != null && transactionsAccountRefObjects.isEmpty()) {
+        if (transactionsAccountRefObjects != null) {
             JSONArray permissionArray = new JSONArray();
+            JSONArray accessMethodArray = new JSONArray();
+
             permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
             permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
 
-            JSONArray accessMethodArray = new JSONArray();
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_TRANSACTION);
-
-            accountData.add(object);
-        } else if (transactionsAccountRefObjects != null) {
-            JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
-
-            JSONArray accessMethodArray = new JSONArray();
             accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
             accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
 
@@ -269,27 +207,15 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_TRANSACTION);
 
-            accountData.add(object);
+            accountDetailsArray.add(object);
         }
 
-        if (accountsAccountRefObjects != null && accountsAccountRefObjects.isEmpty()) {
+        if (accountsAccountRefObjects != null) {
             JSONArray permissionArray = new JSONArray();
-            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-
             JSONArray accessMethodArray = new JSONArray();
 
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_ACCOUNT);
-
-            accountData.add(object);
-        } else if (accountsAccountRefObjects != null) {
-            JSONArray permissionArray = new JSONArray();
             permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
 
-            JSONArray accessMethodArray = new JSONArray();
             accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
 
             JSONObject object = new JSONObject();
@@ -298,10 +224,173 @@ public class AccountAccountListRetrievalHandler implements AccountListRetrievalH
             object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
             object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_ACCOUNT);
 
-            accountData.add(object);
+            accountDetailsArray.add(object);
         }
 
-        return accountData;
+        return accountDetailsArray;
+    }
+
+    /**
+     * Gets the bank offered account details using the initiation payload.
+     *
+     * @param accessObject access object
+     * @param userId       user id
+     * @return accounts array
+     */
+    private JSONArray getBankOfferedAccountDetails(JSONObject accessObject, String userId) {
+
+        JSONArray accountDetailsArray = new JSONArray();
+
+        String shareableAccountsEndpoint = CommonConfigParser.getInstance().getShareableAccountsRetrieveEndpoint();
+        JSONArray bankOfferedAccounts = DataRetrievalUtil.getAccountsFromEndpoint(userId, shareableAccountsEndpoint,
+                new HashMap<>(), new HashMap<>());
+
+        if (bankOfferedAccounts == null) {
+            log.error("No accounts found");
+            return null;
+        }
+
+        JSONArray accountsAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.ACCOUNTS.toString());
+        JSONArray balancesAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.BALANCES.toString());
+        JSONArray transactionsAccountRefObjects = (JSONArray) accessObject
+                .get(AccessMethodEnum.TRANSACTIONS.toString());
+
+        if (balancesAccountRefObjects != null && balancesAccountRefObjects.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            JSONArray accessMethodArray = new JSONArray();
+
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_BALANCE);
+
+            accountDetailsArray.add(object);
+        }
+
+        if (transactionsAccountRefObjects != null && transactionsAccountRefObjects.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            JSONArray accessMethodArray = new JSONArray();
+
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_TRANSACTION);
+
+            accountDetailsArray.add(object);
+        }
+
+        if (accountsAccountRefObjects != null && accountsAccountRefObjects.isEmpty()) {
+            JSONArray permissionArray = new JSONArray();
+            JSONArray accessMethodArray = new JSONArray();
+
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+
+            JSONObject object = new JSONObject();
+            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
+            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.SELECT_ACCOUNT);
+
+            accountDetailsArray.add(object);
+        }
+
+        return accountDetailsArray;
+    }
+
+    /**
+     * Gets the account details using the bank backend.
+     *
+     * @param permission consent permission
+     * @param userId     user id
+     * @return accounts array
+     */
+    private JSONArray getListOfAvailableAccountDetails(String permission, String userId) {
+
+        JSONArray accountDetailsArray = new JSONArray();
+
+        String shareableAccountsEndpoint = CommonConfigParser.getInstance().getShareableAccountsRetrieveEndpoint();
+        JSONArray bankOfferedAccounts = DataRetrievalUtil.getAccountsFromEndpoint(userId,
+                shareableAccountsEndpoint, new HashMap<>(), new HashMap<>());
+
+        if (bankOfferedAccounts == null) {
+            log.error("No accounts found");
+            return null;
+        }
+
+        JSONArray permissionArray = new JSONArray();
+        JSONArray accessMethodArray = new JSONArray();
+
+        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+            permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
+
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+            accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
+        } else {
+            permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+
+            accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+        }
+
+        JSONObject object = new JSONObject();
+        object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
+        object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+        object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+        object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BULK);
+
+        accountDetailsArray.add(object);
+
+        return accountDetailsArray;
+    }
+
+    /**
+     * Gets the account details using the bank backend.
+     *
+     * @param userId user id
+     * @return accounts array
+     */
+    private JSONArray getAllPsd2AccountDetails(String userId) {
+
+        JSONArray permissionArray = new JSONArray();
+        JSONArray accessMethodArray = new JSONArray();
+
+        permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+        permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
+        permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+
+        accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
+        accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
+        accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
+
+        String shareableAccountsEndpoint = CommonConfigParser.getInstance().getShareableAccountsRetrieveEndpoint();
+        JSONArray bankOfferedAccounts = DataRetrievalUtil.getAccountsFromEndpoint(userId,
+                shareableAccountsEndpoint, new HashMap<>(), new HashMap<>());
+
+        if (bankOfferedAccounts == null) {
+            log.error("No accounts found");
+            return null;
+        }
+
+        JSONObject object = new JSONObject();
+        object.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS, bankOfferedAccounts);
+        object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
+        object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
+        object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_BULK);
+
+        JSONArray accountDetailsArray = new JSONArray();
+        accountDetailsArray.add(object);
+
+        return accountDetailsArray;
     }
 
     /**
