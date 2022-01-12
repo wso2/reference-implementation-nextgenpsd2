@@ -17,22 +17,22 @@
         <SupportedHashAlgorithms>
         {% if open_banking.berlin.mandatory_params is defined %}
         {% for name in open_banking_berlin.gateway.supported_hash_algorithms %}
-            <Name>{{name}}</Name>
+            <Algorithm>{{name}}</Algorithm>
         {% endfor %}
         {% else %}
-            <Name>SHA-256</Name>
-            <Name>SHA-512</Name>
+            <Algorithm>SHA-256</Algorithm>
+            <Algorithm>SHA-512</Algorithm>
         {% endif %}
         </SupportedHashAlgorithms>
 
         <SupportedSignatureAlgorithms>
         {% if open_banking.berlin.mandatory_params is defined %}
         {% for name in open_banking_berlin.gateway.supported_signature_algorithms %}
-            <Name>{{name}}</Name>
+            <Algorithm>{{name}}</Algorithm>
         {% endfor %}
         {% else %}
-            <Name>SHA256withRSA</Name>
-            <Name>SHA512withRSA</Name>
+            <Algorithm>SHA256withRSA</Algorithm>
+            <Algorithm>SHA512withRSA</Algorithm>
         {% endif %}
         </SupportedSignatureAlgorithms>
     </Gateway>
