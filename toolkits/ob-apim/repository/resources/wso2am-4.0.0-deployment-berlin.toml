@@ -534,6 +534,43 @@ enable = true
 allowed_time=1
 submission.enable=false
 
+#============Application Creation Properties=========================
+[open_banking.keymanager.application.additional.property.validator]
+class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerAdditionalPropertyValidator"
+
+[[open_banking.keymanager.application.type.attributes]]
+name="regulatory"
+label="Regulatory Application"
+type="select"
+tooltip="Is this a Regulatory Application?"
+values="true,false"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="1"
+[[open_banking.keymanager.application.type.attributes]]
+name = "certificate"
+label="Application Certificate"
+type="text"
+tooltip="Application Certificate"
+default=""
+required="false"
+mask="false"
+multiple="false"
+priority="2"
+[[open_banking.keymanager.application.type.attributes]]
+name="orgId"
+label="Organization Id"
+type="input"
+tooltip="Organization Id"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="3"
+
 [open_banking_berlin.gateway.signature_verification]
 supported_hash_algorithms = ["SHA-256", "SHA-512"]
 supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
+

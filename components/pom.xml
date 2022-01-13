@@ -33,6 +33,7 @@
         <module>com.wso2.openbanking.berlin.common</module>
         <module>com.wso2.openbanking.berlin.gateway</module>
         <module>com.wso2.openbanking.berlin.identity</module>
+       <module>com.wso2.openbanking.berlin.keymanager</module>
         <module>com.wso2.openbanking.berlin.data.publisher</module>
         <module>com.wso2.openbanking.berlin.consent.extensions</module>
         <module>com.wso2.openbanking.berlin.demo.backend</module>
