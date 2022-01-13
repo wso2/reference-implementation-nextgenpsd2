@@ -102,6 +102,13 @@
                                                 regex="com.wso2.openbanking.berlin.data.publisher-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.berlin.keymanager/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.berlin.keymanager-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
                             </target>
                         </configuration>
                         <goals>
