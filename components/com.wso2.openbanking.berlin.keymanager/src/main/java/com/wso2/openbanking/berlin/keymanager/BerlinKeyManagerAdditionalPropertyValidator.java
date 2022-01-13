@@ -50,27 +50,48 @@ public class BerlinKeyManagerAdditionalPropertyValidator implements OBKeyManager
     @Override
     public void validateAdditionalProperties(Map<String, ConfigurationDto> obAdditionalProperties)
             throws APIManagementException {
-        try {
-            String regulatory = (String) obAdditionalProperties.get("regulatory").getValues().get(0);
-            String spCertificate = (String) obAdditionalProperties.get("certificate").getValues().get(0);
-            String orgId = (String) obAdditionalProperties.get("orgId").getValues().get(0);
 
-            if ("true".equals(regulatory) || "false".equals(regulatory)) {
-                if (Boolean.parseBoolean(regulatory)) {
-                    validateOrganizationIdPattern(orgId);
-                    validateCertificate(spCertificate, orgId);
-                }
+        String regulatory = getValueForAdditionalProperty(obAdditionalProperties, "regulatory");
+        String spCertificate = getValueForAdditionalProperty(obAdditionalProperties, "certificate");
+        String orgId = getValueForAdditionalProperty(obAdditionalProperties, "orgId");
+
+        if ("true".equals(regulatory) || "false".equals(regulatory)) {
+            if (Boolean.parseBoolean(regulatory)) {
+                validateOrganizationIdPattern(orgId);
+                validateCertificate(spCertificate, orgId);
+            }
+        } else {
+            String msg = "Invalid value for regulatory property";
+            log.error(msg);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+        }
+
+    }
+
+    /**
+     * Obtain the value from Configuration DTO object
+     * @param obAdditionalProperties Additional Property Map
+     * @param propertyName Property Name
+     * @return value for given property
+     * @throws APIManagementException
+     */
+    private String  getValueForAdditionalProperty(Map<String, ConfigurationDto> obAdditionalProperties,
+                                               String propertyName) throws APIManagementException {
+        ConfigurationDto property = obAdditionalProperties.get(propertyName);
+        if (property != null) {
+            List<Object> values = property.getValues();
+            if (values.size() > 0) {
+                return (String) values.get(0);
             } else {
-                String msg = "Invalid value for regulatory property";
+                String msg = "No value found for additional property: " + propertyName;
                 log.error(msg);
                 throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
             }
-        } catch (NullPointerException e) {
-            String msg = "Error in obtaining values for additional properties";
+        } else {
+            String msg = propertyName + "not found in additional properties";
             log.error(msg);
-            throw new APIManagementException(msg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }
-
     }
 
     /**
