@@ -134,4 +134,19 @@ public class ErrorConstants {
     public static final String CODE = "code";
     public static final String TEXT = "text";
 
+    // Executors related error messages
+    public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";
+    public static final String DIGEST_HEADER_MISSING = "Digest header not passed through the request";
+    public static final String SIGNING_CERT_MISSING = "TPP signing certificate header not passed through the request";
+    public static final String SIGNING_CERT_INVALID = "Signature certificate header is invalid";
+    public static final String SIGNING_CERT_REVOKED = "Signature certificate is revoked";
+    public static final String DATE_HEADER_MISSING = "Date header not passed through the request";
+    public static final String INVALID_DIGEST_HEADER = "Invalid Digest header";
+    public static final String INVALID_SIGNATURE_HEADER = "Invalid Signature header";
+    public static final String INVALID_DIGEST_ALGORITHM = "Unsupported Digest algorithm";
+    public static final String INVALID_SIGNATURE_ALGORITHM = "Unsupported Signature algorithm";
+    public static final String SIGNATURE_CERTIFICATE_EXPIRED = "The certificate provided in TPP-Signature-Certificate" +
+            " header is expired";
+    public static final String SIGNATURE_VERIFICATION_FAIL = "Signature verification failed";
+    public static final String CERT_PARSE_EROR = "Error while parsing signature certificate";
 }

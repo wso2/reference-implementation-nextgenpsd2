@@ -456,4 +456,28 @@ public class CommonConfigParser {
         return Boolean.parseBoolean((String) getConfiguration()
                 .get(CommonConstants.MULTIPLE_RECURRING_CONSENT_ENABLED));
     }
+
+    public List<String> getSupportedHashAlgorithms() {
+
+        Object supportedHashAlgorithms = getConfiguration().get(CommonConstants.SUPPORTED_HASH_ALGORITHMS);
+        List<String> supportedHashAlgorithmsList = new ArrayList<>();
+        if (supportedHashAlgorithms instanceof ArrayList) {
+            supportedHashAlgorithmsList.addAll((ArrayList) supportedHashAlgorithms);
+        } else if (supportedHashAlgorithms instanceof String) {
+            supportedHashAlgorithmsList.add((String) supportedHashAlgorithms);
+        }
+        return supportedHashAlgorithmsList;
+    }
+
+    public List<String> getSupportedSignatureAlgorithms() {
+
+        Object supportedSignatureAlgorithms = getConfiguration().get(CommonConstants.SUPPORTED_SIGNATURE_ALGORITHMS);
+        List<String> supportedSignatureAlgorithmsList = new ArrayList<>();
+        if (supportedSignatureAlgorithms instanceof ArrayList) {
+            supportedSignatureAlgorithmsList.addAll((ArrayList) supportedSignatureAlgorithms);
+        } else if (supportedSignatureAlgorithms instanceof String) {
+            supportedSignatureAlgorithmsList.add((String) supportedSignatureAlgorithms);
+        }
+        return supportedSignatureAlgorithmsList;
+    }
 }
