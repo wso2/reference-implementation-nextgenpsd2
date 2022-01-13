@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authservlet.util;
 
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -30,7 +31,36 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthServletUtil {
 
     /**
-     * Method to populate single payments data to be sent to consent page.
+     * Converts the plain string account reference details from the consent page to JSON array.
+     *
+     * @param accountRefs checked account reference details from consent page
+     * @return JSON account refs array
+     */
+    public static JSONArray convertToAccountRefObjectsArray(String[] accountRefs) {
+
+        JSONArray accountRefObjects = new JSONArray();
+        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
+
+        for (String accountRef : accountRefs) {
+            JSONObject accountRefObject = new JSONObject();
+            if (accountRef.matches(".*\\(([A-Z]{3})\\)")) {
+                String[] accountDetails = accountRef.split(" ");
+                String accountNumber = accountDetails[0].trim();
+                String currencyString = accountDetails[1].trim();
+                accountRefObject.put(configuredAccountReference, accountNumber);
+                accountRefObject.put(ConsentExtensionConstants.CURRENCY,
+                        currencyString.substring(1, currencyString.length() - 1));
+            } else {
+                accountRefObject.put(configuredAccountReference, accountRef.trim());
+            }
+            accountRefObjects.put(accountRefObject);
+        }
+
+        return accountRefObjects;
+    }
+
+    /**
+     * Method to populate payments data to be sent to consent page.
      *
      * @param httpServletRequest
      * @param dataSet
@@ -40,7 +70,8 @@ public class AuthServletUtil {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
+        JSONArray dataRequestedJsonArray = dataSet.getJSONObject(ConsentExtensionConstants.CONSENT_DATA)
+                .getJSONArray(ConsentExtensionConstants.CONSENT_DETAILS);
         Map<String, List<String>> dataRequested = new LinkedHashMap<>();
 
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
@@ -63,16 +94,23 @@ public class AuthServletUtil {
         return returnMaps;
     }
 
+    /**
+     * Method to populate accounts data to be sent to consent page.
+     *
+     * @param httpServletRequest
+     * @param dataSet
+     * @return
+     */
     public static Map<String, Object> populateAccountsData(HttpServletRequest httpServletRequest, JSONObject dataSet) {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        // Setting the consent related details to display in the consent page
-        JSONArray consentDataJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.CONSENT_DATA);
-        Map<String, List<String>> consentData = new LinkedHashMap<>();
+        JSONArray dataRequestedJsonArray = dataSet.getJSONObject(ConsentExtensionConstants.CONSENT_DATA)
+                .getJSONArray(ConsentExtensionConstants.CONSENT_DETAILS);
+        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
 
-        for (int consentDataIndex = 0; consentDataIndex < consentDataJsonArray.length(); consentDataIndex++) {
-            JSONObject dataObj = consentDataJsonArray.getJSONObject(consentDataIndex);
+        for (int consentDataIndex = 0; consentDataIndex < dataRequestedJsonArray.length(); consentDataIndex++) {
+            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(consentDataIndex);
             String title = dataObj.getString(ConsentExtensionConstants.TITLE);
             JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
             ArrayList<String> listData = new ArrayList<>();
@@ -80,92 +118,94 @@ public class AuthServletUtil {
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
                 listData.add(dataArray.getString(dataIndex));
             }
-            consentData.put(title, listData);
+            dataRequested.put(title, listData);
         }
 
         // Setting the account details and permission to be displayed in the consent page
-        JSONArray accountDetailsJsonArray = dataSet.getJSONArray(ConsentExtensionConstants.ACCOUNT_DETAILS);
-        Map<String, Map<String, String>> staticDefaultMap = new HashMap<>();
-        boolean isStaticDefault = false;
+        JSONArray accountDetailsJsonArray = dataSet.getJSONObject(ConsentExtensionConstants.ACCOUNT_DATA)
+                .getJSONArray(ConsentExtensionConstants.ACCOUNT_DETAILS_LIST);
+        Map<String, List<String>> staticBulkMap = new HashMap<>();
+        boolean isStaticBulk = false;
 
-        Map<String, Map<String, String>> selectBalanceMap = new HashMap<>();
+        Map<String, List<String>> selectBalanceMap = new HashMap<>();
         boolean isSelectBalance = false;
 
-        Map<String, Map<String, String>> staticBalanceMap = new HashMap<>();
+        Map<String, List<String>> staticBalanceMap = new HashMap<>();
         boolean isStaticBalance = false;
 
-        Map<String, Map<String, String>> selectAccountMap = new HashMap<>();
+        Map<String, List<String>> selectAccountMap = new HashMap<>();
         boolean isSelectAccount = false;
 
-        Map<String, Map<String, String>> staticAccountMap = new HashMap<>();
+        Map<String, List<String>> staticAccountMap = new HashMap<>();
         boolean isStaticAccount = false;
 
-        Map<String, Map<String, String>> selectTransactionMap = new HashMap<>();
+        Map<String, List<String>> selectTransactionMap = new HashMap<>();
         boolean isSelectTransaction = false;
 
-        Map<String, Map<String, String>> staticTransactionMap = new HashMap<>();
+        Map<String, List<String>> staticTransactionMap = new HashMap<>();
         boolean isStaticTransaction = false;
 
+        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
         for (int accountDetailsIndex = 0; accountDetailsIndex < accountDetailsJsonArray.length();
              accountDetailsIndex++) {
             JSONObject dataObj = accountDetailsJsonArray.getJSONObject(accountDetailsIndex);
             String accountType = dataObj.getString(ConsentExtensionConstants.ACCOUNT_TYPE);
-            JSONArray accountNumbersJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.ACCOUNT_NUMBERS);
+            JSONArray accountRefObjects = dataObj.getJSONArray(ConsentExtensionConstants.ACCOUNT_REF_OBJECTS);
             JSONArray permissionsJsonArray = dataObj.getJSONArray(ConsentExtensionConstants.PERMISSIONS);
 
-            Map<String, String> accountNumbers = new HashMap<>();
-            Map<String, String> permissions = new HashMap<>();
+            List<String> accountRefs = new ArrayList<>();
+            List<String> permissions = new ArrayList<>();
 
-            for (int accNumberIndex = 0; accNumberIndex < accountNumbersJsonArray.length(); accNumberIndex++) {
-                JSONObject obj = accountNumbersJsonArray.getJSONObject(accNumberIndex);
-
-                String currencyType = StringUtils.EMPTY;
+            for (int accNumberIndex = 0; accNumberIndex < accountRefObjects.length(); accNumberIndex++) {
+                JSONObject obj = accountRefObjects.getJSONObject(accNumberIndex);
                 if (obj.has(ConsentExtensionConstants.CURRENCY)) {
-                    currencyType = (StringUtils.isNotBlank(obj.getString(ConsentExtensionConstants.CURRENCY)) ?
-                            obj.getString(ConsentExtensionConstants.CURRENCY) : StringUtils.EMPTY);
+                    String accountNumber = obj.getString(configuredAccountReference);
+                    String currency = obj.getString(ConsentExtensionConstants.CURRENCY);
+                    String accountRef = String.format("%s (%s)", accountNumber, currency);
+                    accountRefs.add(accountRef);
+                } else {
+                    accountRefs.add(obj.getString(configuredAccountReference));
                 }
-                accountNumbers.put(obj.getString(ConsentExtensionConstants.IBAN), currencyType);
             }
 
             for (int permissionIndex = 0; permissionIndex < permissionsJsonArray.length(); permissionIndex++) {
-                permissions.put(ConsentExtensionConstants.PERMISSION,
-                        permissionsJsonArray.getString(permissionIndex));
+                permissions.add(permissionsJsonArray.getString(permissionIndex));
             }
 
-            if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_DEFAULT)) {
-                isStaticDefault = true;
-                staticDefaultMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
-                staticDefaultMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
+            if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_BULK)) {
+                isStaticBulk = true;
+                staticBulkMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
+                staticBulkMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_BALANCE)) {
                 isSelectBalance = true;
-                selectBalanceMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectBalanceMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 selectBalanceMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_BALANCE)) {
                 isStaticBalance = true;
-                staticBalanceMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticBalanceMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 staticBalanceMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_ACCOUNT)) {
                 isSelectAccount = true;
-                selectAccountMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectAccountMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 selectAccountMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_ACCOUNT)) {
                 isStaticAccount = true;
-                staticAccountMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticAccountMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 staticAccountMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.SELECT_TRANSACTION)) {
                 isSelectTransaction = true;
-                selectTransactionMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                selectTransactionMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 selectTransactionMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             } else if (StringUtils.equals(accountType, ConsentExtensionConstants.STATIC_TRANSACTION)) {
                 isStaticTransaction = true;
-                staticTransactionMap.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountNumbers);
+                staticTransactionMap.put(ConsentExtensionConstants.ACCOUNT_REFS, accountRefs);
                 staticTransactionMap.put(ConsentExtensionConstants.PERMISSIONS, permissions);
             }
         }
 
-        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, consentData);
+        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
 
-        returnMaps.put(ConsentExtensionConstants.STATIC_DEFAULT, staticDefaultMap);
+        returnMaps.put(ConsentExtensionConstants.STATIC_BULK, staticBulkMap);
         returnMaps.put(ConsentExtensionConstants.SELECT_BALANCE, selectBalanceMap);
         returnMaps.put(ConsentExtensionConstants.STATIC_BALANCE, staticBalanceMap);
         returnMaps.put(ConsentExtensionConstants.SELECT_ACCOUNT, selectAccountMap);
@@ -173,7 +213,7 @@ public class AuthServletUtil {
         returnMaps.put(ConsentExtensionConstants.SELECT_TRANSACTION, selectTransactionMap);
         returnMaps.put(ConsentExtensionConstants.STATIC_TRANSACTION, staticTransactionMap);
 
-        returnMaps.put("isStaticDefault", isStaticDefault);
+        returnMaps.put("isStaticBulk", isStaticBulk);
         returnMaps.put("isSelectBalance", isSelectBalance);
         returnMaps.put("isStaticBalance", isStaticBalance);
         returnMaps.put("isSelectAccount", isSelectAccount);
@@ -183,14 +223,45 @@ public class AuthServletUtil {
 
         httpServletRequest.setAttribute(ConsentExtensionConstants.CONSENT_TYPE,
                 dataSet.getString(ConsentExtensionConstants.TYPE));
+        httpServletRequest.setAttribute(ConsentExtensionConstants.AUTH_TYPE,
+                dataSet.getString(ConsentExtensionConstants.AUTH_TYPE));
 
         return returnMaps;
     }
 
+    /**
+     * Method to populate funds confirmation data to be sent to consent page.
+     *
+     * @param httpServletRequest
+     * @param dataSet
+     * @return
+     */
     public static Map<String, Object> populateFundsConfirmationData(HttpServletRequest httpServletRequest,
                                                                     JSONObject dataSet) {
 
-        //todo: Implement for cof flow
-        return new HashMap<>();
+        Map<String, Object> returnMaps = new HashMap<>();
+
+        JSONArray dataRequestedJsonArray = dataSet.getJSONObject(ConsentExtensionConstants.CONSENT_DATA)
+                .getJSONArray(ConsentExtensionConstants.CONSENT_DETAILS);
+        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
+
+        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
+            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
+            String title = dataObj.getString(ConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(ConsentExtensionConstants.DATA_SIMPLE);
+            ArrayList<String> listData = new ArrayList<>();
+
+            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
+                listData.add(dataArray.getString(dataIndex));
+            }
+            dataRequested.put(title, listData);
+        }
+        returnMaps.put(ConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        httpServletRequest.setAttribute(ConsentExtensionConstants.CONSENT_TYPE,
+                dataSet.getString(ConsentExtensionConstants.TYPE));
+        httpServletRequest.setAttribute(ConsentExtensionConstants.AUTH_TYPE,
+                dataSet.getString(ConsentExtensionConstants.AUTH_TYPE));
+
+        return returnMaps;
     }
 }

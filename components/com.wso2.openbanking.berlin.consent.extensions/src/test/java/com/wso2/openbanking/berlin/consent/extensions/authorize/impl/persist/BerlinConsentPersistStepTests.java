@@ -122,6 +122,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         consentData.setConsentId(consentId);
         consentData.setAuthResource(authorizationResource);
         consentData.setConsentResource(consentResource);
+        consentData.addData(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, TestUtil
+                .getSampleAccountRefObject("iban", "123", null));
         ConsentPersistData consentPersistData = new ConsentPersistData(new JSONObject(), new HashMap<>(), true,
                 consentData);
 
@@ -196,6 +198,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         consentData.setConsentId(consentId);
         consentData.setAuthResource(authorizationResource);
         consentData.setConsentResource(consentResource);
+        consentData.addData(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, TestUtil
+                .getSampleAccountRefObject("iban", "123", null));
         ConsentPersistData consentPersistData = new ConsentPersistData(new JSONObject(), new HashMap<>(), true,
                 consentData);
 
@@ -235,6 +239,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         consentData.setConsentId(consentId);
         consentData.setAuthResource(authorizationResource);
         consentData.setConsentResource(consentResource);
+        consentData.addData(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, TestUtil
+                .getSampleAccountRefObject("iban", "123", null));
         ConsentPersistData consentPersistData = new ConsentPersistData(new JSONObject(), new HashMap<>(), true,
                 consentData);
 
@@ -284,6 +290,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         consentData.setConsentId(consentId);
         consentData.setAuthResource(authorizationResource1);
         consentData.setConsentResource(consentResource);
+        consentData.addData(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, TestUtil
+                .getSampleAccountRefObject("iban", "123", null));
         ConsentPersistData consentPersistData = new ConsentPersistData(new JSONObject(), new HashMap<>(), true,
                 consentData);
 
@@ -332,6 +340,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         consentData.setConsentId(consentId);
         consentData.setAuthResource(authorizationResource1);
         consentData.setConsentResource(consentResource);
+        consentData.addData(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, TestUtil
+                .getSampleAccountRefObject("iban", "123", null));
         ConsentPersistData consentPersistData = new ConsentPersistData(new JSONObject(), new HashMap<>(), true,
                 consentData);
 

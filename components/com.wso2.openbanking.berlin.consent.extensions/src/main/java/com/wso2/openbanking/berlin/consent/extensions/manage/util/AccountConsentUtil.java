@@ -269,11 +269,23 @@ public class AccountConsentUtil {
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                         ErrorConstants.INVALID_PERMISSION));
             }
+
+            if (numberOfProvidedAccessTypes == numberOfEmptyAccessMethodArrays) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Account permission is set to %s ", PermissionEnum.BANK_OFFERED));
+                }
+                return PermissionEnum.BANK_OFFERED.toString();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Account permission is set to %s ", PermissionEnum.DEDICATED_ACCOUNTS));
+                }
+                return PermissionEnum.DEDICATED_ACCOUNTS.toString();
+            }
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Account permission is set to %s ", PermissionEnum.DEFAULT));
+            log.debug(String.format("Account permission is set to %s ", PermissionEnum.DEDICATED_ACCOUNTS));
         }
-        return PermissionEnum.DEFAULT.toString();
+        return PermissionEnum.DEDICATED_ACCOUNTS.toString();
     }
 
     /**

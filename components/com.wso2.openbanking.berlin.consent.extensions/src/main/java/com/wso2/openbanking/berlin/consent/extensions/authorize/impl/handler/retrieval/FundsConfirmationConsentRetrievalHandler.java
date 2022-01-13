@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  *  This software is the property of WSO2 Inc. and its suppliers, if any.
  *  Dissemination of any information or reproduction of any material contained
@@ -30,22 +30,20 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Map;
 
 /**
- * Class to handle Account consent data retrieval for Authorize.
+ * Class to handle funds confirmations data retrieval for Authorize.
  */
-public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
+public class FundsConfirmationConsentRetrievalHandler implements ConsentRetrievalHandler {
 
-    private static final Log log = LogFactory.getLog(AccountConsentRetrievalHandler.class);
+    private static final Log log = LogFactory.getLog(FundsConfirmationConsentRetrievalHandler.class);
 
     @Override
     public JSONObject getConsentData(ConsentResource consentResource) throws ConsentException {
-
-        String permission = consentResource.getConsentAttributes().get(ConsentExtensionConstants.PERMISSION);
 
         try {
             String receiptString = consentResource.getReceipt();
             // This can be directly created to JSONObject since the payload is validated during initiation
             JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
-            return populateAccountsData(receiptJSON, permission);
+            return populateFundsConfirmationData(receiptJSON);
         } catch (ParseException e) {
             log.error("Error while parsing retrieved consent data", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -54,7 +52,7 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
     }
 
     @Override
-    public boolean validateAuthorizationStatus(ConsentResource consentResource, String authType) {
+    public boolean validateAuthorizationStatus(ConsentResource consentResource, String authStatus) {
 
         String consentStatus = consentResource.getCurrentStatus();
         boolean isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus)
@@ -73,30 +71,35 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
     }
 
     /**
-     * Method to populate accounts data.
+     * Method to populate funds confirmation data.
      *
      * @param receipt Consent Receipt
-     * @return a JSON object with accounts data in it
+     * @return a JSON object with funds confirmation data in it
      */
-    private static JSONObject populateAccountsData(JSONObject receipt, String permission) {
+    private static JSONObject populateFundsConfirmationData(JSONObject receipt) {
 
         JSONObject consentData = new JSONObject();
         JSONArray consentDataArray = new JSONArray();
         JSONObject dataElement = new JSONObject();
 
-        // construct accounts data
-        String recurringIndicator = receipt.getAsString(ConsentExtensionConstants.RECURRING_INDICATOR);
-        consentDataArray.add(ConsentExtensionConstants.RECURRING_INDICATOR_TITLE + " : " + recurringIndicator);
+        // construct funds confirmation data
+        if (receipt.containsKey(ConsentExtensionConstants.CARD_NUMBER)
+                && receipt.getAsString(ConsentExtensionConstants.CARD_NUMBER) != null) {
+            String cardNumber = receipt.getAsString(ConsentExtensionConstants.CARD_NUMBER);
+            consentDataArray.add(ConsentExtensionConstants.CARD_NUMBER_TITLE + " : " + cardNumber);
+        }
 
-        String validUntilDate = receipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
-        consentDataArray.add(ConsentExtensionConstants.VALID_UNTIL_TITLE + " : " + validUntilDate);
+        if (receipt.containsKey(ConsentExtensionConstants.CARD_EXPIRY_DATE)
+                && receipt.getAsString(ConsentExtensionConstants.CARD_EXPIRY_DATE) != null) {
+            String cardExpiryDate = receipt.getAsString(ConsentExtensionConstants.CARD_EXPIRY_DATE);
+            consentDataArray.add(ConsentExtensionConstants.CARD_EXPIRY_DATE_TITLE + " : " + cardExpiryDate);
+        }
 
-        String frequencyPerDay = receipt.getAsString(ConsentExtensionConstants.FREQUENCY_PER_DAY);
-        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_PER_DAY_TITLE + " : " + frequencyPerDay);
-
-        String combinedServiceIndicator = receipt.getAsString(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR);
-        consentDataArray.add(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR_TITLE + " : "
-                + combinedServiceIndicator);
+        if (receipt.containsKey(ConsentExtensionConstants.CARD_INFORMATION)
+                && receipt.getAsString(ConsentExtensionConstants.CARD_INFORMATION) != null) {
+            String cardInformation = receipt.getAsString(ConsentExtensionConstants.CARD_INFORMATION);
+            consentDataArray.add(ConsentExtensionConstants.CARD_INFORMATION_TITLE + " : " + cardInformation);
+        }
 
         dataElement.appendField(ConsentExtensionConstants.TITLE,
                 ConsentExtensionConstants.CONSENT_DETAILS_TITLE);
@@ -104,9 +107,9 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         consentData.appendField(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(dataElement));
 
-        // Access object and permission
-        consentData.appendField(ConsentExtensionConstants.ACCESS_OBJECT, receipt.get(ConsentExtensionConstants.ACCESS));
-        consentData.appendField(ConsentExtensionConstants.PERMISSION, permission);
+        // Account ref object
+        consentData.appendField(ConsentExtensionConstants.ACCOUNT_REF_OBJECT,
+                receipt.get(ConsentExtensionConstants.ACCOUNT));
 
         return consentData;
     }

@@ -66,4 +66,5 @@ public class CommonConstants {
     public static final String AIS_SCOPE = "ais";
     public static final String PIS_SCOPE = "pis";
     public static final String PIIS_SCOPE = "piis";
+    public static final String DELIMITER = ":";
 }

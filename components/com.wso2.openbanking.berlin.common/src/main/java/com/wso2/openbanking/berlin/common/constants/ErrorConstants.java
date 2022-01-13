@@ -105,6 +105,8 @@ public class ErrorConstants {
             "authorisation Id matched with the requested different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
+    public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +
+            "with bank offered accounts";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";
@@ -127,6 +129,9 @@ public class ErrorConstants {
             "Services are not supported";
     public static final String INVALID_PERMISSION = "Requested permissions in the Payload are invalid";
     public static final String VALID_UNTIL_DATE_INVALID = "Valid until date is invalid";
+
+    // Funds confirmation related error messages
+    public static final String CARD_EXPIRY_DATE_INVALID = "Card expiry date is invalid";
 
     // Error object related constants
     public static final String PATH = "path";

@@ -20,7 +20,8 @@ public enum PermissionEnum {
     AVAILABLE_ACCOUNTS("availableAccounts"),
     AVAILABLE_ACCOUNTS_WITH_BALANCES("availableAccountsWithBalance"),
     ALL_PSD2("allPsd2"),
-    DEFAULT("default");
+    BANK_OFFERED("bankOffered"),
+    DEDICATED_ACCOUNTS("dedicatedAccounts");
 
     private String value;
 

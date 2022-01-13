@@ -22,6 +22,10 @@ import java.util.List;
 public class ConsentExtensionConstants {
 
     // Constants that are common to all request types
+    public static final String ACCOUNT_REF_OBJECTS = "accountRefObjects";
+    public static final String ACCOUNT_REFS = "accountRefs";
+    public static final String CURRENCY = "currency";
+    public static final String IS_DEFAULT = "isDefault";
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
     public static final String CONSENT_ID_HEADER = "consent-id";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
@@ -32,12 +36,12 @@ public class ConsentExtensionConstants {
     public static final String LAST_ACTION_DATE = "lastActionDate";
     public static final String CONSENT_STATUS = "consentStatus";
     public static final String CONSENT_ID = "consentId";
+    public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String AUTH_ID = "authorisationId";
     public static final String CHOSEN_SCA_METHOD = "chosenScaMethod";
     public static final String SCA_METHODS = "scaMethods";
     public static final String LINKS = "_links";
     public static final String HREF = "href";
-    public static final String CONSENT_ATTR_KEY_DELIMITER = ":";
     public static final String SELF_LINK_TEMPLATE = "/%s/%s/%s";
     public static final String STATUS_LINK_TEMPLATE = "/%s/%s/%s/status";
     public static final String AUTH_RESOURCE_LINK_TEMPLATE = "/%s/%s/%s/authorisations/%s";
@@ -51,6 +55,8 @@ public class ConsentExtensionConstants {
     public static final String IMPLICIT = "implicit";
     public static final String EXPLICIT = "explicit";
     public static final String CONSENT_DATA = "consentData";
+    public static final String ACCOUNT_DATA = "accountData";
+    public static final String CONSENT_DETAILS = "consentDetails";
     public static final String TITLE = "title";
     public static final String PAYMENT_TYPE_TITLE = "Payment Type";
     public static final String DATA_SIMPLE = "data";
@@ -76,6 +82,7 @@ public class ConsentExtensionConstants {
     public static final String AUTH_TYPE = "auth_type";
     public static final String TYPE = "type";
     public static final String DEFAULT_PERMISSION = "n/a";
+    public static final String ACTIVE = "active";
 
     // Original proper case header constants
     public static final String LOCATION_PROPER_CASE_HEADER = "Location";
@@ -85,7 +92,19 @@ public class ConsentExtensionConstants {
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
             "]{12}";
 
+    // Constants that are used by funds confirmation service
+    public static final String  ACCOUNT_REF_OBJECT = "accountRefObject";
+    public static final String CARD_EXPIRY_DATE = "cardExpiryDate";
+    public static final String CARD_NUMBER = "cardNumber";
+    public static final String CARD_INFORMATION = "cardInformation";
+    public static final String CARD_NUMBER_TITLE = "Card Number";
+    public static final String  CARD_EXPIRY_DATE_TITLE = "Card Expiry Date";
+    public static final String  CARD_INFORMATION_TITLE = "Card Information";
+    public static final String ACCOUNT_REFERENCE_TITLE = "Account Reference";
+    public static final String PAYLOAD = "payload";
+
     // Constants that are used by accounts service
+    public static final String ACCOUNT_DETAILS_LIST = "accountDetailsList";
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
     public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
     public static final String CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "card-accounts";
@@ -116,7 +135,6 @@ public class ConsentExtensionConstants {
     public static final String VALIDATION_RESPONSE_PERMISSION = "permission";
     public static final String ACCESS_METHOD = "accessMethod";
     public static final String ACCESS_METHODS = "accessMethods";
-    public static final String ACCOUNT_NUMBERS = "accountNumbers";
     public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
@@ -139,15 +157,15 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS_PERMISSION = "Read Account Information";
     public static final String BALANCES_PERMISSION = "Read Account Balance Information";
     public static final String TRANSACTIONS_PERMISSION = "Read Account Transaction Information";
-    public static final String ACCOUNTS_ACC_NUMBER_SET = "accountsAccNumberSet";
-    public static final String BALANCES_ACC_NUMBER_SET = "balancesAccNumberSet";
-    public static final String TRANSACTIONS_ACC_NUMBER_SET = "transactionsAccNumberSet";
-    public static final String CHECKED_ACCOUNTS = "checkedAccounts";
-    public static final String CHECKED_BALANCES = "checkedBalances";
-    public static final String CHECKED_TRANSACTIONS = "checkedTransactions";
+    public static final String ACCOUNTS_ACCOUNT_REF_OBJECTS = "accountsAccountRefObjects";
+    public static final String BALANCES_ACCOUNT_REF_OBJECTS = "balancesAccountRefObjects";
+    public static final String TRANSACTIONS_ACCOUNT_REF_OBJECTS = "transactionsAccountRefObjects";
+    public static final String CHECKED_ACCOUNTS_ACCOUNT_REFS = "checkedAccountsAccountRefs";
+    public static final String CHECKED_BALANCES_ACCOUNT_REFS = "checkedBalancesAccountRefs";
+    public static final String CHECKED_TRANSACTIONS_ACCOUNT_REFS = "checkedTransactionsAccountRefs";
     public static final String ACCOUNT_TYPE = "accountType";
     // Account types that are displayed in the consent page
-    public static final String STATIC_DEFAULT = "static-default";
+    public static final String STATIC_BULK = "static-bulk";
     public static final String SELECT_BALANCE = "select-balance";
     public static final String STATIC_BALANCE = "static-balance";
     public static final String SELECT_ACCOUNT = "select-account";
@@ -175,7 +193,6 @@ public class ConsentExtensionConstants {
     public static final String TRANSACTION_FEE_INDICATOR = "transactionFeeIndicator";
     public static final String TRANSACTION_FEES = "transactionFees";
     public static final String AMOUNT = "amount";
-    public static final String CURRENCY = "currency";
     public static final String CURRENCIES = "currencies";
     public static final String CURRENCY_CODE_TITLE = "Currency Type: ";
     public static final String START_DATE = "startDate";
@@ -184,7 +201,6 @@ public class ConsentExtensionConstants {
     public static final String EXECUTION_RULE = "executionRule";
     public static final String REQUESTED_EXECUTION_DATE = "requestedExecutionDate";
     public static final String DEBTOR_ACCOUNT = "debtorAccount";
-    public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";
     public static final String CREDITOR_AGENT = "creditorAgent";
