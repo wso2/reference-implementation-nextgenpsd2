@@ -137,4 +137,40 @@ public class CommonConfigParserTests {
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.PAYMENTS.toString()), "v1");
         Assert.assertEquals(commonConfigParser.getApiVersion(ConsentTypeEnum.FUNDS_CONFIRMATION.toString()), "v2");
     }
+
+    @Test (priority = 9)
+    public void testGetMaximumFutureFuturePaymentDays() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertEquals(commonConfigParser.getMaxFuturePaymentDays(), "");
+    }
+
+    @Test (priority = 10)
+    public void testGetOneSupportedCodeChallengeMethods() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertEquals(commonConfigParser.getSupportedCodeChallengeMethods().get(0), "S256");
+    }
+
+    @Test (priority = 11)
+    public void testOneGetSupportedHashAlgorithm() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertEquals(commonConfigParser.getSupportedHashAlgorithms().get(0), "SHA-256");
+    }
+
+    @Test (priority = 12)
+    public void testOneGetSupportedSignatureAlgorithm() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertEquals(commonConfigParser.getSupportedSignatureAlgorithms().get(0), "SHA256withRSA");
+    }
 }

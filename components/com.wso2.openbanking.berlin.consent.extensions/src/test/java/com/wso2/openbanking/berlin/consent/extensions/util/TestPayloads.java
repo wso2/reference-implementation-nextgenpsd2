@@ -964,17 +964,18 @@ public class TestPayloads {
             "   \"access\":{\n" +
             "      \"accounts\":[\n" +
             "         {\n" +
-            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "            \"iban\":\"DE12345678901234567890\"\n" +
             "         }\n" +
             "      ],\n" +
             "      \"balances\":[\n" +
             "         {\n" +
-            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "            \"iban\":\"DE12345678901234567890\",\n" +
+            "            \"currency\":\"EUR\"\n" +
             "         }\n" +
             "      ],\n" +
             "      \"transactions\":[\n" +
             "         {\n" +
-            "            \"iban\":\"DE40100100103307118608\"\n" +
+            "            \"iban\":\"DE34534456343478667544\"\n" +
             "         }\n" +
             "      ]\n" +
             "   },\n" +
@@ -1003,5 +1004,28 @@ public class TestPayloads {
             "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
             "   \"frequencyPerDay\":4,\n" +
             "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String VALID_FUNDS_CONFIRMATION_PAYLOAD = "{\n" +
+            "   \"account\":{\n" +
+            "      \"iban\":\"DE73459340345034563141\",\n" +
+            "      \"currency\": \"USD\"\n" +
+            "   },\n" +
+            "   \"cardNumber\":\"1234567891234\",\n" +
+            "   \"cardExpiryDate\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"cardInformation\":\"MyMerchant Loyalty Card\",\n" +
+            "   \"registrationInformation\":\"Sample info\"\n" +
+            "}";
+
+    public static final String VALID_FUNDS_CONFIRMATION_SUBMISSION_PAYLOAD = "{\n" +
+            "   \"account\":{\n" +
+            "      \"iban\":\"DE73459340345034563141\",\n" +
+            "      \"currency\":\"USD\"\n" +
+            "   },\n" +
+            "   \"cardNumber\":\"1234567891234\",\n" +
+            "   \"instructedAmount\":{\n" +
+            "      \"currency\":\"EUR\",\n" +
+            "      \"amount\":\"123\"\n" +
+            "   }\n" +
             "}";
 }

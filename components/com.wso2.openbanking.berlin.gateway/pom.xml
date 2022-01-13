@@ -48,10 +48,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.wso2.openbanking</groupId>
@@ -60,10 +62,23 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <classifier>runtime</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -80,6 +95,7 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/*Exception.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -147,7 +163,6 @@
                     <xmlOutput>true</xmlOutput>
                     <findbugsXmlOutputDirectory>target/findbugs
                     </findbugsXmlOutputDirectory>
-                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
                     <!--Exclude generated sources-->
                 </configuration>
                 <executions>

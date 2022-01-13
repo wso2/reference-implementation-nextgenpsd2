@@ -37,7 +37,7 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
     private static final Log log = LogFactory.getLog(AccountConsentRetrievalHandler.class);
 
     @Override
-    public JSONArray getConsentDataSet(ConsentResource consentResource) throws ConsentException {
+    public JSONObject getConsentData(ConsentResource consentResource) throws ConsentException {
 
         String permission = consentResource.getConsentAttributes().get(ConsentExtensionConstants.PERMISSION);
 
@@ -57,7 +57,8 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
     public boolean validateAuthorizationStatus(ConsentResource consentResource, String authType) {
 
         String consentStatus = consentResource.getCurrentStatus();
-        boolean isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus);
+        boolean isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus)
+                || StringUtils.equals(ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(), consentStatus);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("The consent with Id: %s is in %s status. It is %s to authorize",
@@ -75,13 +76,13 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
      * Method to populate accounts data.
      *
      * @param receipt Consent Receipt
-     * @return a JSON array with accounts data in it
+     * @return a JSON object with accounts data in it
      */
-    private static JSONArray populateAccountsData(JSONObject receipt, String permission) {
+    private static JSONObject populateAccountsData(JSONObject receipt, String permission) {
 
+        JSONObject consentData = new JSONObject();
         JSONArray consentDataArray = new JSONArray();
         JSONObject dataElement = new JSONObject();
-        JSONArray consentDataJSON = new JSONArray();
 
         // construct accounts data
         String recurringIndicator = receipt.getAsString(ConsentExtensionConstants.RECURRING_INDICATOR);
@@ -100,12 +101,13 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
         dataElement.appendField(ConsentExtensionConstants.TITLE,
                 ConsentExtensionConstants.CONSENT_DETAILS_TITLE);
         dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
-        dataElement.appendField(ConsentExtensionConstants.ACCESS_OBJECT,
-                receipt.get(ConsentExtensionConstants.ACCESS));
-        dataElement.appendField(ConsentExtensionConstants.PERMISSION, permission);
 
-        consentDataJSON.add(dataElement);
+        consentData.appendField(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(dataElement));
 
-        return consentDataJSON;
+        // Access object and permission
+        consentData.appendField(ConsentExtensionConstants.ACCESS_OBJECT, receipt.get(ConsentExtensionConstants.ACCESS));
+        consentData.appendField(ConsentExtensionConstants.PERMISSION, permission);
+
+        return consentData;
     }
 }

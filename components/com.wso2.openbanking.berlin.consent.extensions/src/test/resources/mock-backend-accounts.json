@@ -1,0 +1,57 @@
+{
+  "customerIdentification": {
+    "customerIdentification": "JEAN123",
+    "userIdentification": "admin@wso2.com"
+  },
+  "accounts": [
+    {
+      "iban": "DE12345678901234567890",
+      "bban": "BARC12345612345678",
+      "pan": "5409050000000000",
+      "isDefault": true,
+      "currency": "USD"
+    },
+    {
+      "iban": "DE12345678901234567890",
+      "bban": "BARC12345612345678",
+      "pan": "5409050000000000",
+      "isDefault": false,
+      "currency": "EUR"
+    },
+    {
+      "iban": "DE12345678901234567890",
+      "bban": "BARC12345612345678",
+      "pan": "5409050000000000",
+      "isDefault": false,
+      "currency": "GBP"
+    },
+    {
+      "iban": "DE98765432109876543210",
+      "bban": "BARC87654321654321",
+      "pan": "9181230000000000",
+      "isDefault": true,
+      "currency": "EUR"
+    },
+    {
+      "iban": "DE73459340345034563141",
+      "bban": "BARC96503450034033",
+      "pan": "6548830000000000",
+      "isDefault": true,
+      "currency": "GBP"
+    },
+    {
+      "iban": "DE84563457493493534546",
+      "bban": "BARC95645364533323",
+      "pan": "1234560000000000",
+      "isDefault": true,
+      "currency": "AUD"
+    },
+    {
+      "iban": "DE34534456343478667544",
+      "bban": "BARC09456045686545",
+      "pan": "9368240000000000",
+      "isDefault": true,
+      "currency": "EUR"
+    }
+  ]
+}

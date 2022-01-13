@@ -569,3 +569,8 @@ required="true"
 mask="false"
 multiple="false"
 priority="3"
+
+[open_banking_berlin.gateway.signature_verification]
+supported_hash_algorithms = ["SHA-256", "SHA-512"]
+supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
+

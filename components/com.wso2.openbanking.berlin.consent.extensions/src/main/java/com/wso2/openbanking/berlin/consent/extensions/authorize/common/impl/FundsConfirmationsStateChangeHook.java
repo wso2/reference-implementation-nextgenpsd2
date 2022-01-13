@@ -15,18 +15,37 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.common.impl;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.AuthorisationStateChangeHook;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.AuthorisationAggregateStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Authorisation state change hook for funds confirmations service.
  */
 public class FundsConfirmationsStateChangeHook implements AuthorisationStateChangeHook {
 
+    private static final Log log = LogFactory.getLog(FundsConfirmationsStateChangeHook.class);
+
     @Override
     public String onAuthorisationStateChange(String consentId, String authType,
                                            AuthorisationAggregateStatusEnum aggregatedStatus,
                                            AuthorizationResource currentAuthorisation) {
 
-        // todo: Implement for funds confirmation flow
-        return null;
+        String consentStatus = null;
+
+        switch (aggregatedStatus) {
+            case FULLY_AUTHORISED:
+                consentStatus = ConsentStatusEnum.VALID.toString();
+                break;
+            case REJECTED:
+                consentStatus = ConsentStatusEnum.REJECTED.toString();
+                break;
+            case PARTIALLY_AUTHORISED:
+                consentStatus = ConsentStatusEnum.PARTIALLY_AUTHORISED.toString();
+                break;
+            default:
+                log.warn(String.format("Unbindable authorisation state (%s) offered", aggregatedStatus));
+        }
+        return consentStatus;
     }
 }
