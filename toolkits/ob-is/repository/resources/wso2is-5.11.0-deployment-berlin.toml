@@ -412,7 +412,7 @@ priority = 3
 
 [[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
-priority = 1
+priority = 4
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
