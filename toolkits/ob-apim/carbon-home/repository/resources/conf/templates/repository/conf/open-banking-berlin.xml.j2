@@ -12,6 +12,33 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
+
+    <Gateway>
+        <SignatureVerification>
+            <SupportedHashAlgorithms>
+                {% if open_banking_berlin.gateway.signature_verification.supported_hash_algorithms is defined %}
+                {% for name in open_banking_berlin.gateway.signature_verification.supported_hash_algorithms %}
+                    <Algorithm>{{name}}</Algorithm>
+                {% endfor %}
+                {% else %}
+                    <Algorithm>SHA-256</Algorithm>
+                    <Algorithm>SHA-512</Algorithm>
+                {% endif %}
+                </SupportedHashAlgorithms>
+
+                <SupportedSignatureAlgorithms>
+                {% if open_banking_berlin.gateway.signature_verification.supported_signature_algorithms is defined %}
+                {% for name in open_banking_berlin.gateway.signature_verification.supported_signature_algorithms %}
+                    <Algorithm>{{name}}</Algorithm>
+                {% endfor %}
+                {% else %}
+                    <Algorithm>SHA256withRSA</Algorithm>
+                    <Algorithm>SHA512withRSA</Algorithm>
+                {% endif %}
+                </SupportedSignatureAlgorithms>
+        </SignatureVerification>
+    </Gateway>
+
     <ConsentManagement>
         <!-- Enable frequency per day throttling for eligible API GET calls -->
         <!--Maximum value is 4 unless agreed bilaterally between TPP and ASPSP-->

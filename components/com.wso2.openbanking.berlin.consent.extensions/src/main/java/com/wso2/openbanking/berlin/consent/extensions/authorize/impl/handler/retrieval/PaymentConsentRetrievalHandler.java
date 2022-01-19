@@ -16,7 +16,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
@@ -40,14 +39,14 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
     private static final Log log = LogFactory.getLog(PaymentConsentRetrievalHandler.class);
 
     @Override
-    public JSONArray getConsentDataSet(ConsentResource consentResource) throws ConsentException {
+    public JSONObject getConsentData(ConsentResource consentResource) throws ConsentException {
 
         try {
             String receiptString = consentResource.getReceipt();
             // This can be directly created to JSONObject since the payload is validated during initiation
             JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
 
-            JSONArray consentDataJSON;
+            JSONObject consentDataJSON;
 
             if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), consentResource.getConsentType())) {
                 consentDataJSON = populateSinglePaymentData(receiptJSON);
@@ -73,10 +72,12 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
             log.debug("Checking whether the consent with Id: " + consentResource.getConsentID() + "is in an " +
                     "applicable status to authorize");
         }
+
         if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
             return true;
         } else {
-            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus);
+            return StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.PATC.name(), consentStatus);
         }
     }
 
@@ -89,97 +90,105 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
      * Method to populate single payments data.
      *
      * @param receipt   Consent Receipt
-     * @return a JSON array with single payments data in it
+     * @return a JSON object with single payments data in it
      */
-    private static JSONArray populateSinglePaymentData(JSONObject receipt) {
+    private static JSONObject populateSinglePaymentData(JSONObject receipt) {
 
-        JSONArray singlePaymentDataArray = new JSONArray();
-        JSONObject singlePaymentElement = new JSONObject();
-        JSONArray consentDataJSON = new JSONArray();
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDataArray = new JSONArray();
+        JSONObject dataElement = new JSONObject();
 
-        populateDebtorAccountData(receipt, singlePaymentDataArray);
-        populateCommonData(receipt, singlePaymentDataArray);
+        populateCommonData(receipt, consentDataArray);
 
-        singlePaymentElement.appendField(ConsentExtensionConstants.TITLE,
+        dataElement.appendField(ConsentExtensionConstants.TITLE,
                 ConsentExtensionConstants.REQUESTED_DATA_TITLE);
-        singlePaymentElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, singlePaymentDataArray);
-        consentDataJSON.add(singlePaymentElement);
+        dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
 
-        return consentDataJSON;
+        consentData.appendField(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(dataElement));
+
+        // Debtor account ref object
+        consentData.appendField(ConsentExtensionConstants.ACCOUNT_REF_OBJECT,
+                receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+
+        return consentData;
     }
 
     /**
      * Method to populate bulk payments data.
      *
      * @param receipt Consent Receipt
-     * @return a JSON array with bulk payments data in it
+     * @return a JSON object with bulk payments data in it
      */
-    private static JSONArray populateBulkPaymentData(JSONObject receipt) {
+    private static JSONObject populateBulkPaymentData(JSONObject receipt) {
 
-        JSONObject debtorAccountElement = new JSONObject();
-        JSONArray debtorAccountArray = new JSONArray();
-        JSONArray consentDataJSON = new JSONArray();
-
-        populateDebtorAccountData(receipt, debtorAccountArray);
-        debtorAccountElement.appendField(ConsentExtensionConstants.TITLE,
-                ConsentExtensionConstants.DEBTOR_ACCOUNT_TITLE);
-        debtorAccountElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, debtorAccountArray);
-        consentDataJSON.add(debtorAccountElement);
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDetails = new JSONArray();
 
         JSONArray paymentsArray = (JSONArray) receipt.get(ConsentExtensionConstants.PAYMENTS);
 
         for (int paymentIndex = 0; paymentIndex < paymentsArray.size(); paymentIndex++) {
             JSONObject bulkPayment = (JSONObject) paymentsArray.get(paymentIndex);
-            JSONObject bulkPaymentElement = new JSONObject();
-            JSONArray bulkPaymentDataArray = new JSONArray();
+            JSONObject dataElement = new JSONObject();
+            JSONArray consentDataArray = new JSONArray();
 
-            populateCommonData(bulkPayment, bulkPaymentDataArray);
+            populateCommonData(bulkPayment, consentDataArray);
 
             int paymentNumber = paymentIndex + 1;
-            bulkPaymentElement.appendField(ConsentExtensionConstants.TITLE,
+            dataElement.appendField(ConsentExtensionConstants.TITLE,
                     ConsentExtensionConstants.PAYMENT_TITLE + paymentNumber);
-            bulkPaymentElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, bulkPaymentDataArray);
-            consentDataJSON.add(bulkPaymentElement);
+            dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
+            consentDetails.add(dataElement);
         }
-        return consentDataJSON;
+        consentData.appendField(ConsentExtensionConstants.CONSENT_DETAILS, consentDetails);
+
+        // Debtor account ref object
+        consentData.appendField(ConsentExtensionConstants.ACCOUNT_REF_OBJECT,
+                receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+
+        return consentData;
     }
 
     /**
      * Method to populate periodic payments data.
      *
      * @param receipt Consent Receipt
-     * @return a JSON array with periodic payments data in it
+     * @return a JSON object with periodic payments data in it
      */
-    private static JSONArray populatePeriodicPaymentData(JSONObject receipt) {
+    private static JSONObject populatePeriodicPaymentData(JSONObject receipt) {
 
-        JSONArray periodicPaymentDataArray = new JSONArray();
-        JSONObject periodicPaymentElement = new JSONObject();
-        JSONArray consentDataJSON = new JSONArray();
+        JSONObject consentData = new JSONObject();
+        JSONArray consentDataArray = new JSONArray();
+        JSONObject dataElement = new JSONObject();
 
-        populateCommonData(receipt, periodicPaymentDataArray);
+        populateCommonData(receipt, consentDataArray);
 
-        periodicPaymentDataArray.add(ConsentExtensionConstants.START_DATE_TITLE + " : "
+        consentDataArray.add(ConsentExtensionConstants.START_DATE_TITLE + " : "
                 + receipt.getAsString(ConsentExtensionConstants.START_DATE));
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.END_DATE))) {
-            periodicPaymentDataArray.add(ConsentExtensionConstants.END_DATE_TITLE + " : "
+            consentDataArray.add(ConsentExtensionConstants.END_DATE_TITLE + " : "
                     + receipt.getAsString(ConsentExtensionConstants.END_DATE));
         }
 
-        periodicPaymentDataArray.add(ConsentExtensionConstants.FREQUENCY_TITLE + " : "
+        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_TITLE + " : "
                 + receipt.getAsString(ConsentExtensionConstants.FREQUENCY));
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.EXECUTION_RULE))) {
-            periodicPaymentDataArray.add(ConsentExtensionConstants.EXECUTION_RULE_TITLE + " : "
+            consentDataArray.add(ConsentExtensionConstants.EXECUTION_RULE_TITLE + " : "
                     + receipt.getAsString(ConsentExtensionConstants.EXECUTION_RULE));
         }
 
-        periodicPaymentElement.appendField(ConsentExtensionConstants.TITLE,
+        dataElement.appendField(ConsentExtensionConstants.TITLE,
                 ConsentExtensionConstants.REQUESTED_DATA_TITLE);
-        periodicPaymentElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, periodicPaymentDataArray);
-        consentDataJSON.add(periodicPaymentElement);
+        dataElement.appendField(ConsentExtensionConstants.DATA_SIMPLE, consentDataArray);
 
-        return consentDataJSON;
+        consentData.appendField(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(dataElement));
+
+        // Debtor account ref object
+        consentData.appendField(ConsentExtensionConstants.ACCOUNT_REF_OBJECT,
+                receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+
+        return consentData;
     }
 
     /**
@@ -249,30 +258,5 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
             paymentDataArray.add(ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE + " : "
                     + receipt.getAsString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION));
         }
-    }
-
-    /**
-     * Method to populate debtor account data for payments data.
-     *
-     * @param receipt Consent Receipt
-     * @param paymentDataArray Consent Data JSON
-     * @return a JSON array with debtor account data in it
-     */
-    private static void populateDebtorAccountData(JSONObject receipt, JSONArray paymentDataArray) {
-
-        String debtorAccountReference;
-        JSONObject debtorAccountElement = (JSONObject) receipt.get(ConsentExtensionConstants.DEBTOR_ACCOUNT);
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
-
-        if (StringUtils.equals(ConsentExtensionConstants.IBAN, configuredAccountReference)) {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.IBAN);
-        } else if (StringUtils.equals(ConsentExtensionConstants.BBAN, configuredAccountReference)) {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.BBAN);
-        } else {
-            debtorAccountReference = debtorAccountElement.getAsString(ConsentExtensionConstants.PAN);
-        }
-
-        paymentDataArray.add(String.format(ConsentExtensionConstants.DEBTOR_REFERENCE_TITLE,
-                configuredAccountReference) + " : " + debtorAccountReference);
     }
 }

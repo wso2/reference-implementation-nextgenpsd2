@@ -21,22 +21,19 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.AccountValidationUtil;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Validate Accounts submission requests.
@@ -92,13 +89,14 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         log.debug("Consent is Authorized by User");
         if (AccountValidationUtil.isSingleAccountRetrieveRequest(requestPath)) {
             log.debug("Validating single accounts retrieval");
-            validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
+            AccountValidationUtil
+                    .validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
         } else if (AccountValidationUtil.isBulkAccountRetrieveRequest(requestPath)) {
             log.debug("Validating bulk accounts retrieval");
             ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
                     .getConsentMappingResources();
 
-            if (mappingResources == null || mappingResources.size() < 1) {
+            if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
                 log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
                 consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
                 consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
@@ -121,60 +119,6 @@ public class AccountSubmissionValidator implements SubmissionValidator {
                         ErrorConstants.CONSENT_UPDATE_ERROR);
             }
         }
-    }
-
-    private void validateAccountPermissionsForSingleAccounts(ConsentValidateData consentValidateData,
-                                                             ConsentValidationResult consentValidationResult) {
-
-        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
-        String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
-        String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
-        boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
-
-        boolean isAccountIdValidationEnabled = CommonConfigParser.getInstance().isAccountIdValidationEnabled();
-        DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
-        ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
-
-        boolean isAccountAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.ACCOUNTS.toString(), mappingResources);
-        boolean isBalanceAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.BALANCES.toString(), mappingResources);
-        boolean isTransactionAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
-
-        if (StringUtils.isEmpty(accountId)) {
-            log.debug("The Account ID can not be null or empty");
-            log.error(ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY));
-            return;
-        }
-
-        if (isAccountIdValidationEnabled) {
-            if (!AccountValidationUtil
-                    .hasValidAccountMappingResource(accountId, accessMethod, mappingResources, isWithBalance)) {
-                log.debug("The Account ID in the request path is not contained in any of the mapped resources");
-                log.error(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
-                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-                consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                        ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID));
-                return;
-            }
-        }
-
-        if (!isAccountAccess || !isBalanceAccess || !isTransactionAccess) {
-            log.error(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS));
-            return;
-        }
-
-        consentValidationResult.setValid(true);
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")

@@ -14,17 +14,12 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.pe
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
-import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,27 +55,20 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
             authStatus = ScaStatusEnum.FAILED.toString();
         }
 
-        try {
-            JSONObject receiptJSON = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
-                    .parse(consentPersistData.getConsentData().getConsentResource().getReceipt());
-            JSONObject debtorAccountElement = (JSONObject) receiptJSON.get(ConsentExtensionConstants.DEBTOR_ACCOUNT);
-            String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
-            String debtorAccountReference = debtorAccountElement.getAsString(configuredAccountReference);
+        Map<String, Object> metaDataMap = consentPersistData.getConsentData().getMetaDataMap();
+        JSONObject accountRefObject = (JSONObject) metaDataMap.get(ConsentExtensionConstants.ACCOUNT_REF_OBJECT);
 
-            // Adding default permission since a payment consent doesn't have any permissions
-            Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
-            ArrayList<String> permissionDefault = new ArrayList<>();
-            permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
-            accountIdMapWithPermissions.put(debtorAccountReference, permissionDefault);
+        // Adding default permission since a payment consent doesn't have any permissions
+        Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
+        ArrayList<String> permissionDefault = new ArrayList<>();
+        permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
+        String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
+        accountIdMapWithPermissions.put(accountIdWithCurrency, permissionDefault);
 
-            ConsentPersistHandlerService consentPersistHandlerService =
-                    new ConsentPersistHandlerService(consentCoreService);
-            consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
-                    authorisationId, userId, authStatus);
-        } catch (ParseException e) {
-            log.error(ErrorConstants.CONSENT_PERSIST_ERROR, e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, ErrorConstants.CONSENT_PERSIST_ERROR);
-        }
+        ConsentPersistHandlerService consentPersistHandlerService =
+                new ConsentPersistHandlerService(consentCoreService);
+        consentPersistHandlerService.persistAuthorisation(consentResource, accountIdMapWithPermissions,
+                authorisationId, userId, authStatus, isApproved);
     }
 
     @Override

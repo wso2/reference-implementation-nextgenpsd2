@@ -16,6 +16,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -43,6 +45,23 @@ import javax.ws.rs.HttpMethod;
 public class ConsentExtensionUtil {
 
     private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
+
+    /**
+     * Returns the string after appending the currency to it if available.
+     *
+     * @param accountRefObject account reference object
+     * @return account id or account id with currency
+     */
+    public static String getAccountIdWithCurrency(JSONObject accountRefObject) {
+
+        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
+        String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
+        if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
+            accountIdWithCurrency += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
+                    .getAsString(ConsentExtensionConstants.CURRENCY));
+        }
+        return accountIdWithCurrency;
+    }
 
     /**
      * Returns the part of the path that differentiates the request path into
@@ -184,7 +203,7 @@ public class ConsentExtensionUtil {
             if (i == keys.length - 1) {
                 consentAttributeKey.append(keys[i]);
             } else {
-                consentAttributeKey.append(keys[i]).append(ConsentExtensionConstants.CONSENT_ATTR_KEY_DELIMITER);
+                consentAttributeKey.append(keys[i]).append(CommonConstants.DELIMITER);
             }
         }
 
@@ -206,8 +225,8 @@ public class ConsentExtensionUtil {
         try {
             if (StringUtils.equals(HttpMethod.GET, requestMethod) || StringUtils.equals(HttpMethod.DELETE,
                     requestMethod)) {
-                // Consent Id of accounts always situated in 1st position. Consent Id of payments and funds confirmation
-                // always situated in 2nd position
+                // Consent Id of accounts always situated in 1st position. Consent Id of payments and
+                // funds confirmation always situated in 2nd position
                 consentId = (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)) ?
                         requestPath.split("/")[1] : requestPath.split("/")[2];
                 if (CommonUtil.isValidUuid(consentId)) {

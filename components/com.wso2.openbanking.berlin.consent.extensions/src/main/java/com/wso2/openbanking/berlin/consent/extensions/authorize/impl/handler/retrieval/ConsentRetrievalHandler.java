@@ -15,7 +15,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.re
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public interface ConsentRetrievalHandler {
      * @return
      * @throws ConsentException
      */
-    JSONArray getConsentDataSet(ConsentResource consentResource) throws ConsentException;
+    JSONObject getConsentData(ConsentResource consentResource) throws ConsentException;
 
     /**
      * Abstract method defined to validate the authorization status.

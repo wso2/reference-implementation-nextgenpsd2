@@ -18,23 +18,13 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
-import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.AccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
-import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil;
-import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Class to handle account list retrieval for authorize.
@@ -42,17 +32,17 @@ import java.util.Set;
 public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(BerlinAccountListRetrievalStep.class);
+    AccountListRetrievalHandler accountListRetrievalHandler;
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        if (!consentData.isRegulatory() ||
-                !StringUtils.equals(consentData.getType(), ConsentTypeEnum.ACCOUNTS.toString())) {
+        if (!consentData.isRegulatory()) {
             return;
         }
 
-        JSONArray consentDataArray = (JSONArray) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
-        if (consentDataArray == null || consentDataArray.size() == 0) {
+        JSONObject consentDataJSON = (JSONObject) jsonObject.get(ConsentExtensionConstants.CONSENT_DATA);
+        if (consentDataJSON == null || consentDataJSON.size() == 0) {
             log.error(ErrorConstants.INCORRECT_CONSENT_DATA);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.SERVER_ERROR,
@@ -60,122 +50,25 @@ public class BerlinAccountListRetrievalStep implements ConsentRetrievalStep {
                             consentData.getState()));
         }
 
-        JSONObject consentDataObject = (JSONObject) consentDataArray.get(0);
-        String permission = consentDataObject.getAsString(ConsentExtensionConstants.PERMISSION);
-        JSONObject accessObject = (JSONObject) consentDataObject.get(ConsentExtensionConstants.ACCESS_OBJECT);
+        JSONObject accountDataJSON = getAccountData(consentData, consentDataJSON);
 
-        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEFAULT.toString())) {
-            JSONArray accountDetailsArray = DataRetrievalUtil
-                    .getAccountsFromPayload(accessObject, consentData.getUserId());
-
-            if (accountDetailsArray == null) {
-                log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
-                                ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER, consentData.getRedirectURI(),
-                                consentData.getState()));
-            }
-
-            jsonObject.put(ConsentExtensionConstants.ACCOUNT_DETAILS, accountDetailsArray);
-            addAccountDetailsToMetaData(consentData.getMetaDataMap(), accountDetailsArray);
-        } else {
-
-            JSONArray permissionArray = new JSONArray();
-            JSONArray accessMethodArray = new JSONArray();
-
-            if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.ALL_PSD2.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
-                accessMethodArray.add(AccessMethodEnum.TRANSACTIONS.toString());
-            } else if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-            } else if (StringUtils.equalsIgnoreCase(permission,
-                    PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
-                permissionArray.add(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
-                permissionArray.add(ConsentExtensionConstants.BALANCES_PERMISSION);
-
-                accessMethodArray.add(AccessMethodEnum.ACCOUNTS.toString());
-                accessMethodArray.add(AccessMethodEnum.BALANCES.toString());
-            }
-
-            JSONArray accountArray = DataRetrievalUtil.getAccountsFromEndpoint(consentData.getUserId());
-
-            if (accountArray == null) {
-                log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
-                                ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER, consentData.getRedirectURI(),
-                                consentData.getState()));
-            }
-
-            JSONObject object = new JSONObject();
-            object.put(ConsentExtensionConstants.ACCOUNT_NUMBERS, accountArray);
-            object.put(ConsentExtensionConstants.PERMISSIONS, permissionArray);
-            object.put(ConsentExtensionConstants.ACCESS_METHODS, accessMethodArray);
-            object.put(ConsentExtensionConstants.ACCOUNT_TYPE, ConsentExtensionConstants.STATIC_DEFAULT);
-
-            JSONArray objArray = new JSONArray();
-            objArray.add(object);
-
-            jsonObject.put(ConsentExtensionConstants.ACCOUNT_DETAILS, objArray);
-            addAccountDetailsToMetaData(consentData.getMetaDataMap(), objArray);
-        }
+        jsonObject.appendField(ConsentExtensionConstants.ACCOUNT_DATA, accountDataJSON);
+        accountListRetrievalHandler.appendAccountDetailsToMetadata(consentData.getMetaDataMap(), accountDataJSON);
     }
 
     /**
-     * Appends the account details to the consent metadata to access it from the persist steps.
+     * Method to retrieve account related data from the initiation payload.
      *
-     * @param metaDataMap consent metadata map
-     * @param accountDetailsArray map of account details
+     * @param consentData
+     * @param consentDataJSON
+     * @return
+     * @throws ConsentException
      */
-    private void addAccountDetailsToMetaData(Map<String, Object> metaDataMap, JSONArray accountDetailsArray) {
+    public JSONObject getAccountData(ConsentData consentData, JSONObject consentDataJSON)
+            throws ConsentException {
 
-        for (Object accountDetails : accountDetailsArray) {
-            JSONObject dataObj = (JSONObject) accountDetails;
-            JSONArray accountNumbersJsonArray = (JSONArray) dataObj.get(ConsentExtensionConstants.ACCOUNT_NUMBERS);
-            JSONArray accessMethodsJsonArray = (JSONArray) dataObj.get(ConsentExtensionConstants.ACCESS_METHODS);
-
-            List<String> accountNumbers = new ArrayList<>();
-
-            for (Object accountNumberJson : accountNumbersJsonArray) {
-                JSONObject obj = (JSONObject) accountNumberJson;
-                accountNumbers.add(obj.getAsString(ConsentExtensionConstants.IBAN));
-            }
-
-            Set<String> accountsAccNumberSet = new HashSet<>();
-            Set<String> balancesAccNumberSet = new HashSet<>();
-            Set<String> transactionsAccNumberSet = new HashSet<>();
-
-            for (Object accessMethodJson : accessMethodsJsonArray) {
-                String accessMethod = (String) accessMethodJson;
-
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.ACCOUNTS.toString())) {
-                    accountsAccNumberSet.addAll(accountNumbers);
-                }
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.toString())) {
-                    balancesAccNumberSet.addAll(accountNumbers);
-                }
-                if (StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.toString())) {
-                    transactionsAccNumberSet.addAll(accountNumbers);
-                }
-            }
-            metaDataMap.put(ConsentExtensionConstants.ACCOUNTS_ACC_NUMBER_SET, toJsonArray(accountsAccNumberSet));
-            metaDataMap.put(ConsentExtensionConstants.BALANCES_ACC_NUMBER_SET, toJsonArray(balancesAccNumberSet));
-            metaDataMap.put(ConsentExtensionConstants.TRANSACTIONS_ACC_NUMBER_SET,
-                    toJsonArray(transactionsAccNumberSet));
-        }
-    }
-
-    private JSONArray toJsonArray(Set<String> set) {
-
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.addAll(set);
-        return jsonArray;
+        String type = consentData.getConsentResource().getConsentType();
+        accountListRetrievalHandler = AuthorizationHandlerFactory.getAccountListRetrievalHandler(type);
+        return accountListRetrievalHandler.getAccountData(consentData, consentDataJSON);
     }
 }
