@@ -14,6 +14,7 @@ package com.wso2.openbanking.berlin.keymanager;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
+import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHolder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PrepareForTest({OpenBankingConfigParser.class})
+@PrepareForTest({OpenBankingConfigParser.class, TPPCertValidatorDataHolder.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     @Mock
@@ -51,6 +52,9 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
 
     @Mock
     OpenBankingConfigParser openBankingConfigParser;
+
+    @Mock
+    TPPCertValidatorDataHolder tppCertValidatorDataHolder;
 
     @ObjectFactory
     public IObjectFactory getObjectFactory() {
@@ -108,6 +112,10 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
 
+        tppCertValidatorDataHolder = PowerMockito.mock(TPPCertValidatorDataHolder.class);
+        PowerMockito.mockStatic(TPPCertValidatorDataHolder.class);
+        PowerMockito.when(TPPCertValidatorDataHolder.getInstance()).thenReturn(tppCertValidatorDataHolder);
+
         validator = Mockito.spy(BerlinKeyManagerAdditionalPropertyValidator.class);
         Mockito.doReturn(certificateContent).when(validator).extractCertificateContent(Mockito.anyObject());
         Map<String, List<String>> allowedScopes = new HashMap<>();
@@ -115,6 +123,7 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
         allowedScopes.put("payments", Arrays.asList("PISP"));
         allowedScopes.put("cof", Arrays.asList("CBPII"));
         Mockito.when(openBankingConfigParser.getAllowedScopes()).thenReturn(allowedScopes);
+        Mockito.when(tppCertValidatorDataHolder.isPsd2RoleValidationEnabled()).thenReturn(true);
         certificateContent.setPspRoles(roles);
         Assert.assertEquals(validator.validateRolesFromCert(x509Certificate), isValid);
     }

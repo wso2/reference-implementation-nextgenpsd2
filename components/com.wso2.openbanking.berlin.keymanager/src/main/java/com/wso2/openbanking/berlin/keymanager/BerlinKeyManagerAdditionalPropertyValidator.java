@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHolder;
 import com.wso2.openbanking.accelerator.keymanager.OBKeyManagerAdditionalPropertyValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -128,16 +129,25 @@ public class BerlinKeyManagerAdditionalPropertyValidator implements OBKeyManager
      * @return isValid
      * @throws APIManagementException
      */
-        protected boolean validateRolesFromCert(X509Certificate certificate) throws APIManagementException {
+    protected boolean validateRolesFromCert(X509Certificate certificate) throws APIManagementException {
 
         CertificateContent certificateContent = extractCertificateContent(certificate);
         Set<String> allowedRoles = new HashSet<>();
-        Map<String, List<String>> definedScopes = OpenBankingConfigParser.getInstance().getAllowedScopes();
-        for (Map.Entry<String, List<String>> scope : definedScopes.entrySet()) {
-            allowedRoles.addAll(scope.getValue());
+        if (TPPCertValidatorDataHolder.getInstance().isPsd2RoleValidationEnabled()) {
+            Map<String, List<String>> definedScopes = OpenBankingConfigParser.getInstance().getAllowedScopes();
+            for (Map.Entry<String, List<String>> scope : definedScopes.entrySet()) {
+                allowedRoles.addAll(scope.getValue());
+            }
+            List<String> providedRoles = certificateContent.getPspRoles();
+            return allowedRoles.containsAll(providedRoles);
+        } else {
+            // Skip role validation if the role validation configuration is set to false
+            if (log.isDebugEnabled()) {
+                log.debug("Skipping role validation as it is not enabled from the configuration");
+            }
+            return true;
         }
-        List<String> providedRoles = certificateContent.getPspRoles();
-        return allowedRoles.containsAll(providedRoles);
+
     }
 
     /**
