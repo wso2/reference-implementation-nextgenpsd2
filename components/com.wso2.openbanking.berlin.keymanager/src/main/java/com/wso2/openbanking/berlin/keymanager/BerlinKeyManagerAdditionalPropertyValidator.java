@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.keymanager;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
@@ -25,11 +26,11 @@ import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class BerlinKeyManagerAdditionalPropertyValidator implements OBKeyManager
      * @return value for given property
      * @throws APIManagementException
      */
-    private String  getValueForAdditionalProperty(Map<String, ConfigurationDto> obAdditionalProperties,
+    protected String getValueForAdditionalProperty(Map<String, ConfigurationDto> obAdditionalProperties,
                                                String propertyName) throws APIManagementException {
         ConfigurationDto property = obAdditionalProperties.get(propertyName);
         if (property != null) {
@@ -127,10 +128,14 @@ public class BerlinKeyManagerAdditionalPropertyValidator implements OBKeyManager
      * @return isValid
      * @throws APIManagementException
      */
-    protected boolean validateRolesFromCert(X509Certificate certificate) throws APIManagementException {
+        protected boolean validateRolesFromCert(X509Certificate certificate) throws APIManagementException {
 
         CertificateContent certificateContent = extractCertificateContent(certificate);
-        List<String> allowedRoles = new ArrayList<>(Arrays.asList("AISP", "PISP", "AIISP"));
+        Set<String> allowedRoles = new HashSet<>();
+        Map<String, List<String>> definedScopes = OpenBankingConfigParser.getInstance().getAllowedScopes();
+        for (Map.Entry<String, List<String>> scope : definedScopes.entrySet()) {
+            allowedRoles.addAll(scope.getValue());
+        }
         List<String> providedRoles = certificateContent.getPspRoles();
         return allowedRoles.containsAll(providedRoles);
     }
