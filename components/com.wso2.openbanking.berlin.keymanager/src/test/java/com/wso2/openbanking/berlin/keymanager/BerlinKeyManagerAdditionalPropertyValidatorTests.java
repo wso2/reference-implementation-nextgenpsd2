@@ -12,14 +12,21 @@
 
 package com.wso2.openbanking.berlin.keymanager;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
+import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHolder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
+import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
@@ -31,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@PrepareForTest({OpenBankingConfigParser.class, TPPCertValidatorDataHolder.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     @Mock
     X509Certificate x509Certificate;
@@ -40,6 +49,18 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
 
     @Spy
     BerlinKeyManagerAdditionalPropertyValidator validator;
+
+    @Mock
+    OpenBankingConfigParser openBankingConfigParser;
+
+    @Mock
+    TPPCertValidatorDataHolder tppCertValidatorDataHolder;
+
+    @ObjectFactory
+    public IObjectFactory getObjectFactory() {
+
+        return new org.powermock.modules.testng.PowerMockObjectFactory();
+    }
 
     @BeforeClass
     public void init() {
@@ -72,7 +93,7 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     @DataProvider
     public Object[][] validateRolesFromCertDataProvider() {
 
-        List<String> allValidRoles = new ArrayList<>(Arrays.asList("AISP", "PISP", "AIISP"));
+        List<String> allValidRoles = new ArrayList<>(Arrays.asList("AISP", "PISP", "CBPII"));
         List<String> singleValidRole = new ArrayList<>(Arrays.asList("AISP"));
         List<String> allInvalidRoles = new ArrayList<>(Arrays.asList("dummy1", "dummy2"));
         List<String> singleInvalidRole = new ArrayList<>(Arrays.asList("AISP", "PISP", "dummy"));
@@ -87,8 +108,22 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     @Test(dataProvider = "validateRolesFromCertDataProvider")
     private void testValidateRolesFromCert(List<String> roles, boolean isValid) throws APIManagementException {
 
+        openBankingConfigParser = PowerMockito.mock(OpenBankingConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+
+        tppCertValidatorDataHolder = PowerMockito.mock(TPPCertValidatorDataHolder.class);
+        PowerMockito.mockStatic(TPPCertValidatorDataHolder.class);
+        PowerMockito.when(TPPCertValidatorDataHolder.getInstance()).thenReturn(tppCertValidatorDataHolder);
+
         validator = Mockito.spy(BerlinKeyManagerAdditionalPropertyValidator.class);
         Mockito.doReturn(certificateContent).when(validator).extractCertificateContent(Mockito.anyObject());
+        Map<String, List<String>> allowedScopes = new HashMap<>();
+        allowedScopes.put("accounts", Arrays.asList("AISP", "PISP"));
+        allowedScopes.put("payments", Arrays.asList("PISP"));
+        allowedScopes.put("cof", Arrays.asList("CBPII"));
+        Mockito.when(openBankingConfigParser.getAllowedScopes()).thenReturn(allowedScopes);
+        Mockito.when(tppCertValidatorDataHolder.isPsd2RoleValidationEnabled()).thenReturn(true);
         certificateContent.setPspRoles(roles);
         Assert.assertEquals(validator.validateRolesFromCert(x509Certificate), isValid);
     }
