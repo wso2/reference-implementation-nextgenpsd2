@@ -54,6 +54,10 @@
             <artifactId>powermock-api-mockito</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wso2.openbanking</groupId>
+            <artifactId>com.wso2.openbanking.berlin.common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.common.config;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
@@ -479,5 +480,12 @@ public class CommonConfigParser {
             supportedSignatureAlgorithmsList.add((String) supportedSignatureAlgorithms);
         }
         return supportedSignatureAlgorithmsList;
+    }
+
+    public boolean isPsd2RoleValidationEnabled() {
+        Object psd2RoleValidationEnabledObj = OpenBankingConfigParser.getInstance()
+                .getConfigElementFromKey(OpenBankingConstants.PSD2_ROLE_VALIDATION_ENABLED);
+        return Boolean.parseBoolean((String) psd2RoleValidationEnabledObj);
+
     }
 }

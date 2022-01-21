@@ -14,7 +14,7 @@ package com.wso2.openbanking.berlin.keymanager;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
-import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHolder;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -30,6 +30,8 @@ import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
+import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
+import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -38,9 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PrepareForTest({OpenBankingConfigParser.class, TPPCertValidatorDataHolder.class})
+@PrepareForTest({OpenBankingConfigParser.class, CommonConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
-public class BerlinKeyManagerAdditionalPropertyValidatorTests {
+public class BerlinKeyManagerExtensionImplTests {
     @Mock
     X509Certificate x509Certificate;
 
@@ -48,13 +50,19 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     CertificateContent certificateContent;
 
     @Spy
-    BerlinKeyManagerAdditionalPropertyValidator validator;
+    BerlinKeyManagerExtensionImpl berlinKeyManagerExtensionImpl;
 
     @Mock
     OpenBankingConfigParser openBankingConfigParser;
 
     @Mock
-    TPPCertValidatorDataHolder tppCertValidatorDataHolder;
+    CommonConfigParser commonConfigParser;
+
+    @Spy
+    org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTO;
+
+    @Spy
+    org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider;
 
     @ObjectFactory
     public IObjectFactory getObjectFactory() {
@@ -82,7 +90,7 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     private void testValidateOrganizationIdPattern(String orgId, Class<? extends Exception> exceptionType) {
 
         try {
-            validator.validateOrganizationIdPattern(orgId);
+            berlinKeyManagerExtensionImpl.validateOrganizationIdPattern(orgId);
             Assert.assertTrue(exceptionType == null);
         } catch (APIManagementException e) {
             Assert.assertEquals(e.getClass(), exceptionType);
@@ -112,20 +120,21 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
 
-        tppCertValidatorDataHolder = PowerMockito.mock(TPPCertValidatorDataHolder.class);
-        PowerMockito.mockStatic(TPPCertValidatorDataHolder.class);
-        PowerMockito.when(TPPCertValidatorDataHolder.getInstance()).thenReturn(tppCertValidatorDataHolder);
+        commonConfigParser = PowerMockito.mock(CommonConfigParser.class);
+        PowerMockito.mockStatic(CommonConfigParser.class);
+        PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParser);
 
-        validator = Mockito.spy(BerlinKeyManagerAdditionalPropertyValidator.class);
-        Mockito.doReturn(certificateContent).when(validator).extractCertificateContent(Mockito.anyObject());
+        berlinKeyManagerExtensionImpl = Mockito.spy(BerlinKeyManagerExtensionImpl.class);
+        Mockito.doReturn(certificateContent).when(berlinKeyManagerExtensionImpl)
+                .extractCertificateContent(Mockito.anyObject());
         Map<String, List<String>> allowedScopes = new HashMap<>();
         allowedScopes.put("accounts", Arrays.asList("AISP", "PISP"));
         allowedScopes.put("payments", Arrays.asList("PISP"));
         allowedScopes.put("cof", Arrays.asList("CBPII"));
         Mockito.when(openBankingConfigParser.getAllowedScopes()).thenReturn(allowedScopes);
-        Mockito.when(tppCertValidatorDataHolder.isPsd2RoleValidationEnabled()).thenReturn(true);
+        Mockito.when(commonConfigParser.isPsd2RoleValidationEnabled()).thenReturn(true);
         certificateContent.setPspRoles(roles);
-        Assert.assertEquals(validator.validateRolesFromCert(x509Certificate), isValid);
+        Assert.assertEquals(berlinKeyManagerExtensionImpl.validateRolesFromCert(x509Certificate), isValid);
     }
 
     @DataProvider
@@ -141,10 +150,12 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
     private void testValidateOrganizationIdFromCert(String organizationId, String organizationIdFromCert,
                                                     boolean isValid) throws APIManagementException {
 
-        validator = Mockito.spy(BerlinKeyManagerAdditionalPropertyValidator.class);
-        Mockito.doReturn(certificateContent).when(validator).extractCertificateContent(Mockito.anyObject());
+        berlinKeyManagerExtensionImpl = Mockito.spy(BerlinKeyManagerExtensionImpl.class);
+        Mockito.doReturn(certificateContent).when(berlinKeyManagerExtensionImpl)
+                .extractCertificateContent(Mockito.anyObject());
         certificateContent.setPspAuthorisationNumber(organizationIdFromCert);
-        Assert.assertEquals(validator.validateOrganizationIdFromCert(x509Certificate, organizationId), isValid);
+        Assert.assertEquals(berlinKeyManagerExtensionImpl
+                .validateOrganizationIdFromCert(x509Certificate, organizationId), isValid);
     }
 
     @DataProvider
@@ -155,9 +166,9 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
         Map<String, ConfigurationDto> incorrectRegulatoryAppAdditionalProperties = new HashMap<>();
 
         String dummyString = "dummy";
-        String property1Name = "regulatory";
-        String property2Name = "certificate";
-        String property3Name = "orgId";
+        String property1Name = BerlinKeyManagerConstants.REGULATORY;
+        String property2Name = BerlinKeyManagerConstants.SP_CERTIFICATE;
+        String property3Name = BerlinKeyManagerConstants.ORG_ID;
 
         ConfigurationDto property1 = new ConfigurationDto(property1Name, "", "", "",
                 "", false, false, Arrays.asList("true"), false);
@@ -190,14 +201,69 @@ public class BerlinKeyManagerAdditionalPropertyValidatorTests {
                                                   Class<? extends Exception> exceptionType)
             throws APIManagementException {
 
-        Mockito.doNothing().when(validator).validateOrganizationIdPattern(Mockito.anyString());
-        Mockito.doNothing().when(validator).validateCertificate(Mockito.anyString(), Mockito.anyString());
+        Mockito.doNothing().when(berlinKeyManagerExtensionImpl).validateOrganizationIdPattern(Mockito.anyString());
+        Mockito.doNothing().when(berlinKeyManagerExtensionImpl)
+                .validateCertificate(Mockito.anyString(), Mockito.anyString());
         try {
-            validator.validateAdditionalProperties(obAdditionalProperties);
+            berlinKeyManagerExtensionImpl.validateAdditionalProperties(obAdditionalProperties);
             Assert.assertTrue(exceptionType == null);
         } catch (APIManagementException e) {
             Assert.assertEquals(e.getClass(), exceptionType);
         }
+    }
 
+    @DataProvider
+    public Object[][] testOrgIdAsClientIdDataProvider() {
+        return new Object[][]{
+                {"dummyorgId", null},
+                {null, APIManagementException.class},
+        };
+    }
+
+
+    @Test(dataProvider = "testOrgIdAsClientIdDataProvider")
+    private void testOrgIdAsClientId(String orgId, Class<? extends Exception> exceptionType)
+            throws APIManagementException {
+
+        try {
+            HashMap<String, String> additionalProperties = new HashMap<>();
+            additionalProperties.put(BerlinKeyManagerConstants.ORG_ID, orgId);
+            OAuthAppRequest oAuthAppRequest = new OAuthAppRequest();
+            oAuthAppRequest.setOAuthApplicationInfo(new OAuthApplicationInfo());
+
+            Mockito.doNothing().when(berlinKeyManagerExtensionImpl).validateOrganizationIdPattern(Mockito.anyString());
+            Mockito.doNothing().when(berlinKeyManagerExtensionImpl)
+                    .validateCertificate(Mockito.anyString(), Mockito.anyString());
+            berlinKeyManagerExtensionImpl.setOrgIdAsClientID(oAuthAppRequest, additionalProperties);
+            Assert.assertEquals(oAuthAppRequest.getOAuthApplicationInfo().getClientId(), orgId);
+            Assert.assertTrue(exceptionType == null);
+        } catch (APIManagementException e) {
+            Assert.assertEquals(e.getClass(), exceptionType);
+        }
+    }
+
+    @Test
+    private void preUpdateSpApp() throws APIManagementException {
+        HashMap<String, String> additionalProperties = new HashMap<>();
+        String dummyString = "dummy";
+        oAuthConsumerAppDTO.setApplicationName(dummyString);
+        additionalProperties.put(BerlinKeyManagerConstants.SP_CERTIFICATE, dummyString);
+        berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties);
+
+        Assert.assertEquals(serviceProvider.getCertificateContent(), dummyString);
+        Assert.assertTrue(oAuthConsumerAppDTO.getPkceMandatory());
+        Assert.assertTrue(oAuthConsumerAppDTO.getPkceSupportPlain());
+    }
+
+    @Test
+    private void preUpdateSpAppWithEmptyCertificate() throws APIManagementException {
+        HashMap<String, String> additionalProperties = new HashMap<>();
+        String dummyString = "dummy";
+        oAuthConsumerAppDTO.setApplicationName(dummyString);
+        try {
+            berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties);
+        } catch (APIManagementException e) {
+            Assert.assertEquals(e.getClass(), APIManagementException.class);
+        }
     }
 }
