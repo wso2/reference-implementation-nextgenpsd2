@@ -483,9 +483,15 @@ public class CommonConfigParser {
     }
 
     public boolean isPsd2RoleValidationEnabled() {
+
         Object psd2RoleValidationEnabledObj = OpenBankingConfigParser.getInstance()
                 .getConfigElementFromKey(OpenBankingConstants.PSD2_ROLE_VALIDATION_ENABLED);
         return Boolean.parseBoolean((String) psd2RoleValidationEnabledObj);
+    }
+
+    public String getOrgIdValidationRegex() {
+
+            return ((String) getConfiguration().get(CommonConstants.ORG_ID_VALIDATION_REGEX)).trim();
 
     }
 }

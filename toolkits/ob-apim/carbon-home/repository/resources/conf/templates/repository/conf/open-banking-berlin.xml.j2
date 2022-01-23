@@ -64,4 +64,12 @@
             {% endif %}
         </Idempotency>
     </ConsentManagement>
+
+    <KeyManager>
+        {% if open_banking.berlin.keymanager.org_id_validation is defined %}
+        <OrgIdValidationRegex>{{open_banking.berlin.keymanager.org_id_validation.regex}}</OrgIdValidationRegex>
+        {% else %}
+         <OrgIdValidationRegex>^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$</OrgIdValidationRegex>
+        {% endif %}
+    </KeyManager>
 </Server>

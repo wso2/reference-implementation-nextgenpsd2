@@ -20,12 +20,15 @@ import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
 import com.wso2.openbanking.accelerator.keymanager.OBKeyManagerExtensionInterface;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -57,7 +60,6 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
         String spCertificate = getValueForAdditionalProperty(obAdditionalProperties,
                 BerlinKeyManagerConstants.SP_CERTIFICATE);
         String orgId = getValueForAdditionalProperty(obAdditionalProperties, BerlinKeyManagerConstants.ORG_ID);
-
         if ("true".equals(regulatory) || "false".equals(regulatory)) {
             if (Boolean.parseBoolean(regulatory)) {
                 validateOrganizationIdPattern(orgId);
@@ -122,9 +124,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
             log.error(msg);
             throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Provided certificate successfully validated");
-        }
+        log.debug("Provided certificate successfully validated");
     }
 
     /**
@@ -176,8 +176,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
      */
     protected void validateOrganizationIdPattern(String organizationId) throws APIManagementException {
 
-        String regexString = "^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$";
-        Pattern regexPattern = Pattern.compile(regexString);
+        Pattern regexPattern = Pattern.compile(CommonConfigParser.getInstance().getOrgIdValidationRegex());
 
         Matcher matcher = regexPattern.matcher(organizationId);
         if (!matcher.find()) {
@@ -221,8 +220,8 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
         }
     }
 
-    public void doPreUpdateSpApp(org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO oAuthConsumerAppDTO,
-                                 org.wso2.carbon.identity.application.common.model.ServiceProvider serviceProvider,
+    public void doPreUpdateSpApp(OAuthConsumerAppDTO oAuthConsumerAppDTO,
+                                 ServiceProvider serviceProvider,
                                  HashMap<String, String> additionalProperties)
             throws APIManagementException {
 
@@ -260,7 +259,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
             throws APIManagementException {
 
         String orgId = additionalProperties.get(BerlinKeyManagerConstants.ORG_ID);
-        if (orgId != null) {
+        if (StringUtils.isNotBlank(orgId)) {
             oAuthAppRequest.getOAuthApplicationInfo().setClientId(orgId);
         } else {
             String errMsg = "Org ID not available in the request";
