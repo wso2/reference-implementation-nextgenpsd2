@@ -494,4 +494,18 @@ public class CommonConfigParser {
             return ((String) getConfiguration().get(CommonConstants.ORG_ID_VALIDATION_REGEX)).trim();
 
     }
+
+    public List<String> getCertificateRevocationValidationExcludedIssuers() {
+
+        List<String> excludedIssuersList = new ArrayList<>();
+        Object configuredIssuers = OpenBankingConfigParser.getInstance()
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_EXCLUDED_ISSUERS);
+
+        if (configuredIssuers instanceof ArrayList) {
+            excludedIssuersList.addAll((ArrayList) configuredIssuers);
+        } else if (configuredIssuers instanceof String) {
+            excludedIssuersList.add((String) configuredIssuers);
+        }
+        return excludedIssuersList;
+    }
 }

@@ -16,11 +16,11 @@
 
     <Gateway>
         <SupportedHashAlgorithms>
-            <Name>SHA-256</Name>
+            <Algorithm>SHA-256</Algorithm>
         </SupportedHashAlgorithms>
 
         <SupportedSignatureAlgorithms>
-            <Name>SHA256withRSA</Name>
+            <Algorithm>SHA256withRSA</Algorithm>
         </SupportedSignatureAlgorithms>
     </Gateway>
 
