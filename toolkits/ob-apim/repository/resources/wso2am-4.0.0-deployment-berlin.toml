@@ -587,3 +587,6 @@ priority="5"
 supported_hash_algorithms = ["SHA-256", "SHA-512"]
 supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
 
+#[open_banking.berlin.keymanager.org_id_validation]
+#regex=""
+

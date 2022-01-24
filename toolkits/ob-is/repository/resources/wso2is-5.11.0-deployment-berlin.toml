@@ -350,6 +350,9 @@ request_object_validator = "com.wso2.openbanking.accelerator.identity.auth.exten
 type = "request_uri_param_value_builder"
 class = "com.wso2.openbanking.accelerator.identity.builders.DefaultOBRequestUriRequestObjectBuilder"
 
+#[oauth.client.id.validation]
+#regex =""
+
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
