@@ -89,6 +89,12 @@ public class BerlinKeyManagerExtensionImplTests {
     @Test(dataProvider = "validateOrganizationIdPatternDataProvider")
     private void testValidateOrganizationIdPattern(String orgId, Class<? extends Exception> exceptionType) {
 
+        commonConfigParser = PowerMockito.mock(CommonConfigParser.class);
+        PowerMockito.mockStatic(CommonConfigParser.class);
+        PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParser);
+        PowerMockito.when(commonConfigParser.getOrgIdValidationRegex())
+                .thenReturn("^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$");
+
         try {
             berlinKeyManagerExtensionImpl.validateOrganizationIdPattern(orgId);
             Assert.assertTrue(exceptionType == null);
