@@ -17,7 +17,7 @@
 
     <groupId>com.wso2.openbanking</groupId>
     <artifactId>open-banking-test-suite</artifactId>
-    <version>1.0.0-M2</version>
+    <version>1.0.0-M3</version>
     <packaging>pom</packaging>
 
     <modules>
