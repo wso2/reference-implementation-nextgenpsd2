@@ -57,6 +57,8 @@ public class CommonConstants {
     public static final String MULTI_CURRENCY_ENABLED = "ConsentManagement.MultiCurrency.Enable";
     public static final String MULTIPLE_RECURRING_CONSENT_ENABLED = "ConsentManagement.Accounts." +
             "EnableMultipleRecurringConsent";
+    public static final String SUPPORTED_HASH_ALGORITHMS = "Gateway.SupportedHashAlgorithms.Name";
+    public static final String SUPPORTED_SIGNATURE_ALGORITHMS = "Gateway.SupportedSignatureAlgorithms.Name";
 
     public static final String SCA_APPROACH_KEY = "SCA-Approach";
     public static final String SCA_METHODS_KEY = "SCA-Methods";
@@ -73,4 +75,7 @@ public class CommonConstants {
             ".PaymentSubmissionIdempotencyEnabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
             ".AllowedDuration";
+    public static final String DELIMITER = ":";
+
+    public static final String ORG_ID_VALIDATION_REGEX = "KeyManager.OrgIdValidationRegex";
 }

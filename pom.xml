@@ -18,7 +18,7 @@
     <groupId>com.wso2.openbanking</groupId>
     <artifactId>ob-compliance-toolkit-berlin</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-M1</version>
+    <version>1.0.0-M2</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -645,6 +645,6 @@
         <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
 
         <!-- Open Banking Accelerator Version-->
-        <openbanking.accelerator.version.range>[3.0.0, 4.0.0)</openbanking.accelerator.version.range>
+        <openbanking.accelerator.version.range>[3.0.0.70, 4.0.0)</openbanking.accelerator.version.range>
     </properties>
 </project>

@@ -16,7 +16,7 @@
     <parent>
         <artifactId>ob-compliance-toolkit-berlin</artifactId>
         <groupId>com.wso2.openbanking</groupId>
-        <version>1.0.0-M1</version>
+        <version>1.0.0-M2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -24,7 +24,7 @@
 
     <artifactId>ob-compliance-toolkit-berlin-components</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-M1</version>
+    <version>1.0.0-M2</version>
 
     <name>WSO2 Open Banking Berlin Toolkit</name>
     <description>WSO2 Open Banking Toolkit for Berlin Specification</description>
@@ -33,6 +33,7 @@
         <module>com.wso2.openbanking.berlin.common</module>
         <module>com.wso2.openbanking.berlin.gateway</module>
         <module>com.wso2.openbanking.berlin.identity</module>
+       <module>com.wso2.openbanking.berlin.keymanager</module>
         <module>com.wso2.openbanking.berlin.data.publisher</module>
         <module>com.wso2.openbanking.berlin.consent.extensions</module>
         <module>com.wso2.openbanking.berlin.demo.backend</module>

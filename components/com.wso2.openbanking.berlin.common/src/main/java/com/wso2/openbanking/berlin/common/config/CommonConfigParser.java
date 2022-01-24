@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.common.config;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
@@ -363,7 +364,7 @@ public class CommonConfigParser {
         return (String) getConfiguration().get(CommonConstants.OAUTH_METADATA_ENDPOINT);
     }
 
-    public int getConfiguredFreqPerDay() {
+    public int getConfiguredMinimumFreqPerDay() {
         return getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE) == null ? 4 :
                 Integer.parseInt((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE));
     }
@@ -373,7 +374,7 @@ public class CommonConfigParser {
                 && Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.VALID_UNTIL_DATE_CAP_ENABLED));
     }
 
-    public long validUntilDays() {
+    public int validUntilDaysCap() {
         return Integer.parseInt(getConfiguration().get(CommonConstants.VALID_UNTIL_DAYS).toString());
     }
 
@@ -455,5 +456,42 @@ public class CommonConfigParser {
     public boolean isMultipleRecurringConsentEnabled() {
         return Boolean.parseBoolean((String) getConfiguration()
                 .get(CommonConstants.MULTIPLE_RECURRING_CONSENT_ENABLED));
+    }
+
+    public List<String> getSupportedHashAlgorithms() {
+
+        Object supportedHashAlgorithms = getConfiguration().get(CommonConstants.SUPPORTED_HASH_ALGORITHMS);
+        List<String> supportedHashAlgorithmsList = new ArrayList<>();
+        if (supportedHashAlgorithms instanceof ArrayList) {
+            supportedHashAlgorithmsList.addAll((ArrayList) supportedHashAlgorithms);
+        } else if (supportedHashAlgorithms instanceof String) {
+            supportedHashAlgorithmsList.add((String) supportedHashAlgorithms);
+        }
+        return supportedHashAlgorithmsList;
+    }
+
+    public List<String> getSupportedSignatureAlgorithms() {
+
+        Object supportedSignatureAlgorithms = getConfiguration().get(CommonConstants.SUPPORTED_SIGNATURE_ALGORITHMS);
+        List<String> supportedSignatureAlgorithmsList = new ArrayList<>();
+        if (supportedSignatureAlgorithms instanceof ArrayList) {
+            supportedSignatureAlgorithmsList.addAll((ArrayList) supportedSignatureAlgorithms);
+        } else if (supportedSignatureAlgorithms instanceof String) {
+            supportedSignatureAlgorithmsList.add((String) supportedSignatureAlgorithms);
+        }
+        return supportedSignatureAlgorithmsList;
+    }
+
+    public boolean isPsd2RoleValidationEnabled() {
+
+        Object psd2RoleValidationEnabledObj = OpenBankingConfigParser.getInstance()
+                .getConfigElementFromKey(OpenBankingConstants.PSD2_ROLE_VALIDATION_ENABLED);
+        return Boolean.parseBoolean((String) psd2RoleValidationEnabledObj);
+    }
+
+    public String getOrgIdValidationRegex() {
+
+            return ((String) getConfiguration().get(CommonConstants.ORG_ID_VALIDATION_REGEX)).trim();
+
     }
 }

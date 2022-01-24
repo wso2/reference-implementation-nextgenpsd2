@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -20,27 +21,19 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
-import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.AccountValidationUtil;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Validate Accounts submission requests.
@@ -53,28 +46,10 @@ public class AccountSubmissionValidator implements SubmissionValidator {
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
             throws ConsentException {
 
-        /*
-        The 'permission'(can contain availableAccounts, availableAccountsWithBalances, allPsd2 or default)
-        and 'accessMethod'(can contain allAccounts or allAccountsWithOwnerName) stored in the consent validation
-        result is only relevant for 'Account List of Available Accounts' and 'Global' consents.
-
-        The 'accessMethod'(can contain accounts, balances or transactions) inside the account of the account list
-        and this is only relevant for 'Consent Request on Dedicated Accounts' and 'Bank Offered Consent' consents.
-         */
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
 
-        JSONObject consentReceipt;
-        try {
-            consentReceipt =
-                    (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(detailedConsentResource.getReceipt());
-        } catch (ParseException e) {
-            log.error(ErrorConstants.JSON_PARSE_ERROR, e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    ErrorConstants.JSON_PARSE_ERROR);
-        }
-
         String requestPath = consentValidateData.getRequestPath();
-        ConsentCoreServiceImpl coreService = new ConsentCoreServiceImpl();
+        ConsentCoreServiceImpl coreService = getConsentService();
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Checking if consent id %s is expired", detailedConsentResource.getConsentID()));
@@ -112,23 +87,25 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
 
         log.debug("Consent is Authorized by User");
-        JSONObject consentInfo = consentValidationResult.getConsentInformation();
-
-        String permission = detailedConsentResource.getConsentAttributes().get(ConsentExtensionConstants.PERMISSION);
-        consentInfo.appendField(ConsentExtensionConstants.CONSENT_ID, detailedConsentResource.getConsentID());
-        consentInfo.appendField(ConsentExtensionConstants.VALIDATION_RESPONSE_PERMISSION, permission);
-
-        if (!StringUtils.equalsIgnoreCase(permission, PermissionEnum.DEFAULT.toString())) {
-            consentInfo.appendField(ConsentExtensionConstants.ACCESS,
-                    getAccessMethodForPermission(permission, consentReceipt));
-        }
-
         if (AccountValidationUtil.isSingleAccountRetrieveRequest(requestPath)) {
             log.debug("Validating single accounts retrieval");
-            validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
+            AccountValidationUtil
+                    .validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
         } else if (AccountValidationUtil.isBulkAccountRetrieveRequest(requestPath)) {
             log.debug("Validating bulk accounts retrieval");
-            validateAccountPermissionsForBulkAccounts(consentValidateData, consentValidationResult, permission);
+            ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
+                    .getConsentMappingResources();
+
+            if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
+                log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
+                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
+                consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                        ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT));
+                return;
+            }
+
+            consentValidationResult.setValid(true);
         }
 
         log.debug("Expiring consent for one off consents after one time use");
@@ -144,89 +121,10 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         }
     }
 
-    private void validateAccountPermissionsForBulkAccounts(ConsentValidateData consentValidateData,
-                                                           ConsentValidationResult consentValidationResult,
-                                                           String permission) {
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    ConsentCoreServiceImpl getConsentService() {
 
-        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
-        String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
-        boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
-        ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
-                .getConsentMappingResources();
-
-        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.ALL_PSD2.toString())
-                || StringUtils.equalsIgnoreCase(permission,
-                PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
-            AccountValidationUtil.setAccountInfoForBulkAccountRequests(consentValidationResult, mappingResources,
-                    true, isWithBalance, accessMethod, true);
-        } else {
-            AccountValidationUtil.setAccountInfoForBulkAccountRequests(consentValidationResult, mappingResources,
-                    true, isWithBalance, accessMethod, false);
-        }
-    }
-
-    private void validateAccountPermissionsForSingleAccounts(ConsentValidateData consentValidateData,
-                                                             ConsentValidationResult consentValidationResult) {
-
-        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
-        String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
-        String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
-        boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
-
-        boolean isAccountIdValidationEnabled = CommonConfigParser.getInstance().isAccountIdValidationEnabled();
-        DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
-        ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
-
-        boolean isAccountAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.ACCOUNTS.toString(), mappingResources);
-        boolean isBalanceAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.BALANCES.toString(), mappingResources);
-        boolean isTransactionAccess = AccountValidationUtil
-                .isWhichAccessMethod(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
-
-        if (StringUtils.isEmpty(accountId)) {
-            log.debug("The Account ID can not be null or empty");
-            AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, false,
-                    false, null, null);
-            return;
-        }
-
-        if (isAccountIdValidationEnabled) {
-            if (!AccountValidationUtil
-                    .isAccountIdInMappingResourceForAccessMethod(accountId, accessMethod, mappingResources)) {
-                log.debug("The Account ID in the request path is not contained in any of the mapped resources");
-                AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, false,
-                        false, null, null);
-                return;
-            }
-        }
-
-        if (StringUtils.equals(accessMethod, AccessMethodEnum.BALANCES.toString())) {
-            AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isBalanceAccess,
-                    isWithBalance, accountId, AccessMethodEnum.BALANCES.toString());
-            return;
-        }
-
-        if (StringUtils.equals(accessMethod, AccessMethodEnum.ACCOUNTS.toString())) {
-            AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isAccountAccess,
-                    isWithBalance, accountId, AccessMethodEnum.ACCOUNTS.toString());
-            return;
-        }
-
-        if (StringUtils.equals(accessMethod, AccessMethodEnum.TRANSACTIONS.toString())) {
-            AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, isTransactionAccess,
-                    isWithBalance, accountId, AccessMethodEnum.TRANSACTIONS.toString());
-            return;
-        }
-
-        AccountValidationUtil.setAccountInfoForSingleAccountRequests(consentValidationResult, false,
-                false, null, null);
-    }
-
-    private String getAccessMethodForPermission(String permission, JSONObject consentReceipt) {
-
-        JSONObject accessObject = (JSONObject) consentReceipt.get(ConsentExtensionConstants.ACCESS);
-        return accessObject.getAsString(permission);
+        return new ConsentCoreServiceImpl();
     }
 
 }

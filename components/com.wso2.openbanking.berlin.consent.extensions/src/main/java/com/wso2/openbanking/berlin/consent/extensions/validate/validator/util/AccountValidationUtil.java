@@ -12,15 +12,23 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.validate.validator.util;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
+import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,70 +36,73 @@ import java.util.List;
  */
 public class AccountValidationUtil {
 
+    private static final Log log = LogFactory.getLog(AccountValidationUtil.class);
+
     /**
-     * Sets the bulk account details to the validation response.
+     * Validates the permissions for single account retrieval requests.
      *
-     * @param consentValidationResult consent validation result
-     * @param mappingResources        consent mapping resources
-     * @param isValid                 is valid
-     * @param isWithBalance           is with balance
-     * @param accessMethod            access method
-     * @param isOnlyAccounts          should append only account consent resources
+     * @param consentValidateData     data required for validating the consent
+     * @param consentValidationResult validation response parameters
      */
-    public static void setAccountInfoForBulkAccountRequests(ConsentValidationResult consentValidationResult,
-                                                            ArrayList<ConsentMappingResource> mappingResources,
-                                                            boolean isValid, boolean isWithBalance, String accessMethod,
-                                                            boolean isOnlyAccounts) {
+    public static void validateAccountPermissionsForSingleAccounts(ConsentValidateData consentValidateData,
+                                                                   ConsentValidationResult consentValidationResult) {
 
-        ArrayList<ConsentMappingResource> filteredMappingResources = new ArrayList<>();
+        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
+        String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
+        String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
+        boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
 
-        // Filtering only accounts access method mapping resources
-        if (isOnlyAccounts) {
-            for (ConsentMappingResource mappingResource : mappingResources) {
-                if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.ACCOUNTS.toString())) {
-                    filteredMappingResources.add(mappingResource);
-                }
+        boolean isAccountIdValidationEnabled = CommonConfigParser.getInstance().isAccountIdValidationEnabled();
+        DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
+        ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
+
+        if (StringUtils.isBlank(accountId)) {
+            log.debug("The Account ID can not be null or empty");
+            log.error(ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY);
+            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
+            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY));
+            return;
+        }
+
+        // Validating the access method(permission) for single account retrieval requests
+        // only if the account Id validation is enabled
+        if (isAccountIdValidationEnabled) {
+            if (AccountValidationUtil
+                    .hasValidAccountMappingResource(accountId, accessMethod, mappingResources, isWithBalance)) {
+                consentValidationResult.setValid(true);
+                return;
+            } else {
+                log.debug("The Account ID in the request path is not contained in any of the mapped resources");
+                log.error(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
+                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
+                consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                        ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID));
+                return;
             }
         }
 
-        JSONArray accountList = new JSONArray();
-        for (ConsentMappingResource mappingResource : (isOnlyAccounts ? filteredMappingResources : mappingResources)) {
-            JSONObject accountInfo = new JSONObject();
-            accountInfo.appendField(ConsentExtensionConstants.ACCOUNT_ID, mappingResource.getAccountID());
-            accountInfo.appendField(ConsentExtensionConstants.IS_BALANCE_PERMISSION, isWithBalance);
-            accountInfo.appendField(ConsentExtensionConstants.ACCESS_METHOD, accessMethod);
-            accountList.add(accountInfo);
+        // If account Id validation is not enabled, checking only if there are any active mapping resource with
+        // any access method(permission; accounts, balances, transactions)
+        boolean hasActiveAccountAccess = AccountValidationUtil
+                .hasActiveAccess(AccessMethodEnum.ACCOUNTS.toString(), mappingResources);
+        boolean hasActiveBalanceAccess = AccountValidationUtil
+                .hasActiveAccess(AccessMethodEnum.BALANCES.toString(), mappingResources);
+        boolean hasActiveTransactionAccess = AccountValidationUtil
+                .hasActiveAccess(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
+
+        if (!hasActiveAccountAccess || !hasActiveBalanceAccess || !hasActiveTransactionAccess) {
+            log.error(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
+            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
+            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS));
+            return;
         }
 
-        consentValidationResult.getConsentInformation()
-                .appendField(ConsentExtensionConstants.ACCOUNT_LIST, accountList);
-        consentValidationResult.setValid(isValid);
-    }
-
-    /**
-     * Sets the single account details to the validation response.
-     *
-     * @param consentValidationResult consent validation result
-     * @param isValid                 is valid
-     * @param isWithBalance           is with balance
-     * @param accountId               account id
-     * @param accessMethod            access method
-     */
-    public static void setAccountInfoForSingleAccountRequests(ConsentValidationResult consentValidationResult,
-                                                              boolean isValid, boolean isWithBalance, String accountId,
-                                                              String accessMethod) {
-
-        JSONObject accountInfo = new JSONObject();
-        accountInfo.appendField(ConsentExtensionConstants.ACCOUNT_ID, accountId);
-        accountInfo.appendField(ConsentExtensionConstants.IS_BALANCE_PERMISSION, isWithBalance);
-        accountInfo.appendField(ConsentExtensionConstants.ACCESS_METHOD, accessMethod);
-
-        JSONArray accountList = new JSONArray();
-        accountList.add(accountInfo);
-
-        consentValidationResult.getConsentInformation()
-                .appendField(ConsentExtensionConstants.ACCOUNT_LIST, accountList);
-        consentValidationResult.setValid(isValid);
+        consentValidationResult.setValid(true);
     }
 
     /**
@@ -101,21 +112,39 @@ public class AccountValidationUtil {
      * @param accountId        account id
      * @param accessMethod     access method
      * @param mappingResources mapped consent resources
+     * @param isWithBalance    is requesting with balance
      * @return returns true if there is a consent mapping resource that matches the
      * account id and access method combination provided
      */
-    public static boolean isAccountIdInMappingResourceForAccessMethod(String accountId, String accessMethod,
-                                                                      ArrayList<ConsentMappingResource>
-                                                                              mappingResources) {
+    public static boolean hasValidAccountMappingResource(String accountId, String accessMethod,
+                                                         ArrayList<ConsentMappingResource> mappingResources,
+                                                         boolean isWithBalance) {
+
+        boolean isValidAccessMethodForAccount = false;
+        boolean isValidBalanceAccessMethodForAccount = false;
 
         for (ConsentMappingResource mappingResource : mappingResources) {
             if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
-                    && StringUtils.equals(mappingResource.getAccountID(), accountId)) {
-                return true;
+                    && mappingResource.getAccountID().contains(accountId)
+                    && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
+                isValidAccessMethodForAccount = true;
+                break;
             }
         }
 
-        return false;
+        if (isWithBalance) {
+            for (ConsentMappingResource mappingResource : mappingResources) {
+                if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())
+                        && mappingResource.getAccountID().contains(accountId)
+                        && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
+                    isValidBalanceAccessMethodForAccount = true;
+                    break;
+                }
+            }
+            return isValidAccessMethodForAccount && isValidBalanceAccessMethodForAccount;
+        }
+
+        return isValidAccessMethodForAccount;
     }
 
     /**
@@ -125,10 +154,11 @@ public class AccountValidationUtil {
      * @param mappingResources consent mapping resources
      * @return returns true if a consent is mapped to an account containing the provided accessMethod
      */
-    public static boolean isWhichAccessMethod(String accessMethod, ArrayList<ConsentMappingResource> mappingResources) {
+    public static boolean hasActiveAccess(String accessMethod, ArrayList<ConsentMappingResource> mappingResources) {
 
         for (ConsentMappingResource mappingResource : mappingResources) {
-            if (StringUtils.equals(mappingResource.getPermission(), accessMethod)) {
+            if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
+                    && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
                 return true;
             }
         }
@@ -145,7 +175,7 @@ public class AccountValidationUtil {
     public static boolean isSingleAccountRetrieveRequest(String url) {
 
         for (String path : ConsentExtensionConstants.SINGLE_ACCOUNT_ACCESS_METHODS_REGEX_LIST) {
-            if (path.matches(url)) {
+            if (url.matches(path)) {
                 return true;
             }
         }
@@ -161,7 +191,7 @@ public class AccountValidationUtil {
     public static boolean isBulkAccountRetrieveRequest(String url) {
 
         for (String path : ConsentExtensionConstants.BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST) {
-            if (path.matches(url)) {
+            if (url.matches(path)) {
                 return true;
             }
         }

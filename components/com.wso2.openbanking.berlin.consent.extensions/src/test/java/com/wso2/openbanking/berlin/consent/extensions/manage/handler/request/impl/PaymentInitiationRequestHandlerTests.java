@@ -20,6 +20,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
@@ -135,8 +136,8 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
         paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(paymentConsentManageData, authorizationResource,
-                true, mockHttpServletRequest, mockHttpServletResponse);
+        TestUtil.assertConsentResponse(paymentConsentManageData, authorizationResource,
+                true, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.PAYMENTS);
     }
 
     @Test (priority = 2)
@@ -163,7 +164,7 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
 
         paymentInitiationRequestHandler.handle(paymentConsentManageData);
-        TestUtil.assertImplicitConsentResponse(paymentConsentManageData, null,
-                false, mockHttpServletRequest, mockHttpServletResponse);
+        TestUtil.assertConsentResponse(paymentConsentManageData, null,
+                false, mockHttpServletRequest, mockHttpServletResponse, ConsentTypeEnum.PAYMENTS);
     }
 }

@@ -45,10 +45,8 @@ public class OBBerlinAuthServletImplTests {
     @Test
     public void testUpdateRequestAttributeForPayments() {
 
-        JSONArray consentDataArray = new JSONArray();
+        JSONArray consentDetails = new JSONArray();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(ConsentExtensionConstants.TYPE, ConsentTypeEnum.PAYMENTS.toString());
-        jsonObject.put(ConsentExtensionConstants.AUTH_TYPE, AuthTypeEnum.AUTHORISATION.toString());
 
         JSONObject requestedData1 = new JSONObject();
         requestedData1.put(ConsentExtensionConstants.TITLE, ConsentExtensionConstants.DEBTOR_ACCOUNT_TITLE);
@@ -57,8 +55,15 @@ public class OBBerlinAuthServletImplTests {
         dataSimpleArray.put(0, "sample_data");
         requestedData1.put(ConsentExtensionConstants.DATA_SIMPLE, dataSimpleArray);
 
-        consentDataArray.put(0, requestedData1);
-        jsonObject.put(ConsentExtensionConstants.CONSENT_DATA, consentDataArray);
+        consentDetails.put(0, requestedData1);
+
+        JSONObject consentData = new JSONObject();
+        consentData.put(ConsentExtensionConstants.CONSENT_DETAILS, consentDetails);
+        consentData.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, new JSONObject().put("iban", "123"));
+
+        jsonObject.put(ConsentExtensionConstants.CONSENT_DATA, consentData);
+        jsonObject.put(ConsentExtensionConstants.TYPE, ConsentTypeEnum.PAYMENTS.toString());
+        jsonObject.put(ConsentExtensionConstants.AUTH_TYPE, AuthTypeEnum.AUTHORISATION.toString());
 
         Map<String, Object> attributesMap =  obBerlinAuthServlet.updateRequestAttribute(mockHttpServletRequest,
                 jsonObject, resourceBundleMock);

@@ -533,3 +533,65 @@ enable = true
 [open_banking_berlin.consent.idempotency]
 allowed_time=1
 submission.enable=false
+
+#============Application Creation Properties=========================
+[open_banking.keymanager.application.additional.property.validator]
+class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
+
+[[open_banking.keymanager.application.type.attributes]]
+name="REGULATORY"
+label="Regulatory Application"
+type="select"
+tooltip="Is this a Regulatory Application?"
+values="true,false"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="1"
+[[open_banking.keymanager.application.type.attributes]]
+name = "SP_CERTIFICATE"
+label="Application Certificate"
+type="input"
+tooltip="Application Certificate"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="2"
+[[open_banking.keymanager.application.type.attributes]]
+name="ORG_ID"
+label="Organization Id"
+type="input"
+tooltip="Organization Id"
+default=""
+required="true"
+mask="false"
+multiple="false"
+priority="3"
+[[open_banking.keymanager.application.type.attributes]]
+name="token_endpoint_auth_signing_alg"
+label="Signing Algorithm"
+type="input"
+tooltip="Signing Algorithm"
+default="PS256"
+required="true"
+mask="false"
+multiple="false"
+priority="4"
+[[open_banking.keymanager.application.type.attributes]]
+name="token_endpoint_auth_method"
+label="Token Auth Method"
+type="select"
+tooltip="Token Auth Method"
+default=""
+values="private_key_jwt,tls_client_auth"
+required="true"
+mask="false"
+multiple="false"
+priority="5"
+
+[open_banking_berlin.gateway.signature_verification]
+supported_hash_algorithms = ["SHA-256", "SHA-512"]
+supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
+

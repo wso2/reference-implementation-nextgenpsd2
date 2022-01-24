@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.wso2.openbanking</groupId>
         <artifactId>open-banking-toolkit-berlin-modules</artifactId>
-        <version>1.0.0-M1</version>
+        <version>1.0.0-M2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -100,6 +100,13 @@
                                             dir="../../components/com.wso2.openbanking.berlin.data.publisher/target">
                                         <filename
                                                 regex="com.wso2.openbanking.berlin.data.publisher-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.berlin.keymanager/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.berlin.keymanager-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                             </target>

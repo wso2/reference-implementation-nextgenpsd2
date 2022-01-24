@@ -60,6 +60,12 @@ public class ErrorConstants {
     public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
             "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
+    public static final String NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS = "No matching accounts found for " +
+            "requested permissions";
+    public static final String NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID = "No matching account found for " +
+            "requested account id";
+    public static final String ACCOUNT_ID_CANNOT_BE_EMPTY = "Account id cannot be empty";
+    public static final String NO_VALID_ACCOUNTS_FOR_CONSENT = "No valid accounts for this consent";
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
     public static final String INCORRECT_CONSENT_DATA = "Received invalid consent data";
@@ -100,6 +106,8 @@ public class ErrorConstants {
             "authorisation Id matched with the requested different consent type";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
+    public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +
+            "with bank offered accounts";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";
@@ -125,6 +133,9 @@ public class ErrorConstants {
     public static final String INVALID_PERMISSION = "Requested permissions in the Payload are invalid";
     public static final String VALID_UNTIL_DATE_INVALID = "Valid until date is invalid";
 
+    // Funds confirmation related error messages
+    public static final String CARD_EXPIRY_DATE_INVALID = "Card expiry date is invalid";
+
     // Error object related constants
     public static final String PATH = "path";
     public static final String CATEGORY = "category";
@@ -145,4 +156,19 @@ public class ErrorConstants {
 
 
 
+    // Executors related error messages
+    public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";
+    public static final String DIGEST_HEADER_MISSING = "Digest header not passed through the request";
+    public static final String SIGNING_CERT_MISSING = "TPP signing certificate header not passed through the request";
+    public static final String SIGNING_CERT_INVALID = "Signature certificate header is invalid";
+    public static final String SIGNING_CERT_REVOKED = "Signature certificate is revoked";
+    public static final String DATE_HEADER_MISSING = "Date header not passed through the request";
+    public static final String INVALID_DIGEST_HEADER = "Invalid Digest header";
+    public static final String INVALID_SIGNATURE_HEADER = "Invalid Signature header";
+    public static final String INVALID_DIGEST_ALGORITHM = "Unsupported Digest algorithm";
+    public static final String INVALID_SIGNATURE_ALGORITHM = "Unsupported Signature algorithm";
+    public static final String SIGNATURE_CERTIFICATE_EXPIRED = "The certificate provided in TPP-Signature-Certificate" +
+            " header is expired";
+    public static final String SIGNATURE_VERIFICATION_FAIL = "Signature verification failed";
+    public static final String CERT_PARSE_EROR = "Error while parsing signature certificate";
 }
