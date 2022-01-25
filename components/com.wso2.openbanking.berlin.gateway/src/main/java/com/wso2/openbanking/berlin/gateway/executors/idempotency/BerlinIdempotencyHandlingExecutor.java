@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.HttpMethod;
 
+/**
+ * Idempotency handling executor
+ */
 public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
 
     private static final Log log = LogFactory.getLog(BerlinIdempotencyHandlingExecutor.class);
@@ -62,7 +65,7 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
             return;
         }
 
-        //Check whether idempotency handling for payment submission is enabled
+        //Check whether idempotency handling is enabled
         if (!isIdempotencyRequired()) {
             return;
         }
@@ -129,12 +132,11 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
                             ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT, ErrorConstants.HEADER_INVALID));
                 }
             } else {
-                log.debug("Handling idempotency through key manager");
+                log.debug("Object not found in cache. Adding the request to cache.");
                 //Since request is not in cache, adding the request to the cache against the idempotency key
                 contextProps.put(GatewayConstants.REQUEST_CACHE_KEY, payload);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error(ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_ERROR);
             obapiRequestContext.setError(true);
             obapiRequestContext.setErrors(handleIdempotencyErrors(obapiRequestContext,

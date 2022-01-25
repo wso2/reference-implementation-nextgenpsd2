@@ -16,6 +16,9 @@ import com.wso2.openbanking.accelerator.common.caching.OpenBankingBaseCache;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 
+/**
+ * Idempotency validation cache
+ */
 public class IdempotencyValidationCache extends OpenBankingBaseCache<IdempotencyCacheKey, Object> {
 
     private static final String cacheName = "OPEN_BANKING_BERLIN_IDEMPOTENCY_REQUEST_CACHE";

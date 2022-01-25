@@ -282,8 +282,7 @@ public class CommonUtil {
 
             long diffInHours = Duration.between(createdDate, currDate).toHours();
             return diffInHours <= Long.parseLong(allowedTimeDuration);
-        }
-        else{
+        } else {
             log.error("Idempotency Allowed duration is null");
             return false;
         }

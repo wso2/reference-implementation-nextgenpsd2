@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.berlin.gateway.executors.utils;
 
+/**
+ * Gateway constants
+ */
 public class GatewayConstants {
 
     public static final String X_IDEMPOTENCY_KEY = "X-Request-ID";
