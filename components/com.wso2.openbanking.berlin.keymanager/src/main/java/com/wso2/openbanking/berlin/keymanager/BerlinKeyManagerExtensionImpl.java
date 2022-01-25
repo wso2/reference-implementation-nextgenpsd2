@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.keymanager;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
@@ -28,6 +29,7 @@ import org.wso2.carbon.apimgt.api.ExceptionCodes;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 
 import java.security.cert.X509Certificate;
@@ -56,12 +58,12 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     public void validateAdditionalProperties(Map<String, ConfigurationDto> obAdditionalProperties)
             throws APIManagementException {
 
-        String regulatory = getValueForAdditionalProperty(obAdditionalProperties, BerlinKeyManagerConstants.REGULATORY);
-        String spCertificate = getValueForAdditionalProperty(obAdditionalProperties,
-                BerlinKeyManagerConstants.SP_CERTIFICATE);
-        String orgId = getValueForAdditionalProperty(obAdditionalProperties, BerlinKeyManagerConstants.ORG_ID);
+        String regulatory = getValueForAdditionalProperty(obAdditionalProperties, OpenBankingConstants.REGULATORY);
         if ("true".equals(regulatory) || "false".equals(regulatory)) {
             if (Boolean.parseBoolean(regulatory)) {
+                String spCertificate = getValueForAdditionalProperty(obAdditionalProperties,
+                        BerlinKeyManagerConstants.SP_CERTIFICATE);
+                String orgId = getValueForAdditionalProperty(obAdditionalProperties, BerlinKeyManagerConstants.ORG_ID);
                 validateOrganizationIdPattern(orgId);
                 validateCertificate(spCertificate, orgId);
             }
@@ -220,41 +222,101 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
         }
     }
 
-    public void doPreUpdateSpApp(OAuthConsumerAppDTO oAuthConsumerAppDTO,
-                                 ServiceProvider serviceProvider,
-                                 HashMap<String, String> additionalProperties)
+    public void doPreUpdateSpApp(OAuthConsumerAppDTO oAuthConsumerAppDTO, ServiceProvider serviceProvider,
+                                 HashMap<String, String> additionalProperties, boolean isCreateApp)
             throws APIManagementException {
 
-        String appName = oAuthConsumerAppDTO.getApplicationName();
-        oAuthConsumerAppDTO.setPkceMandatory(true);
-        oAuthConsumerAppDTO.setPkceSupportPlain(true);
-        if (log.isDebugEnabled()) {
-            log.debug("PKCE enabled for application: " + appName);
+        // This method is called both at app creation and app update
+        // Enable PKCE and add SP certificate to the service provider at only app creation for regulatory apps
+        if (isCreateApp && Boolean.parseBoolean(additionalProperties.get(OpenBankingConstants.REGULATORY))) {
+            String appName = oAuthConsumerAppDTO.getApplicationName();
+            oAuthConsumerAppDTO.setPkceMandatory(true);
+            oAuthConsumerAppDTO.setPkceSupportPlain(true);
+            if (log.isDebugEnabled()) {
+                log.debug("PKCE enabled for application: " + appName);
+            }
+            String certificate = additionalProperties.get(BerlinKeyManagerConstants.SP_CERTIFICATE);
+            if (certificate != null) {
+                serviceProvider.setCertificateContent(certificate);
+            } else {
+                String errMsg = "Certificate not available in the request";
+                throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_CREATION_FAILED);
+            }
         }
-        String certificate = additionalProperties.get(BerlinKeyManagerConstants.SP_CERTIFICATE);
-        if (certificate != null) {
-            serviceProvider.setCertificateContent(certificate);
-        } else {
-            String errMsg = "Certificate not available in the request";
-            throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_CREATION_FAILED);
-        }
-
 
     }
 
+    /**
+     * Do changes to app request before creating the app at toolkit level
+     *
+     * @param additionalProperties Values for additional property list defined in the config
+     * @throws APIManagementException when failed to validate a given property
+     */
     @Generated(message = "Excluding from code coverage since it is covered from other methods")
     public void doPreCreateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
             throws APIManagementException {
 
-        setOrgIdAsClientID(oAuthAppRequest, additionalProperties);
+        // Set Organization ID as the consumer key for regulatory apps
+        if (Boolean.parseBoolean(additionalProperties.get(OpenBankingConstants.REGULATORY))) {
+            setOrgIdAsClientID(oAuthAppRequest, additionalProperties);
+        }
+
     }
 
-    public void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
+    /**
+     * Do changes to app request before updating the app at toolkit level
+     *
+     * @param additionalProperties Values for additional property list defined in the config
+     * @throws APIManagementException when failed to validate a given property
+     */
+    public void doPreUpdateApplication(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties,
+                                       ServiceProvider serviceProvider)
             throws APIManagementException {
-        //TODO: fail application update if certificate or org_id is changed
+
+        ServiceProviderProperty[] spProperties = serviceProvider.getSpProperties();
+        validateDbPropertyChange(spProperties, additionalProperties, OpenBankingConstants.REGULATORY);
+
+        // If application is regulatory, check if certificate or organization id is changed in the update
+        if (Boolean.parseBoolean(additionalProperties.get(OpenBankingConstants.REGULATORY))) {
+            validateDbPropertyChange(spProperties, additionalProperties, BerlinKeyManagerConstants.SP_CERTIFICATE);
+            validateDbPropertyChange(spProperties, additionalProperties, BerlinKeyManagerConstants.ORG_ID);
+        }
+
+
     }
 
+    /**
+     * Check if the input value for a sp property is different from its value registered in the database
+     * @param spProperties Service provider property array
+     * @param propertyName Property name
+     * @param additionalProperties Values for additional property list defined in the config
+     * @throws APIManagementException
+     */
+    protected void validateDbPropertyChange(ServiceProviderProperty[] spProperties,
+                                            HashMap<String, String> additionalProperties, String propertyName)
+            throws APIManagementException {
 
+        for (ServiceProviderProperty spProperty : spProperties) {
+            if (StringUtils.equals(spProperty.getName(), propertyName)) {
+                String inputValue = additionalProperties.get(propertyName);
+                String registeredValue = spProperty.getValue();
+                if (!StringUtils.equals(registeredValue, inputValue)) {
+                    //throw error if input value not equal to the DB value
+                    String errMsg = "Input value for property " + inputValue + " provided for service provider property"
+                            + propertyName + " is different from the value in the database";
+                    log.error(errMsg);
+                    throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+                }
+            }
+        }
+    }
+
+    /**
+     * Set Organization ID as the consumer key for regulatory apps
+     * @param oAuthAppRequest
+     * @param additionalProperties
+     * @throws APIManagementException
+     */
     protected void setOrgIdAsClientID(OAuthAppRequest oAuthAppRequest, HashMap<String, String> additionalProperties)
             throws APIManagementException {
 
