@@ -19,7 +19,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
-import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
@@ -51,9 +50,8 @@ public class FundsConfirmationSubmissionValidator implements SubmissionValidator
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
-                    ErrorConstants.CONSENT_INVALID_STATE));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_INVALID_STATE);
             return;
         }
 

@@ -603,8 +603,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
              *  This option can be used to skip certificate revocation validation for certificates which have been
              *  issued by a trusted locally generated CA.
              */
-            List<String> revocationValidationExcludedIssuers = CommonConfigParser.getInstance()
-                    .getCertificateRevocationValidationExcludedIssuers();
+            List<String> revocationValidationExcludedIssuers = (List<String>) getOpenBankingConfigParser()
+                    .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_EXCLUDED_ISSUERS);
 
             if (revocationValidationExcludedIssuers != null
                     && revocationValidationExcludedIssuers.contains(certificate.getIssuerDN().getName())) {

@@ -36,7 +36,7 @@ public class FundsConfirmationService {
 
     @POST
     @Consumes({"application/json; charset=utf-8"})
-    @Path("/funds-confirmation")
+    @Path("/funds-confirmations")
     @Produces("application/json")
     public Response getAccountBalance(String requestString,
                                       @HeaderParam("X-Request-ID") String xRequestId) {

@@ -79,7 +79,7 @@ public class BerlinConsentValidatorTests extends PowerMockTestCase {
 
         JSONObject headers = TestPayloads.getMandatoryValidateHeadersMap(consentId, true);
         ConsentValidateData consentValidateData = new ConsentValidateData(headers,
-                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "accounts",
+                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "/accounts",
                 consentId, TestConstants.USER_ID, clientId, new HashMap<>());
         consentValidateData.setComprehensiveConsent(TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
@@ -101,7 +101,7 @@ public class BerlinConsentValidatorTests extends PowerMockTestCase {
 
         JSONObject headers = TestPayloads.getMandatoryValidateHeadersMap(consentId, true);
         ConsentValidateData consentValidateData = new ConsentValidateData(headers,
-                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "accounts",
+                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "/accounts",
                 consentId, TestConstants.USER_ID, clientId, new HashMap<>());
         consentValidateData.setComprehensiveConsent(TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 UUID.randomUUID().toString(), ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
@@ -122,7 +122,7 @@ public class BerlinConsentValidatorTests extends PowerMockTestCase {
 
         JSONObject headers = TestPayloads.getMandatoryValidateHeadersMap(consentId, true);
         ConsentValidateData consentValidateData = new ConsentValidateData(headers,
-                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "accounts",
+                (JSONObject) parser.parse(TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2), "/accounts",
                 consentId, TestConstants.USER_ID, clientId, new HashMap<>());
         consentValidateData.setComprehensiveConsent(TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),

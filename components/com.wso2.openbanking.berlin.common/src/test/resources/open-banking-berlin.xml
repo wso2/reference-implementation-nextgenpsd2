@@ -15,13 +15,15 @@
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-berlin.xml">
 
     <Gateway>
-        <SupportedHashAlgorithms>
-            <Algorithm>SHA-256</Algorithm>
-        </SupportedHashAlgorithms>
+        <SignatureVerification>
+            <SupportedHashAlgorithms>
+                <Algorithm>SHA-256</Algorithm>
+            </SupportedHashAlgorithms>
 
-        <SupportedSignatureAlgorithms>
-            <Algorithm>SHA256withRSA</Algorithm>
-        </SupportedSignatureAlgorithms>
+            <SupportedSignatureAlgorithms>
+                <Algorithm>SHA256withRSA</Algorithm>
+            </SupportedSignatureAlgorithms>
+        </SignatureVerification>
     </Gateway>
 
     <ConsentManagement>

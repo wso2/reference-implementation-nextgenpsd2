@@ -30,12 +30,14 @@ public class ConsentExtensionConstants {
     public static final String CONSENT_ID_HEADER = "consent-id";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
     public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
+    public static final String PSU_IP_ADDRESS_PROPER_CASE_HEADER = "PSU-IP-Address";
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
     public static final String LAST_ACTION_DATE = "lastActionDate";
     public static final String CONSENT_STATUS = "consentStatus";
     public static final String CONSENT_ID = "consentId";
+    public static final String CONSENT_ID_PROPER_CASE_HEADER = "Consent-ID";
     public static final String INSTRUCTED_AMOUNT = "instructedAmount";
     public static final String AUTH_ID = "authorisationId";
     public static final String CHOSEN_SCA_METHOD = "chosenScaMethod";
@@ -93,7 +95,7 @@ public class ConsentExtensionConstants {
             "]{12}";
 
     // Constants that are used by funds confirmation service
-    public static final String  ACCOUNT_REF_OBJECT = "accountRefObject";
+    public static final String ACCOUNT_REF_OBJECT = "accountRefObject";
     public static final String CARD_EXPIRY_DATE = "cardExpiryDate";
     public static final String CARD_NUMBER = "cardNumber";
     public static final String CARD_INFORMATION = "cardInformation";
@@ -138,20 +140,20 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
-            "accounts",
-            "accounts\\?withBalance",
-            "card-accounts"));
+            "/accounts",
+            "/accounts\\?withBalance",
+            "/card-accounts"));
     public static final List<String> SINGLE_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
-            "accounts/[^/?]*",
-            "accounts/[^/?]*\\?withBalance",
-            "accounts/[^/?]*/balances",
-            "accounts/[^/?]*/transactions",
-            "accounts/[^/?]*/transactions\\?withBalance",
-            "accounts/[^/?]*/transactions/[^/?]*",
-            "card-accounts/[^/?]*",
-            "card-accounts/[^/?]*/balances",
-            "card-accounts/[^/?]*/transactions"));
+            "/accounts/[^/?]*",
+            "/accounts/[^/?]*\\?withBalance",
+            "/accounts/[^/?]*/balances",
+            "/accounts/[^/?]*/transactions",
+            "/accounts/[^/?]*/transactions\\?withBalance",
+            "/accounts/[^/?]*/transactions/[^/?]*",
+            "/card-accounts/[^/?]*",
+            "/card-accounts/[^/?]*/balances",
+            "/card-accounts/[^/?]*/transactions"));
 
     // Constants that are used in accounts authorize flow
     public static final String ACCOUNTS_PERMISSION = "Read Account Information";

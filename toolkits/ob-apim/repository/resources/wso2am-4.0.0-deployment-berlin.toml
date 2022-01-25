@@ -430,10 +430,6 @@ priority = 6
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
-priority = 6
-
 [open_banking.apim.analytics]
 enable=false
 
@@ -527,7 +523,7 @@ allowed_time=1
 submission.enable=false
 
 #============Application Creation Properties=========================
-[open_banking.keymanager.application.additional.property.validator]
+[open_banking.keymanager.extension.impl]
 class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
 
 [[open_banking.keymanager.application.type.attributes]]

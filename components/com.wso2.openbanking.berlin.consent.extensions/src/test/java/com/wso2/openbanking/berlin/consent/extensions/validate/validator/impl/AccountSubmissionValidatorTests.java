@@ -40,6 +40,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
@@ -112,6 +113,10 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
                 (JSONObject) parser.parse(payload), requestPath,
                 consentId, TestConstants.USER_ID, clientId, new HashMap<>());
 
+        Map<String, String> resourceParams = new HashMap<>();
+        resourceParams.put("ResourcePath", requestPath);
+        consentValidateData.setResourceParams(resourceParams);
+
         String authId = UUID.randomUUID().toString();
         DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
@@ -139,6 +144,10 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
         ConsentValidateData consentValidateData = new ConsentValidateData(headers,
                 (JSONObject) parser.parse(payload), requestPath,
                 consentId, TestConstants.USER_ID, clientId, new HashMap<>());
+
+        Map<String, String> resourceParams = new HashMap<>();
+        resourceParams.put("ResourcePath", requestPath);
+        consentValidateData.setResourceParams(resourceParams);
 
         String authId = UUID.randomUUID().toString();
         DetailedConsentResource detailedConsentResource = TestUtil.getSampleDetailedStoredTestConsentResource(consentId,

@@ -47,7 +47,9 @@ public class AccountValidationUtil {
     public static void validateAccountPermissionsForSingleAccounts(ConsentValidateData consentValidateData,
                                                                    ConsentValidationResult consentValidationResult) {
 
-        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
+        String resourcePath = StringUtils.stripStart(consentValidateData.getResourceParams().get("ResourcePath"),
+                "/");
+        List<String> pathList = Arrays.asList(resourcePath.split("/"));
         String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
         String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
         boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());

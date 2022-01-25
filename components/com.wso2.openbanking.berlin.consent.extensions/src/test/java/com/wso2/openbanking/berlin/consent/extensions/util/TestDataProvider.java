@@ -177,21 +177,21 @@ public class TestDataProvider {
 
         return new Object[][]{
                 {
-                        "payments/sepa-credit-transfers/%s/cancellation-authorisations",
+                        "/payments/sepa-credit-transfers/%s/cancellation-authorisations",
                         ConsentTypeEnum.PAYMENTS.toString(),
                         TransactionStatusEnum.ACTC.name(),
                         AuthTypeEnum.CANCELLATION.toString(),
                         false
                 },
                 {
-                        "bulk-payments/sepa-credit-transfers/%s/cancellation-authorisations",
+                        "/bulk-payments/sepa-credit-transfers/%s/cancellation-authorisations",
                         ConsentTypeEnum.BULK_PAYMENTS.toString(),
                         TransactionStatusEnum.RCVD.name(),
                         AuthTypeEnum.CANCELLATION.toString(),
                         false
                 },
                 {
-                        "periodic-payments/sepa-credit-transfers/%s/cancellation-authorisations",
+                        "/periodic-payments/sepa-credit-transfers/%s/cancellation-authorisations",
                         ConsentTypeEnum.PERIODIC_PAYMENTS.toString(),
                         TransactionStatusEnum.RCVD.name(),
                         AuthTypeEnum.CANCELLATION.toString(),
@@ -204,9 +204,9 @@ public class TestDataProvider {
     Object[][] getBulkAccountsSubmissionTestDataProvider() {
 
         return new Object[][]{
-                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2, "accounts"},
-                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE, "accounts?withBalance"},
-                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS, "card-accounts"}
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2, "/accounts"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS_WITH_BALANCE, "/accounts?withBalance"},
+                {TestPayloads.VALID_ACCOUNTS_PAYLOAD_AVAILABLE_ACCOUNTS, "/card-accounts"}
         };
     }
 
@@ -215,23 +215,23 @@ public class TestDataProvider {
 
         return new Object[][]{
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567890"},
+                        "/accounts/DE12345678901234567890"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567890?withBalance"},
+                        "/accounts/DE12345678901234567890?withBalance"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567891/balances"},
+                        "/accounts/DE12345678901234567891/balances"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567892/transactions"},
+                        "/accounts/DE12345678901234567892/transactions"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567892/transactions?withBalance"},
+                        "/accounts/DE12345678901234567892/transactions?withBalance"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "accounts/DE12345678901234567892/transactions/1234"},
+                        "/accounts/DE12345678901234567892/transactions/1234"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "card-accounts/DE12345678901234567890"},
+                        "/card-accounts/DE12345678901234567890"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "card-accounts/DE12345678901234567891/balances"},
+                        "/card-accounts/DE12345678901234567891/balances"},
                 {TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
-                        "card-accounts/DE12345678901234567892/transactions"}
+                        "/card-accounts/DE12345678901234567892/transactions"}
         };
     }
 
