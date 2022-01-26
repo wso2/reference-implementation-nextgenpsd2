@@ -89,7 +89,7 @@ public class BerlinConsentValidatorTests extends PowerMockTestCase {
 
         berlinConsentValidator.validate(consentValidateData, consentValidationResult);
         Assert.assertNotNull(consentValidationResult.getConsentInformation()
-                .get(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
+                .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
     }
 
     @Test
