@@ -28,7 +28,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(userAccessToken)
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test(groups = ["1.3.6"])
 	void "OB-1534_Sub Account Level Bulk Retrieval of Multi Currency Account"() {
 
 		initiationPayload = AccountsInitiationPayloads.subAccLevelMultiCurrencyInitiationPayload
@@ -54,7 +54,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[2].currency"))
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test(groups = ["1.3.6"])
 	void "OB-1535_Sub Account Level specific account retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.subAccLevelMultiCurrencyInitiationPayload
@@ -80,7 +80,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(response.jsonPath().getJsonObject("account.currency"))
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test(groups = ["1.3.6"])
 	void "OB-1536_Aggregation level bulk retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.aggregationLevelMultiCurrencyInitiationPayload
@@ -98,7 +98,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test(groups = ["1.3.6"])
 	void "OB-1537_Aggregation level specific retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.aggregationLevelMultiCurrencyInitiationPayload
@@ -116,7 +116,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test(groups = ["1.3.6"])
 	void "OB-1538_Aggregation and sub account level bulk retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.subAndAggregartionMultiCurrencyInitiationPayload
