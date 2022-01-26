@@ -57,6 +57,13 @@ public class BerlinConsentValidator implements ConsentValidator {
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
 
+        // Cleaning up any extra appended tenant domains to psuIdFromToken
+        for (int occurrence = 1; occurrence < StringUtils.countMatches(psuIdFromToken,
+                ConsentExtensionConstants.SUPER_TENANT_DOMAIN); occurrence++) {
+            psuIdFromToken = StringUtils.removeEndIgnoreCase(psuIdFromToken,
+                    ConsentExtensionConstants.SUPER_TENANT_DOMAIN);
+        }
+
         log.debug("Validating if the Consent Id belongs to the client");
         if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
@@ -71,7 +78,7 @@ public class BerlinConsentValidator implements ConsentValidator {
         ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
                 .getAuthorizationResources();
         for (AuthorizationResource resource : authResources) {
-            if (psuIdFromToken.contains(resource.getUserID())) {
+            if (psuIdFromToken.equals(resource.getUserID())) {
                 isPsuIdMatching = true;
                 break;
             }
