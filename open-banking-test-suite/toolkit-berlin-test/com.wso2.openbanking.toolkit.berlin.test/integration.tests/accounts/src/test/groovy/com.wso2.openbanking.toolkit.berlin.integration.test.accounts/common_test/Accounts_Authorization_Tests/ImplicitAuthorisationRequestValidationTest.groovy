@@ -14,11 +14,22 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
+import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
+import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
+import io.restassured.http.ContentType
+import io.restassured.response.Response
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -31,6 +42,7 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
     // Static parameters
     String consentPath = AccountsConstants.CONSENT_PATH
     String initiationPayload = AccountsInitiationPayloads.AllAccessBankOfferedConsentPayload
+    String psuId = "${ConfigParser.getInstance().getPSU()}@${ConfigParser.getInstance().getTenantDomain()}"
 
     @Test (groups = ["1.3.3", "1.3.6"])
     void "PSU authentication on cancelled account consent"() {
@@ -53,5 +65,100 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
                             .equalsIgnoreCase("Current Consent State is not valid for authorisation"))
                 }
                 .execute()
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1409_Implicit Authorisation when ExplicitAuthorisationPreferred param is not set in initiation"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1410_Implicit Authorisation when ExplicitAuthorisationPreferred param set to false"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1529_Authorisation with undefined PSU_ID when TPP-ExplicitAuthorisationPreferred set to false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, psuId)
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        String authUrl = automation.currentUrl.get()
+        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+        Assert.assertEquals(oauthErrorCode, "invalid_request, User is not similar to the logged in user.")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1530_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
     }
 }

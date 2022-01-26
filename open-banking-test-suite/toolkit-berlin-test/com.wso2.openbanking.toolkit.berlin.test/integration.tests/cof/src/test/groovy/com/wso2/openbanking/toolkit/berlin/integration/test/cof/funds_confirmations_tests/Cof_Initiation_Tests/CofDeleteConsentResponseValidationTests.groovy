@@ -30,7 +30,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
     def initiationPayload = CofInitiationPayloads.defaultInitiationPayload
 
     @Test (groups = ["SmokeTest", "1.3.6"])
-    void "TC0603001_Delete the consent with valid consentId"() {
+    void "OB-1560_Delete consent in received state"() {
 
         //Account Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
@@ -47,7 +47,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
     }
 
     @Test(groups = ["1.3.6"])
-    void "TC0603002_Delete the consent with an invalid consentId"() {
+    void "OB-1562_Delete consent request with invalid consent id"() {
 
         //Account Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
@@ -63,7 +63,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "TC0603003_Delete the consent without consentId parameter"() {
+    void "OB-1565_Send delete consent request without consent id"() {
 
         //Account Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
@@ -91,7 +91,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "TC0603005_Delete an already deleted consent"() {
+    void "OB-1564_Send delete consent request for already terminated consent"() {
 
         //Account Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
@@ -111,5 +111,29 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
                 .toString(),"${consentId} is already in terminatedByTpp state")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1561_Delete consent in authorised state "() {
+        //Account Initiation
+        doDefaultCofInitiation(consentPath, initiationPayload)
+
+        //Authorise the consent
+        doCofAuthorizationFlow()
+
+        //Check Status
+        doStatusRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_VALID)
+
+        //Delete Consent
+        deleteCofConsent(consentPath)
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+        Assert.assertNotNull(consentDeleteResponse.getHeader("X-Request-ID"))
+
+        //Check Status
+        doStatusRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_TERMINATED_BY_TPP)
     }
 }

@@ -39,7 +39,7 @@ class AccountsInitiationPayloads {
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
@@ -61,7 +61,7 @@ class AccountsInitiationPayloads {
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
@@ -83,7 +83,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":4,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -95,7 +95,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
                
         }
     """.stripIndent()
@@ -108,7 +108,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -120,7 +120,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -132,11 +132,11 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
-    static final String AllAccessBankOfferedConsentPayload = """
+	public static final String AllAccessBankOfferedConsentPayload = """
           {  
                "access":{  
                   "accounts":[],
@@ -146,7 +146,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -165,7 +165,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -189,7 +189,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -213,7 +213,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -237,7 +237,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 }

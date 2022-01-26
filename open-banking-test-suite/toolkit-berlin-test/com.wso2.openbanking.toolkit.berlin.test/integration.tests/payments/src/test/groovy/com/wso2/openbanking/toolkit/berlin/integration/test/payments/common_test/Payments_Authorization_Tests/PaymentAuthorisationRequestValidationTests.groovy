@@ -12,21 +12,26 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
 import io.restassured.http.ContentType
+import io.restassured.response.Response
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.testng.Assert
@@ -205,7 +210,8 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, paymentId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                UUID.randomUUID().toString())
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
@@ -248,7 +254,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(BerlinConstants.SCOPES.ACCOUNTS,
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.ACCOUNTS,
                 paymentId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
@@ -264,7 +270,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, paymentId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
@@ -277,7 +283,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, " ")
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Error while retrieving payment data. No payment ID provided with " +
@@ -336,15 +342,110 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0302019_Send the Authorisation Request with unsupported code_challenge_method value"() {
 
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, paymentId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
         }
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1470_Implicit Authorisation when ExplicitAuthorisationPreferred param is not set in initiation"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1471_Implicit Authorisation when ExplicitAuthorisationPreferred param set to false"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1540_Authorisation with undefined PSU_ID when TPP-ExplicitAuthorisationPreferred set to false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, psuId)
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        String authUrl = automation.currentUrl.get()
+        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+        Assert.assertEquals(oauthErrorCode, "invalid_request, User is not similar to the logged in user.")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1541_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
     }
 }

@@ -73,7 +73,7 @@ class BerlinConstants {
     }
 
     static final enum SCOPES {
-        PAYMENTS(["openid", "payments"], "pis"), ACCOUNTS(["openid", "com.wso2.openbanking.toolkit.berlin.integration.test.accounts"], "ais") ,
+        PAYMENTS(["openid", "payments"], "pis"), ACCOUNTS(["openid", "accounts"], "ais") ,
         COF(["openid", "fundsconfirmations"], "piis")
 
         private final List<String> scopes

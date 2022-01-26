@@ -100,44 +100,6 @@ class OAuthAuthorizationRequestBuilder {
     }
 
     /**
-     * Build Authorization Request With Invalid Client Id
-     * @param scopes
-     * @param accountId
-     * @return authorization_response
-     */
-    static AuthorizationRequest OAuthRequestWithInvalidClientId(BerlinConstants.SCOPES scopes, String accountId) {
-
-        return new AuthorizationRequest.Builder(new ResponseType(), new ClientID(UUID.randomUUID().toString()))
-                .responseType(ResponseType.parse("code"))
-                .endpointURI(params.endpoint)
-                .redirectionURI(new URI(AppConfigReader.getRedirectURL()))
-                .scope(new Scope(scopes.getConsentScope(accountId)))
-                .codeChallenge(new CodeVerifier(), CodeChallengeMethod.S256)
-                .state(new State(UUID.randomUUID().toString()))
-                .build()
-    }
-
-    /**
-     * Build Authorization Request With Unsupported Code Challenge Method
-     * @param scopes
-     * @param accountId
-     * @return authorization_response
-     */
-    static AuthorizationRequest OAuthRequestWithUnsupportedCodeChallengeMethod(BerlinConstants.SCOPES scopes, String accountId) {
-
-        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
-
-        return new AuthorizationRequest.Builder(new ResponseType(), new ClientID(AppConfigReader.getClientId()))
-                .responseType(ResponseType.parse("code"))
-                .endpointURI(params.endpoint)
-                .redirectionURI(new URI(AppConfigReader.getRedirectURL()))
-                .scope(new Scope(scopes.getConsentScope(accountId)))
-                .codeChallenge(new CodeVerifier(), codeChallengeMethod)
-                .state(new State(UUID.randomUUID().toString()))
-                .build()
-    }
-
-    /**
      * Build Authorization Request Without Scope attribute
      * @return authorization_response
      */
@@ -185,6 +147,33 @@ class OAuthAuthorizationRequestBuilder {
                 .scope(new Scope(scopes.getConsentScope(accountId)))
                 .codeChallenge(new CodeVerifier(), CodeChallengeMethod.PLAIN)
                 .state(new State(UUID.randomUUID().toString()))
+                .build()
+    }
+
+    /**
+     * Build Authorization Request with configurable attribute
+     * @param scopes
+     * @param accountId
+     * @param clientId
+     * @param responseType
+     * @param codeChallengeMethod
+     * @param state
+     * @return authorization_request
+     */
+    static AuthorizationRequest OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES scopes, String accountId,
+                                                                   String clientId = AppConfigReader.getClientId(),
+                                                                   String responseType = "code",
+                                                                   CodeChallengeMethod codeChallengeMethod =
+                                                                           CodeChallengeMethod.S256,
+                                                                   String state = UUID.randomUUID().toString()) {
+
+        return new AuthorizationRequest.Builder(new ResponseType(), new ClientID(clientId))
+                .responseType(ResponseType.parse(responseType))
+                .endpointURI(params.endpoint)
+                .redirectionURI(new URI(AppConfigReader.getRedirectURL()))
+                .scope(new Scope(scopes.getConsentScope(accountId)))
+                .codeChallenge(new CodeVerifier(), codeChallengeMethod)
+                .state(new State(state))
                 .build()
     }
 }

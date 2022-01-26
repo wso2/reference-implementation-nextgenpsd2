@@ -155,4 +155,10 @@ abstract class AbstractCofFlow {
         consentDeleteResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .delete("${consentPath}/${consentId}")
     }
+
+    void getConsentStatus(String consentPath, String consent_Id) {
+        retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${consent_Id}/status")
+        consentStatus = TestUtil.parseResponseBody(retrievalResponse, "consentStatus")
+    }
 }

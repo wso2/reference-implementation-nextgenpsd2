@@ -189,4 +189,30 @@ class CofInitiationPayloads {
         "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
     }
     """.stripIndent()
+
+    static String initiationPayloadForSubAccLevelMultiCurrency = """
+    {
+        "account":
+            {
+                "iban": "DE12345678901234567890",
+                "currency": "EUR"
+            },
+        "cardNumber": "1234567891234",
+        "cardExpiryDate": "2025-12-31",
+        "cardInformation": "My Merchant Loyalty Card",
+        "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
+    }
+    """.stripIndent()
+    static String initiationPayloadForAggregateLevelMultiCurrency = """
+    {
+        "account":
+            {
+                "iban": "DE12345678901234567890"
+            },
+        "cardNumber": "1234567891234",
+        "cardExpiryDate": "2025-12-31",
+        "cardInformation": "My Merchant Loyalty Card",
+        "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
+    }
+    """.stripIndent()
 }

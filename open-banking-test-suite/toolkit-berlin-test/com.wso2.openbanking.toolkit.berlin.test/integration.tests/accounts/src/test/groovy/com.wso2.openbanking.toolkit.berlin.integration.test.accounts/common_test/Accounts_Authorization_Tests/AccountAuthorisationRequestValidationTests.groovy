@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
@@ -21,6 +22,7 @@ import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -63,7 +65,8 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, accountId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+                UUID.randomUUID().toString())
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
@@ -107,7 +110,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(BerlinConstants.SCOPES.PAYMENTS,
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.PAYMENTS,
                 accountId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
@@ -123,7 +126,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, accountId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
@@ -136,7 +139,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, " ")
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Error while retrieving account data. No account ID provided with " +
@@ -195,12 +198,15 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0202012_Send the Authorisation Request with unsupported code_challenge value"() {
 
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, accountId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")

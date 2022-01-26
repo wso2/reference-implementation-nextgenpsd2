@@ -136,6 +136,7 @@ class BerlinRequestBuilder {
                 .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(config.getBaseURL())
     }
 
     static String getCurrentDate() {

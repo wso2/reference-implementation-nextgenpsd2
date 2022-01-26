@@ -32,7 +32,7 @@ class CofSCAFlowTest extends AbstractCofFlow {
     String retrievalPayload = CofRetrievalPayloads.defaultRetrievalPayload
 
     @Test (groups = ["SmokeTest", "1.3.6"])
-    void "TC0601001_Cof initiation for SCA implicit accept scenario"() {
+    void "OB-1542_COF consent initiation with valid inputs"() {
 
         doDefaultCofInitiation(consentPath, initiationPayload)
 
@@ -48,7 +48,7 @@ class CofSCAFlowTest extends AbstractCofFlow {
     }
 
     @Test (groups = ["SmokeTest", "1.3.6"],
-            dependsOnMethods = ["TC0601001_Cof initiation for SCA implicit accept scenario"])
+            dependsOnMethods = ["OB-1542_COF consent initiation with valid inputs"])
     void "TC0602013_Cof Authorization for SCA implicit accept scenario"() {
 
         doCofAuthorizationFlow()
@@ -95,5 +95,27 @@ class CofSCAFlowTest extends AbstractCofFlow {
         doStatusRetrieval(consentPath)
 
         Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_REJECTED)
+    }
+
+    @Test (groups = ["1.3.6"], dependsOnMethods = "TC0602014_Cof Authorization for SCA implicit deny scenario")
+    void "OB-1551_Retrieve status of an authorised consent"() {
+
+        getConsentStatus(consentPath, consentId)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_REJECTED)
+    }
+
+    @Test (groups = ["1.3.6"], dependsOnMethods = "TC0602014_Cof Authorization for SCA implicit deny scenario")
+    void "OB-1553_Consent details retrieval for terminated consent"() {
+
+        //Get Consent
+        doConsentRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_REJECTED)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("account"))
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("cardNumber"))
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("cardExpiryDate"))
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("cardInformation"))
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("consentStatus"))
     }
 }

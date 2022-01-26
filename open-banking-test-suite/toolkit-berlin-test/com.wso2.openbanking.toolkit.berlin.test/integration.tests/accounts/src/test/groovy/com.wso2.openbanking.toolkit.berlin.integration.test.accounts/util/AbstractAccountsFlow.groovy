@@ -161,6 +161,7 @@ abstract class AbstractAccountsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, "true")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, "true")
                 .body(initiationPayload)
                 .post(consentPath)
 

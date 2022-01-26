@@ -12,15 +12,18 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Authorization_Tests
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.cof.util.AbstractCofFlow
@@ -63,7 +66,8 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, consentId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId,
+                UUID.randomUUID().toString())
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
@@ -95,7 +99,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(BerlinConstants.SCOPES.PAYMENTS,
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.PAYMENTS,
                 consentId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
@@ -111,7 +115,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, consentId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
@@ -124,7 +128,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, " ")
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
         consentAuthorizeErrorFlowToValidateScopes(request)
 
         Assert.assertEquals(oauthErrorCode, "Error while retrieving funds confirmation data. No consent ID " +
@@ -182,12 +186,15 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
     @Test (groups = ["1.3.6"])
     void "TC0602011_Send the Authorisation Request with unsupported code_challenge value"() {
 
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, consentId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
@@ -196,12 +203,16 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
     @Test(groups = ["1.3.6"])
     void "TC0602012_Send the Authorisation Request without code_challenge_method value"() {
+
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, consentId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")

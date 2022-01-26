@@ -211,4 +211,23 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
                 "Input string \"1234\" is not a valid UUID")
     }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1528_Initiation request with incorrect PSU_ID when TPP-ExplicitAuthorisationPreferred set to true"() {
+
+        def consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .filter(new BerlinSignatureFilter())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+    }
 }

@@ -37,7 +37,7 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
             "recurringIndicator":false,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay":1,
-            "combinedServiceIndicator":true
+            "combinedServiceIndicator":false
         }"""
                 .stripIndent()
 
@@ -63,7 +63,7 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
             "recurringIndicator":false,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay":1,
-            "combinedServiceIndicator":true
+            "combinedServiceIndicator":false
         }"""
                 .stripIndent()
 
@@ -88,7 +88,7 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
             "recurringIndicator":false,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay":1,
-            "combinedServiceIndicator":true
+            "combinedServiceIndicator":false
         }"""
                 .stripIndent()
 
