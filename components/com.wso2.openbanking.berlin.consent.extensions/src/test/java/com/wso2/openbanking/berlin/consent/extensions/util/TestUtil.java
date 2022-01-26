@@ -90,7 +90,7 @@ public class TestUtil {
         Assert.assertEquals(mockHttpServletResponse.getHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH).toString(),
                 ScaApproachEnum.REDIRECT.toString());
         Assert.assertNotNull(mockHttpServletResponse
-                .getHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER).toString());
+                .getHeader(ConsentExtensionConstants.LOCATION_HEADER).toString());
 
         JSONObject linksObject = (JSONObject) response.get(ConsentExtensionConstants.LINKS);
         Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.SELF));
@@ -153,7 +153,7 @@ public class TestUtil {
         Assert.assertEquals(mockHttpServletResponse.getHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH).toString(),
                 ScaApproachEnum.REDIRECT.toString());
         Assert.assertNotNull(mockHttpServletResponse
-                .getHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER).toString());
+                .getHeader(ConsentExtensionConstants.LOCATION_HEADER).toString());
 
         JSONObject linksObject = (JSONObject) response.get(ConsentExtensionConstants.LINKS);
         Assert.assertNotNull(linksObject.get(ConsentExtensionConstants.SCA_STATUS));

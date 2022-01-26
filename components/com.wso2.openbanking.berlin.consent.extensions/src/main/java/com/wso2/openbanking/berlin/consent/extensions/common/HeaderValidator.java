@@ -44,7 +44,7 @@ public class HeaderValidator {
     public static void validatePsuIpAddress(Map<String, String> headers) {
 
         log.debug("Validating PSU-IP-Address header");
-        if (headers.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers, ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.get(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
             if (StringUtils.isEmpty(psuIpAddress)) {
@@ -72,7 +72,8 @@ public class HeaderValidator {
 
         Map<String, String> headerMap = new HashMap<>();
 
-        if (headersObject.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject,
+                ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             headerMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER,
                     headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
         }
@@ -86,7 +87,7 @@ public class HeaderValidator {
      */
     public static void validateXRequestId(Map<String, String> headers) {
         log.debug("Validating the X-Request-ID header");
-        if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
             if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
@@ -113,7 +114,7 @@ public class HeaderValidator {
 
         Map<String, String> headerMap = new HashMap<>();
 
-        if (headersObject.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             headerMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
                     headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
         }
@@ -158,7 +159,8 @@ public class HeaderValidator {
      */
     public static boolean isTppExplicitAuthorisationPreferred(Map<String, String> headers) {
         log.debug("Determining whether the consent request is implicit or explicit");
-        if (headers.containsKey(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers,
+                ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER)) {
             return Boolean.parseBoolean(headers.get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         }
 
@@ -173,7 +175,8 @@ public class HeaderValidator {
      */
     public static Optional<Boolean> isTppRedirectPreferred(Map<String, String> headers) {
         log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
-        if (headers.containsKey(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers,
+                ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
             return Optional.of(Boolean.parseBoolean(headers
                     .get(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)));
         }
@@ -203,7 +206,7 @@ public class HeaderValidator {
      */
     public static void validateConsentId(JSONObject headersObject) {
         log.debug("Validating the Consent-ID header");
-        if (headersObject.containsKey(ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject, ConsentExtensionConstants.CONSENT_ID_HEADER)) {
             String consentId = headersObject.getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
 
             if (StringUtils.isEmpty(consentId) || !CommonUtil.isValidUuid(consentId)) {

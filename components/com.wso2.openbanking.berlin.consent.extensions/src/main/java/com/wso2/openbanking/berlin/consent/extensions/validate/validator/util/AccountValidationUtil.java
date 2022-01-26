@@ -20,7 +20,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
-import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +46,9 @@ public class AccountValidationUtil {
     public static void validateAccountPermissionsForSingleAccounts(ConsentValidateData consentValidateData,
                                                                    ConsentValidationResult consentValidationResult) {
 
-        List<String> pathList = Arrays.asList(consentValidateData.getRequestPath().split("/"));
+        String resourcePath = StringUtils.stripStart(consentValidateData.getResourceParams().get("ResourcePath"),
+                "/");
+        List<String> pathList = Arrays.asList(resourcePath.split("/"));
         String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
         String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
         boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
@@ -60,9 +61,8 @@ public class AccountValidationUtil {
             log.debug("The Account ID can not be null or empty");
             log.error(ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.ACCOUNT_ID_CANNOT_BE_EMPTY);
             return;
         }
 
@@ -77,9 +77,8 @@ public class AccountValidationUtil {
                 log.debug("The Account ID in the request path is not contained in any of the mapped resources");
                 log.error(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
                 consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-                consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                        ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID));
+                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+                consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
                 return;
             }
         }
@@ -93,12 +92,11 @@ public class AccountValidationUtil {
         boolean hasActiveTransactionAccess = AccountValidationUtil
                 .hasActiveAccess(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
 
-        if (!hasActiveAccountAccess || !hasActiveBalanceAccess || !hasActiveTransactionAccess) {
+        if (!hasActiveAccountAccess && !hasActiveBalanceAccess && !hasActiveTransactionAccess) {
             log.error(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
             return;
         }
 

@@ -415,32 +415,20 @@ priority = 1
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutor"
 priority = 2
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.APITPPValidationExecutor"
 priority = 3
-
-# Add Berlin idempotency executor here
-#[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-#name = ""
-#priority = 4
-
-# Add Berlin consent enforcement executor here
-# [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-# name = ""
-# priority = 5
-
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 6
-
-# Add Berlin data reporting executor here
-# [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-# name = ""
-# priority = 7
-
-# Add Berlin error handling executor here
-# [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-# name = "com.wso2.openbanking.uk.gateway.executors.error.handling.UKErrorHandlingExecutor"
-# priority = 1000
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+priority = 1000
 
 [open_banking.apim.analytics]
 enable=false
@@ -535,7 +523,7 @@ allowed_time=1
 submission.enable=false
 
 #============Application Creation Properties=========================
-[open_banking.keymanager.application.additional.property.validator]
+[open_banking.keymanager.extension.impl]
 class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
 
 [[open_banking.keymanager.application.type.attributes]]
@@ -594,4 +582,7 @@ priority="5"
 [open_banking_berlin.gateway.signature_verification]
 supported_hash_algorithms = ["SHA-256", "SHA-512"]
 supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
+
+#[open_banking.berlin.keymanager.org_id_validation]
+#regex=""
 

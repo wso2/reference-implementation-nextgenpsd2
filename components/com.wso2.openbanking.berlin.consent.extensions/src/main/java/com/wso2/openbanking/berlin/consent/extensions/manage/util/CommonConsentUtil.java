@@ -52,7 +52,7 @@ public class CommonConsentUtil {
         String consentType = ConsentExtensionUtil.getConsentTypeFromRequestPath(requestPath);
         String locationString = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
                 apiVersion, requestPath, createdAuthorizationResource.getAuthorizationID());
-        consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER,
+        consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_HEADER,
                 locationString);
 
         Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(isRedirectPreferred,

@@ -18,7 +18,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
-import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import net.minidev.json.JSONObject;
@@ -50,9 +49,8 @@ public class FundsConfirmationValidationUtil {
         if (payload == null) {
             log.error(ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.FORMAT_ERROR.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
             return false;
         }
 
@@ -61,9 +59,8 @@ public class FundsConfirmationValidationUtil {
                 || !payload.containsKey(ConsentExtensionConstants.INSTRUCTED_AMOUNT)) {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.MANDATORY_ELEMENTS_MISSING));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.FORMAT_ERROR.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             return false;
         }
 
@@ -81,9 +78,8 @@ public class FundsConfirmationValidationUtil {
         if (!isAccountMappingValid) {
             log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
             return false;
         }
 

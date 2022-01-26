@@ -44,8 +44,9 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         HeaderValidator.validateXRequestId(consentValidateData.getHeaders());
         consentValidationResult.getConsentInformation()
-                .appendField(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                        consentValidateData.getHeaders().getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                .appendField(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+                        consentValidateData.getHeaders().getAsString(ConsentExtensionConstants
+                                .X_REQUEST_ID_HEADER));
 
         if (consentValidateData.getHeaders().containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             HeaderValidator.validatePsuIpAddress(consentValidateData.getHeaders());
@@ -56,13 +57,19 @@ public class BerlinConsentValidator implements ConsentValidator {
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
 
+        // Cleaning up any extra appended tenant domains to psuIdFromToken
+        for (int occurrence = 1; occurrence < StringUtils.countMatches(psuIdFromToken,
+                ConsentExtensionConstants.SUPER_TENANT_DOMAIN); occurrence++) {
+            psuIdFromToken = StringUtils.removeEndIgnoreCase(psuIdFromToken,
+                    ConsentExtensionConstants.SUPER_TENANT_DOMAIN);
+        }
+
         log.debug("Validating if the Consent Id belongs to the client");
         if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             consentValidationResult.setHttpCode(ResponseStatus.FORBIDDEN.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             return;
         }
 
@@ -80,14 +87,13 @@ public class BerlinConsentValidator implements ConsentValidator {
         if (!isPsuIdMatching) {
             log.error(ErrorConstants.NO_MATCHING_USER_FOR_CONSENT);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.PSU_CREDENTIALS_INVALID,
-                    ErrorConstants.NO_MATCHING_USER_FOR_CONSENT));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.PSU_CREDENTIALS_INVALID.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_USER_FOR_CONSENT);
             return;
         }
 
         SubmissionValidator submissionValidator = SubmissionValidatorFactory
-                .getSubmissionValidator(consentValidateData.getRequestPath());
+                .getSubmissionValidator(consentValidateData.getResourceParams().get("ResourcePath"));
 
         if (submissionValidator != null) {
             submissionValidator.validate(consentValidateData, consentValidationResult);
