@@ -75,7 +75,7 @@ public class HeaderValidator {
         if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject,
                 ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             headerMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER,
-                    headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
+                    headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER));
         }
         validatePsuIpAddress(headerMap);
     }
@@ -116,7 +116,7 @@ public class HeaderValidator {
 
         if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             headerMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
-                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
         }
         validateXRequestId(headerMap);
     }

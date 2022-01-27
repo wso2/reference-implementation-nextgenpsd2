@@ -28,7 +28,8 @@ public class ConsentExtensionConstants {
     public static final String IS_DEFAULT = "isDefault";
     public static final String CONSENT_ID_HEADER = "Consent-ID";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
-    public static final String PSU_IP_ADDRESS_HEADER = "PSU-IP-Address";
+    public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
+    public static final String PSU_IP_ADDRESS_PROPER_CASE_HEADER = "PSU-IP-Address";
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
@@ -85,7 +86,8 @@ public class ConsentExtensionConstants {
 
     // Original proper case header constants
     public static final String LOCATION_HEADER = "Location";
-    public static final String X_REQUEST_ID_HEADER = "X-Request-ID";
+    public static final String X_REQUEST_ID_HEADER = "x-request-id";
+    public static final String X_REQUEST_ID_PROPER_CASE_HEADER = "X-Request-ID";
     public static final String ASPSP_SCA_APPROACH_PROPER_CASE_HEADER = "ASPSP-SCA-Approach";
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +

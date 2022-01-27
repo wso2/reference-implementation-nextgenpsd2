@@ -47,12 +47,12 @@ public class TestPayloads {
     public static JSONObject getMandatoryValidateHeadersMap(String consentId, boolean isWithPsuIpAddress) {
 
         JSONObject validateHeadersObject = new JSONObject();
-        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 UUID.randomUUID().toString());
         validateHeadersObject.put(ConsentExtensionConstants.CONSENT_ID_HEADER, consentId);
 
         if (isWithPsuIpAddress) {
-            validateHeadersObject.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER, "127.0.0.1");
+            validateHeadersObject.put(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER, "127.0.0.1");
         }
 
         return validateHeadersObject;
