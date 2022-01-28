@@ -176,7 +176,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
      */
     protected void validateOrganizationIdPattern(String organizationId) throws APIManagementException {
 
-        Pattern regexPattern = Pattern.compile(CommonConfigParser.getInstance().getOrgIdValidationRegex());
+        Pattern regexPattern = Pattern.compile(getConfigParser().getOrgIdValidationRegex());
 
         Matcher matcher = regexPattern.matcher(organizationId);
         if (!matcher.find()) {
@@ -187,7 +187,6 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
         if (log.isDebugEnabled()) {
             log.debug("Organization ID passed the regex validation");
         }
-
     }
 
     @Generated(message = "Excluding from code coverage since it is covered from other method")
@@ -265,6 +264,12 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
             String errMsg = "Org ID not available in the request";
             throw new APIManagementException(errMsg, ExceptionCodes.OAUTH2_APP_CREATION_FAILED);
         }
+    }
+
+    @Generated(message = "Created for testing purposes")
+    protected CommonConfigParser getConfigParser() {
+
+        return CommonConfigParser.getInstance();
     }
 
 }

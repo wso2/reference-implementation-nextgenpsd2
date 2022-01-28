@@ -154,8 +154,6 @@ public class ErrorConstants {
     public static final String EXECUTOR_IDEMPOTENCY_KEY_ERROR = "Error while handling Idempotency check.:" +
             ErrorConstants.PATH_IDEM_KEY;
 
-
-
     // Executors related error messages
     public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";
     public static final String DIGEST_HEADER_MISSING = "Digest header not passed through the request";

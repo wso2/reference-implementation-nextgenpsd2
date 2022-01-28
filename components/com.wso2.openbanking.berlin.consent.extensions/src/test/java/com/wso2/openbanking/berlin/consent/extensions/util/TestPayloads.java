@@ -47,7 +47,8 @@ public class TestPayloads {
     public static JSONObject getMandatoryValidateHeadersMap(String consentId, boolean isWithPsuIpAddress) {
 
         JSONObject validateHeadersObject = new JSONObject();
-        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+                UUID.randomUUID().toString());
         validateHeadersObject.put(ConsentExtensionConstants.CONSENT_ID_HEADER, consentId);
 
         if (isWithPsuIpAddress) {

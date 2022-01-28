@@ -38,7 +38,7 @@
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
-    <jaxrs:server id="fundsConfirmationService" address="/funds-confirmation">
+    <jaxrs:server id="fundsConfirmationService" address="/funds-confirmations">
         <jaxrs:serviceBeans>
             <ref bean="fundsConfirmationServiceBean"/>
         </jaxrs:serviceBeans>

@@ -397,4 +397,41 @@ public class ConsentExtensionUtil {
         }
         return parsedDate;
     }
+
+    /**
+     * This method checks a provided header key is in the header map without considering the case.
+     *
+     * @param headersJson headers map
+     * @param headerKey header key that need to be checked
+     * @return true if present, false otherwise
+     */
+    public static boolean checkCaseIgnoredHeader(Map<String, String> headersJson, String headerKey) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Validating header: " + headerKey);
+        }
+        for (String header : headersJson.keySet()) {
+            if (header.equalsIgnoreCase(headerKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method checks a provided header key is in the header json without considering the case.
+     *
+     * @param headersJson headers json
+     * @param headerKey header key that need to be checked
+     * @return true if present, false otherwise
+     */
+    public static boolean checkCaseIgnoredHeader(JSONObject headersJson, String headerKey) {
+
+        for (String header : headersJson.keySet()) {
+            if (header.equalsIgnoreCase(headerKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

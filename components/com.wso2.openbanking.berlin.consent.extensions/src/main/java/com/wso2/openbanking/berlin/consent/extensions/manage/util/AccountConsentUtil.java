@@ -389,7 +389,7 @@ public class AccountConsentUtil {
         String requestPath = consentManageData.getRequestPath();
         String locationString = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
                 apiVersion, requestPath, createdConsent.getConsentID());
-        consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_PROPER_CASE_HEADER,
+        consentManageData.setResponseHeader(ConsentExtensionConstants.LOCATION_HEADER,
                 locationString);
 
         Map<String, Object> scaElements = CommonUtil.getScaApproachAndMethods(isRedirectPreferred,

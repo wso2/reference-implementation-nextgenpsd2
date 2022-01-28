@@ -26,10 +26,9 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_REFS = "accountRefs";
     public static final String CURRENCY = "currency";
     public static final String IS_DEFAULT = "isDefault";
-    public static final String X_REQUEST_ID_HEADER = "x-request-id";
-    public static final String CONSENT_ID_HEADER = "consent-id";
+    public static final String CONSENT_ID_HEADER = "Consent-ID";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
-    public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
+    public static final String PSU_IP_ADDRESS_HEADER = "PSU-IP-Address";
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
@@ -85,15 +84,15 @@ public class ConsentExtensionConstants {
     public static final String ACTIVE = "active";
 
     // Original proper case header constants
-    public static final String LOCATION_PROPER_CASE_HEADER = "Location";
-    public static final String X_REQUEST_ID_PROPER_CASE_HEADER = "X-Request-ID";
+    public static final String LOCATION_HEADER = "Location";
+    public static final String X_REQUEST_ID_HEADER = "X-Request-ID";
     public static final String ASPSP_SCA_APPROACH_PROPER_CASE_HEADER = "ASPSP-SCA-Approach";
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
             "]{12}";
 
     // Constants that are used by funds confirmation service
-    public static final String  ACCOUNT_REF_OBJECT = "accountRefObject";
+    public static final String ACCOUNT_REF_OBJECT = "accountRefObject";
     public static final String CARD_EXPIRY_DATE = "cardExpiryDate";
     public static final String CARD_NUMBER = "cardNumber";
     public static final String CARD_INFORMATION = "cardInformation";
@@ -138,20 +137,20 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_CONSENT_INFO = "accountConsentInfo";
     public static final List<String> BULK_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
-            "accounts",
-            "accounts\\?withBalance",
-            "card-accounts"));
+            "/accounts",
+            "/accounts\\?withBalance",
+            "/card-accounts"));
     public static final List<String> SINGLE_ACCOUNT_ACCESS_METHODS_REGEX_LIST = Collections
             .unmodifiableList(Arrays.asList(
-            "accounts/[^/?]*",
-            "accounts/[^/?]*\\?withBalance",
-            "accounts/[^/?]*/balances",
-            "accounts/[^/?]*/transactions",
-            "accounts/[^/?]*/transactions\\?withBalance",
-            "accounts/[^/?]*/transactions/[^/?]*",
-            "card-accounts/[^/?]*",
-            "card-accounts/[^/?]*/balances",
-            "card-accounts/[^/?]*/transactions"));
+            "/accounts/[^/?]*",
+            "/accounts/[^/?]*\\?withBalance",
+            "/accounts/[^/?]*/balances",
+            "/accounts/[^/?]*/transactions",
+            "/accounts/[^/?]*/transactions\\?withBalance",
+            "/accounts/[^/?]*/transactions/[^/?]*",
+            "/card-accounts/[^/?]*",
+            "/card-accounts/[^/?]*/balances",
+            "/card-accounts/[^/?]*/transactions"));
 
     // Constants that are used in accounts authorize flow
     public static final String ACCOUNTS_PERMISSION = "Read Account Information";

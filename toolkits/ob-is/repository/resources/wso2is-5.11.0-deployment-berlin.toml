@@ -187,6 +187,9 @@ name = "code"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
 
 [[oauth.custom_response_type]]
+validator = "com.wso2.openbanking.berlin.identity.response.type.validators.BerlinCodeResponseTypeValidator"
+
+[[oauth.custom_response_type]]
 name = "code id_token"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBHybridResponseTypeHandlerExtension"
 
@@ -347,6 +350,9 @@ request_object_validator = "com.wso2.openbanking.accelerator.identity.auth.exten
 type = "request_uri_param_value_builder"
 class = "com.wso2.openbanking.accelerator.identity.builders.DefaultOBRequestUriRequestObjectBuilder"
 
+[oauth.client.id.validation]
+regex ="^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$"
+
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
@@ -396,6 +402,9 @@ max_connections_per_route = 1500
 #================Identity==============
 [open_banking.identity.authentication_webapp]
 servlet_extension = "com.wso2.openbanking.berlin.consent.extensions.authservlet.impl.OBBerlinAuthServletImpl"
+
+[open_banking.identity.extensions]
+response_type_handler="com.wso2.openbanking.berlin.identity.response.type.handlers.BerlinResponseTypeHandlerImpl"
 
 #================consent management==============
 [[open_banking.consent.authorize_steps.retrieve]]

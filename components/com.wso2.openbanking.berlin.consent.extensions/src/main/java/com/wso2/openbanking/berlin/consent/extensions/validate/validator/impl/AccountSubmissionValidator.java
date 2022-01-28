@@ -23,7 +23,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
-import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
@@ -70,9 +69,8 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             }
             log.error(ErrorConstants.CONSENT_EXPIRED);
             consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_EXPIRED,
-                    ErrorConstants.CONSENT_EXPIRED));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_EXPIRED.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_EXPIRED);
             return;
         }
 
@@ -80,9 +78,8 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_UNKNOWN,
-                    ErrorConstants.CONSENT_INVALID_STATE));
+            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString());
+            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_INVALID_STATE);
             return;
         }
 
@@ -99,9 +96,8 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
                 log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
                 consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-                consentValidationResult.setModifiedPayload(ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                        ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT));
+                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+                consentValidationResult.setErrorMessage(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
                 return;
             }
 
