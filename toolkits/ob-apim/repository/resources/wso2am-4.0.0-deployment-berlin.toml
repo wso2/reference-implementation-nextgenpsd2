@@ -417,11 +417,9 @@ priority = 2
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 3
-
-# Add Berlin idempotency executor here
-#[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-#name = ""
-#priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+priority = 4
 
 # Add Berlin consent enforcement executor here
 # [[open_banking.gateway.openbanking_gateway_executors.type.executors]]

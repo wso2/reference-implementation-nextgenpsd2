@@ -71,8 +71,8 @@ public class CommonConstants {
             ".CacheAccessExpiry";
     public static final String IDEMPOTENCY_CACHE_MODIFY_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
             ".CacheModifiedExpiry";
-    public static final String SUBMISSION_IDEMPOTENCY_ENABLED = "ConsentManagement.Idempotency" +
-            ".PaymentSubmissionIdempotencyEnabled";
+    public static final String PAYMENT_INITIATION_IDEMPOTENCY_ENABLED = "ConsentManagement.Idempotency" +
+            ".PaymentInitiationIdempotencyEnabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
             ".AllowedDuration";
     public static final String DELIMITER = ":";

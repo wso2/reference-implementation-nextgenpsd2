@@ -32,7 +32,8 @@
        <Idempotency>
             <!-- Allowed idempotency duration in hours -->
             <AllowedTimeDurationForIdempotency>1</AllowedTimeDurationForIdempotency>
-            <PaymentSubmissionIdempotencyEnabled>true</PaymentSubmissionIdempotencyEnabled>
+            <!-- Payment Initiation Idempotency enabled -->
+            <PaymentInitiationIdempotencyEnabled>true</PaymentInitiationIdempotencyEnabled>
         </Idempotency>
     </ConsentManagement>
 </Server>

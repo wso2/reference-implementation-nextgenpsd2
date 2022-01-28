@@ -38,9 +38,9 @@ import javax.ws.rs.HttpMethod;
 /**
  * Idempotency handling executor
  */
-public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
+public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
 
-    private static final Log log = LogFactory.getLog(BerlinIdempotencyHandlingExecutor.class);
+    private static final Log log = LogFactory.getLog(IdempotencyHandlingExecutor.class);
     /**
      * Method to handle pre request
      *
@@ -154,7 +154,7 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
      * @param key                 unique cache key
      * @param idempotentDetails   properties to store
      */
-    private void setPropertiesToCache(IdempotencyValidationCache idempotencyValidationCache, String key,
+    protected void setPropertiesToCache(IdempotencyValidationCache idempotencyValidationCache, String key,
                                       Map idempotentDetails) {
 
         idempotencyValidationCache.addToCache(IdempotencyCacheKey.of(key), idempotentDetails);
@@ -166,7 +166,7 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
      * @param key unique cache key
      * @return context properties
      */
-    private Map getPropertiesFromCache(IdempotencyValidationCache idempotencyValidationCache, String key) {
+    protected Map getPropertiesFromCache(IdempotencyValidationCache idempotencyValidationCache, String key) {
 
         Object cachedObject = idempotencyValidationCache.getFromCache(IdempotencyCacheKey.of(key));
         return cachedObject == null ? new HashMap<>() : (Map) cachedObject;
@@ -179,8 +179,8 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
      * @param message
      * @return
      */
-    private ArrayList<OpenBankingExecutorError> handleIdempotencyErrors(OBAPIRequestContext obapiRequestContext,
-                                                                        String message, String errorCode) {
+    protected ArrayList<OpenBankingExecutorError> handleIdempotencyErrors(OBAPIRequestContext obapiRequestContext,
+                                                                String message, String errorCode) {
 
         OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
                 ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR, message, OpenBankingErrorCodes.BAD_REQUEST_CODE);
@@ -194,11 +194,11 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
      *
      * @return
      */
-    private boolean isIdempotencyRequired() {
+    protected boolean isIdempotencyRequired() {
 
         CommonConfigParser parser = CommonConfigParser.getInstance();
         String isIdempotencyEnabled = (String) parser.getConfiguration()
-                .get(CommonConstants.SUBMISSION_IDEMPOTENCY_ENABLED);
+                .get(CommonConstants.PAYMENT_INITIATION_IDEMPOTENCY_ENABLED);
 
         return Boolean.parseBoolean(isIdempotencyEnabled);
     }
@@ -209,7 +209,7 @@ public class BerlinIdempotencyHandlingExecutor implements OpenBankingGatewayExec
      * @param resource
      * @return
      */
-    private boolean isPaymentRequest(String resource) {
+    protected boolean isPaymentRequest(String resource) {
 
         return (resource.contains(GatewayConstants.PAYMENTS) || resource.contains(GatewayConstants.BULK_PAYMENTS) ||
                 resource.contains(GatewayConstants.PERIODIC_PAYMENTS));
