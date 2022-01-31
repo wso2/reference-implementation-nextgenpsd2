@@ -122,7 +122,7 @@ abstract class AbstractAccountsFlow {
                 .execute()
 
         //Get Code from URL
-        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[1]
+        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[0]
                 .replace("+", " ")
     }
 
@@ -148,9 +148,6 @@ abstract class AbstractAccountsFlow {
 
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
-                .addStep {driver, context ->
-                    Assert.assertNotNull(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim())
-                }
                 .execute()
 
         oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),

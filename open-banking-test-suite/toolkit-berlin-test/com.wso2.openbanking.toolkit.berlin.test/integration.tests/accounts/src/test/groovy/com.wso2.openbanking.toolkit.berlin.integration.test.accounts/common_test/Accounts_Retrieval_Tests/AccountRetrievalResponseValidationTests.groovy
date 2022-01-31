@@ -190,7 +190,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .queryParam("bookingStatus", "both")
-                .queryParam("dateFrom", "2018-60-11")
+                .queryParam("dateFrom", "2018-Jan-11")
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)

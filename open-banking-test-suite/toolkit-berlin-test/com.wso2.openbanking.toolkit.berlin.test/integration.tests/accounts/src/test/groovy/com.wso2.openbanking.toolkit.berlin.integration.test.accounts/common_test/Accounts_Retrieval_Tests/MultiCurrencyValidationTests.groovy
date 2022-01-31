@@ -56,18 +56,15 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[0]"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[0].iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[0].currency"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("accounts[0].iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
+		Assert.assertEquals(response.jsonPath().getJsonObject("accounts[0].currency"), BerlinConstants.CURRENCY1)
 		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[1]"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[1].iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[1].currency"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[2]"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[2].iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[2].currency"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("accounts[1].iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
+		Assert.assertEquals(response.jsonPath().getJsonObject("accounts[1].currency"), BerlinConstants.CURRENCY1)
 	}
 
 	@Test(groups = ["1.3.6"])
-	void "OB-1535_Sub Account Level specific account retrieval of multi currency account"() {
+	void "OB-1535_Sub Account Level tranaction retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.subAccLevelMultiCurrencyInitiationPayload
 
@@ -78,18 +75,31 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		def response = BerlinRequestBuilder
 						.buildBasicRequest(userAccessToken)
 						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-						.get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
+						.queryParam("bookingStatus", "booked")
+						.get(AccountsConstants.TRANSACTIONS_PATHT_MULTICURRENCY)
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.currency"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.currency"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.iban"))
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account.currency"))
+		Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("account.iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
+	}
+
+	@Test(groups = ["1.3.6"])
+	void "OB-1589_Sub Account Level balances retrieval of multi currency account"() {
+
+		initiationPayload = AccountsInitiationPayloads.subAccLevelMultiCurrencyInitiationPayload
+
+		//Account Initiation and Authorisation Step
+		preRetrievalStep(initiationPayload)
+
+		//Account Retrieval
+		def response = BerlinRequestBuilder
+						.buildBasicRequest(userAccessToken)
+						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+						.get(AccountsConstants.BALANCES_PATH_MULTICURRENCY)
+
+		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("account.iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
 	}
 
 	@Test(groups = ["1.3.6"])
@@ -107,11 +117,12 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 						.get(AccountsConstants.ACCOUNTS_PATH)
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+		Assert.assertNotNull(response.jsonPath().getJsonObject("accounts[0]"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("accounts[0].iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
 	}
 
 	@Test(groups = ["1.3.6"])
-	void "OB-1537_Aggregation level specific retrieval of multi currency account"() {
+	void "OB-1537_Aggregation level transaction retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.aggregationLevelMultiCurrencyInitiationPayload
 
@@ -122,10 +133,30 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		def response = BerlinRequestBuilder
 						.buildBasicRequest(userAccessToken)
 						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-						.get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
+						.get(AccountsConstants.TRANSACTION_LIST_MULTICURRENCY_ACC)
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-		Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
+		Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("account.iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
+	}
+
+	@Test(groups = ["1.3.6"])
+	void "OB-1590_Aggregation level balances retrieval of multi currency account"() {
+
+		initiationPayload = AccountsInitiationPayloads.aggregationLevelMultiCurrencyInitiationPayload
+
+		//Account Initiation and Authorisation Step
+		preRetrievalStep(initiationPayload)
+
+		//Account Retrieval
+		def response = BerlinRequestBuilder
+						.buildBasicRequest(userAccessToken)
+						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+						.get(AccountsConstants.BALANCES_PATH_MULTICURRENCY)
+
+		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))
+		Assert.assertEquals(response.jsonPath().getJsonObject("account.iban"), BerlinConstants.MULTICURRENCY_ACCOUNT)
 	}
 
 	@Test(groups = ["1.3.6"])

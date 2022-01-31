@@ -386,7 +386,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Set frequency per day attribute as 1,for one time account access.")
+                "Set frequency per day attribute as 1,for one time account access")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -548,7 +548,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TIMESTAMP_INVALID)
+                BerlinConstants.FORMAT_ERROR)
 
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().
                 contains("String \"${validTime}\" is invalid against requested date format(s) yyyy-MM-dd"))
@@ -593,7 +593,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "ValidUntil have to be today,"+ LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) +" " +
+                "ValidUntil has to be today, "+ LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) +" " +
                         "or a future date")
     }
 
@@ -692,7 +692,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Invalid request payload.")
+                "Request payload is not present")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

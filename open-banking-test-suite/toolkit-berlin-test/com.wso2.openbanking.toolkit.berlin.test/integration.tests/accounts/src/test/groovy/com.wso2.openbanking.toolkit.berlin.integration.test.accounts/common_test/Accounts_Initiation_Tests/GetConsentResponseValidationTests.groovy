@@ -149,8 +149,9 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
         doConsentRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
-        Assert.assertNull(retrievalResponse.jsonPath().getJsonObject("access.balances.iban"))
-        Assert.assertNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban"))
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban"), [])
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban"), [])
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban"), [])
     }
 
     @Test(groups = ["1.3.6"],
@@ -169,8 +170,7 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep {driver, context ->
                     fields.forEach{ value ->
-                        Select ddAccount = new Select(driver.findElement(By.xpath(value)))
-                        ddAccount.selectByIndex(1)
+                        driver.findElement(By.xpath(value)).click()
                     }
                     driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
                 }
@@ -183,7 +183,11 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
         doConsentRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
-        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.balances.iban"))
-        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban"))
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
     }
 }

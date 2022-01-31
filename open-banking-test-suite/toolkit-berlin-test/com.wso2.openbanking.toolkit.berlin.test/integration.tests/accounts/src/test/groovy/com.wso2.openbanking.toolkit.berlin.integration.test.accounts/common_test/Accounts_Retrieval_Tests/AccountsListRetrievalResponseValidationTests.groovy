@@ -182,7 +182,7 @@ class AccountsListRetrievalResponseValidationTests extends AbstractAccountsFlow 
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "TC0213017_Retrieve Transactions from Consent on Account List of All Psd2 Accounts"() {
+    void "TC0213017_Retrieve Balances from Consent on Account List of All Psd2 Accounts"() {
 
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = AccountsInitiationPayloads.initiationPayloadForAllPsd2

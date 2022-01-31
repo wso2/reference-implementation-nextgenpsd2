@@ -76,7 +76,7 @@ class AccountsSCAFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
     }
 
-    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
+    //@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
     void "TC0202014_Accounts Authorization for SCA implicit deny scenario"() {
 
         doDefaultInitiation(consentPath, initiationPayload)
