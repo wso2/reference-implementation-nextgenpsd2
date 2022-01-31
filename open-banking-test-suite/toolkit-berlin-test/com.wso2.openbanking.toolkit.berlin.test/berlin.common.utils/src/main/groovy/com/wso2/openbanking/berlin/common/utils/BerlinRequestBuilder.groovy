@@ -60,7 +60,7 @@ class BerlinRequestBuilder {
         def tokenDTO = new ApplicationAccessTokenDto()
         tokenDTO.setScopes(scopes.getScopes())
 
-        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO)
+        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO, AppConfigReader.getClientId())
         def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
 
         log.info("Got access token $accessToken")
@@ -99,6 +99,7 @@ class BerlinRequestBuilder {
         def response = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(httpRequest.query)
+                .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .post(TestConstants.TOKEN_ENDPOINT)
 
         HTTPResponse httpResponse = new HTTPResponse(response.statusCode())
@@ -133,7 +134,7 @@ class BerlinRequestBuilder {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(config.getBaseURL())

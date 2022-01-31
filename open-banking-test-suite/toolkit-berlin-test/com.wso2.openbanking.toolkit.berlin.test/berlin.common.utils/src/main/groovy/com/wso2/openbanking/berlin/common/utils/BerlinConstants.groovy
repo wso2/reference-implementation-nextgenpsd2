@@ -96,4 +96,10 @@ class BerlinConstants {
     static final String IS_VALID = "IsValid"
     static final String SCA_STATUS_PARAM = "scaStatus"
     static final String TRUSTED_BENEFICIARY_FLAG = "trustedBeneficiaryFlag"
+
+    static final String NORMAL_ACCOUNT = "DE98765432109876543210"
+    static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890"
+    static final String CURRENCY1 = "USD"
+    static final String CURRENCY2 = "EUR"
+    static final String CURRENCY3 = "GBP"
 }
