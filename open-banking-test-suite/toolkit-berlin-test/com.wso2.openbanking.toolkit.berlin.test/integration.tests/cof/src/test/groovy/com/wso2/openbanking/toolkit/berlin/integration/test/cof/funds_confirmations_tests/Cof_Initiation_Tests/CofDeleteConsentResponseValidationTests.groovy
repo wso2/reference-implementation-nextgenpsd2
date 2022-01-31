@@ -57,9 +57,11 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
         //Delete Consent
         def consentDeleteResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .delete("${consentPath}/" + invalidConsentId)
-        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_406)
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE)
+                .toString(),BerlinConstants.CONSENT_UNKNOWN)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString(),"Consent-ID ${invalidConsentId} is not a valid UUID.")
+                .toString(),"Matching consent not found for provided Id")
     }
 
     @Test (groups = ["1.3.6"])

@@ -24,6 +24,7 @@ import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.cof.util.AbstractCofFlow
@@ -87,7 +88,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
         Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
     }
@@ -101,9 +102,10 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.PAYMENTS,
                 consentId)
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "The provided consent Id mismatches with the scope type " +
+                "(\"ais, pis, piis\")")
     }
 
     @Test (groups = ["1.3.6"])
@@ -116,9 +118,9 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId)
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "Matching consent not found for provided Id")
     }
 
     @Test (groups = ["1.3.6"])
@@ -129,10 +131,9 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Error while retrieving funds confirmation data. No consent ID " +
-                "provided with scope.")
+        Assert.assertEquals(oauthErrorCode, "Error while retrieving consent data. No consent Id provided with scope")
     }
 
     @Test (groups = ["1.3.6"])
@@ -143,7 +144,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutState(scopes, consentId)
-        consentAuthorizeErrorFlow(request)
+        consentAuthorizeErrorFlowValidation(request)
 
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
@@ -232,15 +233,11 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         auth = new BerlinOAuthAuthorization(scopes, consentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-                    Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                            "Current Consent State is not valid for authorisation")
-                }
                 .execute()
 
         def oauthErrorCode = TestUtil.getDecodedUrl(automation.currentUrl.get())
 
-        Assert.assertEquals(oauthErrorCode,"Current Consent State is not valid for authorisation")
+        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
     }
 
     @Test (groups = ["1.3.6"])
@@ -259,6 +256,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         def consentId = TestUtil.parseResponseBody(response, "consentId")
@@ -267,15 +265,11 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         auth = new BerlinOAuthAuthorization(scopes, consentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-                    Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                            "PSU-ID of the consent does not match with the logged in user")
-                }
                 .execute()
 
         //Verify the Error
         def oauthErrorCode = TestUtil.getDecodedUrl(automation.currentUrl.get())
-        Assert.assertEquals(oauthErrorCode, "PSU-ID of the consent does not match with the logged in user")
+        Assert.assertEquals(oauthErrorCode, "The logged in user does not match with the user who initiated the consent")
     }
 
     @Test (groups = ["1.3.6"])
@@ -293,6 +287,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         consentId = TestUtil.parseResponseBody(response, "consentId")
@@ -317,10 +312,10 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         auth = new BerlinOAuthAuthorization(scopes, consentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-                    Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText()
-                            .trim(), "Invalid debtor account in consent")
-                }
                 .execute()
+
+        def oauthErrorCode = TestUtil.getDecodedUrl(automation.currentUrl.get())
+
+        Assert.assertEquals(oauthErrorCode,"Provided account references do not exist or not valid")
     }
 }

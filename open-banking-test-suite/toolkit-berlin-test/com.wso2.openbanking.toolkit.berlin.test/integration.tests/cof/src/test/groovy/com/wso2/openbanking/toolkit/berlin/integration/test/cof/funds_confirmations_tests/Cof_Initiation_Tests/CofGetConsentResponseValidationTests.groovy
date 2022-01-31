@@ -29,7 +29,7 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
     def consentPath = CofConstants.COF_CONSENT_PATH
     def initiationPayload = CofInitiationPayloads.defaultInitiationPayload
 
-    @Test (groups = ["SmokeTest", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.6"], priority = 1)
     void "OB-1543_Retrieve COF consent details"() {
 
         //Account Initiation
@@ -46,8 +46,9 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("consentStatus"))
     }
 
-    @Test (groups = ["SmokeTest", "1.3.6"], dependsOnMethods = "OB-1543_Retrieve COF consent details")
+    @Test (groups = ["SmokeTest", "1.3.6"], dependsOnMethods = "OB-1543_Retrieve COF consent details", priority = 1)
     void "OB-1547_Retrieve status of a valid consent"() {
+
         getConsentStatus(consentPath, consentId)
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, CofConstants.CONSENT_STATUS_RECEIVED)
@@ -81,7 +82,7 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
                 BerlinConstants.RESOURCE_UNKNOWN)
     }
 
-    @Test (groups = ["1.3.6"])
+    @Test (groups = ["1.3.6"], priority = 2)
     void "OB-1546_Consent details retrieval for a deleted consent"() {
 
         //Account Initiation
@@ -106,7 +107,8 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("consentStatus"))
     }
 
-    @Test (groups = ["1.3.6"], dependsOnMethods = "OB-1546_Consent details retrieval for a deleted consent")
+    @Test (groups = ["1.3.6"], dependsOnMethods = "OB-1546_Consent details retrieval for a deleted consent",
+            priority = 2)
     void "OB-1549_Retrieve status of a deleted consent"() {
         getConsentStatus(consentPath, consentId)
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -155,16 +157,23 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
         def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/1234")
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
-        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Matching consent not found for provided Id")
     }
 
     @Test (groups = ["1.3.6"])
     void "OB-1548_Retrieve status of a invalid consent"() {
 
-        def invalidConsentId = 1234
+        String invalidConsentId = 1234
 
         getConsentStatus(consentPath, invalidConsentId)
+
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
-        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Matching consent not found for provided Id")
     }
 }

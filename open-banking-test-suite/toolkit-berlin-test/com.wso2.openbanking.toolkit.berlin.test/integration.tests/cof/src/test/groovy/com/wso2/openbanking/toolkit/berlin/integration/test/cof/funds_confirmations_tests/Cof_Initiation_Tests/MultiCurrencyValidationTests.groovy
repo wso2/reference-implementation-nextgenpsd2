@@ -21,7 +21,7 @@ import org.testng.annotations.Test
 
 class MultiCurrencyValidationTests extends AbstractCofFlow {
 
-	String consentPath = CofConstants.CONSENT_PATH
+	String consentPath = CofConstants.COF_CONSENT_PATH
 
 	@Test (groups = ["1.3.6"])
 	void "OB-1572_Sub Account Level COF initiation of Multi Currency Account"() {
@@ -31,6 +31,13 @@ class MultiCurrencyValidationTests extends AbstractCofFlow {
 		doDefaultCofInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+	}
+
+	@Test (groups = ["1.3.6"], dependsOnMethods = "OB-1572_Sub Account Level COF initiation of Multi Currency Account")
+	void "OB-1578_COF consent authorisation for multi currency account"() {
+
+		doCofAuthorizationFlow()
+		Assert.assertNotNull(code)
 	}
 
 	@Test (groups = ["1.3.6"])
@@ -43,14 +50,8 @@ class MultiCurrencyValidationTests extends AbstractCofFlow {
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
 	}
 
-	@Test (groups = ["1.3.6"])
-	void "OB-1578_COF consent authorisation for multi currency account"() {
-
-		def initiationPayload = CofInitiationPayloads.initiationPayloadForSubAccLevelMultiCurrency
-
-		doDefaultCofInitiation(consentPath, initiationPayload)
-
-		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+	@Test (groups = ["1.3.6"], dependsOnMethods = "OB-1573_Aggregation Level COF initiation of multi currency account")
+	void "OB-1591_COF consent authorisation for aggregation level multi currency account"() {
 
 		doCofAuthorizationFlow()
 		Assert.assertNotNull(code)

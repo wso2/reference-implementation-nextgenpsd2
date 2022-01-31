@@ -58,6 +58,8 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
                 "Object has missing required properties ([\"account\"])")
     }
@@ -74,8 +76,10 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains("\"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string \"INVALID_IBAN\""))
+                .contains("No valid accounts for this consent"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -90,8 +94,10 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains("\"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string \"\""))
+                .contains("No valid accounts for this consent"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -106,6 +112,8 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
                 "Object has missing required properties ([\"instructedAmount\"])")
     }
@@ -122,6 +130,8 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
                 " Object has missing required properties ([\"amount\"])")
     }

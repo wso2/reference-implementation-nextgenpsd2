@@ -57,10 +57,11 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
@@ -90,10 +91,11 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
@@ -107,24 +109,16 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals (consentResponse.getStatusCode (), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (consentResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
                         .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.6"])
@@ -136,23 +130,16 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (consentResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
                         .contains("Make sure you have provided the correct security credentials"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.6"])
@@ -163,29 +150,19 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
 
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
-        switch (BerlinTestUtil.solutionVersion) {
-
-            case TestConstants.SOLUTION_VERSION_140:
-                Assert.assertEquals (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                        "Parameter 'X-Request-ID' is required but is missing.")
-                break
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                        contains ("Header parameter 'X-Request-ID' is required on path " +
-                                "'/consents/confirmation-of-funds' but not found in request."))
-                break
-        }
+        Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                        contains ("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -197,10 +174,11 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -209,7 +187,7 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.6"])
@@ -226,6 +204,7 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
