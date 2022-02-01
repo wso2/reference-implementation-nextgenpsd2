@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
+ */
+
+.boxContainer {
+  border: 2px groove rgba(170, 167, 167, 0.16);
+  border-radius: 20px;
+  min-height: 754px;
+  min-width: 95vw;
+  background: white;
+  padding: 1.25em;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  margin-top: 2.25rem;
+  margin-bottom: 2.25rem;
+}
+
+.box {
+  display: inline-block;
+  min-width: 90vw;
+}
+
+@media (max-width: 500px) {
+  .boxContainer {
+    min-height: 200px;
+    min-width: 0;
+    width: 92%;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+  .box{
+    padding: 0.2em;
+  }
+
+}

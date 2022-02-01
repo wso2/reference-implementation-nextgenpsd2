@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
+ */
+
+.body {
+  /* margin: 2.25rem 2.25rem; */
+  min-height: 84.2vh;
+  padding: 1.5em 2.25em;
+  color: rgba(8, 18, 71, 1);
+}
+
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#detailRow {
+  margin-top: 0.5rem;
+  min-height: 72.4vh;
+}
+
+Col {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+#profileCol {
+  /* -webkit-box-shadow: 4px 7px 15px -10px rgba(0, 0, 0, 0.69);
+  box-shadow: 4px 7px 15px -10px rgba(0, 0, 0, 0.69); */
+  border: 2px groove rgba(170, 167, 167, 0.16);
+  /* border: 1px solid #AAA7A7; */
+  border-radius: 20px;
+margin-bottom: 1rem;
+  background-color: white;
+  height: 100%;
+}
+
+#consentDetailCol {
+  margin-left: 1rem;
+}
+
+@media (max-width: 500px) {
+  .body{
+    padding: 0.5em 1em;
+    margin-bottom: 1rem;
+  }
+  #consentDetailCol {
+    margin-left: 0;
+  }
+}

@@ -99,6 +99,9 @@
                                                 regex="com.wso2.openbanking.berlin.data.publisher-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+
+                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr/"
+                                       src="../../react-apps/self-care-portal/target/consentmgr.war"/>
                             </target>
                         </configuration>
                         <goals>

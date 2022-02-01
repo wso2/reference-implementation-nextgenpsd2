@@ -1,0 +1,136 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
+ */
+
+.profileBody {
+  /* color: rgba(8, 18, 71, 1); */
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+#profileLogo {
+  border-radius: 50%;
+  width: 10rem;
+  height: 10rem;
+}
+
+.profileMain {
+  text-align: center;
+  margin-top: -1rem;
+}
+
+.confirmLink {
+  margin-top: 2.5rem;
+}
+
+.withdrawBtn {
+  background-color: white;
+  color: #d9534f;
+  border: 1px solid #d9534f;
+  border-radius: 15px;
+  padding: 0.25em 1.75em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+.actionButtons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actionBtnDiv {
+  padding: 0.5rem;
+}
+
+.withdrawBtn:hover {
+  color: white;
+  background-color: #d9534f;
+  transition: all ease-in-out 0.2s;
+  text-decoration: none;
+}
+
+.withdrawBtn:focus {
+  outline: none;
+}
+
+.horizontalLine {
+  border: none;
+  /* width: 100%; */
+  height: 1.3125rem;
+  margin-top: 0;
+  border-bottom: 2px groove rgba(170, 167, 167, 0.16);
+  box-shadow: 0 4px 9px -10px rgba(0, 0, 0, 0.53);
+  /* margin: -50px auto 10px; */
+}
+
+.infoBox {
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.infoBox h5 {
+  margin-bottom: 1rem;
+}
+
+.accredBox {
+  display: flex;
+  border: 2px groove rgba(170, 167, 167, 0.16);
+  padding: 0.5em;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.accredInfo {
+  margin-left: 2rem;
+}
+
+#cdrLogo {
+  /* width: 5rem; */
+  margin-left: 0.4rem;
+  height: 3rem;
+}
+
+.note{
+  margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .profileMain {
+    margin-top: 0.5rem;
+  }
+  #cdrLogo {
+    /* width: 5rem; */
+    margin: auto;
+    margin-bottom: 0.5rem;
+  }
+  .accredBox {
+   
+    padding-left: 0em;
+    padding-right: 0em;
+  
+  }
+  .accredInfo {
+    margin-left: 0rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+  
+}
