@@ -27,26 +27,26 @@ class PaymentsDataProviders {
                                  PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
                                PaymentsInitiationPayloads.singlePaymentPayload] as Object[])
 
-        PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
-                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-                               PaymentsInitiationPayloads.bulkPaymentPayload] as Object[])
-
-        PaymentsTypesList.add([PaymentsConstants.PERIODIC_PAYMENTS_PATH,
-                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-                               PaymentsInitiationPayloads.periodicPaymentPayload] as Object[])
-
-        PaymentsTypesList.add([PaymentsConstants.SINGLE_PAYMENTS_PATH,
-                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-                               PaymentsInitiationPayloads.singlePaymentPayloadWithAdditionalParams] as Object[])
+//        PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
+//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+//                               PaymentsInitiationPayloads.bulkPaymentPayload] as Object[])
+//
+//        PaymentsTypesList.add([PaymentsConstants.PERIODIC_PAYMENTS_PATH,
+//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+//                               PaymentsInitiationPayloads.periodicPaymentPayload] as Object[])
+//
+//        PaymentsTypesList.add([PaymentsConstants.SINGLE_PAYMENTS_PATH,
+//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+//                               PaymentsInitiationPayloads.singlePaymentPayloadWithAdditionalParams] as Object[])
 
         return PaymentsTypesList
     }
@@ -195,9 +195,25 @@ class PaymentsDataProviders {
 
         def executionRule = new ArrayList<Object[]>()
         executionRule.add([PaymentsConstants.executionRuleFollowing] as Object[])
-        executionRule.add([PaymentsConstants.executionRuleLatest] as Object[])
+        executionRule.add([PaymentsConstants.executionRulePreceding] as Object[])
 
         return executionRule
+    }
+
+    @DataProvider(name = "PaymentsTypesForCancellation")
+    Object[][] getPaymentsTypesForCancellation() {
+
+        def PaymentsTypesList = new ArrayList<Object[]>()
+
+        PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS],
+                               PaymentsInitiationPayloads.bulkPaymentPayload] as Object[])
+
+        PaymentsTypesList.add([PaymentsConstants.PERIODIC_PAYMENTS_PATH,
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS],
+                               PaymentsInitiationPayloads.periodicPaymentPayload] as Object[])
+
+        return PaymentsTypesList
     }
 
 }

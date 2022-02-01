@@ -129,7 +129,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
     }
 
     //Note: The <AuthorizeCancellation> tag should set to false in openbanking.xml
-    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0304004_Get Already Terminated Payment Consent"(String consentPath, List<String> paymentProducts,
                                                             String payload) {
         paymentProducts.each { value ->

@@ -16,6 +16,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
@@ -63,20 +64,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(retrievalResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("ams:description").
+            Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("description").
                             contains ("Incorrect Access Token Type is provided"))
-                    break
-            }
         }
     }
 
@@ -99,22 +92,14 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140]:
-                    Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "Parameter 'X-Request-ID' is required but is missing.")
-                    break
-                default:
-                    Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
+            Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
                             contains("Header parameter 'X-Request-ID' is required on path"))
-                    break
-            }
         }
     }
 
@@ -138,6 +123,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -169,6 +155,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -198,20 +185,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                     .header(BerlinConstants.Date, getCurrentDate())
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(retrievalResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("ams:description").
+            Assert.assertTrue (retrievalResponse.getBody().jsonPath().getString("description").
                             contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                    break
-            }
         }
     }
 
@@ -235,20 +214,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(retrievalResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("ams:description").
+            Assert.assertTrue (retrievalResponse.getBody().jsonPath().getString("description").
                             contains ("Invalid Credentials. Make sure you have provided the correct security credentials"))
-                    break
-            }
         }
     }
 
@@ -272,20 +243,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(retrievalResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("ams:description").
+            Assert.assertTrue (retrievalResponse.getBody().jsonPath().getString("description").
                             contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                    break
-            }
         }
     }
 }

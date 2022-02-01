@@ -22,44 +22,51 @@ import org.testng.annotations.Test
 
 class MultiCurrencyValidationTests extends AbstractPaymentsFlow {
 
-	String consentPath = PaymentsConstants.PISP_PATH
+	String consentPath
 
 	@Test (groups = ["1.3.6"])
 	void "OB-1566_Sub Account Level single payment initiation of Multi Currency Account"() {
 
+		consentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/$PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS"
 		def initiationPayload = PaymentsInitiationPayloads.singlePaymentPayload
 
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertNotNull(consentResponse.jsonPath().getJsonObject("debtorAccount.iban"))
 	}
 
 	@Test (groups = ["1.3.6"])
 	void "OB-1567_Sub Account Level bulk payment initiation of multi currency account"() {
 
+		consentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/$PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS"
 		def initiationPayload = PaymentsInitiationPayloads.bulkPaymentPayload
 
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertNotNull(consentResponse.jsonPath().getJsonObject("debtorAccount.iban"))
+
+		doAuthorizationFlow()
+		Assert.assertNotNull(code)
 	}
 
 	@Test (groups = ["1.3.6"])
 	void "OB-1568_Sub Account Level periodic payment initiation of multi currency account"() {
 
+		consentPath = PaymentsConstants.PERIODIC_PAYMENTS_PATH + "/$PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS"
 		def initiationPayload = PaymentsInitiationPayloads.periodicPaymentPayload
 
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertNotNull(consentResponse.jsonPath().getJsonObject("debtorAccount.iban"))
+
+		doAuthorizationFlow()
+		Assert.assertNotNull(code)
 	}
 
 	@Test (groups = ["1.3.6"])
 	void "OB-1569_Aggregation level specific payment initiation of multi currency account"() {
 
+		consentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/$PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS"
 		def initiationPayload = PaymentsInitiationPayloads.singlePaymentPayloadWithoutInstructedAmount_Currency
 
 		doDefaultInitiation(consentPath, initiationPayload)
@@ -72,12 +79,12 @@ class MultiCurrencyValidationTests extends AbstractPaymentsFlow {
 	@Test (groups = ["1.3.6"])
 	void "OB-1570_Payment consent authorisation for multi currency account"() {
 
+		consentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/$PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS"
 		def initiationPayload = PaymentsInitiationPayloads.singlePaymentPayload
 
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-		Assert.assertNotNull(consentResponse.jsonPath().getJsonObject("debtorAccount.iban"))
 
 		doAuthorizationFlow()
 		Assert.assertNotNull(code)

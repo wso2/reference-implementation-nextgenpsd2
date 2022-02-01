@@ -100,7 +100,7 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"),
-				"https://localhost:8243/.well-known/openid-configuration")
+				"${ConfigParser.getInstance().getBaseURL()}/.well-known/openid-configuration")
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0]" +
 				".authenticationType"), "SMS_OTP")

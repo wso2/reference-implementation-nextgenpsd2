@@ -20,6 +20,7 @@ class PaymentsInitiationPayloads {
 
     final static String instructedAmount = PaymentsConstants.instructedAmount
     final static String instructedAmountCurrency = PaymentsConstants.instructedAmountCurrency
+    final static String instructedAmountCurrency2 = PaymentsConstants.instructedAmountCurrency2
     final static String debtorAccount1 = PaymentsConstants.debtorAccount1
     final static String creditorAccount1 = PaymentsConstants.creditorAccount1
     final static String creditorName1 = PaymentsConstants.creditorName1
@@ -28,7 +29,7 @@ class PaymentsInitiationPayloads {
     final static String creditorName2 = PaymentsConstants.creditorName2
 
     final static String executionRuleFollowing = PaymentsConstants.executionRuleFollowing
-    final static String executionRuleLatest = PaymentsConstants.executionRuleLatest
+    final static String executionRuleLatest = PaymentsConstants.executionRulePreceding
     final static String frequency = PaymentsConstants.frequency
     final static String dayOfExecution = PaymentsConstants.dayOfExecution
     final static LocalDate paymentDate = OffsetDateTime.now().toLocalDate().plusDays(5)
@@ -40,7 +41,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}" 
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -56,7 +58,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}" 
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -71,7 +74,8 @@ class PaymentsInitiationPayloads {
     static final String bulkPaymentPayload = """{
             "batchBookingPreferred": true,
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
                 },
             "requestedExecutionDate": "${paymentDate}",
             "payments":[
@@ -81,7 +85,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "iban": "${debtorAccount1}"
+                        "iban": "${debtorAccount1}",
+                        "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName1}",
                     "creditorAccount": {
@@ -95,7 +100,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "iban": "${debtorAccount1}"
+                        "iban": "${debtorAccount1}",
+                        "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName2}",
                     "creditorAccount": {
@@ -115,7 +121,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -136,7 +143,8 @@ class PaymentsInitiationPayloads {
                     "amount": "${instructedAmount}"
                 },
                 "debtorAccount": {
-                    "iban": "${debtorAccount1}"
+                    "iban": "${debtorAccount1}",
+                    "currency": "${instructedAmountCurrency}"
                 },
                 "creditorName": "${creditorName1}",
                 "creditorAccount": {
@@ -150,7 +158,8 @@ class PaymentsInitiationPayloads {
                     "amount": "${instructedAmount}"
                 },
                 "debtorAccount": {
-                    "iban": "${debtorAccount1}"
+                    "iban": "${debtorAccount1}",
+                    "currency": "${instructedAmountCurrency}"
                 },
                 "creditorName": "${creditorName1}",
                 "creditorAccount": {
@@ -167,7 +176,8 @@ class PaymentsInitiationPayloads {
                 "amount": "123"
             }, 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             }, 
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -198,7 +208,8 @@ class PaymentsInitiationPayloads {
 
     static final String singlePaymentPayloadWithoutInstructedAmount = """{
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -213,7 +224,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -228,7 +240,8 @@ class PaymentsInitiationPayloads {
                 "currency": "${instructedAmountCurrency}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -248,7 +261,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount}"
+                "iban": "${debtorAccount}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName}",
             "creditorAccount": {
@@ -268,7 +282,8 @@ class PaymentsInitiationPayloads {
         String bulkPaymentPayload = """{
             "batchBookingPreferred": true,
             "debtorAccount": {
-                "${accountAttribute}": "${debtorAccount}"
+                "${accountAttribute}": "${debtorAccount}",
+                "currency": "${instructedAmountCurrency}"
                 },
             "requestedExecutionDate": "${paymentDate}",
             "payments":[
@@ -278,7 +293,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "${accountAttribute}": "${debtorAccount}"
+                        "${accountAttribute}": "${debtorAccount}",
+                "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName}",
                     "creditorAccount": {
@@ -292,7 +308,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "${accountAttribute}": "${debtorAccount}"
+                        "${accountAttribute}": "${debtorAccount}",
+                        "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName}",
                     "creditorAccount": {
@@ -313,7 +330,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "remittanceInformationUnstructured": "Ref Number Merchant"
@@ -326,7 +344,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorAccount": {
                 "iban": "${creditorAccount1}"
@@ -342,7 +361,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -366,7 +386,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -379,16 +400,14 @@ class PaymentsInitiationPayloads {
 
     static final String bulkPaymentPayloadWithOnlyMandatoryElements = """{
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
                 },
             "payments":[
                 {
                     "instructedAmount": {
                         "currency": "${instructedAmountCurrency}",
                         "amount": "${instructedAmount}"
-                    },
-                    "debtorAccount": {
-                        "iban": "${debtorAccount1}"
                     },
                     "creditorName": "${creditorName1}",
                     "creditorAccount": {
@@ -400,9 +419,6 @@ class PaymentsInitiationPayloads {
                     "instructedAmount": {
                         "currency": "${instructedAmountCurrency}",
                         "amount": "${instructedAmount}"
-                    },
-                    "debtorAccount": {
-                        "iban": "${debtorAccount1}"
                     },
                     "creditorName": "${creditorName2}",
                     "creditorAccount": {
@@ -424,7 +440,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "iban": "${debtorAccount1}"
+                        "iban": "${debtorAccount1}",
+                        "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName1}",
                     "creditorAccount": {
@@ -438,7 +455,8 @@ class PaymentsInitiationPayloads {
                         "amount": "${instructedAmount}"
                     },
                     "debtorAccount": {
-                        "iban": "${debtorAccount2}"
+                        "iban": "${debtorAccount2}",
+                        "currency": "${instructedAmountCurrency}"
                     },
                     "creditorName": "${creditorName2}",
                     "creditorAccount": {
@@ -453,7 +471,8 @@ class PaymentsInitiationPayloads {
     static final String bulkPaymentPayloadWithoutPayments = """{
             "batchBookingPreferred": true,
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
                 },
             "requestedExecutionDate": "${paymentDate}"
         }"""
@@ -464,7 +483,8 @@ class PaymentsInitiationPayloads {
         String bulkPaymentPayload = """{
             "batchBookingPreferred": true,
             "debtorAccount": {
-                "iban": "${PaymentsConstants.debtorAccount1}"
+                "iban": "${PaymentsConstants.debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
                 },
             "requestedExecutionDate": "${paymentDate}",
             "payments":$paymentArr
@@ -482,7 +502,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -503,7 +524,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -524,7 +546,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -539,7 +562,8 @@ class PaymentsInitiationPayloads {
     static String periodicPaymentPayloadWithoutInstructedAmount = """
         {
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -578,7 +602,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorAccount": {
                 "iban": "${creditorAccount1}"
@@ -599,7 +624,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "remittanceInformationUnstructured": "Ref Number Abonnement",
@@ -622,7 +648,8 @@ class PaymentsInitiationPayloads {
             },
 
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -646,7 +673,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -665,7 +693,8 @@ class PaymentsInitiationPayloads {
                 "amount": "${instructedAmount}"
             },
             "debtorAccount": {
-                "iban": "${debtorAccount1}"
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
             },
             "creditorName": "${creditorName1}",
             "creditorAccount": {
@@ -678,4 +707,56 @@ class PaymentsInitiationPayloads {
 
         return futureDatedPaymentPayload
     }
+
+    static final String singlePaymentPayloadWithMismatchingCurrency = """{
+            "instructedAmount": {
+                "currency": "${instructedAmountCurrency2}",
+                "amount": "${instructedAmount}"
+            },
+            "debtorAccount": {
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}" 
+            },
+            "creditorName": "${creditorName1}",
+            "creditorAccount": {
+                "iban": "${creditorAccount1}"
+            },
+            "remittanceInformationUnstructured": "Ref Number Merchant"
+        }"""
+            .stripIndent()
+
+    static final String bulkPaymentPayloadWithSingleAndFutureDatedEntries = """{
+
+            "debtorAccount": {
+                "iban": "${debtorAccount1}",
+                "currency": "${instructedAmountCurrency}"
+                },
+            "payments":[
+                {
+                    "instructedAmount": {
+                        "currency": "${instructedAmountCurrency}",
+                        "amount": "${instructedAmount}"
+                    },
+                    "creditorName": "${creditorName1}",
+                    "creditorAccount": {
+                        "iban": "${creditorAccount1}"
+                    },
+                    "remittanceInformationUnstructured": "Ref Number Merchant"
+                },
+                {
+                    "instructedAmount": {
+                        "currency": "${instructedAmountCurrency}",
+                        "amount": "${instructedAmount}"
+                    },
+                    "creditorName": "${creditorName1}",
+                        "creditorAccount": {
+                        "iban": "${creditorAccount1}"
+                    },
+                    "requestedExecutionDate": "${paymentDate}",
+                    "remittanceInformationUnstructured": "Ref Number Merchant"                
+                }
+            ]
+        }"""
+            .stripIndent()
+
 }

@@ -49,12 +49,13 @@ class BerlinConstants {
     static final String CONSENT_STATUS = "consentStatus"
     static final String TIMESTAMP_INVALID = "TIMESTAMP_INVALID"
     static final String HEADER_BOOKINGSTATUS= "Header.bookingStatus"
-    static final String QUERY_BOOKINGSTATUS = "Query.bookingStatus";
+    static final String QUERY_BOOKINGSTATUS = "Query.bookingStatus"
     static final String HEADER_DATEFROM = "Header.dateFrom"
     static final String QUERY_DATEFROM = "Query.dateFrom"
     static final String PRODUCT_UNKNOWN = "PRODUCT_UNKNOWN"
     static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
-    static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE";
+    static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE"
+    static final String CANCELLATION_INVALID = "CANCELLATION_INVALID"
 
 
     static final int STATUS_CODE_204 = 204
@@ -67,6 +68,7 @@ class BerlinConstants {
     static final int STATUS_CODE_405 = 405
     static final int STATUS_CODE_406 = 406
     static final int STATUS_CODE_202 = 202
+    static final int STATUS_CODE_415 = 415
 
     static final enum AUTH_METHOD {
         PRIVATE_KEY_JWT

@@ -16,6 +16,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
@@ -62,20 +63,12 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentDeleteResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "fault.description")
+            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
                             .toString().contains ("Incorrect Access Token Type is provided"))
-                    break
-            }
         }
     }
 
@@ -99,22 +92,14 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .contentType(ContentType.JSON)
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140]:
-                    Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "Parameter 'X-Request-ID' is required but is missing.")
-                    break
-                default:
-                    Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                            contains("Header parameter 'X-Request-ID' is required on path"))
-                    break
-            }
+            Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                            contains("X-Request-ID header is missing in the request"))
         }
     }
 
@@ -139,6 +124,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .header(BerlinConstants.X_REQUEST_ID, "1234")
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -146,7 +132,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     BerlinConstants.FORMAT_ERROR)
 
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Input string \"1234\" is not a valid UUID")
+                    "Invalid X-Request-ID header. Needs to be in UUID format")
         }
     }
 
@@ -171,13 +157,14 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .header(BerlinConstants.X_REQUEST_ID, "")
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Parameter 'X-Request-ID' is required but is missing.")
+                    "Invalid X-Request-ID header. Needs to be in UUID format")
         }
     }
 
@@ -201,20 +188,12 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, "")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentDeleteResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "fault.description")
+            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
                             .toString().contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                    break
-            }
         }
     }
 
@@ -239,21 +218,13 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .header(BerlinConstants.X_REQUEST_ID, "")
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentDeleteResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "fault.description")
+            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
                             .toString().contains ("Invalid Credentials. Make sure you have provided the correct " +
                             "security credentials"))
-                    break
-            }
         }
     }
 
@@ -278,20 +249,12 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .header(BerlinConstants.X_REQUEST_ID, "")
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "")
                     .filter(new BerlinSignatureFilter())
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentDeleteResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "fault.description")
+            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
                             .toString().contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                    break
-            }
         }
     }
 }
