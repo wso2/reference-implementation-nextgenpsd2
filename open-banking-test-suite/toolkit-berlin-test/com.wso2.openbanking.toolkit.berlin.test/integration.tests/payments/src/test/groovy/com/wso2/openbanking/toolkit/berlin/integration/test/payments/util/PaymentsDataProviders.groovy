@@ -27,26 +27,26 @@ class PaymentsDataProviders {
                                  PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
                                PaymentsInitiationPayloads.singlePaymentPayload] as Object[])
 
-//        PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
-//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-//                               PaymentsInitiationPayloads.bulkPaymentPayload] as Object[])
-//
-//        PaymentsTypesList.add([PaymentsConstants.PERIODIC_PAYMENTS_PATH,
-//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-//                               PaymentsInitiationPayloads.periodicPaymentPayload] as Object[])
-//
-//        PaymentsTypesList.add([PaymentsConstants.SINGLE_PAYMENTS_PATH,
-//                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-//                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
-//                               PaymentsInitiationPayloads.singlePaymentPayloadWithAdditionalParams] as Object[])
+        PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+                               PaymentsInitiationPayloads.bulkPaymentPayload] as Object[])
+
+        PaymentsTypesList.add([PaymentsConstants.PERIODIC_PAYMENTS_PATH,
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+                               PaymentsInitiationPayloads.periodicPaymentPayload] as Object[])
+
+        PaymentsTypesList.add([PaymentsConstants.SINGLE_PAYMENTS_PATH,
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+                               PaymentsInitiationPayloads.singlePaymentPayloadWithAdditionalParams] as Object[])
 
         return PaymentsTypesList
     }
