@@ -157,8 +157,8 @@ abstract class AbstractAccountsFlow {
     void doExplicitAuthInitiation(String consentPath, String initiationPayload) {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, "true")
-                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, "true")
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .body(initiationPayload)
                 .post(consentPath)
 

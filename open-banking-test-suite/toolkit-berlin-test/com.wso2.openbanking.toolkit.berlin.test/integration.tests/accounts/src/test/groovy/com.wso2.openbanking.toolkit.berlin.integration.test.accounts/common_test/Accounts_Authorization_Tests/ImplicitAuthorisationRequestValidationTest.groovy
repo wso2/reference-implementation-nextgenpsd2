@@ -41,7 +41,7 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
 
     // Static parameters
     String consentPath = AccountsConstants.CONSENT_PATH
-    String initiationPayload = AccountsInitiationPayloads.AllAccessBankOfferedConsentPayload
+    String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
     String psuId = "${ConfigParser.getInstance().getPSU()}@${ConfigParser.getInstance().getTenantDomain()}"
 
     @Test (groups = ["1.3.3", "1.3.6"])
