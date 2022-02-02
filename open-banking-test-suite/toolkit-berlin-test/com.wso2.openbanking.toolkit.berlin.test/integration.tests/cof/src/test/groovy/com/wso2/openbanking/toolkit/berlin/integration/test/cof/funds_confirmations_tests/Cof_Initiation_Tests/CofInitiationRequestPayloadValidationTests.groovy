@@ -97,7 +97,7 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TIMESTAMP_INVALID)
+                BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
                 " String \"2020-12-312\" is invalid against requested date format(s) yyyy-MM-dd")
     }
@@ -111,9 +111,9 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "The provided card expiry date 2000-12-12 is a past date.")
+                "The provided card expiry date 2000-12-12 is a past date")
     }
 
     @Test (groups = ["1.3.6"])
@@ -169,7 +169,7 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "Invalid " +
-                "request payload, provided account reference does not match with configured one.")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account reference type is not supported")
     }
 }

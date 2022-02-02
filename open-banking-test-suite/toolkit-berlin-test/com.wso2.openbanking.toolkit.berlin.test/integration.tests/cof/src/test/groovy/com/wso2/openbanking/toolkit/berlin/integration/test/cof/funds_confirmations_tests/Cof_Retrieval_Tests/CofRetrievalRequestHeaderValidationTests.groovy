@@ -16,6 +16,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.cof.util.AbstractCofFlow
@@ -79,10 +80,11 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(response, "description")
                 .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
@@ -99,10 +101,11 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(response, "description")
                 .contains("Invalid Credentials. Make sure you have provided the correct security credentials"))
     }
 
@@ -118,6 +121,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -140,6 +144,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -163,6 +168,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -185,6 +191,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -207,6 +214,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, "1234")
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -228,6 +236,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, "")
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -260,8 +269,14 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, consentId)
                 .body(retrievalPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.CONSENT_INVALID)
+        //TODO: Update error after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/7134
+        //Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+        //        "")
     }
 }

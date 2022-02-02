@@ -50,8 +50,7 @@ class AccountsBankOfferedConsentTest extends AbstractAccountsFlow {
                         .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                         .addStep {driver, context ->
                             fields.forEach{ value ->
-                                Select ddAccount = new Select(driver.findElement(By.xpath(value)))
-                                ddAccount.selectByIndex(1)
+                                driver.findElement(By.xpath(value)).click()
                             }
                             driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
                         }

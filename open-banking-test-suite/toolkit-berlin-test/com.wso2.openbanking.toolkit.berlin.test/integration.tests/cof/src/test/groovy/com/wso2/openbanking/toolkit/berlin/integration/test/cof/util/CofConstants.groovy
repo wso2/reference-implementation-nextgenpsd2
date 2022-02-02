@@ -46,4 +46,6 @@ class CofConstants {
         }
         return cofConsentPath
     }
+
+    static final String currency = "EUR"
 }

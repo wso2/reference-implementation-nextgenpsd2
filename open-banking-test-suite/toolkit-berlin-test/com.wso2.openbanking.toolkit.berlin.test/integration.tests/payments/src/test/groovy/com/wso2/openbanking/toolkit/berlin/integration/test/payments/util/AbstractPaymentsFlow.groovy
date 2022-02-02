@@ -23,6 +23,7 @@ import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.response.Response
 import org.openqa.selenium.By
@@ -117,7 +118,7 @@ class AbstractPaymentsFlow {
                 .execute()
 
         //Get Code from URL
-        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[1]
+        code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[0]
                 .replace("+", " ")
 
     }
@@ -125,7 +126,8 @@ class AbstractPaymentsFlow {
     void doExplicitAuthInitiation(String consentPath, String initiationPayload) {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, "true")
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .body(initiationPayload)
                 .post(consentPath)
 
@@ -136,6 +138,8 @@ class AbstractPaymentsFlow {
     void createExplicitAuthorization(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .body("{}")
                 .post("${consentPath}/${paymentId}/authorisations")
 
@@ -153,7 +157,7 @@ class AbstractPaymentsFlow {
     void createExplicitCancellation(String consentPath) {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .body("{}")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .post("${consentPath}/${paymentId}/cancellation-authorisations")
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")
@@ -184,13 +188,10 @@ class AbstractPaymentsFlow {
                 .execute()
     }
 
-    void consentAuthorizeErrorFlowToValidateScopes(AuthorizationRequest request) {
+    void consentAuthorizeErrorFlowValidation(AuthorizationRequest request) {
 
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
-                .addStep {driver, context ->
-                    Assert.assertNotNull(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim())
-                }
                 .execute()
 
         oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
@@ -204,7 +205,55 @@ class AbstractPaymentsFlow {
                 .get(consentPath + "/" + paymentId)
 
         consentStatus = TestUtil.parseResponseBody(consentRetrievalResponse, "transactionStatus")
-
     }
 
+    /**
+     * Initiation Request without Redirect Preffered Param.
+     * @param consentPath
+     * @param initiationPayload
+     */
+    void doDefaultInitiationWithoutRedirectPreffered(String consentPath, String initiationPayload) {
+
+        //initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .body(initiationPayload)
+                .post(consentPath)
+    }
+
+    /**
+     * Consent Initiation Request with Explicit Auth Preferred.
+     * @param consentPath
+     * @param initiationPayload
+     */
+    void doInitiationWithExplicitAuthPreferred(String consentPath, String initiationPayload) {
+
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .body(initiationPayload)
+                .post(consentPath)
+
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+    }
+
+    /**
+     * Get List of Explicit Authorisation Resources.
+     * @param consentPath
+     */
+    void getExplicitAuthResources(String consentPath, String paymentId = paymentId) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${paymentId}/authorisations")
+    }
+
+    /**
+     * Get Explicit Authorisation Resource Status.
+     * @param consentPath
+     */
+    void getExplicitAuthResourceStatus(String consentPath) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${paymentId}/authorisations/${authorisationId}")
+    }
 }

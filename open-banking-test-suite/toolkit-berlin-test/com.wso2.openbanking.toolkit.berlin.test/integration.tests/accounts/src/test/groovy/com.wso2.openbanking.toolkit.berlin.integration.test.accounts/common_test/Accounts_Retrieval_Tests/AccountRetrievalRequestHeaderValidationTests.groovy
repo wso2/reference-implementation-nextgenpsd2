@@ -14,9 +14,9 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
-import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -75,17 +75,8 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue(response.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(response, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
                         contains ("Incorrect Access Token Type is provided"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -99,20 +90,12 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.Date, getCurrentDate())
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue(response.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(response, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
                         contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -127,20 +110,12 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue(response.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(response, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
                         contains ("Invalid Credentials. Make sure you have provided the correct security credentials"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -154,22 +129,14 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case TestConstants.SOLUTION_VERSION_140:
-                Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                        "Parameter 'X-Request-ID' is required but is missing.")
-                break
-            default:
-                Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
                         contains("Header parameter 'X-Request-ID' is required on path"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -184,6 +151,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -205,22 +173,14 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case TestConstants.SOLUTION_VERSION_140:
-                Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                        "Parameter 'Consent-ID' is required but is missing.")
-                break
-            default:
-                Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
                         contains("Header parameter 'Consent-ID' is required on path"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -235,6 +195,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, "1234")
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -255,6 +216,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, "")
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -286,9 +248,14 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "Consent is not in a valid state")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -305,11 +272,12 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, BerlinRequestBuilder.getCurrentDate())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .header(BerlinConstants.PSU_IP_ADDRESS, "823.121.123.142")
+                .header(BerlinConstants.PSU_IP_ADDRESS, "823")
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)

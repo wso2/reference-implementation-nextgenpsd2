@@ -29,7 +29,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
     //Note: The <AuthorizeCancellation> tag should set to false in openbanking.xml
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+            dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303001_Direct Payment Cancellation"(String consentPath, List<String> paymentProducts, String payload) {
 
         paymentProducts.each { value ->
@@ -97,7 +97,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
     //Note: The <AuthorizeCancellation> tag should set to false in openbanking.xml
     @Test (groups = ["1.3.3", "1.3.6"],
-            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+            dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303004_Delete Already Deleted Payment Consent"(String consentPath, List<String> paymentProducts,
                                                             String payload) {
 
@@ -121,12 +121,12 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
             doConsentDelete(paymentConsentPath)
             Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Cannot cancel an already canceled payment")
+                    "The requested consent is already deleted")
         }
     }
 
     @Test(groups = ["1.3.3", "1.3.6"],
-            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+            dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303014_Delete an Authorised Payment Consent"(String consentPath, List<String> paymentProducts,
                                                           String payload) {
 
@@ -165,7 +165,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         String bulkPaymentConsentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" +
                 PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS
 
-        //Single Payment Initiation
+        //Periodic Payment Initiation
         doDefaultInitiation(singlePaymentConsentPath, PaymentsInitiationPayloads.singlePaymentPayload)
 
         //Check Status
@@ -178,6 +178,8 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "The provided consent ID valid but belongs to a different consent type")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -202,5 +204,36 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "The provided consent ID valid but belongs to a different consent type")
+    }
+
+    @Test(groups = ["1.3.6"],
+            dataProvider = "SinglePayments", dataProviderClass = PaymentsDataProviders.class)
+    void "OB-1592_Send Single payment delete request"(String consentPath, List<String> paymentProducts, String
+            payload) {
+
+        paymentProducts.each { value ->
+            String paymentConsentPath = consentPath + "/" + value
+
+            //Make Payment Initiation Request
+            doDefaultInitiation(paymentConsentPath, payload)
+            Assert.assertNotNull(paymentId)
+
+            // Check consent received status
+            doStatusRetrieval(paymentConsentPath)
+
+            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
+            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
+            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+
+            // Delete Flow
+            doConsentDelete(paymentConsentPath)
+            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_405)
+            Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CANCELLATION_INVALID)
+            Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                    "Cancellation not applicable for Single payments")
+        }
     }
 }

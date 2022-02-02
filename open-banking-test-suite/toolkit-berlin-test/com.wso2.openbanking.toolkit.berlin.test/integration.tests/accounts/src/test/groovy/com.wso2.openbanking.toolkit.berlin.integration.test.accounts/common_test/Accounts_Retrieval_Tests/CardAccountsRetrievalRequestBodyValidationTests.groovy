@@ -27,7 +27,7 @@ import org.testng.annotations.Test
 class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFlow {
 
     String consentPath = AccountsConstants.CONSENT_PATH
-    String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
+    String initiationPayload = AccountsInitiationPayloads.defaultCardAccountInitiationPayload
 
     @BeforeClass (groups = ["1.3.3", "1.3.6"])
     void "Get User Access Token"() {
@@ -272,5 +272,70 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+    }
+
+    @Test (groups = ["1.3.6"], priority = 2)
+    void "OB-1527_Retrieval Card Account Details without having maskedPan account reference in consent"() {
+
+        String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+        //Authorize the Consent and Extract the Code
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .get(AccountsConstants.CARD_ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1467_Validate Specific Account retrieval with Balances"() {
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .queryParam("withBalance")
+                .get(AccountsConstants.CARD_ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccounts"))
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1468_Validate Specific Account retrieval with Balances"() {
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .queryParam("withBalance")
+                .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1469_Validate Bulk Transactions retrieval with Balances"() {
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .queryParam("withBalance")
+                .get(AccountsConstants.TRANSACTIONS_PATH)
+
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
     }
 }

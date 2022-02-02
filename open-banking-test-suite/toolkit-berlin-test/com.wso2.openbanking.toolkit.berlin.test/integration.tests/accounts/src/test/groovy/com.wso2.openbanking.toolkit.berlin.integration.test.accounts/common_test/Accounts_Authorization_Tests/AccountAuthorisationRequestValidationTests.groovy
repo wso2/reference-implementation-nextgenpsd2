@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
@@ -21,6 +22,8 @@ import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -63,7 +66,8 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, accountId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+                UUID.randomUUID().toString())
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
@@ -97,7 +101,8 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
         consentAuthorizeErrorFlowToValidateScopes(request)
 
-        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+//        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+        Assert.assertEquals(oauthErrorCode, "Error while retrieving consent data. No consent Id provided with scope")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -107,11 +112,11 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(BerlinConstants.SCOPES.PAYMENTS,
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.PAYMENTS,
                 accountId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "The provided consent Id mismatches with the scope type (\"ais, pis, piis\")")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -123,10 +128,10 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, accountId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId)
         consentAuthorizeErrorFlowToValidateScopes(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "Matching consent not found for provided Id")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -136,11 +141,10 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, " ")
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
         consentAuthorizeErrorFlowToValidateScopes(request)
 
-        Assert.assertEquals(oauthErrorCode, "Error while retrieving account data. No account ID provided with " +
-                "scope.")
+        Assert.assertEquals(oauthErrorCode, "Error while retrieving consent data. No consent Id provided with scope")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -195,12 +199,15 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0202012_Send the Authorisation Request with unsupported code_challenge value"() {
 
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, accountId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
@@ -220,16 +227,12 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         auth = new BerlinOAuthAuthorization(scopes, accountId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                     .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                    .addStep {driver, context ->
-                        Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                                "Current Consent State is not valid for authorisation")
-                    }
                     .execute()
 
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"Current Consent State is not valid for authorisation")
+        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -248,6 +251,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         def consentId = TestUtil.parseResponseBody(response, "consentId")
@@ -257,15 +261,15 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep {driver, context ->
-            Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                    "PSU-ID of the consent does not match with the logged in user")
-        }
+                    Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
+                            "The logged in user does not match with the user who initiated the consent")
+                }
         .execute()
 
         //Verify the Error
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
-        Assert.assertEquals(oauthErrorCode, "PSU-ID of the consent does not match with the logged in user")
+        Assert.assertEquals(oauthErrorCode, "The logged in user does not match with the user who initiated the consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -283,6 +287,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
         accountId = TestUtil.parseResponseBody(response, "consentId")

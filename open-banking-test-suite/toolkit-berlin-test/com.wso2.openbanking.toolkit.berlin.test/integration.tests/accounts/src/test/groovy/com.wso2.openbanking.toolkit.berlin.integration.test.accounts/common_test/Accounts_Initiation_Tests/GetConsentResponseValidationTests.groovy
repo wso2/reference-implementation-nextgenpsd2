@@ -13,11 +13,20 @@
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
+import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
+import com.wso2.openbanking.test.framework.automation.BrowserAutomation
+import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
+import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsDataProviders
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
+import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.Select
 import org.testng.Assert
+import org.testng.Reporter
 import org.testng.annotations.Test
 
 import java.time.LocalDateTime
@@ -125,5 +134,60 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("lastActionDate"))
         Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("lastActionDate"),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+    }
+
+    @Test(groups = ["1.3.6"],
+            dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
+    void "OB-1532_Bank Offered consent retrieval before authorisation"(String title, List<String> fields, String payload) {
+
+        Reporter.log(title)
+
+        //Consent Initiation
+        doDefaultInitiation(consentPath, payload)
+
+        //Consent Retrieval
+        doConsentRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban"), [])
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban"), [])
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban"), [])
+    }
+
+    @Test(groups = ["1.3.6"],
+            dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
+    void "OB-1533_Bank Offered consent retrieval after authorisation"(String title, List<String> fields, String
+            payload) {
+
+        Reporter.log(title)
+
+        //Consent Initiation
+        doDefaultInitiation(consentPath, payload)
+
+        //Consent Authorization
+        def auth = new BerlinOAuthAuthorization(scopes, accountId)
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
+                .addStep {driver, context ->
+                    fields.forEach{ value ->
+                        driver.findElement(By.xpath(value)).click()
+                    }
+                    driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+        def code = TestUtil.getCodeFromUrl(automation.currentUrl.get())
+        Assert.assertNotNull(code)
+
+        //Consent Retrieval
+        doConsentRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
+        Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
+        Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban")[0],
+                BerlinConstants.NORMAL_ACCOUNT)
     }
 }

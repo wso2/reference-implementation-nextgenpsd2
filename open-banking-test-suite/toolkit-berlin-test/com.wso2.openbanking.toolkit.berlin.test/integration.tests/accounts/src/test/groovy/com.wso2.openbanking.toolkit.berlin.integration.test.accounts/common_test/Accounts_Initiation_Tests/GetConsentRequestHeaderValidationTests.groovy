@@ -16,6 +16,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -24,6 +25,7 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.Accoun
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
+import sun.security.krb5.Config
 
 /**
  * Header Validation Tests on Get Consent Request.
@@ -61,6 +63,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
@@ -92,6 +95,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -127,6 +131,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -154,6 +159,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -179,20 +185,12 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                 .header(BerlinConstants.Date, getCurrentDate())
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (retrievalResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
                         contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -212,20 +210,12 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (retrievalResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
                         contains ("Make sure you have provided the correct security credentials"))
-                break
-        }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -245,19 +235,11 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (retrievalResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "fault.description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
                         contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                break
-        }
     }
 }

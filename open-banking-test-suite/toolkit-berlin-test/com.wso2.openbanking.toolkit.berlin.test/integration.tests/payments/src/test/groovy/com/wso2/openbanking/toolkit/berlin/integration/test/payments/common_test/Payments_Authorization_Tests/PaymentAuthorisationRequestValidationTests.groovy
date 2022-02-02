@@ -12,21 +12,27 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
 import io.restassured.http.ContentType
+import io.restassured.response.Response
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.testng.Assert
@@ -43,6 +49,9 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0302003_Authorize a Revoked consent"() {
 
+        def consentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" + PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS
+        def initiationPayload = PaymentsInitiationPayloads.bulkPaymentPayload
+
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -53,16 +62,12 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-            Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                    "Current Consent State is not valid for authorisation")
-        }
-        .execute()
+                .execute()
 
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"Current Consent State is not valid for authorisation")
+        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -81,6 +86,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().baseURL)
                 .post(consentPath)
 
         def paymentId = TestUtil.parseResponseBody(response, "paymentId")
@@ -89,16 +95,12 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-            Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                    "PSU-ID of the consent does not match with the logged in user")
-        }
-        .execute()
+                .execute()
 
         //Verify the Error
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
-        Assert.assertEquals(oauthErrorCode, "PSU-ID of the consent does not match with the logged in user")
+        Assert.assertEquals(oauthErrorCode, "The logged in user does not match with the user who initiated the consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -116,6 +118,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .body(initiationPayload)
+                .baseUri(ConfigParser.getInstance().baseURL)
                 .post(consentPath)
 
         paymentId = TestUtil.parseResponseBody(response, "paymentId")
@@ -143,11 +146,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-            Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                    "Unauthenticated authorization not found for Consent")
-        }
-        .execute()
+                .execute()
 
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
@@ -170,16 +169,13 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
-                .addStep {driver, context ->
-            Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
-                    "Unauthenticated authorization not found for Consent")
-        }
-        .execute()
+                .execute()
 
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"Unauthenticated authorization not found for Consent")
+        Assert.assertEquals(oauthErrorCode,"This consent has already been authorised by " +
+                "${PsuConfigReader.getPSU()}@carbon.super")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -205,25 +201,17 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, paymentId)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                UUID.randomUUID().toString())
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
                 .addStep {driver, context ->
 
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-
-                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR))
-                    Assert.assertTrue(lblErrorResponse.getText().trim().contains("{\"error_description\":\"A valid OAuth client " +
-                            "could not be found for client_id: "))
-                    break
-                default:
-                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
+                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants
+                            .LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
                     Assert.assertTrue(lblErrorResponse.getText().trim().contains("Cannot find an application associated " +
                             "with the given consumer key"))
-                    break
-            }
         }
         .execute()
     }
@@ -236,7 +224,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
         Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
     }
@@ -248,11 +236,11 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(BerlinConstants.SCOPES.ACCOUNTS,
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(BerlinConstants.SCOPES.ACCOUNTS,
                 paymentId)
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "The provided consent Id mismatches with the scope type (\"ais, pis, piis\")")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -264,10 +252,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, paymentId)
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId)
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
+        Assert.assertEquals(oauthErrorCode, "Matching consent not found for provided Id")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -277,11 +265,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
-        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, " ")
-        consentAuthorizeErrorFlowToValidateScopes(request)
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
+        consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode, "Error while retrieving payment data. No payment ID provided with " +
-                "scope.")
+        Assert.assertEquals(oauthErrorCode, "Error while retrieving consent data. No consent Id provided with scope")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -292,10 +279,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutState(scopes, paymentId)
-        consentAuthorizeErrorFlow(request)
-
-        String authUrl = automation.currentUrl.get()
-        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+        consentAuthorizeErrorFlowValidation(request)
 
         Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
     }
@@ -336,15 +320,250 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0302019_Send the Authorisation Request with unsupported code_challenge_method value"() {
 
+        CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
         //Do Authorization
         try {
-            OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, paymentId)
+            OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                    AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
         } catch (IllegalArgumentException e) {
             Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
         }
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1470_Implicit Authorisation when ExplicitAuthorisationPreferred param is not set in initiation"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertNotNull(paymentId)
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+
+        //Consent Status Retrieval
+        doStatusRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1471_Implicit Authorisation when ExplicitAuthorisationPreferred param set to false"() {
+
+        //Consent Initiation
+        Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertNotNull(paymentId)
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+
+        //Consent Status Retrieval
+        doStatusRetrieval(consentPath)
+        Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1540_Authorisation with undefined PSU_ID when TPP-ExplicitAuthorisationPreferred set to false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, psuId)
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertNotNull(paymentId)
+
+        //Do Implicit Authorisation
+        auth = new BerlinOAuthAuthorization(scopes, paymentId)
+        automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
+                .addStep {driver, context ->
+                    Assert.assertEquals(driver.findElement(By.xpath(BerlinConstants.LBL_CONSENT_PAGE_ERROR)).getText().trim(),
+                            "The logged in user does not match with the user who initiated the consent")
+                }
+                .execute()
+
+        //Verify the Error
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
+                "UTF8")
+        Assert.assertEquals(oauthErrorCode, "The logged in user does not match with the user who initiated the consent")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1541_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
+
+        String psuId = "psu1@wso2.com"
+
+        //Consent Initiation
+        Response consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertNotNull(paymentId)
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    @Test(groups = ["1.3.6"])
+    void "OB-1472_Implicit Authorisation when TPP-Redirect Preferred not set in initiation request"() {
+
+        //Consent Initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .body(initiationPayload)
+                .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+    }
+
+    @Test(groups = ["1.3.6"])
+    void "OB-1473_Implicit Authorisation when PSU reject the auth flow"() {
+
+        //Consent Initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .body(initiationPayload)
+                .post(consentPath)
+
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+
+        //Consent Deny
+        doConsentDenyFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertEquals(code, "User denied the consent")
+
+        //Check consent status
+        doStatusRetrieval(consentPath)
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
+    }
+
+    @Test(groups = ["1.3.6"])
+    void "OB-1476_Send Authorisation request without client id param"() {
+
+        //Consent Initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, false)
+                .body(initiationPayload)
+                .post(consentPath)
+
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                UUID.randomUUID().toString())
+        new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AuthAutomationSteps(request.toURI().toString()))
+                .addStep { driver, context ->
+                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
+                    Assert.assertTrue(lblErrorResponse.getText().trim().contains("Cannot find an application associated " +
+                            "with the given consumer key"))
+                }
+                .execute()
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1479_Send Authorisation request with incorrect consent append to the scope"() {
+
+        def paymentId = "1234"
+
+        //Consent Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Do Authorization
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId)
+        consentAuthorizeErrorFlowValidation(request)
+
+        Assert.assertEquals(oauthErrorCode, "Matching consent not found for provided Id")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1483_Send Authorisation request with incorrect response_type param"() {
+
+        //Consent Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Do Authorization
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                AppConfigReader.getClientId(), "id_token&")
+        consentAuthorizeErrorFlow(request)
+
+        String authUrl = automation.currentUrl.get()
+        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+        Assert.assertEquals(oauthErrorCode, "invalid_request, Invalid response_type parameter value")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-1485_Send Authorisation request with plain value as the code_challenge_method"() {
+
+        //Consent Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Do Authorization
+        def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+                AppConfigReader.getClientId(), "code", CodeChallengeMethod.PLAIN)
+        consentAuthorizeErrorFlow(request)
+
+        String authUrl = automation.currentUrl.get()
+        def code = BerlinTestUtil.getCodeFromURL(authUrl)
+        Assert.assertNotNull(authUrl.contains("state"))
+        Assert.assertNotNull(code)
     }
 }

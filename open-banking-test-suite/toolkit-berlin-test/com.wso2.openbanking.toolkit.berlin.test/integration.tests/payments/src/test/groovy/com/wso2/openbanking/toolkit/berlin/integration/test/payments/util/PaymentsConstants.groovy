@@ -45,6 +45,7 @@ class PaymentsConstants {
 
     static final String instructedAmount = "123.50"
     static final String instructedAmountCurrency = "EUR"
+    static final String instructedAmountCurrency2 = "USD"
     static final String debtorAccount1 = "DE12345678901234567890"
     static final String creditorAccount1 = "DE98765432109876543210"
     static final String creditorName1 = "Merchant123"
@@ -56,7 +57,7 @@ class PaymentsConstants {
     static final String accountAttributePan = "pan"
 
     static final String executionRuleFollowing = "following"
-    static final String executionRuleLatest = "latest"
+    static final String executionRulePreceding = "preceding"
     static final String frequency = "Monthly"
     static final String dayOfExecution  = "01"
 
