@@ -76,8 +76,10 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        Assert.assertNotNull(accountId)
 
         //Do Implicit Authorisation
         doAuthorizationFlow()
@@ -95,8 +97,10 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        Assert.assertNotNull(accountId)
 
         //Do Implicit Authorisation
         doAuthorizationFlow()
@@ -124,8 +128,10 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        Assert.assertNotNull(accountId)
 
         //Do Implicit Authorisation
         doAuthorizationFlow()
@@ -153,8 +159,10 @@ class ImplicitAuthorisationRequestValidationTest extends AbstractAccountsFlow {
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)
+
+        accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "consentId"))
+        Assert.assertNotNull(accountId)
 
         //Do Implicit Authorisation
         doAuthorizationFlow()
