@@ -21,20 +21,17 @@ class AccountsInitiationPayloads {
             "access":{
                 "accounts":[
                     {  
-                        "iban":"DE98765432109876543210",
-                        "currency":"EUR"
+                        "iban":"DE98765432109876543210"
                     }
                 ],
                 "balances":[
                     {  
-                        "iban":"DE98765432109876543210",
-                        "currency":"EUR"
+                        "iban":"DE98765432109876543210"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "iban":"DE98765432109876543210",
-                        "currency":"EUR"
+                        "iban":"DE98765432109876543210"
                     }
                 ]
             },
