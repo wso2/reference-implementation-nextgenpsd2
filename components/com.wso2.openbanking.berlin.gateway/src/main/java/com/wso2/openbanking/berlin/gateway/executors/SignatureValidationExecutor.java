@@ -168,8 +168,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     @Override
     public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
-        // TODO: uncomment after https://github.com/wso2-enterprise/financial-open-banking/issues/7072 is fixed
-
         // Retrieve transport certificate from the request
         javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
         javax.security.cert.X509Certificate transportCert;
