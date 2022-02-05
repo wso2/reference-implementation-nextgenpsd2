@@ -88,80 +88,83 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
 
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
-        
-        Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
-        String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
-        String requestPayload = obapiRequestContext.getRequestPayload();
 
-        try {
-            // Validate whether the required headers are present.
-            validateHeaders(headersMap);
+        if (!obapiRequestContext.isError()) {
 
-            X509Certificate parsedSigningCert;
-            Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
-            if (x509Certificate.isPresent()) {
-                parsedSigningCert = x509Certificate.get();
-                log.debug("Signature certificate parsing successful");
-            } else {
-                log.error(ErrorConstants.CERT_PARSE_EROR);
+            Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
+            String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
+            String requestPayload = obapiRequestContext.getRequestPayload();
+
+            try {
+                // Validate whether the required headers are present.
+                validateHeaders(headersMap);
+
+                X509Certificate parsedSigningCert;
+                Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
+                if (x509Certificate.isPresent()) {
+                    parsedSigningCert = x509Certificate.get();
+                    log.debug("Signature certificate parsing successful");
+                } else {
+                    log.error(ErrorConstants.CERT_PARSE_EROR);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            ErrorConstants.CERT_PARSE_EROR);
+                    return;
+                }
+
+                // Expiry validation
+                validateCertExpiration(parsedSigningCert, obapiRequestContext);
+
+                // Revocation validation
+                if (!isValidCertStatus(parsedSigningCert)) {
+                    log.error(ErrorConstants.SIGNING_CERT_REVOKED);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_REVOKED.toString(),
+                            ErrorConstants.SIGNING_CERT_REVOKED);
+                    return;
+                }
+
+                // Digest validation
+                String digestHeader = headersMap.get(DIGEST_HEADER);
+                if (!validateDigest(digestHeader, requestPayload)) {
+                    log.error("Message digest validation failed");
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                            "Message digest validation failed");
+                    return;
+                }
+
+                // Validate signature
+                if (!validateSignature(headersMap, parsedSigningCert)) {
+                    log.error(ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                            ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
+                    return;
+                } else {
+                    log.debug("Signature validation successfully completed");
+                }
+            } catch (SignatureCertMissingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        ErrorConstants.SIGNING_CERT_MISSING);
+            } catch (DigestValidationException e) {
+                log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.INVALID_DIGEST_HEADER);
+            }  catch (SignatureMissingException e) {
+                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
+                        ErrorConstants.SIGNATURE_HEADER_MISSING);
+            } catch (DigestMissingException e) {
+                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.DIGEST_HEADER_MISSING);
+            } catch (CertificateValidationException | CertificateEncodingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                        ErrorConstants.CERT_PARSE_EROR);
-                return;
-            }
-
-            // Expiry validation
-            validateCertExpiration(parsedSigningCert, obapiRequestContext);
-
-            // Revocation validation
-            if (!isValidCertStatus(parsedSigningCert)) {
-                log.error(ErrorConstants.SIGNING_CERT_REVOKED);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_REVOKED.toString(),
-                        ErrorConstants.SIGNING_CERT_REVOKED);
-                return;
-            }
-
-            // Digest validation
-            String digestHeader = headersMap.get(DIGEST_HEADER);
-            if (!validateDigest(digestHeader, requestPayload)) {
-                log.error("Message digest validation failed");
+                        ErrorConstants.SIGNING_CERT_INVALID);
+            } catch (SignatureValidationException e) {
+                log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        "Message digest validation failed");
-                return;
+                        ErrorConstants.INVALID_SIGNATURE_HEADER);
             }
-
-            // Validate signature
-            if (!validateSignature(headersMap, parsedSigningCert)) {
-                log.error(ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
-                return;
-            } else {
-                log.debug("Signature validation successfully completed");
-            }
-        } catch (SignatureCertMissingException e) {
-            log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                    ErrorConstants.SIGNING_CERT_MISSING);
-        } catch (DigestValidationException e) {
-            log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.INVALID_DIGEST_HEADER);
-        }  catch (SignatureMissingException e) {
-            log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
-                    ErrorConstants.SIGNATURE_HEADER_MISSING);
-        } catch (DigestMissingException e) {
-            log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.DIGEST_HEADER_MISSING);
-        } catch (CertificateValidationException | CertificateEncodingException e) {
-            log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                    ErrorConstants.SIGNING_CERT_INVALID);
-        } catch (SignatureValidationException e) {
-            log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.INVALID_SIGNATURE_HEADER);
         }
     }
 

@@ -91,7 +91,39 @@ public class ErrorHandlingExecutor implements OpenBankingGatewayExecutor {
      */
     public static JSONObject getErrorJSON(OpenBankingExecutorError error) {
 
-         return ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                TPPMessage.CodeEnum.valueOf(error.getCode()), error.getMessage());
+        // This means the error is from accelerator side
+        if (StringUtils.startsWith(error.getCode(), "2")) {
+
+            String message;
+
+            if (StringUtils.isNotBlank(error.getMessage())) {
+                message = error.getMessage();
+            } else {
+                message = error.getTitle();
+            }
+
+            // Get relative Berlin error code
+            TPPMessage.CodeEnum berlinErrorCode = getBerlinErrorCodeFromOBErrorCode(error.getCode());
+            return ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    berlinErrorCode, message);
+        } else {
+            // This means the error is from Berlin toolkit side
+            return ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    TPPMessage.CodeEnum.valueOf(error.getCode()), error.getMessage());
+        }
+    }
+
+    private static TPPMessage.CodeEnum getBerlinErrorCodeFromOBErrorCode(String obErrorCode) {
+
+        // todo: https://github.com/wso2-enterprise/financial-open-banking/issues/7162
+        if (StringUtils.equals("200003", obErrorCode)) {
+            return TPPMessage.CodeEnum.CERTIFICATE_INVALID;
+        } else if (StringUtils.equals("200004", obErrorCode)) {
+            return TPPMessage.CodeEnum.ROLE_INVALID;
+        } else if (StringUtils.equals("200001", obErrorCode)) {
+            return TPPMessage.CodeEnum.TOKEN_INVALID;
+        } else {
+            return TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR;
+        }
     }
 }
