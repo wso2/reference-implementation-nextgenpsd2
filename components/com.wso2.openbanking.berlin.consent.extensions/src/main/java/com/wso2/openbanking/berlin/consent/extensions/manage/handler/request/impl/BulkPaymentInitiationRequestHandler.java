@@ -44,6 +44,14 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
         String maxPaymentExecutionDays = configParser.getMaxFuturePaymentDays();
         PaymentConsentUtil.validateDebtorAccount(payload, configParser.getAccountReferenceType());
 
+        if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
+                && payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME) != null) {
+            log.error(ErrorConstants.EXECUTION_DATE_TIME_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.EXECUTION_DATE_TIME_ERROR));
+        }
+
         log.debug("Validating requested execution date");
         if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
                 && StringUtils.isNotBlank(payload.getAsString(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE))) {

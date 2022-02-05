@@ -92,6 +92,8 @@ public class ErrorConstants {
     public static final String EXECUTION_DATE_NOT_FUTURE = "The execution date must be a future date";
     public static final String PAYMENT_EXECUTION_DATE_EXCEEDED = "The execution date provided in the request is after" +
             " the execution date supported by the ASPSP";
+    public static final String EXECUTION_DATE_TIME_ERROR = "Requested execution date and requested execution time " +
+            "cannot coexist in the payload";
     public static final String CONSENT_INITIATION_ERROR = "Error occurred while initiating payment consent";
     public static final String CONSENT_ATTRIBUTE_INITIATION_ERROR = "Error occurred while storing consent " +
             "attributes";

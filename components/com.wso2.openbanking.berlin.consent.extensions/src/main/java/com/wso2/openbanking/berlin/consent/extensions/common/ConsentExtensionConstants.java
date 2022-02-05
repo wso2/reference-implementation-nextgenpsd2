@@ -199,6 +199,7 @@ public class ConsentExtensionConstants {
     public static final String END_DATE = "endDate";
     public static final String EXECUTION_RULE = "executionRule";
     public static final String REQUESTED_EXECUTION_DATE = "requestedExecutionDate";
+    public static final String REQUESTED_EXECUTION_TIME = "requestedExecutionTime";
     public static final String DEBTOR_ACCOUNT = "debtorAccount";
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";
