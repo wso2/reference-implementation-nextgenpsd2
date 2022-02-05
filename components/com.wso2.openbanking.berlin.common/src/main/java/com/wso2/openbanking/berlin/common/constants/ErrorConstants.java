@@ -83,6 +83,7 @@ public class ErrorConstants {
     public static final String START_DATE_INVALID = "Invalid start date";
     public static final String FREQUENCY_MISSING = "Frequency is missing in periodic payments payload";
     public static final String END_DATE_NOT_FUTURE = "End date must be a future date";
+    public static final String START_DATE_NOT_FUTURE = "Start date must be a future date";
     public static final String END_DATE_NOT_VALID = "Invalid end date";
     public static final String DATES_INCONSISTENT = "End date must be greater than start date";
     public static final String INVALID_EXECUTION_RULE = "Execution rule should be either \"following\" or " +

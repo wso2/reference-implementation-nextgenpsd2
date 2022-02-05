@@ -101,17 +101,17 @@ public class PaymentConsentUtil {
     }
 
     /**
-     * Method to validate a provided date is a future date.
+     * Method to validate a provided date is a future date. Throws an exception if the date is a past date.
      *
      * @param date
      */
-    public static void validateFutureDate(LocalDate date) {
+    public static void validateFutureDate(LocalDate date, String errorMessage) {
 
         if (!date.isAfter(LocalDate.now())) {
-            log.error(ErrorConstants.END_DATE_NOT_FUTURE);
+            log.error(errorMessage);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.END_DATE_NOT_FUTURE));
+                    errorMessage));
         }
     }
 
