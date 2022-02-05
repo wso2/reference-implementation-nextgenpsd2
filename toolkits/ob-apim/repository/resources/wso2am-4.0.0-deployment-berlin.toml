@@ -478,8 +478,8 @@ class = "com.wso2.openbanking.accelerator.gateway.executor.core.OBExtensionListe
 type = "THROTTLING"
 class = "com.wso2.openbanking.accelerator.gateway.throttling.OBThrottlingExtensionImpl"
 
-#[open_banking.gateway.throttling]
-#throttling_data_publisher = "com.wso2.openbanking.sample.throttling.publisher.SampleThrottlingDataPublisher"
+[open_banking.gateway.throttling]
+throttling_data_publisher = "com.wso2.openbanking.berlin.gateway.throttling.FrequencyPerDayThrottleDataPublisherImpl"
 
 #keymanager name
 [open_banking.keyManager]
