@@ -21,10 +21,10 @@ class PaymentsDataProviders {
 
         def PaymentsTypesList = new ArrayList<Object[]>()
         PaymentsTypesList.add([PaymentsConstants.SINGLE_PAYMENTS_PATH,
-                                [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
-                                 PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
-                                 PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
-                                 PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
+                               [PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS,
+                                PaymentsConstants.PAYMENT_PRODUCT_TARGET_2_PAYMENTS,
+                                PaymentsConstants.PAYMENT_PRODUCT_CROSS_BORDER_CREDIT_TRANSFERS],
                                PaymentsInitiationPayloads.singlePaymentPayload] as Object[])
 
         PaymentsTypesList.add([PaymentsConstants.BULK_PAYMENTS_PATH,
@@ -106,12 +106,27 @@ class PaymentsDataProviders {
         Collection<Object[]> explicitAuthorizationList = new ArrayList<Object[]>()
         List<Map<String, String>> listOfParamMaps = new ArrayList<Map<String, String>>()
         Map<String, String> periodicPaymentExplicitAuthDataMap = new HashMap<String, String>()
+        Map<String, String> singlePaymentExplicitAuthDataMap = new HashMap<String, String>()
+        Map<String, String> bulkPaymentExplicitAuthDataMap = new HashMap<String, String>()
 
         periodicPaymentExplicitAuthDataMap.put("consentPath", PaymentsConstants.PERIODIC_PAYMENTS_PATH + "/" +
                 PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS)
         periodicPaymentExplicitAuthDataMap.put("initiationPayload", PaymentsInitiationPayloads.periodicPaymentPayload)
+        periodicPaymentExplicitAuthDataMap.put("paymentType", "periodic")
+
+        singlePaymentExplicitAuthDataMap.put("consentPath", PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS)
+        singlePaymentExplicitAuthDataMap.put("initiationPayload", PaymentsInitiationPayloads.singlePaymentPayload)
+        singlePaymentExplicitAuthDataMap.put("paymentType", "single")
+
+        bulkPaymentExplicitAuthDataMap.put("consentPath", PaymentsConstants.BULK_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS)
+        bulkPaymentExplicitAuthDataMap.put("initiationPayload", PaymentsInitiationPayloads.bulkPaymentPayload)
+        bulkPaymentExplicitAuthDataMap.put("paymentType", "bulk")
 
         listOfParamMaps.add(periodicPaymentExplicitAuthDataMap)
+        listOfParamMaps.add(singlePaymentExplicitAuthDataMap)
+        listOfParamMaps.add(bulkPaymentExplicitAuthDataMap)
 
         for (Map<String, String> map : listOfParamMaps) {
             explicitAuthorizationList.add([map] as Object[])
@@ -216,4 +231,30 @@ class PaymentsDataProviders {
         return PaymentsTypesList
     }
 
+    @DataProvider(name = "ExplicitAuthCancellationData")
+    static Iterator<Object[]> getExplicitAuthCancellationData() {
+
+        Collection<Object[]> explicitAuthorizationList = new ArrayList<Object[]>()
+        List<Map<String, String>> listOfParamMaps = new ArrayList<Map<String, String>>()
+        Map<String, String> periodicPaymentExplicitAuthDataMap = new HashMap<String, String>()
+        Map<String, String> bulkPaymentExplicitAuthDataMap = new HashMap<String, String>()
+
+        periodicPaymentExplicitAuthDataMap.put("consentPath", PaymentsConstants.PERIODIC_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS)
+        periodicPaymentExplicitAuthDataMap.put("initiationPayload", PaymentsInitiationPayloads.periodicPaymentPayload)
+        periodicPaymentExplicitAuthDataMap.put("paymentType", "periodic")
+
+        bulkPaymentExplicitAuthDataMap.put("consentPath", PaymentsConstants.BULK_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS)
+        bulkPaymentExplicitAuthDataMap.put("initiationPayload", PaymentsInitiationPayloads.bulkPaymentPayload)
+        bulkPaymentExplicitAuthDataMap.put("paymentType", "bulk")
+
+        listOfParamMaps.add(periodicPaymentExplicitAuthDataMap)
+        listOfParamMaps.add(bulkPaymentExplicitAuthDataMap)
+
+        for (Map<String, String> map : listOfParamMaps) {
+            explicitAuthorizationList.add([map] as Object[])
+        }
+        return explicitAuthorizationList.iterator()
+    }
 }

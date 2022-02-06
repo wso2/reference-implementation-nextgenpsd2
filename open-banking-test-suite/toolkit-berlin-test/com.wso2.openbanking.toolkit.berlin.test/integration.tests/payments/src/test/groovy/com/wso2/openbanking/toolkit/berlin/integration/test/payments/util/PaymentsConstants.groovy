@@ -61,8 +61,8 @@ class PaymentsConstants {
     static final String frequency = "Monthly"
     static final String dayOfExecution  = "01"
 
-    static final String bbanAccount = "5390 0754 7034"
-    static final String panAccount = "4685-2421-1836-5024"
+    static final String bbanAccount = "BARC12345612345678"
+    static final String panAccount = "5409050000000000"
 
     static String getConsentPath() {
 

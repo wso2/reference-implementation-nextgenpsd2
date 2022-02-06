@@ -130,7 +130,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString (),"Input string \"1234\" is not a valid UUID")
+                .toString (),"Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -156,7 +156,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'X-Request-ID' is required but is missing.")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

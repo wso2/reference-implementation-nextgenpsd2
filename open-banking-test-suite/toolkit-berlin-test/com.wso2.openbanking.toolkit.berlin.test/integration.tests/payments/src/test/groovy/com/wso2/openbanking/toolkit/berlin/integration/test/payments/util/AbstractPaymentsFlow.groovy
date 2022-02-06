@@ -88,9 +88,9 @@ class AbstractPaymentsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -112,9 +112,9 @@ class AbstractPaymentsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.PAYMENTS_DENY_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.PAYMENTS_DENY_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL

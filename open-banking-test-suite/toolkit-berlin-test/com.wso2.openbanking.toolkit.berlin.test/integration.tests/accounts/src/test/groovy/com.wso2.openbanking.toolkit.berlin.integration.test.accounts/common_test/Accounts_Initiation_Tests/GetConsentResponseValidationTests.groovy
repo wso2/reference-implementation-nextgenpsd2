@@ -24,7 +24,6 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.Accoun
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsDataProviders
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.Select
 import org.testng.Assert
 import org.testng.Reporter
 import org.testng.annotations.Test
@@ -184,10 +183,10 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
         Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban")[0],
-                BerlinConstants.NORMAL_ACCOUNT)
+                BerlinConstants.CURRENT_ACCOUNT)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban")[0],
-                BerlinConstants.NORMAL_ACCOUNT)
+                BerlinConstants.CURRENT_ACCOUNT)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban")[0],
-                BerlinConstants.NORMAL_ACCOUNT)
+                BerlinConstants.CURRENT_ACCOUNT)
     }
 }

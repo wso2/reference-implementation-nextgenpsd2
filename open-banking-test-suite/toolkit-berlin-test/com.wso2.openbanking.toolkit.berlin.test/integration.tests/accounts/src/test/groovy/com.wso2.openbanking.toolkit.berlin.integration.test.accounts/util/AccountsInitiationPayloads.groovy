@@ -21,22 +21,22 @@ class AccountsInitiationPayloads {
             "access":{
                 "accounts":[
                     {  
-                        "iban":"DE98765432109876543210"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ],
                 "balances":[
                     {  
-                        "iban":"DE98765432109876543210"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "iban":"DE98765432109876543210"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ]
             },
             "recurringIndicator": true,
-            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""
@@ -46,14 +46,12 @@ class AccountsInitiationPayloads {
             "access":{  
                 "accounts":[
                     {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ],
                 "balances":[
                     {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ]
             },
@@ -69,13 +67,13 @@ class AccountsInitiationPayloads {
                "access":{
                   "accounts":[
                      {
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY1}"
                      }
                   ],
                   "transactions":[
                      {
-                        "iban":"DE98765432109876543210"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ]
                },
@@ -92,7 +90,7 @@ class AccountsInitiationPayloads {
                     "availableAccounts": "allAccounts"
                },
                "recurringIndicator":false,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
                "frequencyPerDay":1,
                "combinedServiceIndicator":false
                
@@ -129,13 +127,13 @@ class AccountsInitiationPayloads {
                     "allPsd2": "allAccounts"
                },
                "recurringIndicator":false,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
                "frequencyPerDay":1,
                "combinedServiceIndicator":false
         }
     """.stripIndent()
 
-	public static final String AllAccessBankOfferedConsentPayload = """
+    public static final String AllAccessBankOfferedConsentPayload = """
           {  
                "access":{  
                   "accounts":[],
@@ -143,7 +141,7 @@ class AccountsInitiationPayloads {
                   "transactions":[]
                },
                "recurringIndicator": true,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
                "frequencyPerDay": 4,
                "combinedServiceIndicator": false
         }
@@ -154,8 +152,8 @@ class AccountsInitiationPayloads {
                "access":{  
                   "accounts":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY1}"
                      }
                   ],
                   "balances":[],
@@ -173,14 +171,12 @@ class AccountsInitiationPayloads {
                "access":{  
                   "accounts":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ],
                   "balances":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ],
                   "transactions":[]
@@ -197,15 +193,13 @@ class AccountsInitiationPayloads {
                "access":{  
                   "accounts":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ],
                   "balances":[],
                   "transactions":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ]
                },
@@ -222,14 +216,12 @@ class AccountsInitiationPayloads {
                   "accounts":[],
                   "balances":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ],
                   "transactions":[  
                      {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                      }
                   ]
                },
@@ -240,23 +232,46 @@ class AccountsInitiationPayloads {
         }
     """.stripIndent()
 
+//    static final String defaultCardAccountInitiationPayload = """{
+//            "access":{
+//                "accounts":[
+//                    {
+//                        "maskedPan":"5409050000000000"
+//                    }
+//                ],
+//                "balances":[
+//                    {
+//                        "maskedPan":"5409050000000000"
+//                    }
+//                ],
+//                "transactions":[
+//                    {
+//                        "iban":"5409050000000000"
+//                    }
+//                ]
+//            },
+//            "recurringIndicator": true,
+//            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+//            "frequencyPerDay": 4,
+//            "combinedServiceIndicator": false
+//        }"""
+//            .stripIndent()
+
     static final String defaultCardAccountInitiationPayload = """{
             "access":{
                 "accounts":[
                     {  
-                        "maskedPan":"1234560000000000",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ],
                 "balances":[
                     {  
-                        "maskedPan":"1234560000000000",
-                        "currency":"USD"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "iban":"1234560000000000"
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
                 ]
             },
@@ -342,6 +357,56 @@ class AccountsInitiationPayloads {
             },
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String initiationPayloadWithPan = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "pan":"${BerlinConstants.PAN_ACCOUNT}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "pan":"${BerlinConstants.PAN_ACCOUNT}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "pan":"${BerlinConstants.PAN_ACCOUNT}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String initiationPayloadWithBban = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""

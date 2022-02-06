@@ -106,58 +106,6 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
     }
 
-    /**
-     * This testcase only supports if AccountReferenceType is configured as 'bban' in open-banking.xml.
-     */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
-    void "TC0401023_Initiation Request with debtorAccount in bban attribute"() {
-        String accountAttributes = PaymentsConstants.accountAttributeBban
-        String debtorAcc = PaymentsConstants.bbanAccount
-
-        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
-                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
-                PaymentsConstants.creditorName1, debtorAcc)
-
-        //Make Payment Initiation Request
-        doDefaultInitiation(bulkPaymentConsentPath, payload)
-
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(consentResponse.getHeader("Location"))
-        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
-        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
-
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-    }
-
-    /**
-     * This testcase only supports if AccountReferenceType is configured as 'pan' in open-banking.xml.
-     */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
-    void "TC0401024_Initiation Request with debtorAccount in pan attribute"() {
-        String accountAttributes = PaymentsConstants.accountAttributePan
-        String debtorAcc = PaymentsConstants.panAccount
-
-        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
-                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
-                PaymentsConstants.creditorName1, PaymentsConstants.creditorAccount1)
-
-        //Make Payment Initiation Request
-        doDefaultInitiation(bulkPaymentConsentPath, payload)
-
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(consentResponse.getHeader("Location"))
-        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
-        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
-
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-    }
-
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0401027_Initiation Request with empty debtorAccount in the payload"() {
 
@@ -188,7 +136,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-         "Payments array cannot be empty for Bulk Payments")
+                "Payments array cannot be empty for Bulk Payments")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

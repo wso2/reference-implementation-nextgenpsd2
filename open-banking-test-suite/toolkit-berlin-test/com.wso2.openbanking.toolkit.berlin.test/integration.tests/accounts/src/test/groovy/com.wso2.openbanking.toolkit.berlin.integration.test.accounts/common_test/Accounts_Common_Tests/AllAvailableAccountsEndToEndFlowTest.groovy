@@ -120,4 +120,22 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("account._links.balances"))
     }
+
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    void "OB-1661_Reject All Accounts Consent"() {
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doConsentDenyFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertEquals(code, "User denied the consent")
+
+        doStatusRetrieval(consentPath)
+
+        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
+    }
 }

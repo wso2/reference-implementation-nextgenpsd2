@@ -39,7 +39,10 @@ abstract class AbstractCofFlow {
     String consentId
     String code
     String consentStatus
+    String authorisationId
+    String requestId
     Response consentResponse
+    Response authorisationResponse
     Response retrievalResponse
     String oauthErrorCode
     Response consentDeleteResponse
@@ -157,5 +160,58 @@ abstract class AbstractCofFlow {
         retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/${consent_Id}/status")
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "consentStatus")
+    }
+
+    void doExplicitAuthInitiation(String consentPath, String initiationPayload) {
+
+        //initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .body(initiationPayload)
+                .post(consentPath)
+
+        consentId = TestUtil.parseResponseBody(consentResponse, "consentId")
+        consentStatus = TestUtil.parseResponseBody(consentResponse, "consentStatus")
+    }
+
+    void createExplicitAuthorization(String consentPath) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .body("{}")
+                .post("${consentPath}/${consentId}/authorisations")
+
+        authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+        requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
+    }
+
+    void getAuthorizationStatus(String consentPath) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${consentId}/authorisations/${authorisationId}")
+    }
+
+    /**
+     * Initiation Request without Redirect Preffered Param.
+     * @param consentPath
+     * @param initiationPayload
+     */
+    void doDefaultInitiationWithoutRedirectPreffered(String consentPath, String initiationPayload) {
+
+        //initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .body(initiationPayload)
+                .post(consentPath)
+    }
+
+    /**
+     * Get List of Explicit Authorisation Resources.
+     * @param consentPath
+     */
+    void getExplicitAuthResources(String consentPath, String consent_Id = consentId) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${consent_Id}/authorisations")
     }
 }

@@ -54,7 +54,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .get(AccountsConstants.ACCOUNTS_PATH)
+                .get(AccountsConstants.ACCOUNTS_PATH + "/")
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
@@ -352,5 +352,76 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.BALANCES_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "TC0202013_Accounts Authorization for SCA implicit accept scenario"() {
+
+        doDefaultInitiation(consentPath, initiationPayload)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(refreshToken)
+    }
+
+    /**
+     * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
+     */
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], enabled = false)
+    void "OB-1663_Accounts retrieval for consent with pan account reference"() {
+
+        String initiationPayload = AccountsInitiationPayloads.initiationPayloadWithPan
+
+        doDefaultInitiation(consentPath, initiationPayload)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(refreshToken)
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+    }
+
+    /**
+     * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
+     */
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], enabled = false)
+    void "OB-1664_Accounts retrieval for consent with bban account reference"() {
+
+        String initiationPayload = AccountsInitiationPayloads.initiationPayloadWithBban
+
+        doDefaultInitiation(consentPath, initiationPayload)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
+
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(refreshToken)
+
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
     }
 }

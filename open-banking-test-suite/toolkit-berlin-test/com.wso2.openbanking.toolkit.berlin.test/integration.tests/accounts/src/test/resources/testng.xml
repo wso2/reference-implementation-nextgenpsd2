@@ -27,6 +27,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.GlobalConsentEndToEndFlowTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.AccountsSCAFlowTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Common_Tests.AccountsFlowTest"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.BankOfferedConsentEndToEndFlow"/>
         </classes>
     </test>
     <test name="Accounts Initiation Flow Tests" parallel="false" enabled="true">
@@ -61,7 +62,6 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.ImplicitAuthorisationRequestValidationTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountAuthorisationRequestValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountsBankOfferedConsentTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountsExplicitAuthorisation"/>

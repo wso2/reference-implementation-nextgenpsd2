@@ -45,7 +45,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
 
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.PAYMENTS
 
-    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.6"])
     void "Create Payment Consent for Explicit Authorization"() {
 
         doExplicitAuthInitiation(consentPath, initiationPayload)
@@ -54,7 +54,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
     }
 
-    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
+    @Test (groups = ["SmokeTest", "1.3.6"],
             dependsOnMethods = ["Create Payment Consent for Explicit Authorization"])
     void "Create Explicit Authorisation"() {
 
@@ -70,7 +70,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"), PaymentsConstants.SCA_STATUS_RECEIVED)
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = ["Create Explicit Authorisation"])
+    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Create Explicit Authorisation"])
     void "Check Idempotent Scenario Authorisation"() {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken, requestId)
@@ -82,7 +82,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
 
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = ["Check Idempotent Scenario Authorisation"])
+    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Check Idempotent Scenario Authorisation"])
     void "Authenticate PSU on SCA Flow"() {
 
         doAuthorizationFlow()
@@ -98,7 +98,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
                 PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = ["Validate the Authorisation IDs List"])
+    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Validate the Authorisation IDs List"])
     void "Create authorisation after settlement"() {
 
         createExplicitAuthorization(consentPath)
@@ -107,7 +107,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
                 PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
+    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
     void "Validate the Authorisation IDs List"() {
 
         def authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -158,7 +158,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertEquals(authorisationId, authorisationResponse.jsonPath().get("authorisationIds[0]"))
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 3,
+    @Test(groups = ["1.3.6"], priority = 3,
             dependsOnMethods = "OB-1487_Explicit Authorisation when ExplicitAuthorisationPreferred param set to true")
     void "OB-1494_Get SCA status of consent authorisation sub-resource"() {
 

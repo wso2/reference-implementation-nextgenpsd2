@@ -133,7 +133,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		def response = BerlinRequestBuilder
 						.buildBasicRequest(userAccessToken)
 						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-						.get(AccountsConstants.TRANSACTION_LIST_MULTICURRENCY_ACC)
+						.get(AccountsConstants.TRANSACTIONS_PATH)
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
@@ -152,7 +152,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 		def response = BerlinRequestBuilder
 						.buildBasicRequest(userAccessToken)
 						.header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-						.get(AccountsConstants.BALANCES_PATH_MULTICURRENCY)
+						.get(AccountsConstants.BALANCES_PATH)
 
 		Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
 		Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))

@@ -25,7 +25,6 @@ import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationS
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.response.Response
 import org.openqa.selenium.By
-import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import java.text.SimpleDateFormat
 
@@ -39,6 +38,7 @@ abstract class AbstractAccountsFlow {
     String code
     String consentStatus
     String userAccessToken
+    String refreshToken
     String oauthErrorCode
     Response consentResponse
     Response retrievalResponse
@@ -93,9 +93,9 @@ abstract class AbstractAccountsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -116,9 +116,9 @@ abstract class AbstractAccountsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_DENY_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_DENY_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -144,7 +144,7 @@ abstract class AbstractAccountsFlow {
                 .execute()
     }
 
-    void consentAuthorizeErrorFlowToValidateScopes(AuthorizationRequest request){
+    void consentAuthorizeErrorFlowValidation(AuthorizationRequest request){
 
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
@@ -208,6 +208,30 @@ abstract class AbstractAccountsFlow {
         userAccessToken = BerlinRequestBuilder
                 .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), authorizationCode)
 
-        return userAccessToken;
+        return userAccessToken
+    }
+
+    /**
+     * Initiation Request without Redirect Preffered Param.
+     * @param consentPath
+     * @param initiationPayload
+     */
+    void doDefaultInitiationWithoutRedirectPreffered(String consentPath, String initiationPayload) {
+
+        //initiation
+        consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .body(initiationPayload)
+                .post(consentPath)
+    }
+
+    /**
+     * Get List of Explicit Authorisation Resources.
+     * @param consentPath
+     */
+    void getExplicitAuthResources(String consentPath, String paymentId = paymentId) {
+
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get("${consentPath}/${paymentId}/authorisations")
     }
 }

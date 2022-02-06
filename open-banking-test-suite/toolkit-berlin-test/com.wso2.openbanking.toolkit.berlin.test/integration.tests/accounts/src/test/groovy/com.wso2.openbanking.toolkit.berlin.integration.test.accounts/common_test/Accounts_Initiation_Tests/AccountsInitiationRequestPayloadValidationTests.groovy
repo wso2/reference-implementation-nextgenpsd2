@@ -386,7 +386,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Set frequency per day attribute as 1,for one time account access")
+                "Set frequency per day attribute as 1 for one time account access")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -427,7 +427,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                        "Numeric instance is lower than the required minimum (minimum: 1, found: 0)")
+                        "Frequency per day have to be greater than zero")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -593,7 +593,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "ValidUntil has to be today, "+ LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) +" " +
+                "validUntil has to be today, "+ LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) +" " +
                         "or a future date")
     }
 
