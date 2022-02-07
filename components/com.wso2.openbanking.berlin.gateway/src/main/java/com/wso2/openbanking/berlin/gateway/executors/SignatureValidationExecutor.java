@@ -244,7 +244,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @throws SignatureCertMissingException thrown if the signature certificate is missing
      * @throws SignatureValidationException thrown if the mandatory headers of the signature are not present
      */
-    private void validateHeaders(Map<String, String> headersMap)
+    protected void validateHeaders(Map<String, String> headersMap)
             throws SignatureMissingException, DigestMissingException, SignatureCertMissingException,
             SignatureValidationException {
 
@@ -278,7 +278,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return return true if the digest validation is a success, false otherwise
      * @throws DigestValidationException thrown if an error occurs while digest validation
      */
-    private boolean validateDigest(String digestHeader, String requestPayload) throws DigestValidationException {
+    protected boolean validateDigest(String digestHeader, String requestPayload) throws DigestValidationException {
         try {
             String[] digestAttribute = digestHeader.split("=", 2);
             if (digestAttribute.length != 2) {
@@ -330,7 +330,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return true if the signature validation is successful, false otherwise
      * @throws SignatureValidationException when an error occurs during signature validation
      */
-    private boolean validateSignature(Map<String, String> requestHeaders,
+    protected boolean validateSignature(Map<String, String> requestHeaders,
                                       java.security.cert.X509Certificate x509Certificate)
             throws SignatureValidationException {
 

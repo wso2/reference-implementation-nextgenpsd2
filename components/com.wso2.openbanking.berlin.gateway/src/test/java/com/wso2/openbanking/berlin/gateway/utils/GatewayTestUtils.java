@@ -147,4 +147,12 @@ public class GatewayTestUtils {
         return executors;
 
     }
+
+    public static synchronized X509Certificate getTestSignatureCertificate()
+            throws CertificateException {
+
+        byte[] bytes = Base64.getDecoder().decode(GatewayTestUtils.TEST_SIGNATURE_CERT
+                .replace(BEGIN_CERT, "").replace(END_CERT, ""));
+        return X509Certificate.getInstance(bytes);
+    }
 }

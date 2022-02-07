@@ -17,6 +17,11 @@ import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.berlin.gateway.exceptions.DigestMissingException;
+import com.wso2.openbanking.berlin.gateway.exceptions.SignatureCertMissingException;
+import com.wso2.openbanking.berlin.gateway.exceptions.SignatureMissingException;
+import com.wso2.openbanking.berlin.gateway.exceptions.SignatureValidationException;
+import com.wso2.openbanking.berlin.gateway.test.TestData;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayTestUtils;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -28,6 +33,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
 
+import java.util.Map;
 import java.util.Optional;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
@@ -136,5 +142,12 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn("mismatchingOrgId");
         new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+    }
+
+    @Test
+    public void testValidateHeaders() throws SignatureCertMissingException, SignatureMissingException,
+            DigestMissingException, SignatureValidationException {
+
+        new SignatureValidationExecutor().validateHeaders(TestData.validAccountsRequestHeadersMap);
     }
 }
