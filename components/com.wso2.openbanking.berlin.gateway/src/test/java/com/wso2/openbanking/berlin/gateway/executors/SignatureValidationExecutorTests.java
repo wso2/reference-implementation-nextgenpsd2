@@ -44,8 +44,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
@@ -314,7 +312,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     public void testValidateSignatureWithoutMandatoryHeaderInSignature()
             throws SignatureValidationException, CertificateValidationException {
 
-        doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock).getSupportedSignatureAlgorithms();
+        doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
+                .getSupportedSignatureAlgorithms();
         new SignatureValidationExecutor().validateSignature(TestData.INVALID_ACCOUNTS_REQUEST_HEADERS_MAP_2,
                 GatewayTestUtils.getTestSigningCertificate());
     }
@@ -358,7 +357,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
                 .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_RETRY_COUNT);
 
         doReturn(TestData.SUPPORTED_HASH_ALGORITHMS).when(commonConfigParserMock).getSupportedHashAlgorithms();
-        doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock).getSupportedSignatureAlgorithms();
+        doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
+                .getSupportedSignatureAlgorithms();
 
         new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
