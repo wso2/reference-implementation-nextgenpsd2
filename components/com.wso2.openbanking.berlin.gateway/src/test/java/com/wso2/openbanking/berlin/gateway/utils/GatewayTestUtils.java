@@ -12,13 +12,20 @@
 
 package com.wso2.openbanking.berlin.gateway.utils;
 
+import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
+import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.berlin.gateway.test.GatewayTestConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
@@ -121,5 +128,23 @@ public class GatewayTestUtils {
         byte[] bytes = Base64.getDecoder().decode(GatewayTestUtils.TEST_TRANSPORT_CERT
                 .replace(BEGIN_CERT, "").replace(END_CERT, ""));
         return X509Certificate.getInstance(bytes);
+    }
+
+    public static Map<String, List<OpenBankingGatewayExecutor>> initExecutors() {
+
+        Map<String, List<OpenBankingGatewayExecutor>> executors = new HashMap<>();
+        Map<String, Map<Integer, String>> fullValidatorMap = GatewayTestConstants.FULL_VALIDATOR_MAP;
+        for (Map.Entry<String, Map<Integer, String>> stringMapEntry : fullValidatorMap.entrySet()) {
+            List<OpenBankingGatewayExecutor> executorList = new ArrayList<>();
+            Map<Integer, String> executorNames = stringMapEntry.getValue();
+            for (Map.Entry<Integer, String> executorEntity : executorNames.entrySet()) {
+                OpenBankingGatewayExecutor object = (OpenBankingGatewayExecutor)
+                        OpenBankingUtils.getClassInstanceFromFQN(executorEntity.getValue());
+                executorList.add(object);
+            }
+            executors.put(stringMapEntry.getKey(), executorList);
+        }
+        return executors;
+
     }
 }
