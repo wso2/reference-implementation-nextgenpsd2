@@ -72,7 +72,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String PSU_CORPORATE_ID_HEADER = "PSU-Corporate-ID";
     private static final String TPP_REDIRECT_URI_HEADER = "TPP-Redirect-URI";
     private static final String X_REQUEST_ID_HEADER = "X-Request-ID";
-    private static final String DATE_HEADER = "date";
+    private static final String DATE_HEADER = "Date";
     private static final String TPP_SIGNATURE_CERTIFICATE_HEADER = "TPP-Signature-Certificate";
 
     private static final String SIGNATURE_HEADER = "Signature";
@@ -335,7 +335,13 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             throws SignatureValidationException {
 
         try {
-            String signatureHeader = requestHeaders.get(SIGNATURE_HEADER);
+            // For signature validation, the order of the headers are considered.
+            // A case-insensitive treeMap is initialized since the headers need to be retrieved without considering
+            // case-sensitivity for generating signing string.
+            Map<String, String> orderedRequestHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            orderedRequestHeaders.putAll(requestHeaders);
+
+            String signatureHeader = orderedRequestHeaders.get(SIGNATURE_HEADER);
             String[] signatureElements = signatureHeader.split("\",");
             Map<String, String> signatureMap = getSignatureMap(signatureElements);
 
@@ -350,7 +356,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 throw new SignatureValidationException("Invalid keyId element in the Signature header");
             }
 
-            Signature signature = null;
+            Signature signature;
             String requestSignatureAlgorithm = x509Certificate.getSigAlgName();
             CommonConfigParser configParser = getConfigParser();
             if (configParser.getSupportedSignatureAlgorithms().contains(requestSignatureAlgorithm)) {
@@ -364,14 +370,14 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             signature.initVerify(x509Certificate.getPublicKey());
             String[] headerElements;
             headerElements = signatureMap.get(HEADERS_ELEMENT).split(" ");
-            if (!validateHeaderElements(headerElements, requestHeaders)) {
+            if (!validateHeaderElements(headerElements, orderedRequestHeaders)) {
                 log.error("Signature header contains invalid header/s");
                 throw new SignatureValidationException("Invalid headers element in the Signature header");
             }
 
             byte[] decodedSignature = Base64.getDecoder()
                     .decode(signatureMap.get(SIGNATURE_ELEMENT).getBytes(StandardCharsets.UTF_8));
-            signature.update(generateSigningString(headerElements, requestHeaders)
+            signature.update(generateSigningString(headerElements, orderedRequestHeaders)
                     .getBytes(StandardCharsets.UTF_8));
             return signature.verify(decodedSignature);
         } catch (NoSuchAlgorithmException e) {
@@ -391,17 +397,12 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      *
      * @param signatureElements the elements of the signature of the request
      * @return the signature elements map
-     * @throws SignatureValidationException thrown if an invalid signature is found
      */
-    private Map<String, String> getSignatureMap(String[] signatureElements) throws SignatureValidationException {
+    private Map<String, String> getSignatureMap(String[] signatureElements) {
         Map<String, String> signatureMap = new HashMap<>();
         for (String signatureElement : signatureElements) {
             String[] signatureAttributes = signatureElement.replaceAll("\"", "").split("=",
                     2);
-            if (signatureAttributes.length != 2) {
-                log.error("Signature elements are not according to the specification");
-                throw new SignatureValidationException(ErrorConstants.INVALID_SIGNATURE_HEADER);
-            }
             if (!signatureMap.containsKey(signatureAttributes[0].trim())) {
                 signatureMap.put(signatureAttributes[0].trim(), signatureAttributes[1].trim());
             }
@@ -438,15 +439,24 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param requestHeaders request headers
      * @return true if all the required headers are included in the signature, false otherwise
      */
-    private boolean validateHeaderElements(String[] headerElements, Object requestHeaders) {
+    private boolean validateHeaderElements(String[] headerElements, Map<String, String> requestHeaders)
+            throws SignatureValidationException {
+
+        // According to the spec, the headers elements defined in signature header should be lowercase
+        for (String headerElement : headerElements) {
+            if (!StringUtils.isAllLowerCase(headerElement.replace("-", ""))) {
+                log.error("Header elements present in the signature are not lowercase");
+                throw new SignatureValidationException("The headers element of the signature element should " +
+                        "contain lowercase headers");
+            }
+        }
+
         boolean containsDigestHeader = false;
         boolean containsRequestIDHeader = false;
         boolean containsPSUIDHeader = false;
         boolean containsPSUCorporateIDHeader = false;
         boolean containsTPPRedirectURIHeader = false;
         boolean containsDateHeader = false;
-
-        TreeMap transportHeadersMap = (TreeMap) requestHeaders;
 
         for (String headerElement : headerElements) {
             if (headerElement.equalsIgnoreCase(DIGEST_HEADER)) {
@@ -471,9 +481,9 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
 
         // If any of the headers PSU-ID, PSU-Corporate-ID or TPP-Redirect-URI contains in the request, they need to
         // be also contained in the headers element of the Signature header
-        if ((transportHeadersMap.get(PSU_ID_HEADER) != null && !containsPSUIDHeader) ||
-                (transportHeadersMap.get(PSU_CORPORATE_ID_HEADER) != null && !containsPSUCorporateIDHeader) ||
-                (transportHeadersMap.get(TPP_REDIRECT_URI_HEADER) != null && !containsTPPRedirectURIHeader)) {
+        if ((requestHeaders.get(PSU_ID_HEADER) != null && !containsPSUIDHeader) ||
+                (requestHeaders.get(PSU_CORPORATE_ID_HEADER) != null && !containsPSUCorporateIDHeader) ||
+                (requestHeaders.get(TPP_REDIRECT_URI_HEADER) != null && !containsTPPRedirectURIHeader)) {
             return false;
         }
         return true;
@@ -486,17 +496,17 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param requestHeaders the headers passed through the request
      * @return the signing string of the request
      */
-    private String generateSigningString(String[] headerElements, Object requestHeaders) {
+    private String generateSigningString(String[] headerElements, Map<String, String> requestHeaders) {
 
         StringBuilder signingString = new StringBuilder();
         for (String header : headerElements) {
-            if (((TreeMap) requestHeaders).get(header) == null) {
+            if (requestHeaders.get(header) == null) {
                 log.error("Required header element not passed through the request header");
                 break;
             }
             signingString.append(StringUtils.lowerCase(header))
                     .append(": ")
-                    .append(((TreeMap) requestHeaders).get(header).toString())
+                    .append((requestHeaders).get(header))
                     .append("\n");
         }
         return signingString.substring(0, signingString.length() - 1);
@@ -526,6 +536,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return Optional X509Certificate
      * @throws CertificateValidationException when certificate generation fails
      */
+    @Generated(message = "Excluded from coverage since this is covered from other tests")
     public static Optional<X509Certificate> parseSignatureCert(String signingCert)
             throws CertificateValidationException {
 
@@ -550,6 +561,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return true if certificate is in valid status, false otherwise
      * @throws CertificateEncodingException thrown if the certificate encoding is failed
      */
+    @Generated(message = "Excluding since this method is already covered from other tests")
     private boolean isValidCertStatus(X509Certificate signatureCertificate)
             throws CertificateEncodingException {
 
@@ -582,6 +594,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param certificate signature certificate
      * @return true is the certificate is valid, false if revoked
      */
+    @Generated(message = "Excluding since this method is already covered from other tests")
     private boolean isCertRevocationSuccess(X509Certificate certificate) {
 
         int certificateRevocationValidationRetryCount = Integer.parseInt((String) getOpenBankingConfigParser()
