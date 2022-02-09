@@ -405,6 +405,10 @@ url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
 username="$ref{super_admin.username}"
 password="$ref{super_admin.password}"
 
+[open_banking.gateway]
+request_router="com.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouter"
+consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
+
 #============executors=========================
 [[open_banking.gateway.openbanking_gateway_executors.type]]
 name = "Default"
@@ -429,6 +433,27 @@ priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 7
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+priority = 1000
+
+[[open_banking.gateway.openbanking_gateway_executors.type]]
+name = "Payments"
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutor"
+priority = 1
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutor"
+priority = 2
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.APITPPValidationExecutor"
+priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -508,9 +533,6 @@ max_connections_per_route = 1500
 #============to increase the https header size===============
 [transport.https.properties]
 maxHttpHeaderSize = 16384
-
-[open_banking.gateway.consent.validation]
-endpoint = "https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
 
 #===================Berlin Toolkit====================
 [open_banking_berlin.consent]

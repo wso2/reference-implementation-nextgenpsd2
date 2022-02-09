@@ -185,8 +185,6 @@ device.enable = true
 [[oauth.custom_response_type]]
 name = "code"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
-
-[[oauth.custom_response_type]]
 validator = "com.wso2.openbanking.berlin.identity.response.type.validators.BerlinCodeResponseTypeValidator"
 
 [[oauth.custom_response_type]]
