@@ -173,4 +173,13 @@ public class CommonConfigParserTests {
 
         Assert.assertEquals(commonConfigParser.getSupportedSignatureAlgorithms().get(0), "SHA256withRSA");
     }
+
+    @Test (priority = 14)
+    public void testGetOrgIdValidationRegex() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertEquals(commonConfigParser.getOrgIdValidationRegex(), "^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$");
+    }
 }

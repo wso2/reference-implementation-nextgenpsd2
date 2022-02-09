@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
@@ -482,6 +483,7 @@ public class CommonConfigParser {
         return supportedSignatureAlgorithmsList;
     }
 
+    @Generated(message = "Skipped from tests because this method reads config from open-banking.xml")
     public boolean isPsd2RoleValidationEnabled() {
 
         Object psd2RoleValidationEnabledObj = OpenBankingConfigParser.getInstance()
