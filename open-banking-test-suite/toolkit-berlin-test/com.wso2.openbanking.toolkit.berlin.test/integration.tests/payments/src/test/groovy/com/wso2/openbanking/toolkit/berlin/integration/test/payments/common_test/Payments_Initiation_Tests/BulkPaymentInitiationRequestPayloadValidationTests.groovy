@@ -135,7 +135,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
     /**
      * This testcase only supports if AccountReferenceType is configured as 'pan' in open-banking.xml.
      */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = true)
+    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
     void "TC0401024_Initiation Request with debtorAccount in pan attribute"() {
         String accountAttributes = PaymentsConstants.accountAttributePan
         String debtorAcc = PaymentsConstants.panAccount
@@ -172,8 +172,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
 
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Account reference type is missing")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -211,15 +211,15 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
      * This testcase only supports if AccountReferenceType is configured as 'iban' in open-banking.xml.
      */
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "TC0401030_Initiation Request with payment entries having different debtorAccount "() {
+    void "TC0401030_Initiation Request with payment entries having debtorAccount "() {
 
         String paymentArray = "[{\n" +
                 "                    \"instructedAmount\": {\n" +
                 "                        \"currency\": \"${PaymentsConstants.instructedAmountCurrency}\",\n" +
                 "                        \"amount\": \"${PaymentsConstants.instructedAmount}\"\n" +
                 "                    },\n" +
-                "                    \"debtorAccount\": {\n" +
-                "                        \"iban\": \"${PaymentsConstants.debtorAccount2}\"\n" +
+                "                     \"debtorAccount\": {\n" +
+                "                        \"iban\": \"${PaymentsConstants.debtorAccount1}\"\n" +
                 "                    },\n" +
                 "                    \"creditorName\": \"${PaymentsConstants.creditorName2}\",\n" +
                 "                    \"creditorAccount\": {\n" +
@@ -318,9 +318,6 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                         "currency": "${PaymentsConstants.instructedAmountCurrency}",
                         "amount": "${PaymentsConstants.instructedAmount}"
                     },
-                    "debtorAccount": {
-                        "iban": "${PaymentsConstants.debtorAccount1}"
-                    },
                     "creditorName": "${PaymentsConstants.creditorName1}",
                     "creditorAccount": {
                         "iban": "${PaymentsConstants.creditorAccount1}"
@@ -339,5 +336,24 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                 BerlinConstants.FORMAT_ERROR)
         //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
         //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "Initiation Request with single and future dated payment entries"() {
+
+        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadWithSingleAndFutureDatedEntries
+
+        //Make Payment Initiation Request
+        doDefaultInitiation(bulkPaymentConsentPath, payload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(consentResponse.getHeader("Location"))
+        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
+        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
+
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
     }
 }

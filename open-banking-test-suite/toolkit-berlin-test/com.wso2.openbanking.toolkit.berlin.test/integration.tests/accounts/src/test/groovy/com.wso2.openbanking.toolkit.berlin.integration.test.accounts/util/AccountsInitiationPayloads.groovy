@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util
 
+import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 
 class AccountsInitiationPayloads {
@@ -20,26 +21,24 @@ class AccountsInitiationPayloads {
             "access":{
                 "accounts":[
                     {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"DE98765432109876543210"
                     }
                 ],
                 "balances":[
                     {  
-                        "iban":"DE12345678901234567890",
-                        "currency":"USD"
+                        "iban":"DE98765432109876543210"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "iban":"DE12345678901234567890"
+                        "iban":"DE98765432109876543210"
                     }
                 ]
             },
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
@@ -61,7 +60,7 @@ class AccountsInitiationPayloads {
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
-            "combinedServiceIndicator": true
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 
@@ -83,7 +82,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":4,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -95,7 +94,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
                
         }
     """.stripIndent()
@@ -108,7 +107,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -120,7 +119,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
@@ -132,11 +131,11 @@ class AccountsInitiationPayloads {
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":1,
-               "combinedServiceIndicator":true
+               "combinedServiceIndicator":false
         }
     """.stripIndent()
 
-    static final String AllAccessBankOfferedConsentPayload = """
+	public static final String AllAccessBankOfferedConsentPayload = """
           {  
                "access":{  
                   "accounts":[],
@@ -146,7 +145,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -165,7 +164,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -189,7 +188,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -213,7 +212,7 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
 
@@ -237,7 +236,114 @@ class AccountsInitiationPayloads {
                "recurringIndicator": true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay": 4,
-               "combinedServiceIndicator": true
+               "combinedServiceIndicator": false
         }
     """.stripIndent()
+
+    static final String defaultCardAccountInitiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "maskedPan":"1234560000000000",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "maskedPan":"1234560000000000",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"1234560000000000"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String subAccLevelMultiCurrencyInitiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY1}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY2}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY3}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String aggregationLevelMultiCurrencyInitiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String subAndAggregartionMultiCurrencyInitiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY1}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}",
+                        "currency":"${BerlinConstants.CURRENCY2}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"${BerlinConstants.MULTICURRENCY_ACCOUNT}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
 }

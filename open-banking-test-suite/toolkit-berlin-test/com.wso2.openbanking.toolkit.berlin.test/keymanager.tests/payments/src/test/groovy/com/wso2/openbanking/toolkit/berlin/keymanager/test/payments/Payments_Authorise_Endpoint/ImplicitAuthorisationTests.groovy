@@ -22,6 +22,7 @@ import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -164,7 +165,8 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(paymentId)
 
-		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, paymentId)
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+						UUID.randomUUID().toString())
 		new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
 						.addStep(new AuthAutomationSteps(request.toURI().toString()))
 						.addStep { driver, context ->
@@ -202,7 +204,7 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		//Do Authorization
-		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, paymentId)
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId)
 		consentAuthorizeErrorFlowToValidateScopes(request, true)
 
 		Assert.assertEquals(oauthErrorCode, "Retrieving consent data failed")
@@ -265,15 +267,52 @@ class ImplicitAuthorisationTests extends AbstractPaymentsFlow {
 	@Test (groups = ["1.3.3", "1.3.6"])
 	void "OB-1486_Send Authorisation request with unsupported code_challenge_method"() {
 
+		CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		//Do Authorization
 		try {
-			OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, paymentId)
+			OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+							AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
 		} catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
 		}
+	}
+
+	@Test (groups = ["1.3.6"])
+	void "OB-1483_Send Authorisation request with incorrect response_type param"() {
+
+		//Consent Initiation
+		doDefaultInitiation(consentPath, initiationPayload)
+
+		//Do Authorization
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+						AppConfigReader.getClientId(), "id_token&")
+		consentAuthorizeErrorFlow(request)
+
+		String authUrl = automation.currentUrl.get()
+		def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+		Assert.assertEquals(oauthErrorCode, "invalid_request, Incorrect response_type provided")
+	}
+
+	@Test (groups = ["1.3.6"])
+	void "OB-1485_Send Authorisation request with plain value as the code_challenge_method"() {
+
+		//Consent Initiation
+		doDefaultInitiation(consentPath, initiationPayload)
+
+		//Do Authorization
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, paymentId,
+						AppConfigReader.getClientId(), "code", CodeChallengeMethod.PLAIN)
+		consentAuthorizeErrorFlow(request)
+
+		String authUrl = automation.currentUrl.get()
+		def code = BerlinTestUtil.getCodeFromURL(authUrl)
+		Assert.assertNotNull(authUrl.contains("state"))
+		Assert.assertNotNull(code)
 	}
 }

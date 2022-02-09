@@ -76,18 +76,14 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                    BerlinConstants.FORMAT_ERROR)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                    "Request Content-Type header '[text/plain; charset=ISO-8859-1]' does not match any allowed types. " +
-                            "Must be one of: [application/json, application/xml, multipart/form-data].")
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_415)
         }
     }
 
@@ -105,18 +101,14 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                    BerlinConstants.FORMAT_ERROR)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                    "Request Content-Type header '[text/html; charset=ISO-8859-1]' does not match any allowed types. " +
-                            "Must be one of: [application/json, application/xml, multipart/form-data].")
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_415)
         }
     }
 
@@ -133,27 +125,18 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140]:
-                    Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "Input string \"1234\" is not a valid UUID")
-                    break
-                default:
-                    Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "Header parameter 'X-Request-ID' is required on path '/{payment-service}/{payment-product}' " +
-                                    "but not found in request.")
-                    break
-            }
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                            "X-Request-ID header is missing in the request")
         }
     }
 
@@ -171,18 +154,18 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
-
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                    "Input string \"1234\" is not a valid UUID")
+                    "Invalid X-Request-ID header. Needs to be in UUID format")
         }
     }
 
@@ -203,10 +186,11 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
@@ -230,26 +214,18 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
-
-            switch(BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140]:
-                    Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "Parameter 'PSU-IP-Address' is required but is missing.")
-                    break
-                default:
-                    Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                            contains("Header parameter 'PSU-IP-Address' is required on path"))
-                    break
-            }
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                            "The PSU-IP-Address mandatory header is missing in the request")
         }
     }
 
@@ -267,16 +243,16 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, "174327080")
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
-
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
                     "String \"174327080\" is not a valid IPv4 address")
         }
@@ -299,6 +275,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
@@ -323,24 +300,16 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue (consentResponse.getBody().xmlPath().getString("ams:description").
+            Assert.assertTrue (consentResponse.getBody().jsonPath().getString("description").
                             contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
-                    break
-            }
         }
     }
 
@@ -358,25 +327,17 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "fault.description")
+            Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
                             .contains("Invalid Credentials. Make sure you have provided the correct " +
                             "security credentials"))
-                    break
-            }
         }
     }
 
@@ -407,24 +368,16 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-            switch (BerlinTestUtil.solutionVersion) {
-                case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                    Assert.assertTrue(consentResponse.getHeader("WWW-Authenticate").contains("error=\"invalid token\""))
-                    break
-
-                default:
-                    Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "fault.description")
+            Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
                             .contains("Incorrect Access Token Type is provided"))
-                    break
-            }
         }
     }
 
@@ -446,10 +399,11 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
@@ -470,10 +424,11 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .header(BerlinConstants.Date, getCurrentDate())
                     .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}@${config.getTenantDomain()}")
+                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
                     .header(BerlinConstants.PSU_TYPE, "email")
                     .filter(new BerlinSignatureFilter())
                     .body(payload)
+                    .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)

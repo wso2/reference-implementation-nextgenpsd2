@@ -49,12 +49,13 @@ class BerlinConstants {
     static final String CONSENT_STATUS = "consentStatus"
     static final String TIMESTAMP_INVALID = "TIMESTAMP_INVALID"
     static final String HEADER_BOOKINGSTATUS= "Header.bookingStatus"
-    static final String QUERY_BOOKINGSTATUS = "Query.bookingStatus";
+    static final String QUERY_BOOKINGSTATUS = "Query.bookingStatus"
     static final String HEADER_DATEFROM = "Header.dateFrom"
     static final String QUERY_DATEFROM = "Query.dateFrom"
     static final String PRODUCT_UNKNOWN = "PRODUCT_UNKNOWN"
     static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
-    static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE";
+    static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE"
+    static final String CANCELLATION_INVALID = "CANCELLATION_INVALID"
 
 
     static final int STATUS_CODE_204 = 204
@@ -67,13 +68,14 @@ class BerlinConstants {
     static final int STATUS_CODE_405 = 405
     static final int STATUS_CODE_406 = 406
     static final int STATUS_CODE_202 = 202
+    static final int STATUS_CODE_415 = 415
 
     static final enum AUTH_METHOD {
         PRIVATE_KEY_JWT
     }
 
     static final enum SCOPES {
-        PAYMENTS(["openid", "payments"], "pis"), ACCOUNTS(["openid", "com.wso2.openbanking.toolkit.berlin.integration.test.accounts"], "ais") ,
+        PAYMENTS(["openid", "payments"], "pis"), ACCOUNTS(["openid", "accounts"], "ais") ,
         COF(["openid", "fundsconfirmations"], "piis")
 
         private final List<String> scopes
@@ -96,4 +98,10 @@ class BerlinConstants {
     static final String IS_VALID = "IsValid"
     static final String SCA_STATUS_PARAM = "scaStatus"
     static final String TRUSTED_BENEFICIARY_FLAG = "trustedBeneficiaryFlag"
+
+    static final String NORMAL_ACCOUNT = "DE98765432109876543210"
+    static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890"
+    static final String CURRENCY1 = "USD"
+    static final String CURRENCY2 = "EUR"
+    static final String CURRENCY3 = "GBP"
 }

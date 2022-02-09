@@ -15,6 +15,7 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmat
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.cof.util.AbstractCofFlow
@@ -60,6 +61,7 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
@@ -83,14 +85,14 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString ().
-                        contains ("Header parameter 'X-Request-ID' is required on path " +
-                                "'/consents/confirmation-of-funds/{consentId}' but not found in request."))
+                        contains ("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -110,6 +112,7 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -117,7 +120,7 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.6"])
@@ -137,13 +140,14 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'X-Request-ID' is required but is missing.")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.6"])
@@ -162,10 +166,11 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                 .header(BerlinConstants.Date, getCurrentDate())
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
                 .contains("Invalid Credentials. Make sure your API invocation call has a header: " +
                         "'Authorization"))
     }
@@ -187,10 +192,11 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
                 .contains("Make sure you have provided the correct security credentials"))
     }
 
@@ -211,10 +217,11 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ")
                 .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "fault.description")
+        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
                 .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 }

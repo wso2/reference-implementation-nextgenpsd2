@@ -421,14 +421,14 @@ priority = 3
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
-#[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-#name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
-#priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
-priority = 6
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000

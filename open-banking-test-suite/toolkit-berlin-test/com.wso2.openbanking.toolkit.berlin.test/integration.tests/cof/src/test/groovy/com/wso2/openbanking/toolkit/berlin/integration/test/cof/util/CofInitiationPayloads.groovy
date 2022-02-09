@@ -23,7 +23,7 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE98765432109876543210"
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2025-12-31",
@@ -55,7 +55,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}" 
             },
         "cardExpiryDate": "${BerlinTestUtil.getDateAndTime(5)}",
         "cardInformation": "My Merchant Loyalty Card",
@@ -67,10 +68,11 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}" 
             },
         "cardNumber": "1234567890123456789012345678901234567890",
-        "cardExpiryDate": "2020-12-31",
+        "cardExpiryDate": "2023-12-31",
         "cardInformation": "My Merchant Loyalty Card",
         "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
     }
@@ -80,7 +82,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardInformation": "My Merchant Loyalty Card",
@@ -92,10 +95,11 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
-        "cardExpiryDate": "2020-12-312",
+        "cardExpiryDate": "2025-12-312",
         "cardInformation": "My Merchant Loyalty Card",
         "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
     }
@@ -105,7 +109,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2000-12-12",
@@ -118,7 +123,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "${BerlinTestUtil.getDateAndTime(5)}",
@@ -130,7 +136,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2020-12-31",
@@ -143,7 +150,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2020-12-31",
@@ -155,7 +163,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE12345678901234567890" 
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}"  
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2020-12-31",
@@ -168,7 +177,8 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "pan": "DE12345678901234567890" 
+                "pan": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}" 
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2025-12-31",
@@ -181,7 +191,34 @@ class CofInitiationPayloads {
     {
         "account":
             {
-                "iban": "DE123456789012345678901234" 
+                "iban": "DE123456789012345678901234",
+                "currency": "${CofConstants.currency}"  
+            },
+        "cardNumber": "1234567891234",
+        "cardExpiryDate": "2025-12-31",
+        "cardInformation": "My Merchant Loyalty Card",
+        "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
+    }
+    """.stripIndent()
+
+    static String initiationPayloadForSubAccLevelMultiCurrency = """
+    {
+        "account":
+            {
+                "iban": "DE12345678901234567890",
+                "currency": "${CofConstants.currency}" 
+            },
+        "cardNumber": "1234567891234",
+        "cardExpiryDate": "2025-12-31",
+        "cardInformation": "My Merchant Loyalty Card",
+        "registrationInformation": "Your contract Number 1234 with MyMerchant is completed with the registration with your bank."
+    }
+    """.stripIndent()
+    static String initiationPayloadForAggregateLevelMultiCurrency = """
+    {
+        "account":
+            {
+                "iban": "DE12345678901234567890"
             },
         "cardNumber": "1234567891234",
         "cardExpiryDate": "2025-12-31",

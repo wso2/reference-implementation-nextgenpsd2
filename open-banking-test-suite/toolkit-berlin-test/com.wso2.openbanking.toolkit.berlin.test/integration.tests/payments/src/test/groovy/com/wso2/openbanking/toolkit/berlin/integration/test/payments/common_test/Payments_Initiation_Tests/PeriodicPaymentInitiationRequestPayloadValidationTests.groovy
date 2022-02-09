@@ -196,7 +196,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Execution rule specified is not supported")
+                "Execution rule should be either \"following\" or \"preceding\"")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -215,7 +215,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Future dates provided in the request contains past dates, Please set correct Dates")
+                "End date must be a future date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Authorise_Endpoint
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
@@ -21,6 +22,7 @@ import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
@@ -175,7 +177,8 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 		Assert.assertNotNull(accountId)
 
-		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithInvalidClientId(scopes, accountId)
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+						UUID.randomUUID().toString())
 		new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
 						.addStep(new AuthAutomationSteps(request.toURI().toString()))
 						.addStep { driver, context ->
@@ -216,7 +219,7 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		//Do Authorization
-		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedScope(scopes, accountId)
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId)
 		consentAuthorizeErrorFlowToValidateScopes(request)
 
 		Assert.assertEquals(oauthErrorCode, "Requested consent not found for this TPP-Unique-ID")
@@ -274,15 +277,52 @@ class ImplicitAuthorisationTests extends AbstractAccountsFlow {
 	@Test (groups = ["1.3.3", "1.3.6"])
 	void "OB-1425_Send Authorisation request with unsupported code_challenge_method"() {
 
+		CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
+
 		//Consent Initiation
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		//Do Authorization
 		try {
-			OAuthAuthorizationRequestBuilder.OAuthRequestWithUnsupportedCodeChallengeMethod(scopes, accountId)
+			OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+							AppConfigReader.getClientId(), "code", codeChallengeMethod)
 
 		} catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.message, "Unsupported code challenge method: RS256")
 		}
+	}
+
+	@Test (groups = ["1.3.6"])
+	void "OB-1422_Send Authorisation request with incorrect response_type param"() {
+
+		//Consent Initiation
+		doDefaultInitiation(consentPath, initiationPayload)
+
+		//Do Authorization
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+						AppConfigReader.getClientId(), "id_token&")
+		consentAuthorizeErrorFlow(request)
+
+		String authUrl = automation.currentUrl.get()
+		def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+		Assert.assertEquals(oauthErrorCode, "invalid_request, Incorrect response_type provided")
+	}
+
+	@Test (groups = ["1.3.6"])
+	void "OB-1424_Send Authorisation request with plain value as the code_challenge_method"() {
+
+		//Consent Initiation
+		doDefaultInitiation(consentPath, initiationPayload)
+
+		//Do Authorization
+		def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId,
+						AppConfigReader.getClientId(), "code", CodeChallengeMethod.PLAIN)
+		consentAuthorizeErrorFlow(request)
+
+		String authUrl = automation.currentUrl.get()
+		def code = BerlinTestUtil.getCodeFromURL(authUrl)
+		Assert.assertNotNull(authUrl.contains("state"))
+		Assert.assertNotNull(code)
 	}
 }

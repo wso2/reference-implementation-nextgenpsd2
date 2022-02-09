@@ -46,6 +46,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentConsentResponseValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentResponseValidationTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.MultiCurrencyValidationTests"/>
         </classes>
     </test>
     <test name="Payments Authorisation Flow Tests" parallel="false" enabled="true">

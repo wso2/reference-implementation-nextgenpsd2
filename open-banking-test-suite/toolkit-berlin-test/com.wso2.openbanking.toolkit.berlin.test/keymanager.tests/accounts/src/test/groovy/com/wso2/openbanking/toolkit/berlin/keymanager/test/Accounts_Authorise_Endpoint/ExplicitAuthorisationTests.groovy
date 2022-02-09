@@ -14,12 +14,17 @@ package com.wso2.openbanking.toolkit.berlin.keymanager.test.Accounts_Authorise_E
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.keymanager.test.util.AccountsPayloads
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
 
@@ -95,7 +100,7 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "consentStatus"), AccountsConstants
 				.CONSENT_STATUS_RECEIVED)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"),
-				"https://localhost:8243/.well-known/openid-configuration")
+				"${ConfigParser.getInstance().getBaseURL()}/.well-known/openid-configuration")
 		Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "chosenScaMethod[0]" +
 				".authenticationType"), "SMS_OTP")
@@ -194,5 +199,51 @@ class ExplicitAuthorisationTests extends AbstractAccountsFlow {
 		Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_403)
 		Assert.assertEquals(TestUtil.parseResponseBody(authorisationResponse, BerlinConstants.TPPMESSAGE_CODE),
 						BerlinConstants.CONSENT_UNKNOWN)
+	}
+
+	@Test(groups = ["1.3.6"])
+	void "OB-1531_Authorisation with undifed PSU_ID when TPP-ExplicitAuthorisationPreferred set to true"() {
+
+		//Consent Initiation
+		consentResponse = TestSuite.buildRequest()
+						.contentType(ContentType.JSON)
+						.header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+						.header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+						.header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic ${accessToken}")
+						.header(BerlinConstants.PSU_ID, "psu1@wso2.com")
+						.header(BerlinConstants.PSU_TYPE, "email")
+						.header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+						.header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+						.header(TestConstants.X_WSO2_CLIENT_ID_KEY, appClientId)
+						.filter(new BerlinSignatureFilter())
+						.baseUri(ConfigParser.instance.authorisationServerURL)
+						.body(initiationPayload)
+						.post(consentPath)
+
+		Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+		Assert.assertNotNull(accountId)
+		Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification.href"))
+
+		//Create Explicit Authorisation Resources
+		createExplicitAuthorization(consentPath)
+
+		accountId = TestUtil.parseResponseBody(consentResponse, "consentId")
+		authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+		requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
+		Assert.assertNotNull(requestId)
+		Assert.assertNotNull(authorisationId)
+		Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+						AccountsConstants.CONSENT_STATUS_RECEIVED)
+		Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
+
+		//Do Authorisation
+		doAuthorizationFlow()
+		Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+		Assert.assertNotNull(code)
+
+		//Check Consent Status
+		doStatusRetrieval(consentPath, accountId)
+		Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
+		Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_VALID)
 	}
 }

@@ -43,6 +43,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofGetConsentResponseValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofDeleteConsentRequestHeaderValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.CofDeleteConsentResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.MultiCurrencyValidationTests"/>
         </classes>
     </test>
     <test name="Funds Confirmation Authorization Flow Tests" parallel="false" enabled="true">
