@@ -50,7 +50,9 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
 
             // todo: handle schema validation errors after fixing:
             //  https://github.com/wso2-enterprise/financial-open-banking/issues/7112
-            if (Integer.toString(errorCode).startsWith("9")) {
+            if (Integer.toString(errorCode).equals("900806")) {
+                errorData = getThrottleFailureResponse(errorMessage, errorDetail);
+            } else if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage, errorDetail);
             } else if (errorCode == 405) {
                 errorData = getMethodNotAllowedFailureResponse(errorMessage);
@@ -102,6 +104,19 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
 
+        return errorData;
+    }
+
+    private static JSONObject getThrottleFailureResponse(String errorMessage, String errorDetail) {
+
+        JSONObject errorData = new JSONObject();
+        int status = 429;
+        String errorText = (errorDetail == null) ? errorMessage : errorDetail;
+        JSONObject errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
+                TPPMessage.CodeEnum.ACCESS_EXCEEDED, errorText);
+
+        errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
         return errorData;
     }
 
