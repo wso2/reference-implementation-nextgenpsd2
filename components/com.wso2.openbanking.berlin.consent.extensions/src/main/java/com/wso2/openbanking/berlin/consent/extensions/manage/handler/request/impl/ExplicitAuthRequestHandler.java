@@ -75,7 +75,6 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
 
         Optional<Boolean> isRedirectPreferred = HeaderValidator.isTppRedirectPreferred(headersMap);
         String psuIdOfRequest = consentManageData.getHeaders().get(ConsentExtensionConstants.PSU_ID_HEADER);
-        String tenantEnsuredPSUId = ConsentExtensionUtil.appendSuperTenantDomain(psuIdOfRequest);
 
         log.debug("Get detailed consent for the provided id");
         try {
@@ -128,12 +127,12 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                 if (explicitAuthResources.size() != 0) {
                     for (AuthorizationResource authResource : explicitAuthResources) {
                         if (!StringUtils.isEmpty(authResource.getUserID())
-                                && StringUtils.equals(tenantEnsuredPSUId, authResource.getUserID())
+                                && StringUtils.equals(psuIdOfRequest, authResource.getUserID())
                                 && StringUtils.equals(authType, authResource.getAuthorizationType())) {
                             // Handling explicit idempotency scenario
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Authorisation resource for user %s already exists",
-                                        tenantEnsuredPSUId));
+                                        psuIdOfRequest));
                             }
                             authorizationResource = authResource;
                             break;
@@ -179,7 +178,7 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
             authorizationResource = new AuthorizationResource();
             authorizationResource.setConsentID(consentId);
             authorizationResource.setAuthorizationType(authType);
-            authorizationResource.setUserID(tenantEnsuredPSUId);
+            authorizationResource.setUserID(psuIdOfRequest);
             authorizationResource.setAuthorizationStatus(ScaStatusEnum.RECEIVED.toString());
 
             try {

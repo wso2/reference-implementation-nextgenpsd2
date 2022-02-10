@@ -59,7 +59,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
         String scopeString = consentData.getScopeString();
         String consentId = ConsentAuthUtil.getConsentId(scopeString);
         String loggedInUserId = consentData.getUserId();
-        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId);
+//        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId);
 
         if (StringUtils.isBlank(consentId)) {
             log.error(ErrorConstants.CONSENT_ID_SCOPE_MISSING_ERROR);
@@ -92,7 +92,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Finding the auth resource relevant to the user if the user Id already exists
             Optional<AuthorizationResource> unauthorizedAuthResource = authorizationsList.stream()
-                            .filter(authorization -> StringUtils.equals(loggedInUserWithSuperTenant,
+                            .filter(authorization -> StringUtils.equals(loggedInUserId,
                                     authorization.getUserID())
                                     && StringUtils.equals(authType, authorization.getAuthorizationType()))
                             .findFirst();
@@ -102,11 +102,11 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                     && !StringUtils.equals(unauthorizedAuthResource.get().getAuthorizationStatus(),
                     ScaStatusEnum.RECEIVED.toString())) {
                 log.error(String.format("The consent of Id: %s has already been authorised by %s", consentId,
-                        loggedInUserWithSuperTenant));
+                        loggedInUserId));
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.INVALID_REQUEST,
                                 String.format("This consent has already been authorised by %s",
-                                        loggedInUserWithSuperTenant),
+                                        loggedInUserId),
                                 consentData.getRedirectURI(), consentData.getState()));
             }
 
@@ -126,9 +126,10 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                         log.debug("Validating whether the logged in user matches with the user who initiated the " +
                                 "consent of Id:" + consentId);
                     }
-                    String initiationPsuId = unauthorizedAuthResource.get().getUserID();
+                    String initiationPsuId = ConsentExtensionUtil
+                            .appendSuperTenantDomain(unauthorizedAuthResource.get().getUserID());
 
-                    if (!StringUtils.equals(initiationPsuId, loggedInUserWithSuperTenant)) {
+                    if (!StringUtils.equals(initiationPsuId, loggedInUserId)) {
                         log.error(ErrorConstants.LOGGED_IN_USER_MISMATCH);
                         jsonObject.put(ConsentExtensionConstants.IS_ERROR, ErrorConstants.LOGGED_IN_USER_MISMATCH);
                     }

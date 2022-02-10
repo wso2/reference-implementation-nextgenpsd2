@@ -27,7 +27,7 @@ import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.common.AuthorisationStateChangeHook;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.enums.AuthorisationAggregateStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.factory.AuthorizationHandlerFactory;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import org.apache.commons.collections.CollectionUtils;
@@ -73,7 +73,8 @@ public class ConsentPersistHandlerService {
         AuthorizationResource currentAuthorisationResource =
                 consentCoreService.getAuthorizationResource(authorisationId);
 
-        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(psuId);
+        // Removing super tenant from username if present in order to avoid storing in the DB
+        String username = StringUtils.removeEndIgnoreCase(psuId, ConsentExtensionConstants.SUPER_TENANT_DOMAIN);
         String consentId = consentResource.getConsentID();
         String currentAuthorisationType = currentAuthorisationResource.getAuthorizationType();
 
@@ -107,12 +108,12 @@ public class ConsentPersistHandlerService {
                     if (StringUtils.equals(consentResource.getConsentType(), ConsentTypeEnum.ACCOUNTS.toString())
                             && StringUtils.equals(aggregatedStatus.get().toString(),
                             AuthorisationAggregateStatusEnum.FULLY_AUTHORISED.toString())) {
-                        handleMultipleRecurringConsent(consentResource, loggedInUserWithSuperTenant);
+                        handleMultipleRecurringConsent(consentResource, username);
                     }
 
                     String consentStatusToUpdate = stateChangeHook.onAuthorisationStateChange(consentId,
                             currentAuthorisationType, aggregatedStatus.get(), currentAuthorisationResource);
-                    consentCoreService.bindUserAccountsToConsent(consentResource, loggedInUserWithSuperTenant,
+                    consentCoreService.bindUserAccountsToConsent(consentResource, username,
                             authorisationId, accountIdMapWithPermissions, authStatus, consentStatusToUpdate);
 
                     // Deactivate the account mappings created for the relevant consent ID when consent is denied
@@ -178,8 +179,7 @@ public class ConsentPersistHandlerService {
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getClientID())),
                         new ArrayList<>(Collections.singletonList(currentConsentResource.getConsentType())),
                         new ArrayList<>(Collections.singletonList(ConsentStatusEnum.VALID.toString())),
-                        new ArrayList<>(Collections.singletonList(ConsentExtensionUtil
-                                .appendSuperTenantDomain(loggedInUserId))), null, null, null,
+                        new ArrayList<>(Collections.singletonList(loggedInUserId)), null, null, null,
                         null)
                 .stream()
                 .filter(detailedConsentResource -> {

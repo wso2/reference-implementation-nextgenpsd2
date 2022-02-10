@@ -27,9 +27,9 @@ import java.util.Map;
 /**
  * CDS Throttle data publisher to frequency per day add custom throttling properties based the request.
  */
-public class FrequencyPerDayThrottleDataPublisherImpl implements ThrottleDataPublisher {
+public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
 
-    private static final Log log = LogFactory.getLog(FrequencyPerDayThrottleDataPublisherImpl.class);
+    private static final Log log = LogFactory.getLog(CustomThrottleDataPublisherImpl.class);
 
     public static final String VIEW_ACCOUNTS = "accounts";
     public static final String VIEW_CARD_ACCOUNTS = "card-accounts";

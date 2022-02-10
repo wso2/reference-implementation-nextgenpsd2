@@ -44,14 +44,15 @@ public class HeaderValidator {
     public static void validatePsuIpAddress(Map<String, String> headers) {
 
         log.debug("Validating PSU-IP-Address header");
-        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers, ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+        if (headers.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.get(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
             if (StringUtils.isEmpty(psuIpAddress)) {
-                log.error(String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
+                log.error(String.format("Invalid %s header",
+                        ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER));
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                         null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)
+                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)
                 ));
             }
         } else {
@@ -72,10 +73,9 @@ public class HeaderValidator {
 
         Map<String, String> headerMap = new HashMap<>();
 
-        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject,
-                ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+        if (headersObject.containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)) {
             headerMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER,
-                    headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER));
+                    headersObject.getAsString(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER));
         }
         validatePsuIpAddress(headerMap);
     }
@@ -87,7 +87,7 @@ public class HeaderValidator {
      */
     public static void validateXRequestId(Map<String, String> headers) {
         log.debug("Validating the X-Request-ID header");
-        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+        if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
             String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
             if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
@@ -114,9 +114,9 @@ public class HeaderValidator {
 
         Map<String, String> headerMap = new HashMap<>();
 
-        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+        if (headersObject.containsKey(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
             headerMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
-                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
         }
         validateXRequestId(headerMap);
     }

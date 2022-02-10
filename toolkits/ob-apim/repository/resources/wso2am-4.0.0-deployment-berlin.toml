@@ -109,6 +109,24 @@ pool_options.validationQuery="SELECT 1"
 pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
 
+# for Open Banking  data
+[[datasource]]
+id="WSO2OB_DB"
+url = "DB_OB_STORE_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+jmx_enable=false
+pool_options.maxActive = "150"
+pool_options.maxWait = "60000"
+pool_options.minIdle = "5"
+pool_options.testOnBorrow = true
+pool_options.validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+pool_options.validationInterval="30000"
+pool_options.defaultAutoCommit=false
+
 [tenant_mgt]
 enable_email_domain = true
 
@@ -479,7 +497,7 @@ type = "THROTTLING"
 class = "com.wso2.openbanking.accelerator.gateway.throttling.OBThrottlingExtensionImpl"
 
 [open_banking.gateway.throttling]
-throttling_data_publisher = "com.wso2.openbanking.berlin.gateway.throttling.FrequencyPerDayThrottleDataPublisherImpl"
+throttling_data_publisher = "com.wso2.openbanking.berlin.gateway.throttling.CustomThrottleDataPublisherImpl"
 
 #keymanager name
 [open_banking.keyManager]

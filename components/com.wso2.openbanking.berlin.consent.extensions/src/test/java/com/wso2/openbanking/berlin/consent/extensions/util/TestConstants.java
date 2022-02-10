@@ -23,7 +23,7 @@ public class TestConstants {
             "backend/services/v130/accounts/payable";
     public static final String SHAREABLE_ACCOUNT_RETRIEVAL_ENDPOINT = "http://localhost:9443/api/openbanking/berlin/" +
             "backend/services/v130/accounts/shareable";
-    public static final String USER_ID = "admin@wso2.com@carbon.super";
+    public static final String USER_ID = "admin@wso2.com";
     public static final String DIFFERENT_USER_ID = "psu@wso2.com@carbon.super";
     public static final String REDIRECT_URI = "https://www.wso2.com";
     public static final String SAMPLE_QUERY_PARAMS = "sampleQueryParams";

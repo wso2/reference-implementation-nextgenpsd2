@@ -128,7 +128,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 accountsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -165,7 +166,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId + "/status";
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 accountsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -192,7 +194,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 accountsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -213,7 +216,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 accountsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -230,7 +234,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -259,7 +264,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -285,7 +291,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -305,7 +312,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
