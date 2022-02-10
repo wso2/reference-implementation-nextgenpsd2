@@ -67,3 +67,6 @@ node_modules/
 
 # Config files
 open-banking-test-suite/toolkit-berlin-test/resources/test-config.xml
+
+# Needed jar files
+!toolkits/ob-apim/repository/resources/siddhi-extension-event-table-3.2.3.jar
