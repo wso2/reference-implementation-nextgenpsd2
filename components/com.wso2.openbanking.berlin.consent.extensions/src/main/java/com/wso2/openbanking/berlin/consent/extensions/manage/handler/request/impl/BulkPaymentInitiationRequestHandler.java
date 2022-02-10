@@ -101,6 +101,15 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
         log.debug("Iterating and validating payment objects");
         for (Object payment : payments) {
             PaymentConsentUtil.validateCommonPaymentElements((JSONObject) payment);
+
+            if (((JSONObject) payment).containsKey(ConsentExtensionConstants.DEBTOR_ACCOUNT)
+                    || ((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME)
+                    || ((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
+                log.error("Invalid data elements are present in payment objects");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.INVALID_DATA_IN_PAYMENTS));
+            }
         }
     }
 }
