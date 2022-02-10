@@ -59,7 +59,6 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
         String scopeString = consentData.getScopeString();
         String consentId = ConsentAuthUtil.getConsentId(scopeString);
         String loggedInUserId = consentData.getUserId();
-//        String loggedInUserWithSuperTenant = ConsentExtensionUtil.appendSuperTenantDomain(loggedInUserId);
 
         if (StringUtils.isBlank(consentId)) {
             log.error(ErrorConstants.CONSENT_ID_SCOPE_MISSING_ERROR);
