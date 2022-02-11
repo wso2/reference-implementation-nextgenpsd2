@@ -44,11 +44,11 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         HeaderValidator.validateXRequestId(consentValidateData.getHeaders());
         consentValidationResult.getConsentInformation()
-                .appendField(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+                .appendField(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                         consentValidateData.getHeaders().getAsString(ConsentExtensionConstants
-                                .X_REQUEST_ID_HEADER));
+                                .X_REQUEST_ID_PROPER_CASE_HEADER));
 
-        if (consentValidateData.getHeaders().containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
+        if (consentValidateData.getHeaders().containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)) {
             HeaderValidator.validatePsuIpAddress(consentValidateData.getHeaders());
         }
 
@@ -56,10 +56,11 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
+        int tenantIdOccurrences = StringUtils.countMatches(psuIdFromToken,
+                ConsentExtensionConstants.SUPER_TENANT_DOMAIN);
 
-        // Cleaning up any extra appended tenant domains to psuIdFromToken
-        for (int occurrence = 1; occurrence < StringUtils.countMatches(psuIdFromToken,
-                ConsentExtensionConstants.SUPER_TENANT_DOMAIN); occurrence++) {
+        // Cleaning up any appended tenant domains to psuIdFromToken
+        for (int occurrence = 0; occurrence < tenantIdOccurrences; occurrence++) {
             psuIdFromToken = StringUtils.removeEndIgnoreCase(psuIdFromToken,
                     ConsentExtensionConstants.SUPER_TENANT_DOMAIN);
         }

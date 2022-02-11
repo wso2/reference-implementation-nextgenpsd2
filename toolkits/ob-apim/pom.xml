@@ -109,6 +109,13 @@
                                                 regex="com.wso2.openbanking.berlin.keymanager-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../toolkits/ob-apim/repository/resources">
+                                        <filename
+                                                regex="siddhi-extension-event-table-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
                             </target>
                         </configuration>
                         <goals>

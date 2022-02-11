@@ -364,6 +364,10 @@ public class CommonConfigParser {
         return (String) getConfiguration().get(CommonConstants.OAUTH_METADATA_ENDPOINT);
     }
 
+    public boolean isFrequencyPerDayThrottlingEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_ENABLED));
+    }
+
     public int getConfiguredMinimumFreqPerDay() {
         return getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE) == null ? 4 :
                 Integer.parseInt((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE));

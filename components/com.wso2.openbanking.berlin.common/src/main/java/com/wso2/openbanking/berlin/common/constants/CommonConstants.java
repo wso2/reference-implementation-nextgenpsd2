@@ -26,6 +26,7 @@ public class CommonConstants {
     public static final String SUPPORTED_SCA_APPROACHES_CONFIG_TAG = "SupportedSCAApproaches";
     public static final String SCA_REQUIRED = "ConsentManagement.SCA.Required";
     public static final String OAUTH_METADATA_ENDPOINT = "ConsentManagement.SCA.OAuthMetadataEndpoint";
+    public static final String FREQ_PER_DAY_ENABLED = "ConsentManagement.FrequencyPerDay.Enable";
     public static final String FREQ_PER_DAY_CONFIG_VALUE = "ConsentManagement.Accounts.FrequencyPerDay.Frequency";
     public static final String VALID_UNTIL_DATE_CAP_ENABLED = "ConsentManagement.Accounts.ValidUntilDateCap.Enabled";
     public static final String VALID_UNTIL_DAYS = "ConsentManagement.Accounts.ValidUntilDateCap.ValidUntilDays";

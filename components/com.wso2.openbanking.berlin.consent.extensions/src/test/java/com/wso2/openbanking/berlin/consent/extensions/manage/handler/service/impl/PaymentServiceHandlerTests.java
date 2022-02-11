@@ -156,7 +156,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -187,7 +188,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -220,7 +222,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = BULK_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -259,7 +262,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PAYMENTS_PATH + "/" + consentId + "/status";
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -286,7 +290,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -307,7 +312,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -324,7 +330,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -353,7 +360,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
                 paymentsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
@@ -381,7 +389,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -406,7 +415,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -431,7 +441,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -447,7 +458,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -467,7 +479,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -501,7 +514,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -531,7 +545,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
@@ -558,7 +573,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         String paymentsGetPath = PERIODIC_PAYMENTS_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "false");
 
         ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,

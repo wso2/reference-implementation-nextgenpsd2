@@ -24,7 +24,8 @@ public class TestPayloads {
     public static Map<String, String> getMandatoryInitiationHeadersMap(String isExplicit) {
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.PSU_ID_HEADER, "admin@wso2.com");
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER, isExplicit);
@@ -36,10 +37,11 @@ public class TestPayloads {
     public static Map<String, String> getMandatoryStartAuthHeadersMap() {
 
         Map<String, String> startAuthHeadersMap = new HashMap<>();
-        startAuthHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        startAuthHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         startAuthHeadersMap.put(ConsentExtensionConstants.PSU_ID_HEADER, "admin@wso2.com");
         startAuthHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
-        startAuthHeadersMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER, "127.0.0.1");
+        startAuthHeadersMap.put(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER, "127.0.0.1");
 
         return startAuthHeadersMap;
     }
@@ -47,12 +49,12 @@ public class TestPayloads {
     public static JSONObject getMandatoryValidateHeadersMap(String consentId, boolean isWithPsuIpAddress) {
 
         JSONObject validateHeadersObject = new JSONObject();
-        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 UUID.randomUUID().toString());
         validateHeadersObject.put(ConsentExtensionConstants.CONSENT_ID_HEADER, consentId);
 
         if (isWithPsuIpAddress) {
-            validateHeadersObject.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER, "127.0.0.1");
+            validateHeadersObject.put(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER, "127.0.0.1");
         }
 
         return validateHeadersObject;

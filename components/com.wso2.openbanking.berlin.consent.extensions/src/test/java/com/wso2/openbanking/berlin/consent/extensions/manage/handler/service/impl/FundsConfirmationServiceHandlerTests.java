@@ -129,7 +129,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil.getSampleConsentManageData(
                 implicitInitiationHeadersMap, fundsConfirmationGetPath, mockHttpServletRequest, mockHttpServletResponse,
@@ -161,7 +162,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId + "/status";
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
                 .getSampleConsentManageData(implicitInitiationHeadersMap, fundsConfirmationGetPath,
@@ -190,7 +192,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
                 .getSampleConsentManageData(implicitInitiationHeadersMap, fundsConfirmationGetPath,
@@ -213,7 +216,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
                 .getSampleConsentManageData(implicitInitiationHeadersMap, fundsConfirmationGetPath,
@@ -231,7 +235,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
@@ -262,7 +267,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
@@ -289,7 +295,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
@@ -310,7 +317,8 @@ public class FundsConfirmationServiceHandlerTests extends PowerMockTestCase  {
         String fundsConfirmationGetPath = FUNDS_CONFIRMATION_PATH + "/" + consentId;
 
         Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
-        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
         implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "true");
 
         ConsentManageData fundsConfirmationConsentManageData = TestUtil
