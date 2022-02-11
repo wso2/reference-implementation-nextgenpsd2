@@ -19,5 +19,5 @@
         </else>
     </filter>
     <property name="error_message_type" value="application/json"/>
-<!--    <class name="com.wso2.openbanking.berlin.gateway.failure.GatewayFailureResponseCreationMediator"/>-->
+    <class name="com.wso2.openbanking.berlin.gateway.failure.GatewayFailureResponseCreationMediator"/>
 </sequence>
