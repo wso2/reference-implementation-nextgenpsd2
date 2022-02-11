@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CDS Throttle data publisher to frequency per day add custom throttling properties based the request.
+ * Berlin Throttle data publisher to frequency per day add custom throttling properties based the request.
  */
 public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
 
