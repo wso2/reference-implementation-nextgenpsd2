@@ -81,8 +81,6 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             ConsentResource consentResource = new ConsentResource(consentManageData.getClientId(),
                     requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.name());
 
-//            String tenantEnsuredPSUId = ConsentExtensionUtil
-//                    .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
             String authStatus = isExplicitAuth ? null : ScaStatusEnum.RECEIVED.toString();
             try {
                 createdConsent = consentCoreService.createAuthorizableConsent(consentResource,
