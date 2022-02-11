@@ -103,6 +103,8 @@ public class ErrorConstants {
             "different consent type";
     public static final String AUTH_ID_CONSENT_ID_MISMATCH = "No available authorisation resource with given " +
             "authorisation Id matched with the requested different consent type";
+    public static final String APPROVE_WITH_NO_ACCOUNTS_ERROR = "Cannot approve the consent without any account " +
+            "related data";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
     public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +

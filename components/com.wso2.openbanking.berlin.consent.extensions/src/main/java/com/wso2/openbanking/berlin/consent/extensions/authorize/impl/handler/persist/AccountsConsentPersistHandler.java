@@ -26,6 +26,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -103,7 +104,20 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 AccessMethodEnum.TRANSACTIONS.toString());
 
         if (accountIdMapWithPermissions.isEmpty()) {
-            return;
+            // Updating the consent and auth statuses during bank offered consent deny scenario when
+            // accounts are not selected
+            if (!isApproved) {
+                consentCoreService.updateConsentStatus(consentResource.getConsentID(),
+                        ConsentStatusEnum.REJECTED.toString());
+                consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
+                // TODO: (improvement) issue for accelerator to update user of auth resource method in core service
+                // https://github.com/wso2-enterprise/financial-open-banking/issues/7175
+                return;
+            } else {
+                log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+            }
         }
 
         ConsentPersistHandlerService consentPersistHandlerService =
