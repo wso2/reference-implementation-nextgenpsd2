@@ -31,8 +31,8 @@ public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
 
     private static final Log log = LogFactory.getLog(CustomThrottleDataPublisherImpl.class);
 
-    public static final String VIEW_ACCOUNTS = "accounts";
-    public static final String VIEW_CARD_ACCOUNTS = "card-accounts";
+    private static final String VIEW_ACCOUNTS = "accounts";
+    private static final String VIEW_CARD_ACCOUNTS = "card-accounts";
 
     private static final String PSU_IP_ADDRESS = "PSU-IP-Address";
     private static final String CONSENT_ID_HEADER = "Consent-ID";
