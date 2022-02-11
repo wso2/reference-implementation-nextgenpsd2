@@ -24,7 +24,16 @@
                 <Algorithm>SHA256withRSA</Algorithm>
             </SupportedSignatureAlgorithms>
         </SignatureVerification>
+        <TPPManagement>
+            <PSD2RoleValidation>
+                <Enabled>true</Enabled>
+            </PSD2RoleValidation>
+        </TPPManagement>
     </Gateway>
+
+    <KeyManager>
+        <OrgIdValidationRegex>^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$</OrgIdValidationRegex>
+    </KeyManager>
 
     <ConsentManagement>
         <PayableAccountsRetrieveEndpoint>http://localhost:9763/api/openbanking/backend/payable-acounts</PayableAccountsRetrieveEndpoint>

@@ -470,6 +470,9 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
@@ -535,10 +538,14 @@ cache_expiry = 3600
 enabled = true
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "accounts"
-roles = "AISP, PISP"
+roles = "AISP, ASPSP"
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "payments"
 roles = "PISP"
+[[open_banking.gateway.tpp_management.allowed_scopes]]
+name = "fundsconfirmations"
+roles = "CBPII"
+
 
 #===================for Connection pool====================
 [open_banking.http_connection_pool]
@@ -626,3 +633,5 @@ supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
 #[open_banking.berlin.keymanager.org_id_validation]
 #regex=""
 
+[open_banking_berlin.payment.initiation.idempotency]
+enabled="true"
