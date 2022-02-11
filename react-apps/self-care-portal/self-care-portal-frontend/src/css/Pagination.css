@@ -1,0 +1,112 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
+ */
+
+.paginationRow {
+  margin: 1.5rem 1.25rem;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background: rgba(216, 73, 73, 0.2); */
+  width: 100%;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.pagination-container a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(8, 18, 71, 1);
+  /* padding: 8px 14px; */
+  height: 2.25rem;
+  width: 2.25rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.pagination-container a.active {
+  background-color: rgba(8, 18, 71, 1);
+  color: white;
+  border: 1px solid rgba(8, 18, 71, 1);
+}
+
+.pagination-container a.disabled {
+  opacity: 0.2;
+}
+.pagination-container a:hover:not(.active) {
+  background-color: rgb(238, 238, 238);
+}
+
+.postsPerPageCol {
+  margin-left: 7rem;
+  display: flex;
+}
+
+.dropdown-menu {
+  min-width: 5rem;
+}
+
+#postsPerPageDropdown {
+  background-color: white;
+  color: rgba(8, 18, 71, 1);
+  border: 1px solid rgba(8, 18, 71, 1);
+  border-radius: 15px;
+  padding: 0.25em 0.7em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 1rem;
+
+  -webkit-box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+  box-shadow: 2px 4px 15px -9px rgba(0, 0, 0, 0.53);
+}
+
+#postsPerPageDropdown[aria-expanded="true"] {
+  color: white;
+  background-color: rgba(8, 18, 71, 1);
+  transition: all ease-in-out 0.2s;
+  text-decoration: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+  cursor: pointer;
+}
+
+.pagination a {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(8, 18, 71, 1);
+  color: rgba(8, 18, 71, 1);
+}
+
+.pagination__link {
+  font-weight: bold;
+}
+
+.pagination__link--active a {
+  color: #fff;
+  background: rgb(135, 149, 191);
+}
+
+.pagination__link--disabled a {
+  color: rgb(198, 197, 202);
+  border: 1px solid rgb(198, 197, 202);
+}

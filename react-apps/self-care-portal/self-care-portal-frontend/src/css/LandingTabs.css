@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
+ */
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  color: rgba(8, 18, 71, 1);
+  font-weight: 600;
+  background-color: #fff;
+  border-bottom: 3px solid rgba(8, 18, 71, 1);
+  transition: all ease-in-out 0.2s;
+}
+
+.nav-tabs .nav-link {
+  flex-grow: 1;
+  text-align: center;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  color: rgba(8, 18, 71, 1);
+}
+a:-webkit-any-link:focus {
+  outline-offset: none;
+  outline: none;
+}
+
+.tab-content > .active {
+  display: block;
+  /* transition-delay: 1s; */
+  transition: all ease-in-out 0.75s;
+}
+
+@media (max-width: 500px) {
+  .nav-tabs{
+    display: flex;
+    flex-direction: column;
+  }
+
+}
