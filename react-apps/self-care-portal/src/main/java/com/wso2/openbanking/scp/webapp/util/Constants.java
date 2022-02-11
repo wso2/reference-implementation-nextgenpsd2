@@ -41,7 +41,7 @@ public class Constants {
     public static final String REFRESH_TOKEN_COOKIE_NAME = COOKIE_BASE_NAME + "RT";
     public static final String TOKEN_VALIDITY_COOKIE_NAME = COOKIE_BASE_NAME + "VALIDITY";
 
-    public static final String SCP_TOKEN_VALIDITY_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String SCP_TOKEN_VALIDITY_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS";
     public static final String DEFAULT_COOKIE_PATH = "/consentmgr";
     public static final int DEFAULT_COOKIE_MAX_AGE = 3600; //(60*60) = 1h
 

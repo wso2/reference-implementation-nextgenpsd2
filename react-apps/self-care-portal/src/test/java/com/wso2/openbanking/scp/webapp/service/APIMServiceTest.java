@@ -17,6 +17,7 @@ import com.wso2.openbanking.scp.webapp.util.Constants;
 import com.wso2.openbanking.scp.webapp.util.Utils;
 import org.apache.http.HttpHeaders;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class APIMServiceTest extends PowerMockTestCase {
 
     private APIMService uut;

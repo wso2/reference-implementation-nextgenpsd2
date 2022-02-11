@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @PrepareForTest({Utils.class})
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class OAuthServiceTest extends PowerMockTestCase {
 
     private static final String IAM_BASE_URL = "http://localhost:9446";
