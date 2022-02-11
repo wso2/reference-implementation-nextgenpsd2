@@ -59,8 +59,8 @@ public class ErrorConstants {
     public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
             "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
-    public static final String NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS = "No matching accounts found for " +
-            "requested permissions";
+    public static final String NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID = "Provided account Id does not have requested" +
+            " permissions";
     public static final String NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID = "No matching account found for " +
             "requested account id";
     public static final String ACCOUNT_ID_CANNOT_BE_EMPTY = "Account id cannot be empty";
