@@ -20,8 +20,10 @@
         </then>
     </filter>
 
-    <!--Appending Basic Auth for Consent Management APIs -->
-    <property name="Authorization" scope="transport" action="remove"/>
-    <header name="Authorization" scope="transport" value="Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw=="/>
+    <!--Appending Basic Auth for Consent Management APIs-->
+    <header name="Authorization" scope="transport" action="remove" />
+    <class name="com.wso2.openbanking.accelerator.gateway.mediator.BasicAuthMediator"/>
+    <header name="Authorization" expression="$ctx:basicAuthentication" scope="transport"/>
+    <!--End-->
     <property name="ENDPOINT_ADDRESS" expression="get-property('To')"/>
 </sequence>

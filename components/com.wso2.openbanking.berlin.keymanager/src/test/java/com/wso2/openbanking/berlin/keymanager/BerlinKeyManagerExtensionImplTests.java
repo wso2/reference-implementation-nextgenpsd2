@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.keymanager;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import org.mockito.Mock;
@@ -32,6 +33,7 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.OAuthAppRequest;
 import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
+import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -39,6 +41,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @PrepareForTest({OpenBankingConfigParser.class, CommonConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
@@ -96,6 +102,10 @@ public class BerlinKeyManagerExtensionImplTests {
                 .thenReturn("^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$");
 
         try {
+            mockStatic(CommonConfigParser.class);
+            CommonConfigParser commonConfigParser = mock(CommonConfigParser.class);
+            when(CommonConfigParser.getInstance()).thenReturn(commonConfigParser);
+            when(commonConfigParser.getOrgIdValidationRegex()).thenReturn("^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$");
             berlinKeyManagerExtensionImpl.validateOrganizationIdPattern(orgId);
             Assert.assertTrue(exceptionType == null);
         } catch (APIManagementException e) {
@@ -123,11 +133,11 @@ public class BerlinKeyManagerExtensionImplTests {
     private void testValidateRolesFromCert(List<String> roles, boolean isValid) throws APIManagementException {
 
         openBankingConfigParser = PowerMockito.mock(OpenBankingConfigParser.class);
-        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
 
         commonConfigParser = PowerMockito.mock(CommonConfigParser.class);
-        PowerMockito.mockStatic(CommonConfigParser.class);
+        mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParser);
 
         berlinKeyManagerExtensionImpl = Mockito.spy(BerlinKeyManagerExtensionImpl.class);
@@ -172,7 +182,7 @@ public class BerlinKeyManagerExtensionImplTests {
         Map<String, ConfigurationDto> incorrectRegulatoryAppAdditionalProperties = new HashMap<>();
 
         String dummyString = "dummy";
-        String property1Name = BerlinKeyManagerConstants.REGULATORY;
+        String property1Name = OpenBankingConstants.REGULATORY;
         String property2Name = BerlinKeyManagerConstants.SP_CERTIFICATE;
         String property3Name = BerlinKeyManagerConstants.ORG_ID;
 
@@ -248,26 +258,82 @@ public class BerlinKeyManagerExtensionImplTests {
         }
     }
 
-    @Test
-    private void preUpdateSpApp() throws APIManagementException {
-        HashMap<String, String> additionalProperties = new HashMap<>();
-        String dummyString = "dummy";
-        oAuthConsumerAppDTO.setApplicationName(dummyString);
-        additionalProperties.put(BerlinKeyManagerConstants.SP_CERTIFICATE, dummyString);
-        berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties);
+   @Test
+   private void preUpdateSpApp() throws APIManagementException {
+       HashMap<String, String> additionalProperties = new HashMap<>();
+       String dummyString = "dummy";
+       oAuthConsumerAppDTO.setApplicationName(dummyString);
+       additionalProperties.put(BerlinKeyManagerConstants.SP_CERTIFICATE, dummyString);
+       additionalProperties.put(OpenBankingConstants.REGULATORY, "true");
+       berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties, true);
 
-        Assert.assertEquals(serviceProvider.getCertificateContent(), dummyString);
-        Assert.assertTrue(oAuthConsumerAppDTO.getPkceMandatory());
-        Assert.assertTrue(oAuthConsumerAppDTO.getPkceSupportPlain());
-    }
+       Assert.assertEquals(serviceProvider.getCertificateContent(), dummyString);
+       Assert.assertTrue(oAuthConsumerAppDTO.getPkceMandatory());
+       Assert.assertTrue(oAuthConsumerAppDTO.getPkceSupportPlain());
+   }
 
-    @Test
-    private void preUpdateSpAppWithEmptyCertificate() throws APIManagementException {
-        HashMap<String, String> additionalProperties = new HashMap<>();
-        String dummyString = "dummy";
-        oAuthConsumerAppDTO.setApplicationName(dummyString);
+   @Test
+   private void preUpdateSpAppWithEmptyCertificate() throws APIManagementException {
+       HashMap<String, String> additionalProperties = new HashMap<>();
+       String dummyString = "dummy";
+       oAuthConsumerAppDTO.setApplicationName(dummyString);
+       additionalProperties.put(OpenBankingConstants.REGULATORY, "true");
+       try {
+           berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider,
+                   additionalProperties, true);
+       } catch (APIManagementException e) {
+           Assert.assertEquals(e.getClass(), APIManagementException.class);
+       }
+   }
+
+   @Test
+   private void testValidateDbPropertyChangePass()
+           throws APIManagementException {
+
+       try {
+           String dummyPropertyName1 = "dummyName1";
+           String dummyValue1 = "dummyValue1";
+           String dummyValue2 = "dummyValue2";
+
+           HashMap<String, String> additionalProperties = new HashMap<>();
+           additionalProperties.put(dummyPropertyName1, dummyValue1);
+
+           ServiceProviderProperty correctServiceProviderProperty = new ServiceProviderProperty();
+           correctServiceProviderProperty.setName(dummyPropertyName1);
+           correctServiceProviderProperty.setValue(dummyValue1);
+
+           ServiceProviderProperty[] correctSpProperties = new ServiceProviderProperty[1];
+           correctSpProperties[0] = correctServiceProviderProperty;
+           berlinKeyManagerExtensionImpl.validateDbPropertyChange(correctSpProperties, additionalProperties,
+                   dummyPropertyName1);
+           // This statement is reached only if void method is succesfully executed
+           Assert.assertTrue(null == null);
+       } catch (APIManagementException e) {
+           Assert.assertEquals(e.getClass(), APIManagementException.class);
+       }
+   }
+
+    @Test()
+    private void testValidateDbPropertyChangeFailure() throws APIManagementException {
+
         try {
-            berlinKeyManagerExtensionImpl.doPreUpdateSpApp(oAuthConsumerAppDTO, serviceProvider, additionalProperties);
+            String dummyPropertyName1 = "dummyName1";
+            String dummyValue1 = "dummyValue1";
+            String dummyValue2 = "dummyValue2";
+
+            HashMap<String, String> additionalProperties = new HashMap<>();
+            additionalProperties.put(dummyPropertyName1, dummyValue1);
+
+            ServiceProviderProperty incorrectServiceProviderProperty = new ServiceProviderProperty();
+            incorrectServiceProviderProperty.setName(dummyPropertyName1);
+            incorrectServiceProviderProperty.setValue(dummyValue2);
+
+           ServiceProviderProperty[] incorrectSpProperties = new ServiceProviderProperty[1];
+           incorrectSpProperties[0] = incorrectServiceProviderProperty;
+            berlinKeyManagerExtensionImpl.validateDbPropertyChange(incorrectSpProperties, additionalProperties,
+                    dummyPropertyName1);
+            // This statement is reached only if void method is succesfully executed
+            Assert.assertTrue(null == null);
         } catch (APIManagementException e) {
             Assert.assertEquals(e.getClass(), APIManagementException.class);
         }
