@@ -145,6 +145,7 @@ public class ErrorConstants {
     public static final String SIGNING_CERT_MISSING = "TPP signing certificate header not passed through the request";
     public static final String SIGNING_CERT_INVALID = "Signature certificate header is invalid";
     public static final String SIGNING_CERT_REVOKED = "Signature certificate is revoked";
+    public static final String DIGEST_VALIDATION_ERROR = "Message digest validation failed";
     public static final String DATE_HEADER_MISSING = "Date header not passed through the request";
     public static final String INVALID_DIGEST_HEADER = "Invalid Digest header";
     public static final String INVALID_SIGNATURE_HEADER = "Invalid Signature header";

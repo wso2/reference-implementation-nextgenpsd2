@@ -125,9 +125,9 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 // Digest validation
                 String digestHeader = headersMap.get(DIGEST_HEADER);
                 if (!validateDigest(digestHeader, requestPayload)) {
-                    log.error("Message digest validation failed");
+                    log.error(ErrorConstants.DIGEST_VALIDATION_ERROR);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                            "Message digest validation failed");
+                            ErrorConstants.DIGEST_VALIDATION_ERROR);
                     return;
                 }
 
@@ -184,8 +184,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             } else {
                 log.error("Transport certificate not found in request context");
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                        "Couldn't do organization ID validation since transport certificate not found in" +
-                                " request context");
+                        "Transport certificate is missing. Cannot do organization ID validation.");
                 return;
             }
 
@@ -198,15 +197,13 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 } else {
                     log.error("Error while processing transport certificate");
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                            "Couldn't do organization ID validation since an error occurred while processing " +
-                                    "transport certificate");
+                            "Invalid transport certificate. Cannot do organization ID validation.");
                     return;
                 }
             } catch (CertificateValidationException e) {
                 log.error("Error while extracting transport certificate content", e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                        "Couldn't do organization ID validation since an error occurred while extracting " +
-                                "transport certificate");
+                        "Transport certificate is invalid. Cannot do organization ID validation.");
                 return;
             }
 
@@ -220,8 +217,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 return;
             } else {
                 if (!StringUtils.equals(clientId, certificateOrgId)) {
-                    log.error("Client ID is not matching with the organization ID of the provided transport" +
-                            " certificate");
+                    log.error("Client ID: " + clientId + " is not matching with the organization ID: "
+                            + certificateOrgId + " of transport certificate");
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                             "Organization ID mismatch with Client ID");
                     return;

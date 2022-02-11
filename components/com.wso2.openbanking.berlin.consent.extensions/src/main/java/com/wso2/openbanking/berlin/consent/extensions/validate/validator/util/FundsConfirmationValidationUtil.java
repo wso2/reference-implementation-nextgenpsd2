@@ -45,7 +45,6 @@ public class FundsConfirmationValidationUtil {
     public static boolean isPayloadValid(DetailedConsentResource detailedConsentResource,
                                          ConsentValidationResult consentValidationResult, JSONObject payload) {
 
-        log.debug("Checking whether the payload is present");
         if (payload == null) {
             log.error(ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
@@ -54,7 +53,6 @@ public class FundsConfirmationValidationUtil {
             return false;
         }
 
-        log.debug("Validating mandatory request body elements");
         if (!payload.containsKey(ConsentExtensionConstants.ACCOUNT)
                 || !payload.containsKey(ConsentExtensionConstants.INSTRUCTED_AMOUNT)) {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
@@ -64,7 +62,6 @@ public class FundsConfirmationValidationUtil {
             return false;
         }
 
-        log.debug("Validating account");
         boolean isAccountMappingValid = false;
         JSONObject accountRefObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
         ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();

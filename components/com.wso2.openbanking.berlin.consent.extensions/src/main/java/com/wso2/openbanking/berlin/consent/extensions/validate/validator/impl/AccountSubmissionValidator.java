@@ -74,7 +74,7 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             return;
         }
 
-        log.debug("Checking if consent is not in a valid state");
+        log.debug("Checking if consent: " + consentValidateData.getConsentId() + " is not in a valid state");
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
@@ -83,13 +83,12 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             return;
         }
 
-        log.debug("Consent is Authorized by User");
         if (AccountValidationUtil.isSingleAccountRetrieveRequest(requestPath)) {
-            log.debug("Validating single accounts retrieval");
+            log.debug("Validating single accounts retrieval for user: " + consentValidateData.getUserId());
             AccountValidationUtil
                     .validateAccountPermissionsForSingleAccounts(consentValidateData, consentValidationResult);
         } else if (AccountValidationUtil.isBulkAccountRetrieveRequest(requestPath)) {
-            log.debug("Validating bulk accounts retrieval");
+            log.debug("Validating bulk accounts retrieval for user: " + consentValidateData.getUserId());
             ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
                     .getConsentMappingResources();
 
@@ -104,9 +103,10 @@ public class AccountSubmissionValidator implements SubmissionValidator {
             consentValidationResult.setValid(true);
         }
 
-        log.debug("Expiring consent for one off consents after one time use");
         if (!detailedConsentResource.isRecurringIndicator()) {
             try {
+                log.debug("Expiring consent: " + detailedConsentResource.getConsentID() + " for one off consents " +
+                        "after one time use");
                 coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
                         ConsentStatusEnum.EXPIRED.toString());
             } catch (ConsentManagementException e) {
