@@ -65,7 +65,7 @@ public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
                 log.debug("Checking whether the " + resourceString + " is eligible for throttling");
             }
 
-            if (isEligibleForFrequencyPerDayThrottling(electedResource)) {
+            if (eligibleResources.contains(electedResource)) {
 
                 List<String> pathList = Arrays.asList(resourceString.split("/"));
                 String accountID = getAccountIdFromURL(pathList);
@@ -76,22 +76,6 @@ public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
             }
         }
         return customKeyMap;
-    }
-
-    /**
-     * Check if the request is eligible for frequency per day throttling.
-     *
-     * @param url elected API resource
-     * @return true if eligible; false otherwise
-     */
-    private boolean isEligibleForFrequencyPerDayThrottling(String url) {
-
-        for (String path : eligibleResources) {
-            if (path.equals(url)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -109,11 +93,8 @@ public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
         } else if (pathList.contains(VIEW_CARD_ACCOUNTS)) {
             accountsIndex = pathList.indexOf(VIEW_CARD_ACCOUNTS);
         }
-        int size = pathList.size();
 
-        if (accountsIndex + 1 == size) {
-            return "";
-        } else if (pathList.get(accountsIndex + 1).equals("")) {
+        if (accountsIndex + 1 == pathList.size() || pathList.get(accountsIndex + 1).equals("")) {
             return "";
         } else {
             return pathList.get(accountsIndex + 1).split("\\?")[0];
