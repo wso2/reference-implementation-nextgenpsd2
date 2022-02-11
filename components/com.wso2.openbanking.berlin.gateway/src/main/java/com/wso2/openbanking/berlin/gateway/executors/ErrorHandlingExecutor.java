@@ -115,7 +115,8 @@ public class ErrorHandlingExecutor implements OpenBankingGatewayExecutor {
 
     private static TPPMessage.CodeEnum getBerlinErrorCodeFromOBErrorCode(String obErrorCode) {
 
-        // todo: https://github.com/wso2-enterprise/financial-open-banking/issues/7162
+        // todo: have to handle separate errors for certificate invalid, expired and missing scenarios
+        //  https://github.com/wso2-enterprise/financial-open-banking/issues/7162
         if (StringUtils.equals("200003", obErrorCode)) {
             return TPPMessage.CodeEnum.CERTIFICATE_INVALID;
         } else if (StringUtils.equals("200004", obErrorCode)) {
