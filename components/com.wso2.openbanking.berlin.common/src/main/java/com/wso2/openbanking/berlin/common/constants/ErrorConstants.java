@@ -60,8 +60,8 @@ public class ErrorConstants {
     public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
             "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
-    public static final String NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS = "No matching accounts found for " +
-            "requested permissions";
+    public static final String NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID = "Provided account Id does not have requested" +
+            " permissions";
     public static final String NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID = "No matching account found for " +
             "requested account id";
     public static final String ACCOUNT_ID_CANNOT_BE_EMPTY = "Account id cannot be empty";
@@ -84,6 +84,7 @@ public class ErrorConstants {
     public static final String START_DATE_INVALID = "Invalid start date";
     public static final String FREQUENCY_MISSING = "Frequency is missing in periodic payments payload";
     public static final String END_DATE_NOT_FUTURE = "End date must be a future date";
+    public static final String START_DATE_NOT_FUTURE = "Start date must be a future date";
     public static final String END_DATE_NOT_VALID = "Invalid end date";
     public static final String DATES_INCONSISTENT = "End date must be greater than start date";
     public static final String INVALID_EXECUTION_RULE = "Execution rule should be either \"following\" or " +
@@ -93,6 +94,10 @@ public class ErrorConstants {
     public static final String EXECUTION_DATE_NOT_FUTURE = "The execution date must be a future date";
     public static final String PAYMENT_EXECUTION_DATE_EXCEEDED = "The execution date provided in the request is after" +
             " the execution date supported by the ASPSP";
+    public static final String EXECUTION_DATE_TIME_ERROR = "Requested execution date and requested execution time " +
+            "cannot coexist in the payload";
+    public static final String INVALID_DATA_IN_PAYMENTS = "Invalid data present in payment objects (\"debtorAccount\"" +
+            ",\"requestedExecutionTime\",\"requestedExecutionDate\")";
     public static final String CONSENT_INITIATION_ERROR = "Error occurred while initiating payment consent";
     public static final String CONSENT_ATTRIBUTE_INITIATION_ERROR = "Error occurred while storing consent " +
             "attributes";

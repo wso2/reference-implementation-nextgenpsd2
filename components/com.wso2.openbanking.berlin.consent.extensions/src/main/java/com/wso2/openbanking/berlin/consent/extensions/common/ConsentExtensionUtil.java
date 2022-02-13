@@ -344,7 +344,7 @@ public class ConsentExtensionUtil {
 
         if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
             log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+            throw new ConsentException(ResponseStatus.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
                     ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
         }

@@ -51,7 +51,6 @@ public class AccountValidationUtil {
         List<String> pathList = Arrays.asList(resourcePath.split("/"));
         String accountId = AccountValidationUtil.getAccountIdFromURL(pathList);
         String accessMethod = AccountValidationUtil.getAccessMethod(pathList);
-        boolean isWithBalance = AccountValidationUtil.isWithBalance(consentValidateData.getRequestPath());
 
         boolean isAccountIdValidationEnabled = CommonConfigParser.getInstance().isAccountIdValidationEnabled();
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
@@ -66,62 +65,73 @@ public class AccountValidationUtil {
             return;
         }
 
-        // Validating the access method(permission) for single account retrieval requests
-        // only if the account Id validation is enabled
         if (isAccountIdValidationEnabled) {
             if (AccountValidationUtil
-                    .hasValidAccountMappingResource(accountId, accessMethod, mappingResources, isWithBalance)) {
+                    .hasValidPermissionsForAccountId(accountId, accessMethod, mappingResources)) {
                 consentValidationResult.setValid(true);
-                return;
             } else {
-                log.debug("The Account ID in the request path is not contained in any of the mapped resources");
-                log.error(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
+                log.error("The provided account Id: " + accountId + " does not contains necessary " +
+                        "permission: " + accessMethod);
                 consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
                 consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
-                consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID);
-                return;
+                consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID);
+            }
+        } else {
+            if (AccountValidationUtil
+                    .hasValidPermissionsForConsentId(accessMethod, mappingResources)) {
+                consentValidationResult.setValid(true);
+            } else {
+                log.error("The provided account Id: " + accountId + " does not contains necessary " +
+                        "permission: " + accessMethod);
+                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
+                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+                consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID);
             }
         }
-
-        // If account Id validation is not enabled, checking only if there are any active mapping resource with
-        // any access method(permission; accounts, balances, transactions)
-        boolean hasActiveAccountAccess = AccountValidationUtil
-                .hasActiveAccess(AccessMethodEnum.ACCOUNTS.toString(), mappingResources);
-        boolean hasActiveBalanceAccess = AccountValidationUtil
-                .hasActiveAccess(AccessMethodEnum.BALANCES.toString(), mappingResources);
-        boolean hasActiveTransactionAccess = AccountValidationUtil
-                .hasActiveAccess(AccessMethodEnum.TRANSACTIONS.toString(), mappingResources);
-
-        if (!hasActiveAccountAccess && !hasActiveBalanceAccess && !hasActiveTransactionAccess) {
-            log.error(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS);
-            return;
-        }
-
-        consentValidationResult.setValid(true);
     }
 
     /**
      * Checks if there is a consent mapping resource that matches the provided
-     * account id and access method combination.
+     * permission. This method should be used when account ID validation is disabled.
+     * This method does not check whether the provided account ID is present in the mapping resource.
+     * It only checks whether the permissions are present for the given consent.
      *
-     * @param accountId        account id
      * @param accessMethod     access method
      * @param mappingResources mapped consent resources
-     * @param isWithBalance    is requesting with balance
      * @return returns true if there is a consent mapping resource that matches the
      * account id and access method combination provided
      */
-    public static boolean hasValidAccountMappingResource(String accountId, String accessMethod,
-                                                         ArrayList<ConsentMappingResource> mappingResources,
-                                                         boolean isWithBalance) {
+    public static boolean hasValidPermissionsForConsentId(String accessMethod,
+                                                          ArrayList<ConsentMappingResource> mappingResources) {
 
         boolean isValidAccessMethodForAccount = false;
-        boolean isValidBalanceAccessMethodForAccount = false;
 
         for (ConsentMappingResource mappingResource : mappingResources) {
+
+            if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
+                    && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
+                isValidAccessMethodForAccount = true;
+            }
+        }
+        return isValidAccessMethodForAccount;
+    }
+
+    /**
+     * Checks if there is a consent mapping resource that matches the provided
+     * account id and permission. This method should be used when account ID validation is enabled.
+     *
+     * @param accessMethod     access method
+     * @param mappingResources mapped consent resources
+     * @return returns true if there is a consent mapping resource that matches the
+     * account id and access method combination provided
+     */
+    public static boolean hasValidPermissionsForAccountId(String accountId, String accessMethod,
+                                                          ArrayList<ConsentMappingResource> mappingResources) {
+
+        boolean isValidAccessMethodForAccount = false;
+
+        for (ConsentMappingResource mappingResource : mappingResources) {
+
             if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
                     && mappingResource.getAccountID().contains(accountId)
                     && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
@@ -129,19 +139,6 @@ public class AccountValidationUtil {
                 break;
             }
         }
-
-        if (isWithBalance) {
-            for (ConsentMappingResource mappingResource : mappingResources) {
-                if (StringUtils.equals(mappingResource.getPermission(), AccessMethodEnum.BALANCES.toString())
-                        && mappingResource.getAccountID().contains(accountId)
-                        && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
-                    isValidBalanceAccessMethodForAccount = true;
-                    break;
-                }
-            }
-            return isValidAccessMethodForAccount && isValidBalanceAccessMethodForAccount;
-        }
-
         return isValidAccessMethodForAccount;
     }
 
