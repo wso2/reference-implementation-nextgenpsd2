@@ -54,6 +54,8 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         HeaderValidator.validateConsentId(consentValidateData.getHeaders());
 
+        String consentIdHeader = consentValidateData.getHeaders()
+                .getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
         int tenantIdOccurrences = StringUtils.countMatches(psuIdFromToken,
@@ -66,7 +68,8 @@ public class BerlinConsentValidator implements ConsentValidator {
         }
 
         log.debug("Validating if the Consent Id belongs to the client");
-        if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)) {
+        if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)
+                || !StringUtils.equals(consentIdHeader, consentValidateData.getComprehensiveConsent().getConsentID())) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             consentValidationResult.setHttpCode(ResponseStatus.FORBIDDEN.getStatusCode());
             consentValidationResult.setErrorCode(TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString());

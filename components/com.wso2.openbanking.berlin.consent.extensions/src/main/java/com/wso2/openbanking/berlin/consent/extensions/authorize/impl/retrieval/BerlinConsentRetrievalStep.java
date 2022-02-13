@@ -72,6 +72,16 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
 
         try {
             ConsentResource consentResource = coreService.getConsent(consentId, true);
+
+            // Validating if the client id sent matches with the client id of the consent
+            if (!StringUtils.equals(consentResource.getClientID(), consentData.getClientId())) {
+                log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ConsentAuthUtil.constructRedirectErrorJson(AuthErrorCode.UNAUTHORIZED_CLIENT,
+                                ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR, consentData.getRedirectURI(),
+                                consentData.getState()));
+            }
+
             ConsentAuthUtil.validateConsentTypeWithId(consentResource.getConsentType(), scopeString,
                     consentData.getRedirectURI(), consentData.getState());
 
