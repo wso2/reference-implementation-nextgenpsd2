@@ -40,7 +40,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
         log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
@@ -60,7 +60,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
         log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
@@ -79,7 +79,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
         log.debug("Validating the X-Request-ID header");
         HeaderValidator.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
+                consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
 
