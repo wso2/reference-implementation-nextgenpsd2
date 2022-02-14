@@ -12,13 +12,11 @@
 
 package com.wso2.openbanking.berlin.gateway.executors;
 
-import com.wso2.openbanking.accelerator.gateway.cache.GatewayCache;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
-import com.wso2.openbanking.accelerator.gateway.internal.GatewayDataHolder;
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,7 +28,7 @@ import java.util.Map;
 /**
  * Unit tests for error hanlding executor.
  */
-@PrepareForTest({GatewayDataHolder.class, GatewayCache.class})
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class ErrorHandlingExecutorTests {
 
     private OBAPIRequestContext obApiRequestContextMock;
