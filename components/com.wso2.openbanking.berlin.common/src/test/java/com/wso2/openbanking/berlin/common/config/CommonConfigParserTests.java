@@ -12,10 +12,14 @@
 
 package com.wso2.openbanking.berlin.common.config;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.util.CommonTestUtil;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,9 +28,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class CommonConfigParserTests {
+@PrepareForTest({OpenBankingConfigParser.class})
+@PowerMockIgnore({"jdk.internal.reflect.*"})
+public class CommonConfigParserTests extends PowerMockTestCase {
 
-    String absolutePathForTestResources;
+    private String absolutePathForTestResources;
+    private OpenBankingConfigParser openBankingConfigParserMock;
 
     @BeforeClass
     public void beforeClass() throws ReflectiveOperationException {
