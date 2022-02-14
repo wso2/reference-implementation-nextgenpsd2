@@ -16,7 +16,7 @@
     <parent>
         <artifactId>ob-compliance-toolkit-berlin</artifactId>
         <groupId>com.wso2.openbanking</groupId>
-        <version>1.0.0-ALPHA</version>
+        <version>1.0.0-RC1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
