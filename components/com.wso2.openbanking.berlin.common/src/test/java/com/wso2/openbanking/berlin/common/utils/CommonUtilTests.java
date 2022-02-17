@@ -30,10 +30,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.powermock.api.mockito.PowerMockito.doReturn;
 
 /**
  * This contains unit tests for CommonUtil class.
@@ -44,6 +50,7 @@ public class CommonUtilTests {
 
     private static List<Map<String, String>> supportedScaMethods;
     private static List<Map<String, String>> supportedScaApproaches;
+    private CommonConfigParser commonConfigParserMock;
 
     @BeforeClass
     public void initClass() {
@@ -89,7 +96,7 @@ public class CommonUtilTests {
     @BeforeMethod
     public void initMethod() {
 
-        CommonConfigParser commonConfigParserMock = Mockito.mock(CommonConfigParser.class);
+        commonConfigParserMock = Mockito.mock(CommonConfigParser.class);
         Mockito.doReturn(supportedScaMethods).when(commonConfigParserMock).getSupportedScaMethods();
         Mockito.doReturn(supportedScaApproaches).when(commonConfigParserMock).getSupportedScaApproaches();
 
@@ -198,4 +205,48 @@ public class CommonUtilTests {
         Assert.assertTrue(CommonUtil.isValidUuid("1b91e649-3d06-4e16-ada7-bf5af2136b44"));
     }
 
+    @Test
+    public void isJsonPayloadSimilarTest() throws IOException {
+
+        String samplePayload1 = "{\n" +
+                "    \"instructedAmount\": {\n" +
+                "        \"currency\": \"EUR\",\n" +
+                "        \"amount\": \"123.50\"\n" +
+                "    },\n" +
+                "    \"debtorAccount\": {\n" +
+                "        \"iban\": \"DE12345678901234567890\"\n" +
+                "    },\n" +
+                "    \"creditorName\": \"Merchant123\",\n" +
+                "    \"creditorAccount\": {\n" +
+                "        \"iban\": \"DE98765432109876543210\"\n" +
+                "    },\n" +
+                "    \"remittanceInformationUnstructured\": \"Ref Number Merchant\"\n" +
+                "}";
+
+        Assert.assertTrue(CommonUtil.isJSONPayloadSimilar(samplePayload1, samplePayload1));
+        Assert.assertFalse(CommonUtil.isJSONPayloadSimilar(samplePayload1, "{}"));
+    }
+
+    @Test
+    public void isRequestReceivedWithinAllowedTimeTest() {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(CommonConstants.IDEMPOTENCY_ALLOWED_TIME, "1");
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("GMT"));
+        doReturn(configMap).when(commonConfigParserMock).getConfiguration();
+        Assert.assertTrue(CommonUtil.isRequestReceivedWithinAllowedTime(DateTimeFormatter.RFC_1123_DATE_TIME
+                .format(zonedDateTime)));
+        Assert.assertTrue(CommonUtil.isRequestReceivedWithinAllowedTime(null));
+    }
+
+    @Test
+    public void isRequestReceivedWithinAllowedTimeTestNull() {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(CommonConstants.IDEMPOTENCY_ALLOWED_TIME, null);
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("GMT"));
+        doReturn(configMap).when(commonConfigParserMock).getConfiguration();
+        Assert.assertFalse(CommonUtil.isRequestReceivedWithinAllowedTime(DateTimeFormatter.RFC_1123_DATE_TIME
+                .format(zonedDateTime)));
+    }
 }
