@@ -92,20 +92,20 @@
             1. iban
             2. bban
             3. pan
+            4. maskedPan
+            5. msisdn
         -->
-    	{% if open_banking_berlin.consent.acc_ref_type is defined %}
-    	<AccountReferenceType>{{open_banking_berlin.consent.acc_ref_type}}</AccountReferenceType>
-    	{% else %}
-    	<AccountReferenceType>iban</AccountReferenceType>
-    	{% endif %}
-
-        <MultiCurrency>
-            {% if open_banking_berlin.consent.multi_currency.enable is defined %}
-            <Enable>{{open_banking_berlin.consent.multi_currency.enable}}</Enable>
-            {% else %}
-            <Enable>false</Enable>
-            {% endif %}
-        </MultiCurrency>
+    	<SupportedAccountReferenceTypes>
+        {% if open_banking_berlin.consent.supported_acc_ref_types is defined %}
+            {% for acc_ref_type in open_banking_berlin.consent.supported_acc_ref_types %}
+            <AccountReferenceType>{{acc_ref_type}}</AccountReferenceType>
+            {% endfor %}
+        {% else %}
+            <AccountReferenceType>iban</AccountReferenceType>
+            <AccountReferenceType>bban</AccountReferenceType>
+            <AccountReferenceType>maskedPan</AccountReferenceType>
+        {% endif %}
+        </SupportedAccountReferenceTypes>
 
         <APIVersions>
             {% if open_banking_berlin.consent.api_versions.ais is defined %}

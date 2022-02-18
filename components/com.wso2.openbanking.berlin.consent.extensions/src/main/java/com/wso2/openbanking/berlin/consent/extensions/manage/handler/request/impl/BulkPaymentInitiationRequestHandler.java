@@ -42,7 +42,7 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
 
         CommonConfigParser configParser = CommonConfigParser.getInstance();
         String maxPaymentExecutionDays = configParser.getMaxFuturePaymentDays();
-        PaymentConsentUtil.validateDebtorAccount(payload, configParser.getAccountReferenceType());
+        PaymentConsentUtil.validateDebtorAccount(payload);
 
         if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
                 && payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME) != null) {

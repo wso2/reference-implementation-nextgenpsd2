@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.HttpMethod;
@@ -47,6 +48,23 @@ public class ConsentExtensionUtil {
     private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
 
     /**
+     * Returns the extracted account reference type from the account reference object.
+     *
+     * @param accountRefObject account reference object
+     * @return account reference type
+     */
+    public static String getAccountReferenceType(JSONObject accountRefObject) {
+
+        List<String> configuredAccountReferences = CommonConfigParser.getInstance().getSupportedAccountReferenceTypes();
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.containsKey(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the string after appending the currency to it if available.
      *
      * @param accountRefObject account reference object
@@ -54,8 +72,9 @@ public class ConsentExtensionUtil {
      */
     public static String getAccountIdWithCurrency(JSONObject accountRefObject) {
 
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
-        String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
+        String configuredAccountReference = getAccountReferenceType(accountRefObject);
+        String accountIdWithCurrency = String.format("%s%s%s", configuredAccountReference, CommonConstants.DELIMITER,
+                accountRefObject.getAsString(configuredAccountReference));
         if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
             accountIdWithCurrency += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
                     .getAsString(ConsentExtensionConstants.CURRENCY));

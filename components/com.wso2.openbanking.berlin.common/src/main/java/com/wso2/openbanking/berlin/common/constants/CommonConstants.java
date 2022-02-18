@@ -40,7 +40,8 @@ public class CommonConstants {
     public static final String SCA_MAPPED_APPROACH = "MappedApproach";
     public static final String SCA_DESCRIPTION = "Description";
     public static final String SCA_DEFAULT = "Default";
-    public static final String ACCOUNT_REFERENCE_TYPE_PATH = "ConsentManagement.AccountReferenceType";
+    public static final String SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH = "ConsentManagement" +
+            ".SupportedAccountReferenceTypes.AccountReferenceType";
     public static final String MAX_FUTURE_PAYMENT_DAYS = "ConsentManagement.Payments.BulkPayments" +
             ".MaximumFuturePaymentDays";
     public static final String TRANSACTION_FEE_ENABLED_PATH = "ConsentManagement.Payments.TransactionFee.Enable";

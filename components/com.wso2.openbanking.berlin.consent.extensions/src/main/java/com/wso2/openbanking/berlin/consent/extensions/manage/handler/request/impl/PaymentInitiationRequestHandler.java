@@ -150,7 +150,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      */
     protected void validateRequestPayload(JSONObject payload) {
 
-        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
     }
 

@@ -72,7 +72,7 @@ public class ErrorConstants {
     public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "Provided account references do not exist or not valid";
 
     // Payments related error messages
-    public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
+    public static final String ACCOUNT_REFERENCE_OBJECT_MISSING = "Account reference object is missing in payload";
     public static final String CREDITOR_ACCOUNT_MISSING = "Creditor account is missing in payments payload";
     public static final String CREDITOR_ACCOUNT_REFERENCE_MISSING = "Creditor account reference is missing in " +
             "payments payload";
@@ -89,8 +89,8 @@ public class ErrorConstants {
     public static final String DATES_INCONSISTENT = "End date must be greater than start date";
     public static final String INVALID_EXECUTION_RULE = "Execution rule should be either \"following\" or " +
             "\"preceding\"";
-    public static final String INVALID_ACCOUNT_REFERENCE_TYPE = "Provided account reference type is not supported";
-    public static final String ACCOUNT_REFERENCE_TYPE_MISSING = "Account reference type is missing";
+    public static final String INVALID_ACCOUNT_REFERENCE = "Provided account reference is invalid or not supported";
+    public static final String ACCOUNT_REFERENCE_IS_EMPTY = "Account reference is empty";
     public static final String EXECUTION_DATE_NOT_FUTURE = "The execution date must be a future date";
     public static final String PAYMENT_EXECUTION_DATE_EXCEEDED = "The execution date provided in the request is after" +
             " the execution date supported by the ASPSP";

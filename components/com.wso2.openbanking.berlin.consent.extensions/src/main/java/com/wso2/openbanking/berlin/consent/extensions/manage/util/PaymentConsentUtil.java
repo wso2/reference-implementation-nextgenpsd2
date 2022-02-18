@@ -53,51 +53,13 @@ public class PaymentConsentUtil {
      * Method to validate debtor account element of the payload.
      *
      * @param payload                the request payload
-     * @param configuredAccReference the configured account reference type
      */
-    public static void validateDebtorAccount(JSONObject payload, String configuredAccReference) {
+    public static void validateDebtorAccount(JSONObject payload) {
+
+        JSONObject debtorAccountObject = (JSONObject) payload.get(ConsentExtensionConstants.DEBTOR_ACCOUNT);
 
         log.debug("Validating payload for debtor account");
-        if (payload.get(ConsentExtensionConstants.DEBTOR_ACCOUNT) == null) {
-            log.error(ErrorConstants.DEBTOR_ACCOUNT_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.DEBTOR_ACCOUNT_MISSING));
-        } else {
-            log.debug("Validating debtor account references");
-            String accountReference = null;
-
-            JSONObject accountObject = (JSONObject) payload.get(ConsentExtensionConstants.DEBTOR_ACCOUNT);
-
-            if (StringUtils.equals(ConsentExtensionConstants.IBAN, configuredAccReference)) {
-                if (accountObject.get(ConsentExtensionConstants.IBAN) != null
-                        && StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.IBAN))) {
-                    accountReference = (String) accountObject.get(ConsentExtensionConstants.IBAN);
-                }
-            } else if (StringUtils.equals(ConsentExtensionConstants.BBAN, configuredAccReference)) {
-                if (accountObject.get(ConsentExtensionConstants.BBAN) != null
-                        && StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.BBAN))) {
-                    accountReference = (String) accountObject.get(ConsentExtensionConstants.BBAN);
-                }
-            } else if (StringUtils.equals(ConsentExtensionConstants.PAN, configuredAccReference)) {
-                if (accountObject.get(ConsentExtensionConstants.PAN) != null
-                        && StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.PAN))) {
-                    accountReference = (String) accountObject.get(ConsentExtensionConstants.PAN);
-                }
-            } else {
-                log.error(ErrorConstants.INVALID_ACCOUNT_REFERENCE_TYPE);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        ErrorConstants.INVALID_ACCOUNT_REFERENCE_TYPE));
-            }
-
-            if (accountReference == null) {
-                log.error(ErrorConstants.ACCOUNT_REFERENCE_TYPE_MISSING);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        ErrorConstants.ACCOUNT_REFERENCE_TYPE_MISSING));
-            }
-        }
+        CommonConsentUtil.validateAccountRefObject(debtorAccountObject);
     }
 
     /**
@@ -264,7 +226,7 @@ public class PaymentConsentUtil {
         if (scaMethods.size() > 1) {
             responseObject.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
         return responseObject;
     }
@@ -445,7 +407,8 @@ public class PaymentConsentUtil {
         if (scaMethods.size() > 1) {
             paymentCancellationResponse.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            paymentCancellationResponse.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+            paymentCancellationResponse.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD,
+                    chosenSCAMethods.get(0));
         }
 
         JSONObject links = LinksConstructor.getCancellationLinks(requestPath, updatedConsent.getConsentID(),

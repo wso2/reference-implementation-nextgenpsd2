@@ -18,7 +18,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentM
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
@@ -34,7 +33,6 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,39 +70,8 @@ public class FundsConfirmationConsentUtil {
 
         JSONObject accountObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
 
-        if (StringUtils.isBlank(accountObject.getAsString(ConsentExtensionConstants.IBAN))
-                && StringUtils.isBlank(accountObject.getAsString(ConsentExtensionConstants.BBAN))
-                && StringUtils.isBlank(accountObject.getAsString(ConsentExtensionConstants.PAN))) {
-            log.error(ErrorConstants.ACCOUNT_REFERENCE_TYPE_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.ACCOUNT_REFERENCE_TYPE_MISSING));
-        }
-
-        log.debug("Validating account reference type");
-        String configuredAccountRefType = CommonConfigParser.getInstance().getAccountReferenceType();
-        boolean isConfiguredAccountRefType = false;
-
-        if (ConsentExtensionConstants.IBAN.equalsIgnoreCase(configuredAccountRefType)) {
-            if (StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.IBAN))) {
-                isConfiguredAccountRefType = true;
-            }
-        } else if (ConsentExtensionConstants.BBAN.equalsIgnoreCase(configuredAccountRefType)) {
-            if (StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.BBAN))) {
-                isConfiguredAccountRefType = true;
-            }
-        } else if (ConsentExtensionConstants.PAN.equalsIgnoreCase(configuredAccountRefType)) {
-            if (StringUtils.isNotBlank(accountObject.getAsString(ConsentExtensionConstants.PAN))) {
-                isConfiguredAccountRefType = true;
-            }
-        }
-
-        if (!isConfiguredAccountRefType) {
-            log.error(ErrorConstants.INVALID_ACCOUNT_REFERENCE_TYPE);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.INVALID_ACCOUNT_REFERENCE_TYPE));
-        }
+        log.debug("Validating account reference object");
+        CommonConsentUtil.validateAccountRefObject(accountObject);
     }
 
     /**
@@ -199,7 +166,7 @@ public class FundsConfirmationConsentUtil {
         if (scaMethods.size() > 1) {
             responseObject.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
 
         return responseObject;
