@@ -66,7 +66,11 @@ public class AccountValidationUtil {
         }
 
         if (isAccountIdValidationEnabled) {
-            if (AccountValidationUtil
+            // Skipping card accounts validation and letting bank handle them regardless of
+            // if account id validation is enabled or disabled
+            if (pathList.contains(ConsentExtensionConstants.CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER)) {
+                consentValidationResult.setValid(true);
+            } else if (AccountValidationUtil
                     .hasValidPermissionsForAccountId(accountId, accessMethod, mappingResources)) {
                 consentValidationResult.setValid(true);
             } else {
@@ -111,6 +115,7 @@ public class AccountValidationUtil {
             if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
                     && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
                 isValidAccessMethodForAccount = true;
+                break;
             }
         }
         return isValidAccessMethodForAccount;
@@ -132,8 +137,12 @@ public class AccountValidationUtil {
 
         for (ConsentMappingResource mappingResource : mappingResources) {
 
-            if (StringUtils.equals(mappingResource.getPermission(), accessMethod)
-                    && mappingResource.getAccountID().contains(accountId)
+            String accountReference = mappingResource.getAccountID();
+            boolean isCardAccount = accountReference.contains(ConsentExtensionConstants.MASKED_PAN)
+                    || accountReference.contains(ConsentExtensionConstants.PAN);
+            if (!isCardAccount
+                    && StringUtils.equals(mappingResource.getPermission(), accessMethod)
+                    && accountReference.contains(accountId)
                     && StringUtils.equals(mappingResource.getMappingStatus(), ConsentExtensionConstants.ACTIVE)) {
                 isValidAccessMethodForAccount = true;
                 break;
