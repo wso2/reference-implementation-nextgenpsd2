@@ -205,7 +205,7 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         paymentDataArray.add(ConsentExtensionConstants.INSTRUCTED_AMOUNT_TITLE + ": "
                 + instructedAmount.getAsString(ConsentExtensionConstants.AMOUNT));
-        paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + ": "
+        paymentDataArray.add(ConsentExtensionConstants.INSTRUCTED_CURRENCY_TITLE + ": "
                 + instructedAmount.getAsString(ConsentExtensionConstants.CURRENCY));
 
         paymentDataArray.add(ConsentExtensionConstants.CREDITOR_NAME_TITLE + ": "
@@ -229,7 +229,7 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         if (creditorAccount.containsKey(ConsentExtensionConstants.CURRENCY)
                 && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.CURRENCY))) {
-            paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + ": "
+            paymentDataArray.add(ConsentExtensionConstants.CREDITOR_ACCOUNT_CURRENCY_TITLE + ": "
                     + creditorAccount.get(ConsentExtensionConstants.CURRENCY));
         }
 
