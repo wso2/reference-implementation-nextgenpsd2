@@ -64,22 +64,34 @@ public class ConsentExtensionUtil {
         return null;
     }
 
+    public static String getAccountReferenceType(org.json.JSONObject accountRefObject) {
+
+        JSONObject mappedAccountRefObject = new JSONObject();
+
+        for (Object keyObj : accountRefObject.keySet()) {
+            String key = (String) keyObj;
+            mappedAccountRefObject.appendField(key, accountRefObject.get(key));
+        }
+
+        return getAccountReferenceType(mappedAccountRefObject);
+    }
+
     /**
-     * Returns the string after appending the currency to it if available.
+     * Returns the string after appending the account reference type, account id and currency if available.
      *
      * @param accountRefObject account reference object
-     * @return account id or account id with currency
+     * @return account reference type, account id and currency
      */
-    public static String getAccountIdWithCurrency(JSONObject accountRefObject) {
+    public static String getAccountReferenceToPersist(JSONObject accountRefObject) {
 
         String configuredAccountReference = getAccountReferenceType(accountRefObject);
-        String accountIdWithCurrency = String.format("%s%s%s", configuredAccountReference, CommonConstants.DELIMITER,
+        String accountReference = String.format("%s%s%s", configuredAccountReference, CommonConstants.DELIMITER,
                 accountRefObject.getAsString(configuredAccountReference));
         if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-            accountIdWithCurrency += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
+            accountReference += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
                     .getAsString(ConsentExtensionConstants.CURRENCY));
         }
-        return accountIdWithCurrency;
+        return accountReference;
     }
 
     /**

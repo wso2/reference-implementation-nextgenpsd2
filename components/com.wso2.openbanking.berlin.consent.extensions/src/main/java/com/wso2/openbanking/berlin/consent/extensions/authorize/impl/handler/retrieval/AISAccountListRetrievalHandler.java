@@ -22,6 +22,7 @@ import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAut
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -406,6 +407,17 @@ public class AISAccountListRetrievalHandler implements AccountListRetrievalHandl
         JSONArray validatedAccountRefObjects = new JSONArray();
         for (Object accountObject : accountRefObjects) {
             JSONObject accountRefObject = (JSONObject) accountObject;
+
+            // Skipping validation for maskedPan based account reference types and this needs to be validated
+            // from the bank back end since there might be scenarios where there are 2 similar maskedPans
+            // for a single user therefore we are not sure which account to validate it against
+            // Eg: 123456xxxxxx1234, 123456xxxxxx1234 -> Both these maskedPans can belong to the same user
+            String accountRefType = ConsentExtensionUtil.getAccountReferenceType(accountRefObject);
+            if (StringUtils.equals(accountRefType, ConsentExtensionConstants.MASKED_PAN)) {
+                validatedAccountRefObjects.appendElement(accountRefObject);
+                continue;
+            }
+
             JSONArray filteredAccountRefObjects = ConsentAuthUtil.getFilteredAccountsForAccountNumber(accountRefObject,
                     accountArray);
 

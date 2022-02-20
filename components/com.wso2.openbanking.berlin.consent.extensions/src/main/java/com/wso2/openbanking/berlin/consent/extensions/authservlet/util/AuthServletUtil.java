@@ -12,8 +12,8 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.authservlet.util;
 
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,19 +39,19 @@ public class AuthServletUtil {
     public static JSONArray convertToAccountRefObjectsArray(String[] accountRefs) {
 
         JSONArray accountRefObjects = new JSONArray();
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
 
         for (String accountRef : accountRefs) {
             JSONObject accountRefObject = new JSONObject();
+            String[] accountDetails = accountRef.split(" ");
+            String accountRefType = accountDetails[0].trim();
             if (accountRef.matches(".*\\(([A-Z]{3})\\)")) {
-                String[] accountDetails = accountRef.split(" ");
-                String accountNumber = accountDetails[0].trim();
-                String currencyString = accountDetails[1].trim();
-                accountRefObject.put(configuredAccountReference, accountNumber);
+                String accountNumber = accountDetails[1].trim();
+                String currencyString = accountDetails[2].trim();
+                accountRefObject.put(accountRefType, accountNumber);
                 accountRefObject.put(ConsentExtensionConstants.CURRENCY,
                         currencyString.substring(1, currencyString.length() - 1));
             } else {
-                accountRefObject.put(configuredAccountReference, accountRef.trim());
+                accountRefObject.put(accountRefType, accountDetails[1].trim());
             }
             accountRefObjects.put(accountRefObject);
         }
@@ -145,7 +145,6 @@ public class AuthServletUtil {
         Map<String, List<String>> staticTransactionMap = new HashMap<>();
         boolean isStaticTransaction = false;
 
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
         for (int accountDetailsIndex = 0; accountDetailsIndex < accountDetailsJsonArray.length();
              accountDetailsIndex++) {
             JSONObject dataObj = accountDetailsJsonArray.getJSONObject(accountDetailsIndex);
@@ -158,13 +157,15 @@ public class AuthServletUtil {
 
             for (int accNumberIndex = 0; accNumberIndex < accountRefObjects.length(); accNumberIndex++) {
                 JSONObject obj = accountRefObjects.getJSONObject(accNumberIndex);
+                String accountRefType = ConsentExtensionUtil.getAccountReferenceType(obj);
+                String accountNumber = obj.getString(accountRefType);
+                String accountRef = String.format("%s %s", accountRefType, accountNumber);
                 if (obj.has(ConsentExtensionConstants.CURRENCY)) {
-                    String accountNumber = obj.getString(configuredAccountReference);
                     String currency = obj.getString(ConsentExtensionConstants.CURRENCY);
-                    String accountRef = String.format("%s (%s)", accountNumber, currency);
+                    accountRef = String.format("%s (%s)", accountRef, currency);
                     accountRefs.add(accountRef);
                 } else {
-                    accountRefs.add(obj.getString(configuredAccountReference));
+                    accountRefs.add(accountRef);
                 }
             }
 

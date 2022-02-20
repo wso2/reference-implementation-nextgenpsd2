@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -167,16 +168,21 @@ public class DataRetrievalUtil {
         try {
             JSONObject accountJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(accountData);
 
-            String accountRefType = ConsentExtensionConstants.IBAN;
             JSONArray slideContent = (JSONArray) accountJson.get("accounts");
             Iterator i = slideContent.iterator();
 
             while (i.hasNext()) {
                 JSONObject slide = (JSONObject) i.next();
-                String account = (String) slide.get(accountRefType);
+                String accountRefType = ConsentExtensionUtil.getAccountReferenceType(slide);
+
+                if (accountRefType == null) {
+                    continue;
+                }
+
+                String accountId = (String) slide.get(accountRefType);
 
                 JSONObject accountObject = new JSONObject();
-                accountObject.put(accountRefType, account);
+                accountObject.put(accountRefType, accountId);
                 accountObject.put(ConsentExtensionConstants.CURRENCY,
                         slide.get(ConsentExtensionConstants.CURRENCY));
                 accountObject.put(ConsentExtensionConstants.IS_DEFAULT,

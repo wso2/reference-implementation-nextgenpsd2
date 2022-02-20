@@ -20,6 +20,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -162,19 +163,19 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         populateCommonData(receipt, consentDataArray);
 
-        consentDataArray.add(ConsentExtensionConstants.START_DATE_TITLE + " : "
+        consentDataArray.add(ConsentExtensionConstants.START_DATE_TITLE + ": "
                 + receipt.getAsString(ConsentExtensionConstants.START_DATE));
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.END_DATE))) {
-            consentDataArray.add(ConsentExtensionConstants.END_DATE_TITLE + " : "
+            consentDataArray.add(ConsentExtensionConstants.END_DATE_TITLE + ": "
                     + receipt.getAsString(ConsentExtensionConstants.END_DATE));
         }
 
-        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_TITLE + " : "
+        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_TITLE + ": "
                 + receipt.getAsString(ConsentExtensionConstants.FREQUENCY));
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.EXECUTION_RULE))) {
-            consentDataArray.add(ConsentExtensionConstants.EXECUTION_RULE_TITLE + " : "
+            consentDataArray.add(ConsentExtensionConstants.EXECUTION_RULE_TITLE + ": "
                     + receipt.getAsString(ConsentExtensionConstants.EXECUTION_RULE));
         }
 
@@ -202,16 +203,16 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         JSONObject instructedAmount = (JSONObject) receipt.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
 
-        paymentDataArray.add(ConsentExtensionConstants.INSTRUCTED_AMOUNT_TITLE + " : "
+        paymentDataArray.add(ConsentExtensionConstants.INSTRUCTED_AMOUNT_TITLE + ": "
                 + instructedAmount.getAsString(ConsentExtensionConstants.AMOUNT));
-        paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + " : "
+        paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + ": "
                 + instructedAmount.getAsString(ConsentExtensionConstants.CURRENCY));
 
-        paymentDataArray.add(ConsentExtensionConstants.CREDITOR_NAME_TITLE + " : "
+        paymentDataArray.add(ConsentExtensionConstants.CREDITOR_NAME_TITLE + ": "
                 + receipt.getAsString(ConsentExtensionConstants.CREDITOR_NAME));
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.CREDITOR_AGENT))) {
-            paymentDataArray.add(ConsentExtensionConstants.CREDITOR_AGENT_TITLE + " : "
+            paymentDataArray.add(ConsentExtensionConstants.CREDITOR_AGENT_TITLE + ": "
                     + receipt.getAsString(ConsentExtensionConstants.CREDITOR_AGENT));
         }
 
@@ -220,42 +221,25 @@ public class PaymentConsentRetrievalHandler implements ConsentRetrievalHandler {
         // This validation is done separately for creditor account since we do not configure a specific account
         // reference type for the creditor account reference type. We can expect any type of creditor account
         // reference in the initiation payload.
-        if (creditorAccount.containsKey(ConsentExtensionConstants.IBAN)
-                && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.IBAN))) {
+        String creditorAccRefType = ConsentExtensionUtil.getAccountReferenceType(creditorAccount);
+        if (StringUtils.isNotBlank(creditorAccRefType)) {
             paymentDataArray.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
-                    ConsentExtensionConstants.IBAN) + " : " + creditorAccount.get(ConsentExtensionConstants.IBAN));
-        } else if (creditorAccount.containsKey(ConsentExtensionConstants.BBAN)
-                && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.BBAN))) {
-            paymentDataArray.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
-                    ConsentExtensionConstants.BBAN) + " : " + creditorAccount.get(ConsentExtensionConstants.BBAN));
-        } else if (creditorAccount.containsKey(ConsentExtensionConstants.PAN)
-                && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.PAN))) {
-            paymentDataArray.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
-                    ConsentExtensionConstants.PAN) + " : " + creditorAccount.get(ConsentExtensionConstants.PAN));
-        } else if (creditorAccount.containsKey(ConsentExtensionConstants.MASKED_PAN)
-                && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.MASKED_PAN))) {
-            paymentDataArray.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
-                    ConsentExtensionConstants.MASKED_PAN) + " : "
-                    + creditorAccount.get(ConsentExtensionConstants.MASKED_PAN));
-        } else if (creditorAccount.containsKey(ConsentExtensionConstants.MSISDN)
-                && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.MSISDN))) {
-            paymentDataArray.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
-                    ConsentExtensionConstants.MSISDN) + " : " + creditorAccount.get(ConsentExtensionConstants.MSISDN));
+                    creditorAccRefType) + ": " + creditorAccount.get(creditorAccRefType));
         }
 
         if (creditorAccount.containsKey(ConsentExtensionConstants.CURRENCY)
                 && StringUtils.isNotBlank(creditorAccount.getAsString(ConsentExtensionConstants.CURRENCY))) {
-            paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + " : "
+            paymentDataArray.add(ConsentExtensionConstants.CURRENCY_TITLE + ": "
                     + creditorAccount.get(ConsentExtensionConstants.CURRENCY));
         }
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED))) {
-            paymentDataArray.add(ConsentExtensionConstants.REMITTANCE_INFORMATION_UNSTRUCTURED_TITLE + " : "
+            paymentDataArray.add(ConsentExtensionConstants.REMITTANCE_INFORMATION_UNSTRUCTURED_TITLE + ": "
                     + receipt.getAsString(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED));
         }
 
         if (StringUtils.isNotBlank(receipt.getAsString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION))) {
-            paymentDataArray.add(ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE + " : "
+            paymentDataArray.add(ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE + ": "
                     + receipt.getAsString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION));
         }
     }

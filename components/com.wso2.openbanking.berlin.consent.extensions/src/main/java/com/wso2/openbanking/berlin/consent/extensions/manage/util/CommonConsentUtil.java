@@ -101,10 +101,12 @@ public class CommonConsentUtil {
      */
     private static boolean hasUnSupportedAccountRefTypes(Set<String> accountRefKeys) {
 
-        // Removing currency since it is not an account reference type
-        accountRefKeys.remove(ConsentExtensionConstants.CURRENCY);
         List<String> configuredAccountRefTypes = CommonConfigParser.getInstance().getSupportedAccountReferenceTypes();
         for (String accountRef : accountRefKeys) {
+            // Skipping currency since it is not an account reference type
+            if (StringUtils.equals(accountRef, ConsentExtensionConstants.CURRENCY)) {
+                continue;
+            }
             if (!configuredAccountRefTypes.contains(accountRef)) {
                 return true;
             }
