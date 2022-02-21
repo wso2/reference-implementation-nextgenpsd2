@@ -67,7 +67,7 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
     @BeforeMethod
     public void initMethod() {
 
-        configMap.put(CommonConstants.ACCOUNT_REFERENCE_TYPE_PATH, ConsentExtensionConstants.IBAN);
+        configMap.put(CommonConstants.SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH, ConsentExtensionConstants.IBAN);
         configMap.put(CommonConstants.MAX_FUTURE_PAYMENT_DAYS, StringUtils.EMPTY);
 
         commonConfigParserMock = mock(CommonConfigParser.class);
@@ -85,7 +85,7 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         JSONObject payload =
                 (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
                         .parse(TestPayloads.PAYMENTS_PAYLOAD_WITHOUT_DEBTOR_ACCOUNT);
-        PaymentConsentUtil.validateDebtorAccount(payload, "iban");
+        PaymentConsentUtil.validateDebtorAccount(payload);
     }
 
     @Test (expectedExceptions = ConsentException.class)
@@ -94,7 +94,7 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         JSONObject payload =
                 (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
                         .parse(TestPayloads.VALID_PAYMENTS_PAYLOAD);
-        PaymentConsentUtil.validateDebtorAccount(payload, "bban");
+        PaymentConsentUtil.validateDebtorAccount(payload);
     }
 
     @Test (expectedExceptions = ConsentException.class)
@@ -103,7 +103,7 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         JSONObject payload =
                 (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
                         .parse(TestPayloads.VALID_PAYMENTS_PAYLOAD);
-        PaymentConsentUtil.validateDebtorAccount(payload, "pan");
+        PaymentConsentUtil.validateDebtorAccount(payload);
     }
 
     @Test (expectedExceptions = ConsentException.class)
@@ -112,7 +112,7 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         JSONObject payload =
                 (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
                         .parse(TestPayloads.PAYMENTS_PAYLOAD_WITH_INVALID_REFERENCE);
-        PaymentConsentUtil.validateDebtorAccount(payload, "iban");
+        PaymentConsentUtil.validateDebtorAccount(payload);
     }
 
     @Test (expectedExceptions = ConsentException.class)
@@ -251,9 +251,8 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
                 paymentCancellationResponse.get(ConsentExtensionConstants.TRANSACTION_STATUS));
         Assert.assertNotNull(paymentCancellationResponse.get(ConsentExtensionConstants.CHOSEN_SCA_METHOD));
         Assert.assertNotNull(paymentCancellationResponse.get(ConsentExtensionConstants.LINKS));
-        JSONArray chosenSCAMethods =
-                (JSONArray) paymentCancellationResponse.get(ConsentExtensionConstants.CHOSEN_SCA_METHOD);
-        JSONObject chosenScaMethod = (JSONObject) chosenSCAMethods.get(0);
+        JSONObject chosenScaMethod = (JSONObject) paymentCancellationResponse
+                .get(ConsentExtensionConstants.CHOSEN_SCA_METHOD);
         Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_TYPE), scaMethod.get(CommonConstants.SCA_TYPE));
         Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_VERSION),
                 scaMethod.get(CommonConstants.SCA_VERSION));

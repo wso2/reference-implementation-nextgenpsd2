@@ -13,23 +13,48 @@
 package com.wso2.openbanking.berlin.consent.extensions.manage.util;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestDataProvider;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.mockito.Mock;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
 
+import static org.mockito.Mockito.doReturn;
+
 /**
  * Test class for AccountConsentUtil class.
  */
+@PrepareForTest({CommonConfigParser.class})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
+        "jdk.internal.reflect.*"})
 public class AccountConsentUtilTests extends PowerMockTestCase {
 
     private static final JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+
+    @Mock
+    CommonConfigParser commonConfigParserMock;
+
+    @BeforeMethod
+    public void init() {
+
+        commonConfigParserMock = PowerMockito.mock(CommonConfigParser.class);
+        PowerMockito.mockStatic(CommonConfigParser.class);
+        PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
+    }
 
     @Test(expectedExceptions = ConsentException.class, dataProvider = "InvalidAccountInitiationPayloadTestDataProvider",
             dataProviderClass = TestDataProvider.class)
