@@ -176,7 +176,7 @@ public class AccountConsentUtil {
      *
      * @param accountRefs account refs object array
      */
-    private static void validateAccountRefObjects(JSONArray accountRefs) {
+    public static void validateAccountRefObjects(JSONArray accountRefs) {
 
         if (accountRefs != null) {
             for (Object accountRef : accountRefs) {

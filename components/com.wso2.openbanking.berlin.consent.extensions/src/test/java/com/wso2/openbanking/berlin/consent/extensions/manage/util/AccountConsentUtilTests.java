@@ -17,6 +17,7 @@ import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestDataProvider;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -67,15 +68,19 @@ public class AccountConsentUtilTests extends PowerMockTestCase {
                 isValidUntilDateCapEnabled, validUntilDaysCap);
     }
 
-    @Test(expectedExceptions = ConsentException.class, dataProvider = "UnsupportedAccReferencePayloadTestDataProvider",
-            dataProviderClass = TestDataProvider.class)
-    public void testUnsupportedAccRefObjects(String payload, int configuredMinFreqPerDay,
-                                                                     boolean isValidUntilDateCapEnabled,
-                                                                     int validUntilDaysCap) throws ParseException {
+    @Test(dataProvider = "ValidAccReferencePayloadTestDataProvider", dataProviderClass = TestDataProvider.class)
+    public void testValidAccRefObjects(String accountRefs) throws ParseException {
 
-        JSONObject payloadJsonObject = (JSONObject) parser.parse(payload);
-        AccountConsentUtil.validateAccountInitiationPayload(payloadJsonObject, configuredMinFreqPerDay,
-                isValidUntilDateCapEnabled, validUntilDaysCap);
+        JSONArray accountRefsJsonArray = (JSONArray) parser.parse(accountRefs);
+        AccountConsentUtil.validateAccountRefObjects(accountRefsJsonArray);
+    }
+
+    @Test(expectedExceptions = ConsentException.class, dataProvider = "InvalidAccReferencePayloadTestDataProvider",
+            dataProviderClass = TestDataProvider.class)
+    public void testInvalidAccRefObjects(String accountRefs) throws ParseException {
+
+        JSONArray accountRefsJsonArray = (JSONArray) parser.parse(accountRefs);
+        AccountConsentUtil.validateAccountRefObjects(accountRefsJsonArray);
     }
 
     @Test(dataProvider = "ValidAccountInitiationPayloadTestDataProvider",

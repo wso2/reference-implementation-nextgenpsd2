@@ -24,18 +24,28 @@ import org.testng.annotations.DataProvider;
  */
 public class TestDataProvider {
 
-    @DataProvider(name = "UnsupportedAccReferencePayloadTestDataProvider")
-    Object[][] getUnsupportedAccReferencePayloadTestDataProvider() {
+    @DataProvider(name = "ValidAccReferencePayloadTestDataProvider")
+    Object[][] getValidAccReferencePayloadTestDataProvider() {
 
-        // payload, configuredFreqPerDay(minimum value), isValidUntilDateCapEnabled,
-        // validUntilDays(configured valid until days)
         return new Object[][]{
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_1, 4, false, 0},
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_2, 4, false, 0},
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_3, 4, false, 0},
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_4, 4, false, 0},
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_5, 4, false, 0},
-                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_7, 4, false, 0}
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_1},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_2},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_3},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_4},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_5}
+        };
+    }
+
+    @DataProvider(name = "InvalidAccReferencePayloadTestDataProvider")
+    Object[][] getInvalidAccReferencePayloadTestDataProvider() {
+
+        return new Object[][]{
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_1},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_2},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_3},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_4},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_5},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_6}
         };
     }
 
