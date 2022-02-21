@@ -67,6 +67,17 @@ public class AccountConsentUtilTests extends PowerMockTestCase {
                 isValidUntilDateCapEnabled, validUntilDaysCap);
     }
 
+    @Test(expectedExceptions = ConsentException.class, dataProvider = "UnsupportedAccReferencePayloadTestDataProvider",
+            dataProviderClass = TestDataProvider.class)
+    public void testUnsupportedAccRefObjects(String payload, int configuredMinFreqPerDay,
+                                                                     boolean isValidUntilDateCapEnabled,
+                                                                     int validUntilDaysCap) throws ParseException {
+
+        JSONObject payloadJsonObject = (JSONObject) parser.parse(payload);
+        AccountConsentUtil.validateAccountInitiationPayload(payloadJsonObject, configuredMinFreqPerDay,
+                isValidUntilDateCapEnabled, validUntilDaysCap);
+    }
+
     @Test(dataProvider = "ValidAccountInitiationPayloadTestDataProvider",
             dataProviderClass = TestDataProvider.class)
     public void testValidValidateAccountInitiationPayloadScenarios(String payload, int configuredMinFreqPerDay,

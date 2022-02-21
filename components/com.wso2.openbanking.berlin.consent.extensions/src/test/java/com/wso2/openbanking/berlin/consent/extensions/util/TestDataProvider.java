@@ -24,6 +24,21 @@ import org.testng.annotations.DataProvider;
  */
 public class TestDataProvider {
 
+    @DataProvider(name = "UnsupportedAccReferencePayloadTestDataProvider")
+    Object[][] getUnsupportedAccReferencePayloadTestDataProvider() {
+
+        // payload, configuredFreqPerDay(minimum value), isValidUntilDateCapEnabled,
+        // validUntilDays(configured valid until days)
+        return new Object[][]{
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_1, 4, false, 0},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_2, 4, false, 0},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_3, 4, false, 0},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_4, 4, false, 0},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_5, 4, false, 0},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_7, 4, false, 0}
+        };
+    }
+
     @DataProvider(name = "InvalidAccountInitiationPayloadTestDataProvider")
     Object[][] getInvalidAccountInitiationPayloadTestDataProvider() {
 

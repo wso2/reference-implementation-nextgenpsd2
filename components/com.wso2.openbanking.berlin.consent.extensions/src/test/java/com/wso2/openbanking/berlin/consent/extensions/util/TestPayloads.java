@@ -1031,4 +1031,113 @@ public class TestPayloads {
             "      \"amount\":\"123\"\n" +
             "   }\n" +
             "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_1 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"pan\":\"DE12345678901234567890\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_2 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"abc\":\"DE12345678901234567890\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_3 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE12345678901234567890\",\n" +
+            "            \"bban\":\"DE12345678901234567890\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_4 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE12345678901234567890\",\n" +
+            "            \"bban\":\"DE12345678901234567890\",\n" +
+            "            \"maskedPan\":\"DE12345678901234567890\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_5 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"currency\":\"DE12345678901234567890\",\n" +
+            "            \"currency\":\"DE12345678901234567890\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_6 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE12345678901234567890\",\n" +
+            "            \"currency\":\"EUR\",\n" +
+            "            \"currency\":\"USD\"\n" +
+            "         }\n" +
+            "      ]\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
+
+    public static final String UNSUPPORTED_ACCOUNT_REFERENCE_7 = "{\n" +
+            "   \"access\":{\n" +
+            "      \"accounts\":[\n" +
+            "         {\n" +
+            "            \"iban\":\"DE12345678901234567890\",\n" +
+            "            \"currency\":\"EUR\",\n" +
+            "         },\n" +
+            "         {\n" +
+            "            \"pan\":\"DE12345678901234567890\",\n" +
+            "            \"currency\":\"EUR\",\n" +
+            "         }\n" +
+            "      ],\n" +
+            "   },\n" +
+            "   \"recurringIndicator\":true,\n" +
+            "   \"validUntil\":\"" + TestUtil.getCurrentDate(2) + "\",\n" +
+            "   \"frequencyPerDay\":4,\n" +
+            "   \"combinedServiceIndicator\":false\n" +
+            "}";
 }
