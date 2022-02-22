@@ -17,16 +17,19 @@ import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
 import com.wso2.openbanking.berlin.gateway.test.GatewayTestConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
@@ -34,6 +37,7 @@ public class GatewayTestUtils {
 
     private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     private static final String END_CERT = "-----END CERTIFICATE-----";
+    private static final String X509_CERT_INSTANCE_NAME = "X.509";
 
     private static java.security.cert.X509Certificate expiredSelfCertificate = null;
     private static java.security.cert.X509Certificate testClientCertificateIssuer = null;
@@ -206,6 +210,26 @@ public class GatewayTestUtils {
 
     }
 
+    public static Optional<java.security.cert.X509Certificate> parseCertificate(String certString)
+            throws java.security.cert.CertificateException,
+            CertificateValidationException {
+
+        java.security.cert.X509Certificate certificate;
+        if (StringUtils.isNotBlank(certString)) {
+            // decoding pem formatted transport cert
+            byte[] decodedCert = Base64.getDecoder().decode(StringUtils.deleteWhitespace(certString
+                    .replace(BEGIN_CERT, "")
+                    .replace(END_CERT, "").replace("\n", "")));
+
+            certificate = (java.security.cert.X509Certificate) CertificateFactory.getInstance(X509_CERT_INSTANCE_NAME)
+                    .generateCertificate(new ByteArrayInputStream(decodedCert));
+        } else {
+            log.error("Certificate is missing");
+            throw new CertificateValidationException("Invalid request. Certificate is missing");
+        }
+        return Optional.ofNullable(certificate);
+    }
+
     public static synchronized X509Certificate getTestSignatureCertificate()
             throws CertificateException {
 
@@ -215,28 +239,25 @@ public class GatewayTestUtils {
     }
 
     public static synchronized java.security.cert.X509Certificate getExpiredSelfCertificate()
-            throws CertificateValidationException {
+            throws CertificateValidationException, java.security.cert.CertificateException {
         if (expiredSelfCertificate == null) {
-            expiredSelfCertificate = CertificateValidationUtils
-                    .parseTransportCert(EXPIRED_SELF_CERT).orElse(null);
+            expiredSelfCertificate = parseCertificate(EXPIRED_SELF_CERT).orElse(null);
         }
         return expiredSelfCertificate;
     }
 
     public static synchronized java.security.cert.X509Certificate getTestSigningCertificate()
-            throws CertificateValidationException {
+            throws CertificateValidationException, java.security.cert.CertificateException {
         if (testEidasCertificate == null) {
-            testEidasCertificate = CertificateValidationUtils.parseTransportCert(TEST_SIGNATURE_CERT)
-                    .orElse(null);
+            testEidasCertificate = parseCertificate(TEST_SIGNATURE_CERT).orElse(null);
         }
         return testEidasCertificate;
     }
 
     public static synchronized java.security.cert.X509Certificate getTestClientCertificateIssuer()
-            throws CertificateValidationException {
+            throws CertificateValidationException, java.security.cert.CertificateException {
         if (testClientCertificateIssuer == null) {
-            testClientCertificateIssuer = CertificateValidationUtils
-                    .parseTransportCert(TEST_CLIENT_CERT_ISSUER).orElse(null);
+            testClientCertificateIssuer = parseCertificate(TEST_CLIENT_CERT_ISSUER).orElse(null);
         }
         return testClientCertificateIssuer;
     }

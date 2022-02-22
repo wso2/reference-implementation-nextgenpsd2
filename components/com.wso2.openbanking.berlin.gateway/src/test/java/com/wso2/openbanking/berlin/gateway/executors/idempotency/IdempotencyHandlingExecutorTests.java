@@ -151,6 +151,9 @@ public class IdempotencyHandlingExecutorTests extends PowerMockTestCase {
 
         when(obapiRequestContextMock.getRequestPayload()).thenReturn(requestPayload);
         ArrayList<OpenBankingExecutorError> executorErrors = new ArrayList<>();
+        OpenBankingExecutorError error = new OpenBankingExecutorError();
+        error.setMessage(ErrorConstants.X_REQUEST_ID_MISSING);
+        executorErrors.add(error);
         when(obapiRequestContextMock.getErrors()).thenReturn(executorErrors);
 
         mockStatic(IdempotencyValidationCache.class);
@@ -216,18 +219,4 @@ public class IdempotencyHandlingExecutorTests extends PowerMockTestCase {
 
         new IdempotencyHandlingExecutor().postProcessResponse(obapiResponseContextMock);
     }
-
-    @Test
-    public void testHandleIdempotencyErrors() {
-        String errorMessage = "dummyMessage";
-        String errorCode = "400";
-        ArrayList<OpenBankingExecutorError> executorErrors = new ArrayList<>();
-        when(obapiResponseContextMock.getErrors()).thenReturn(executorErrors);
-        ArrayList<OpenBankingExecutorError> updatedExecutorErrors = new IdempotencyHandlingExecutor()
-                .handleIdempotencyErrors(obapiRequestContextMock, errorMessage, errorCode);
-        Assert.assertEquals(updatedExecutorErrors.get(0).getMessage(), errorMessage);
-        Assert.assertEquals(updatedExecutorErrors.get(0).getCode(), errorCode);
-
-    }
-
 }

@@ -90,6 +90,7 @@ public class ConsentExtensionConstants {
     public static final String X_REQUEST_ID_PROPER_CASE_HEADER = "X-Request-ID";
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
     public static final String ASPSP_SCA_APPROACH_PROPER_CASE_HEADER = "ASPSP-SCA-Approach";
+    public static final String ASPSP_MULTIPLE_CONSENT_SUPPORTED = "ASPSP-Multiple-Consent-Support";
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
             "]{12}";

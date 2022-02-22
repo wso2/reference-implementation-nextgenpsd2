@@ -95,10 +95,28 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
             String requestPayload = obapiRequestContext.getRequestPayload();
 
+            // Validate whether the required headers are present.
             try {
-                // Validate whether the required headers are present.
                 validateHeaders(headersMap);
+            } catch (SignatureCertMissingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        ErrorConstants.SIGNING_CERT_MISSING);
+            } catch (DigestMissingException e) {
+                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.DIGEST_HEADER_MISSING);
+            } catch (SignatureMissingException e) {
+                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
+                        ErrorConstants.SIGNATURE_HEADER_MISSING);
+            } catch (SignatureValidationException e) {
+                log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                        ErrorConstants.X_REQUEST_ID_MISSING);
+            }
 
+            try {
                 X509Certificate parsedSigningCert;
                 Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
                 if (x509Certificate.isPresent()) {
@@ -140,23 +158,11 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 } else {
                     log.debug("Signature validation successfully completed");
                 }
-            } catch (SignatureCertMissingException e) {
-                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                        ErrorConstants.SIGNING_CERT_MISSING);
             } catch (DigestValidationException e) {
                 log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
                         ErrorConstants.INVALID_DIGEST_HEADER);
-            }  catch (SignatureMissingException e) {
-                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
-                        ErrorConstants.SIGNATURE_HEADER_MISSING);
-            } catch (DigestMissingException e) {
-                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        ErrorConstants.DIGEST_HEADER_MISSING);
-            } catch (CertificateValidationException | CertificateEncodingException e) {
+            } catch (CertificateValidationException | CertificateException e) {
                 log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                         ErrorConstants.SIGNING_CERT_INVALID);

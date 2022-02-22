@@ -429,7 +429,7 @@ consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/va
 
 #============executors=========================
 [[open_banking.gateway.openbanking_gateway_executors.type]]
-name = "Default"
+name = "Accounts"
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutor"
 priority = 1
@@ -471,6 +471,30 @@ name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecuto
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+priority = 1000
+
+[[open_banking.gateway.openbanking_gateway_executors.type]]
+name = "FundsConfirmations"
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutor"
+priority = 1
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutor"
+priority = 2
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.APITPPValidationExecutor"
+priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
@@ -585,7 +609,7 @@ mask="false"
 multiple="false"
 priority="1"
 [[open_banking.keymanager.application.type.attributes]]
-name = "SP_CERTIFICATE"
+name = "sp_certificate"
 label="Application Certificate"
 type="input"
 tooltip="Application Certificate - Mandatory if private_key_jwt Token method is selected"
@@ -595,7 +619,7 @@ mask="false"
 multiple="false"
 priority="2"
 [[open_banking.keymanager.application.type.attributes]]
-name="ORG_ID"
+name="organization_id"
 label="Organization Id"
 type="input"
 tooltip="Organization Id - Mandatory if regulatory property is set to true"
@@ -604,27 +628,6 @@ required="false"
 mask="false"
 multiple="false"
 priority="3"
-[[open_banking.keymanager.application.type.attributes]]
-name="token_endpoint_auth_signing_alg"
-label="Signing Algorithm"
-type="input"
-tooltip="Signing Algorithm"
-default="PS256"
-required="true"
-mask="false"
-multiple="false"
-priority="4"
-[[open_banking.keymanager.application.type.attributes]]
-name="token_endpoint_auth_method"
-label="Token Auth Method"
-type="select"
-tooltip="Token Auth Method (private_key_jwt should only be used if regulatory property is set to true"
-default=""
-values="private_key_jwt,tls_client_auth"
-required="true"
-mask="false"
-multiple="false"
-priority="5"
 
 [open_banking_berlin.gateway.signature_verification]
 supported_hash_algorithms = ["SHA-256", "SHA-512"]

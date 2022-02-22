@@ -19,16 +19,11 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.PaymentConsentUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Class to handle bulk payments initiation request handler.
@@ -52,33 +47,7 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
                     ErrorConstants.EXECUTION_DATE_TIME_ERROR));
         }
 
-        log.debug("Validating requested execution date");
-        if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
-                && StringUtils.isNotBlank(payload.getAsString(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE))) {
-
-            LocalDate requestedExecutionDate =
-                    ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants
-                                    .REQUESTED_EXECUTION_DATE), TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
-                            ErrorConstants.REQUESTED_EXECUTION_DATE_INVALID);
-
-            LocalDate today = LocalDate.now();
-
-            if (!requestedExecutionDate.isAfter(LocalDate.now())) {
-                log.error(ErrorConstants.EXECUTION_DATE_NOT_FUTURE);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        ErrorConstants.EXECUTION_DATE_NOT_FUTURE));
-            } else if (StringUtils.isNotBlank(maxPaymentExecutionDays)) {
-                long maxNumberPaymentExecutionDays = Long.parseLong(maxPaymentExecutionDays);
-                if (ChronoUnit.DAYS.between(today.plusDays(maxNumberPaymentExecutionDays),
-                        requestedExecutionDate) > 0) {
-                    log.error(ErrorConstants.PAYMENT_EXECUTION_DATE_EXCEEDED);
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                            ErrorConstants.PAYMENT_EXECUTION_DATE_EXCEEDED));
-                }
-            }
-        }
+        PaymentConsentUtil.validateRequestedExecutionDate(payload, maxPaymentExecutionDays);
 
         JSONArray payments;
 

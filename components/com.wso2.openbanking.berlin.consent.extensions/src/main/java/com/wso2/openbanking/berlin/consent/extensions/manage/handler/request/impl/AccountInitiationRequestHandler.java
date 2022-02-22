@@ -121,6 +121,8 @@ public class AccountInitiationRequestHandler implements RequestHandler {
             consentManageData.setResponsePayload(AccountConsentUtil
                     .constructAccountInitiationResponse(consentManageData, createdConsent, isExplicitAuth,
                             true, apiVersion, isSCARequired));
+            consentManageData.setResponseHeader(ConsentExtensionConstants.ASPSP_MULTIPLE_CONSENT_SUPPORTED,
+                    String.valueOf(configParser.isMultipleRecurringConsentEnabled()));
             consentManageData.setResponseStatus(ResponseStatus.CREATED);
         }
     }

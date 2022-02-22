@@ -32,35 +32,54 @@ public class APIRequestRouter extends AbstractRequestRouter {
     @Override
     public List<OpenBankingGatewayExecutor> getExecutorsForRequest(OBAPIRequestContext obapiRequestContext) {
 
-        if (APIRequestRouterConstants.API_TYPE_NON_REGULATORY.equals(obapiRequestContext.getOpenAPI().getExtensions()
-                        .get(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP))) {
-            obapiRequestContext.addContextProperty(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP,
-                    APIRequestRouterConstants.API_TYPE_NON_REGULATORY);
-            return EMPTY_LIST;
-        } else if (StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
+        if (StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
                 APIRequestRouterConstants.PAYMENTS_TYPE)) {
             obapiRequestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
                     APIRequestRouterConstants.PAYMENTS_TYPE);
             return this.getExecutorMap().get(APIRequestRouterConstants.PAYMENTS);
+        } else if (StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.FUNDS_CONFIRMATIONS_TYPE)
+                || StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.CONFIRMATION_OF_FUNDS_TYPE)) {
+            obapiRequestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
+                    APIRequestRouterConstants.FUNDS_CONFIRMATIONS_TYPE);
+            return this.getExecutorMap().get(APIRequestRouterConstants.FUNDS_CONFIRMATIONS);
+        } else if (StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.ACCOUNTS_TYPE)
+                || StringUtils.contains(obapiRequestContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.ACCOUNTS_INITIATION_TYPE)) {
+            obapiRequestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
+                    APIRequestRouterConstants.ACCOUNTS_TYPE);
+            return this.getExecutorMap().get(APIRequestRouterConstants.ACCOUNTS);
         } else {
-            return this.getExecutorMap().get(APIRequestRouterConstants.DEFAULT);
+            return EMPTY_LIST;
         }
     }
 
     @Override
     public List<OpenBankingGatewayExecutor> getExecutorsForResponse(OBAPIResponseContext obapiResponseContext) {
 
-        if (obapiResponseContext.getContextProps().containsKey(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP)) {
-            if (APIRequestRouterConstants.API_TYPE_NON_REGULATORY.equals(obapiResponseContext.getContextProps()
-                    .get(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP))) {
-                return EMPTY_LIST;
-            } else if (StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
-                    APIRequestRouterConstants.PAYMENTS_TYPE)) {
-                return this.getExecutorMap().get(APIRequestRouterConstants.PAYMENTS);
-            } else {
-                return this.getExecutorMap().get(APIRequestRouterConstants.DEFAULT);
-            }
+        if (StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.PAYMENTS_TYPE)) {
+            obapiResponseContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
+                    APIRequestRouterConstants.PAYMENTS_TYPE);
+            return this.getExecutorMap().get(APIRequestRouterConstants.PAYMENTS);
+        } else if (StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.FUNDS_CONFIRMATIONS_TYPE)
+                || StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.CONFIRMATION_OF_FUNDS_TYPE)) {
+            obapiResponseContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
+                    APIRequestRouterConstants.FUNDS_CONFIRMATIONS_TYPE);
+            return this.getExecutorMap().get(APIRequestRouterConstants.FUNDS_CONFIRMATIONS);
+        } else if (StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.ACCOUNTS_TYPE)
+                || StringUtils.contains(obapiResponseContext.getMsgInfo().getResource(),
+                APIRequestRouterConstants.ACCOUNTS_INITIATION_TYPE)) {
+            obapiResponseContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
+                    APIRequestRouterConstants.ACCOUNTS_TYPE);
+            return this.getExecutorMap().get(APIRequestRouterConstants.ACCOUNTS);
+        } else {
+            return EMPTY_LIST;
         }
-        return EMPTY_LIST;
     }
 }

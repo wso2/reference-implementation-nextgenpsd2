@@ -83,7 +83,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     private java.security.cert.X509Certificate testPeerCertificateIssuer;
 
     @BeforeClass
-    public void initClass() throws CertificateException, CertificateValidationException {
+    public void initClass() throws CertificateException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         this.transportCertificate = GatewayTestUtils.getTestTransportCertificate();
         obapiRequestContextMock = Mockito.mock(OBAPIRequestContext.class);
@@ -282,7 +283,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testValidateInvalidSignature() throws SignatureValidationException, CertificateValidationException {
+    public void testValidateInvalidSignature() throws SignatureValidationException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
@@ -293,7 +295,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithInvalidKeyID()
-            throws SignatureValidationException, CertificateValidationException {
+            throws SignatureValidationException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         new SignatureValidationExecutor().validateSignature(TestData.INVALID_ACCOUNTS_REQUEST_HEADERS_MAP,
                 GatewayTestUtils.getTestSigningCertificate());
@@ -301,7 +304,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithInvalidAlgorithm()
-            throws SignatureValidationException, CertificateValidationException {
+            throws SignatureValidationException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         doReturn(TestData.UNSUPPORTED_ALGORITHMS).when(commonConfigParserMock).getSupportedSignatureAlgorithms();
         new SignatureValidationExecutor().validateSignature(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP,
@@ -310,7 +314,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithoutMandatoryHeaderInSignature()
-            throws SignatureValidationException, CertificateValidationException {
+            throws SignatureValidationException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
@@ -320,7 +325,8 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithoutUpperCaseHeaderInSignature()
-            throws SignatureValidationException, CertificateValidationException {
+            throws SignatureValidationException, CertificateValidationException,
+            java.security.cert.CertificateException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();

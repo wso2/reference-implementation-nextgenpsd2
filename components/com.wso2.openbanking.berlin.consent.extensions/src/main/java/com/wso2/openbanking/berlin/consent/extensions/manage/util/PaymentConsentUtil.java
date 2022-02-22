@@ -28,6 +28,7 @@ import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -39,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -156,6 +158,43 @@ public class PaymentConsentUtil {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.CREDITOR_NAME_MISSING));
+        }
+    }
+
+    /**
+     * Method to validate requested execution date.
+     *
+     * @param payload request payload
+     * @param maxPaymentExecutionDays maximum payment execution days allowed
+     */
+    public static void validateRequestedExecutionDate(JSONObject payload, String maxPaymentExecutionDays) {
+
+        log.debug("Validating requested execution date");
+        if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
+                && StringUtils.isNotBlank(payload.getAsString(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE))) {
+
+            LocalDate requestedExecutionDate =
+                    ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants
+                                    .REQUESTED_EXECUTION_DATE), TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
+                            ErrorConstants.REQUESTED_EXECUTION_DATE_INVALID);
+
+            LocalDate today = LocalDate.now();
+
+            if (!requestedExecutionDate.isAfter(today)) {
+                log.error(ErrorConstants.EXECUTION_DATE_NOT_FUTURE);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
+                        ErrorConstants.EXECUTION_DATE_NOT_FUTURE));
+            } else if (StringUtils.isNotBlank(maxPaymentExecutionDays)) {
+                long maxNumberPaymentExecutionDays = Long.parseLong(maxPaymentExecutionDays);
+                if (ChronoUnit.DAYS.between(today.plusDays(maxNumberPaymentExecutionDays),
+                        requestedExecutionDate) > 0) {
+                    log.error(ErrorConstants.PAYMENT_EXECUTION_DATE_EXCEEDED);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
+                            ErrorConstants.PAYMENT_EXECUTION_DATE_EXCEEDED));
+                }
+            }
         }
     }
 
@@ -340,6 +379,11 @@ public class PaymentConsentUtil {
      * @param receipt  the receipt of the consent
      */
     private static void setCommonPaymentElementsToResponse(JSONObject response, JSONObject receipt) {
+
+        if (receipt.containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
+            response.appendField(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE,
+                    receipt.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE));
+        }
 
         if (receipt.containsKey(ConsentExtensionConstants.END_TO_END_IDENTIFICATION)) {
             response.appendField(ConsentExtensionConstants.END_TO_END_IDENTIFICATION,
