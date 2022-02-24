@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.common.utils;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.models.TPPMessages;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +45,10 @@ public class ErrorUtil {
         TPPMessages tppMessages = new TPPMessages();
 
         TPPMessage tppMessage = new TPPMessage();
-        tppMessage.setPath(path);
+
+        if (StringUtils.isNotBlank(path)) {
+            tppMessage.setPath(path);
+        }
         tppMessage.setCategory(category);
         tppMessage.setCode(code);
         tppMessage.setText(text);

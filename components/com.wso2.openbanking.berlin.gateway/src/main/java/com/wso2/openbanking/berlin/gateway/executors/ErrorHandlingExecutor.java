@@ -114,15 +114,19 @@ public class ErrorHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     private static TPPMessage.CodeEnum getBerlinErrorCodeFromOBErrorCode(String obErrorCode) {
-
-        // todo: have to handle separate errors for certificate invalid, expired and missing scenarios
-        //  https://github.com/wso2-enterprise/financial-open-banking/issues/7162
+        
         if (StringUtils.equals("200003", obErrorCode)) {
             return TPPMessage.CodeEnum.CERTIFICATE_INVALID;
         } else if (StringUtils.equals("200004", obErrorCode)) {
             return TPPMessage.CodeEnum.ROLE_INVALID;
         } else if (StringUtils.equals("200001", obErrorCode)) {
             return TPPMessage.CodeEnum.TOKEN_INVALID;
+        } else if (StringUtils.equals("200007", obErrorCode)) {
+            return TPPMessage.CodeEnum.CERTIFICATE_MISSING;
+        } else if (StringUtils.equals("200008", obErrorCode)) {
+            return TPPMessage.CodeEnum.CERTIFICATE_EXPIRED;
+        } else if (StringUtils.equals("200009", obErrorCode)) {
+            return TPPMessage.CodeEnum.CERTIFICATE_REVOKED;
         } else {
             return TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR;
         }

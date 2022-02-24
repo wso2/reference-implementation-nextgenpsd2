@@ -102,18 +102,22 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
                         ErrorConstants.SIGNING_CERT_MISSING);
+                return;
             } catch (DigestMissingException e) {
                 log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
                         ErrorConstants.DIGEST_HEADER_MISSING);
+                return;
             } catch (SignatureMissingException e) {
                 log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
                         ErrorConstants.SIGNATURE_HEADER_MISSING);
+                return;
             } catch (SignatureValidationException e) {
                 log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
                         ErrorConstants.X_REQUEST_ID_MISSING);
+                return;
             }
 
             try {
