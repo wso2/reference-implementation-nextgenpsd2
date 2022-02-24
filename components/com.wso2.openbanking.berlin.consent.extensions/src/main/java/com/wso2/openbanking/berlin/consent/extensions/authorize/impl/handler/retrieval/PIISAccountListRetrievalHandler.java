@@ -21,6 +21,7 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.DataRetrievalUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -53,7 +54,16 @@ public class PIISAccountListRetrievalHandler implements AccountListRetrievalHand
                             consentData.getState()));
         }
 
-        JSONObject validatedAccountRefObject = getValidatedAccountRefObject(accountRefObject, userAccountsArray);
+        JSONObject validatedAccountRefObject;
+        if (accountRefObject.containsKey(ConsentExtensionConstants.MASKED_PAN)) {
+            // Skipping validation for maskedPan based account reference types and this needs to be validated
+            // from the bank back end since there might be scenarios where there are 2 similar maskedPans
+            // for a single user therefore we are not sure which account to validate it against
+            // Eg: 123456xxxxxx1234, 123456xxxxxx1234 -> Both these maskedPans can belong to the same user
+            validatedAccountRefObject = accountRefObject;
+        } else {
+            validatedAccountRefObject = getValidatedAccountRefObject(accountRefObject, userAccountsArray);
+        }
 
         if (validatedAccountRefObject == null) {
             log.error(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
@@ -82,25 +92,22 @@ public class PIISAccountListRetrievalHandler implements AccountListRetrievalHand
 
     private void appendAccountDataToConsentData(JSONObject validatedAccountRefObject, JSONObject consentDataJSON) {
 
-        String configuredAccountRefType = CommonConfigParser.getInstance().getAccountReferenceType();
-        JSONArray dataWithAccountInfo = new JSONArray();
+        String accountRefType = ConsentExtensionUtil.getAccountReferenceType(validatedAccountRefObject);
 
-        String accountNumber = validatedAccountRefObject.getAsString(configuredAccountRefType);
+        String accountNumber = validatedAccountRefObject.getAsString(accountRefType);
         String currency = validatedAccountRefObject.getAsString(ConsentExtensionConstants.CURRENCY);
 
-        String accountReference = accountNumber;
+        String accountReference = String.format("%s %s", accountRefType, accountNumber);
         if (currency != null) {
             accountReference += String.format(" (%s)", currency);
         }
 
-        dataWithAccountInfo.add(ConsentExtensionConstants.ACCOUNT_REFERENCE_TITLE + " : " + accountReference);
-
         JSONArray consentDetails = (JSONArray) consentDataJSON.get(ConsentExtensionConstants.CONSENT_DETAILS);
         JSONObject consentDetail = (JSONObject) consentDetails.get(0);
         JSONArray data = (JSONArray) consentDetail.get(ConsentExtensionConstants.DATA_SIMPLE);
-        dataWithAccountInfo.addAll(data);
+        data.add(0, ConsentExtensionConstants.ACCOUNT_REFERENCE_TITLE + ": " + accountReference);
 
-        consentDetail.put(ConsentExtensionConstants.DATA_SIMPLE, dataWithAccountInfo);
+        consentDetail.put(ConsentExtensionConstants.DATA_SIMPLE, data);
         consentDataJSON.put(ConsentExtensionConstants.CONSENT_DETAILS, new JSONArray().appendElement(consentDetail));
     }
 

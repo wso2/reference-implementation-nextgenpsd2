@@ -20,7 +20,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
@@ -146,7 +145,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
     }
 
     /**
-     * Mapping account Ids and currency info with permissions.
+     * Mapping account reference info with permissions.
      *
      * @param accountRefObjects account reference objects
      * @param accessMethod      access method
@@ -159,12 +158,12 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
         for (Object object : accountRefObjects) {
             JSONObject accountRefObject = (JSONObject) object;
-            String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
-            if (accountIdMapWithPermissions.containsKey(accountIdWithCurrency)) {
-                ArrayList<String> currentPermissions = accountIdMapWithPermissions.get(accountIdWithCurrency);
+            String accountReference = ConsentExtensionUtil.getAccountReferenceToPersist(accountRefObject);
+            if (accountIdMapWithPermissions.containsKey(accountReference)) {
+                ArrayList<String> currentPermissions = accountIdMapWithPermissions.get(accountReference);
                 if (!currentPermissions.contains(accessMethod)) {
                     currentPermissions.add(accessMethod);
-                    accountIdMapWithPermissions.put(accountIdWithCurrency, currentPermissions);
+                    accountIdMapWithPermissions.put(accountReference, currentPermissions);
                 }
             } else {
                 ArrayList<String> permissions = new ArrayList<>();
@@ -176,7 +175,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                     permissions.add(AccessMethodEnum.ACCOUNTS.toString());
                 }
 
-                accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
+                accountIdMapWithPermissions.put(accountReference, permissions);
             }
         }
     }
@@ -241,19 +240,19 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
     private JSONArray getAccountRefObjectsForMappingResources(ArrayList<ConsentMappingResource> mappingResources) {
 
         JSONArray accountRefObjects = new JSONArray();
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
 
         for (ConsentMappingResource mappingResource : mappingResources) {
             JSONObject accountRefObject = new JSONObject();
             String accountId = mappingResource.getAccountID();
-            if (accountId.contains(CommonConstants.DELIMITER)) {
-                String[] accountDetails = accountId.split(CommonConstants.DELIMITER);
-                String accountNumber = accountDetails[0].trim();
-                String currencyString = accountDetails[1].trim();
-                accountRefObject.put(configuredAccountReference, accountNumber);
-                accountRefObject.put(ConsentExtensionConstants.CURRENCY, currencyString);
+            String[] accountDetails = accountId.split(CommonConstants.DELIMITER);
+            String accountRefType = accountDetails[0].trim();
+            String accountNumber = accountDetails[1].trim();
+            if (accountDetails.length > 2) {
+                String currency = accountDetails[2].trim();
+                accountRefObject.put(accountRefType, accountNumber);
+                accountRefObject.put(ConsentExtensionConstants.CURRENCY, currency);
             } else {
-                accountRefObject.put(configuredAccountReference, accountId);
+                accountRefObject.put(accountRefType, accountNumber);
             }
             accountRefObjects.appendElement(accountRefObject);
         }

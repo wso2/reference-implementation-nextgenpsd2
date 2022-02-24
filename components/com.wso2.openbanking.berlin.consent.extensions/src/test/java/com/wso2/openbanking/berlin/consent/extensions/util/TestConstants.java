@@ -12,6 +12,11 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.util;
 
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Test constants.
  */
@@ -31,5 +36,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "invalid request path";
     public static final String SINGLE_CURRENCY_ACC_NUMBER = "DE73459340345034563141";
     public static final String MULTI_CURRENCY_ACC_NUMBER = "DE12345678901234567890";
+    public static final List<String> SUPPORTED_ACC_REF_TYPES = Arrays.asList(ConsentExtensionConstants.IBAN,
+            ConsentExtensionConstants.BBAN, ConsentExtensionConstants.MASKED_PAN);
 
 }

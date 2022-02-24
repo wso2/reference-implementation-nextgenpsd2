@@ -14,7 +14,6 @@ package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.im
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
@@ -39,7 +38,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
     protected void validateRequestPayload(JSONObject payload) {
 
         LocalDate startDate;
-        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
 
         log.debug("Validating periodic payments payload for start date");

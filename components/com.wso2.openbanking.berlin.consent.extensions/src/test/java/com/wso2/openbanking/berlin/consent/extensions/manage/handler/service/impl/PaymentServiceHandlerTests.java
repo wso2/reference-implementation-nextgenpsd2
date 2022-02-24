@@ -102,7 +102,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
         commonConfigParserMock = PowerMockito.mock(CommonConfigParser.class);
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
 

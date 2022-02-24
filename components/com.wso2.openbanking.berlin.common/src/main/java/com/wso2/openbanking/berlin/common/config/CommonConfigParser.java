@@ -406,8 +406,17 @@ public class CommonConfigParser {
                 (String) getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS);
     }
 
-    public String getAccountReferenceType() {
-        return (String) getConfiguration().get(CommonConstants.ACCOUNT_REFERENCE_TYPE_PATH);
+    public List<String> getSupportedAccountReferenceTypes() {
+
+        Object supportedAccountReferenceTypes =
+                getConfiguration().get(CommonConstants.SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH);
+        List<String> accountReferenceTypes = new ArrayList<>();
+        if (supportedAccountReferenceTypes instanceof ArrayList) {
+            accountReferenceTypes.addAll((ArrayList) supportedAccountReferenceTypes);
+        } else if (supportedAccountReferenceTypes instanceof String) {
+            accountReferenceTypes.add((String) supportedAccountReferenceTypes);
+        }
+        return accountReferenceTypes;
     }
 
     public boolean isAuthorizationRequiredForCancellation() {
@@ -452,10 +461,6 @@ public class CommonConfigParser {
         } else {
             return ((String) getConfiguration().get(CommonConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT)).trim();
         }
-    }
-
-    public boolean isMultiCurrencyEnabled() {
-        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.MULTI_CURRENCY_ENABLED));
     }
 
     public boolean isMultipleRecurringConsentEnabled() {

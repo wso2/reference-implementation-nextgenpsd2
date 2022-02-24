@@ -62,7 +62,8 @@ public class ConsentExtensionConstants {
     public static final String DATA_SIMPLE = "data";
     public static final String SINGLE_PAYMENT_TITLE = "Single Payments";
     public static final String INSTRUCTED_AMOUNT_TITLE = "Instructed Amount";
-    public static final String CURRENCY_TITLE = "Instructed Currency";
+    public static final String INSTRUCTED_CURRENCY_TITLE = "Instructed Currency";
+    public static final String CREDITOR_ACCOUNT_CURRENCY_TITLE = "Creditor Account Currency";
     public static final String DEBTOR_REFERENCE_TITLE = "Debtor Account %s Reference";
     public static final String CREDITOR_NAME_TITLE = "Creditor Name";
     public static final String CREDITOR_REFERENCE_TITLE = "Creditor Account %s Reference";

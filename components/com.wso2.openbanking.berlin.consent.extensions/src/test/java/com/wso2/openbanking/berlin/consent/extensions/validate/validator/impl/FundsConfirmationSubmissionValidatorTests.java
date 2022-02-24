@@ -69,7 +69,8 @@ public class FundsConfirmationSubmissionValidatorTests extends PowerMockTestCase
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
 
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
 
         fundsConfirmationSubmissionValidator = Mockito.spy(FundsConfirmationSubmissionValidator.class);
     }

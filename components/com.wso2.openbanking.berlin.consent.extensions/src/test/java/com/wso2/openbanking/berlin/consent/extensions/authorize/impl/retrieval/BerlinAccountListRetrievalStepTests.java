@@ -89,7 +89,8 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
 
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(TestConstants.PAYABLE_ACCOUNT_RETRIEVAL_ENDPOINT).when(commonConfigParserMock)
                 .getPayableAccountsRetrieveEndpoint();
         doReturn(TestConstants.SHAREABLE_ACCOUNT_RETRIEVAL_ENDPOINT).when(commonConfigParserMock)

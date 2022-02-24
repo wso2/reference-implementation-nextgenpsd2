@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
@@ -66,8 +67,12 @@ public class FundsConfirmationValidationUtil {
         JSONObject accountRefObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
         ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
         if (CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
-            ConsentMappingResource mappingResource = mappingResources.get(0);
-            if (isAccountMappingValid(accountRefObject, mappingResource)) {
+            if (CommonConfigParser.getInstance().isAccountIdValidationEnabled()) {
+                ConsentMappingResource mappingResource = mappingResources.get(0);
+                if (isAccountMappingValid(accountRefObject, mappingResource)) {
+                    isAccountMappingValid = true;
+                }
+            } else {
                 isAccountMappingValid = true;
             }
         }
@@ -89,8 +94,15 @@ public class FundsConfirmationValidationUtil {
             return false;
         }
 
-        String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
-        return StringUtils.equals(mappingResource.getAccountID(), accountIdWithCurrency);
+        String accountReference = ConsentExtensionUtil.getAccountReferenceToPersist(accountRefObject);
+        String mappingResourceAccountId = mappingResource.getAccountID();
+
+        // Skipping maskedPan validation since this account reference type must be validated by the bank
+        if (mappingResourceAccountId.contains(ConsentExtensionConstants.MASKED_PAN)) {
+            return true;
+        }
+
+        return StringUtils.equals(mappingResourceAccountId, accountReference);
     }
 
 }

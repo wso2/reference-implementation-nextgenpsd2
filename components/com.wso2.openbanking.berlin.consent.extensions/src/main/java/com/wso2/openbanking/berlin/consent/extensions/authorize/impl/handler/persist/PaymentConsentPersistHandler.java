@@ -62,8 +62,8 @@ public class PaymentConsentPersistHandler implements ConsentPersistHandler {
         Map<String, ArrayList<String>> accountIdMapWithPermissions = new HashMap<>();
         ArrayList<String> permissionDefault = new ArrayList<>();
         permissionDefault.add(ConsentExtensionConstants.DEFAULT_PERMISSION);
-        String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
-        accountIdMapWithPermissions.put(accountIdWithCurrency, permissionDefault);
+        String accountReference = ConsentExtensionUtil.getAccountReferenceToPersist(accountRefObject);
+        accountIdMapWithPermissions.put(accountReference, permissionDefault);
 
         ConsentPersistHandlerService consentPersistHandlerService =
                 new ConsentPersistHandlerService(consentCoreService);

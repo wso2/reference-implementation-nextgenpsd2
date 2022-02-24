@@ -45,6 +45,7 @@ import org.testng.annotations.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -108,7 +109,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -125,7 +127,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_BBAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.BBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -142,7 +145,11 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_PAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.PAN).when(commonConfigParserMock).getAccountReferenceType();
+
+        List<String> supportedAccRefTypes = Arrays.asList(ConsentExtensionConstants.IBAN,
+                ConsentExtensionConstants.BBAN, ConsentExtensionConstants.MASKED_PAN, ConsentExtensionConstants.PAN);
+        doReturn(supportedAccRefTypes).when(commonConfigParserMock).getSupportedAccountReferenceTypes();
+
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -159,7 +166,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_MASKED_PAN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.MASKED_PAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -176,7 +184,11 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD_MSISDN))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.MSISDN).when(commonConfigParserMock).getAccountReferenceType();
+
+        List<String> supportedAccRefTypes = Arrays.asList(ConsentExtensionConstants.IBAN,
+                ConsentExtensionConstants.BBAN, ConsentExtensionConstants.MASKED_PAN, ConsentExtensionConstants.MSISDN);
+        doReturn(supportedAccRefTypes).when(commonConfigParserMock).getSupportedAccountReferenceTypes();
+
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -199,7 +211,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         consentResource.setConsentAttributes(consentAttributes);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -222,7 +235,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         consentResource.setConsentAttributes(consentAttributes);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -245,7 +259,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         consentResource.setConsentAttributes(consentAttributes);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -270,7 +285,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         consentResource.setConsentAttributes(consentAttributes);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -293,7 +309,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         consentResource.setConsentAttributes(consentAttributes);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -311,7 +328,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
                 ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), TestPayloads.VALID_FUNDS_CONFIRMATION_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -329,7 +347,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -347,7 +366,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.BULK_PAYMENTS.toString(), TestPayloads.VALID_BULK_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -378,7 +398,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.PSU_AUTHENTICATED.toString(), authId,
                 TestConstants.USER_ID));
@@ -422,7 +443,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.PSU_AUTHENTICATED.toString(), authId,
                 TestConstants.USER_ID));
@@ -440,7 +462,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.DIFFERENT_USER_ID));
@@ -459,7 +482,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.ACCP.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
@@ -475,7 +499,8 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestUtil.getSampleConsentResource(TransactionStatusEnum.RCVD.name(),
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.FULL_VALID_PAYMENTS_PAYLOAD))
                 .when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
                 AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
