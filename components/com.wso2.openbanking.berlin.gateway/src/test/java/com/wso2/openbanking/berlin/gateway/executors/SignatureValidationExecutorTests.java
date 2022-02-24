@@ -15,6 +15,7 @@ package com.wso2.openbanking.berlin.gateway.executors;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
@@ -84,7 +85,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @BeforeClass
     public void initClass() throws CertificateException, CertificateValidationException,
-            java.security.cert.CertificateException {
+            java.security.cert.CertificateException, OpenBankingException {
 
         this.transportCertificate = GatewayTestUtils.getTestTransportCertificate();
         obapiRequestContextMock = Mockito.mock(OBAPIRequestContext.class);
@@ -283,8 +284,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testValidateInvalidSignature() throws SignatureValidationException, CertificateValidationException,
-            java.security.cert.CertificateException {
+    public void testValidateInvalidSignature() throws SignatureValidationException, OpenBankingException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
@@ -295,8 +295,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithInvalidKeyID()
-            throws SignatureValidationException, CertificateValidationException,
-            java.security.cert.CertificateException {
+            throws SignatureValidationException, OpenBankingException {
 
         new SignatureValidationExecutor().validateSignature(TestData.INVALID_ACCOUNTS_REQUEST_HEADERS_MAP,
                 GatewayTestUtils.getTestSigningCertificate());
@@ -304,8 +303,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithInvalidAlgorithm()
-            throws SignatureValidationException, CertificateValidationException,
-            java.security.cert.CertificateException {
+            throws SignatureValidationException, OpenBankingException {
 
         doReturn(TestData.UNSUPPORTED_ALGORITHMS).when(commonConfigParserMock).getSupportedSignatureAlgorithms();
         new SignatureValidationExecutor().validateSignature(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP,
@@ -314,8 +312,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithoutMandatoryHeaderInSignature()
-            throws SignatureValidationException, CertificateValidationException,
-            java.security.cert.CertificateException {
+            throws SignatureValidationException, OpenBankingException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
@@ -325,8 +322,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
     @Test (expectedExceptions = SignatureValidationException.class)
     public void testValidateSignatureWithoutUpperCaseHeaderInSignature()
-            throws SignatureValidationException, CertificateValidationException,
-            java.security.cert.CertificateException {
+            throws SignatureValidationException, OpenBankingException {
 
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
