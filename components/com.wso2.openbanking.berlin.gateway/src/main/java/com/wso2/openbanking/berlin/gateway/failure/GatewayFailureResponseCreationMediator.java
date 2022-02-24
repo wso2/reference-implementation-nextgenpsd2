@@ -48,14 +48,14 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
 
             JSONObject errorData;
 
-            // todo: handle schema validation errors after fixing:
-            //  https://github.com/wso2-enterprise/financial-open-banking/issues/7112
             if (Integer.toString(errorCode).equals("900806")) {
                 errorData = getThrottleFailureResponse(errorMessage, errorDetail);
             } else if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage, errorDetail);
             } else if (errorCode == 405) {
                 errorData = getMethodNotAllowedFailureResponse(errorMessage);
+            } else if (errorDetail.startsWith(GatewayConstants.SCHEMA_VALIDATION_ERROR_IDENTIFIER)) {
+                errorData = getSchemaValidationFailureResponse(errorCode, errorDetail);
             } else {
                 return true;
             }
@@ -66,6 +66,41 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
         }
 
         return true;
+    }
+
+    /**
+     * Method to get the error response for schema validation failures.
+     *
+     * @param errorDetail
+     * @return
+     */
+    private static JSONObject getSchemaValidationFailureResponse(int errorCode, String errorDetail) {
+
+        JSONObject errorData = new JSONObject();
+        String berlinErrorCode;
+        int status;
+
+        errorDetail = errorDetail.replace(GatewayConstants.SCHEMA_VALIDATION_ERROR_IDENTIFIER, "").trim();
+        if (errorDetail.endsWith(",")) {
+            errorDetail = errorDetail.substring(0, errorDetail.length() - 1);
+        }
+
+        if (errorDetail.matches(GatewayConstants.PAYMENT_PRODUCT_ERROR_PATTERN)) {
+            berlinErrorCode = TPPMessage.CodeEnum.PRODUCT_UNKNOWN.toString();
+            status = HttpStatus.SC_NOT_FOUND;
+        } else {
+            berlinErrorCode = TPPMessage.CodeEnum.FORMAT_ERROR.toString();
+            status = errorCode;
+        }
+
+        JSONObject errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
+                TPPMessage.CodeEnum.valueOf(berlinErrorCode),
+                errorDetail);
+
+        errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+
+        return errorData;
     }
 
     /**
