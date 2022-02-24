@@ -1,0 +1,24 @@
+@From(eventtable='rdbms', datasource.name='WSO2OB_DB', table.name='OB_CONSENT')
+define table OB_CONSENT(CONSENT_ID string, RECEIPT string, CREATED_TIME long, UPDATED_TIME long, CLIENT_ID string, CONSENT_TYPE string, CURRENT_STATUS string, CONSENT_FREQUENCY int, VALIDITY_TIME long, RECURRING_INDICATOR bool);
+
+FROM RequestStream
+SELECT true AS isEligible, userId, str:concat(cast(map:get(propertiesMap,
+'accountId'),'string'),':', cast(map:get(propertiesMap,
+'consentId'),'string'),':', userId, ':', cast(map:get(propertiesMap,
+'consumerKey'),'string')) as throttleKey,
+cast(map:get(propertiesMap, 'consumerKey'),'string') as clientId,
+cast(map:get(propertiesMap, 'consentId'),'string') as consentId
+INSERT INTO EligibilityStream;
+
+from OB_CONSENT as a
+join EligibilityStream as s on a.CONSENT_ID == s.consentId and a.CLIENT_ID == s.clientId and a.CURRENT_STATUS == 'valid' 
+select CONSENT_FREQUENCY, throttleKey, isEligible, consentId, userId
+insert into EligibilityStream1;
+
+FROM EligibilityStream1[isEligible==true]#throttler:timeBatch(1 day)
+SELECT throttleKey, (count(throttleKey) > CONSENT_FREQUENCY) as isThrottled, expiryTimeStamp group by throttleKey
+INSERT ALL EVENTS into ResultStream;
+
+from ResultStream#throttler:emitOnStateChange(throttleKey, isThrottled)
+select *
+insert into GlobalThrottleStream;

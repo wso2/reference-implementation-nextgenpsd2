@@ -28,7 +28,8 @@ public class ConsentExtensionConstants {
     public static final String IS_DEFAULT = "isDefault";
     public static final String CONSENT_ID_HEADER = "Consent-ID";
     public static final String EXPLICIT_AUTHORISATION_PATH_END = "authorisations";
-    public static final String PSU_IP_ADDRESS_HEADER = "PSU-IP-Address";
+    public static final String PSU_IP_ADDRESS_PROPER_CASE_HEADER = "PSU-IP-Address";
+    public static final String PSU_IP_ADDRESS_HEADER = "psu-ip-address";
     public static final String PSU_ID_HEADER = "psu-id";
     public static final String TPP_EXPLICIT_AUTH_PREFERRED_HEADER = "tpp-explicit-authorisation-preferred";
     public static final String TPP_REDIRECT_PREFERRED_HEADER = "tpp-redirect-preferred";
@@ -61,7 +62,8 @@ public class ConsentExtensionConstants {
     public static final String DATA_SIMPLE = "data";
     public static final String SINGLE_PAYMENT_TITLE = "Single Payments";
     public static final String INSTRUCTED_AMOUNT_TITLE = "Instructed Amount";
-    public static final String CURRENCY_TITLE = "Instructed Currency";
+    public static final String INSTRUCTED_CURRENCY_TITLE = "Instructed Currency";
+    public static final String CREDITOR_ACCOUNT_CURRENCY_TITLE = "Creditor Account Currency";
     public static final String DEBTOR_REFERENCE_TITLE = "Debtor Account %s Reference";
     public static final String CREDITOR_NAME_TITLE = "Creditor Name";
     public static final String CREDITOR_REFERENCE_TITLE = "Creditor Account %s Reference";
@@ -85,7 +87,8 @@ public class ConsentExtensionConstants {
 
     // Original proper case header constants
     public static final String LOCATION_HEADER = "Location";
-    public static final String X_REQUEST_ID_HEADER = "X-Request-ID";
+    public static final String X_REQUEST_ID_PROPER_CASE_HEADER = "X-Request-ID";
+    public static final String X_REQUEST_ID_HEADER = "x-request-id";
     public static final String ASPSP_SCA_APPROACH_PROPER_CASE_HEADER = "ASPSP-SCA-Approach";
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";
     public static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F" +
@@ -199,6 +202,7 @@ public class ConsentExtensionConstants {
     public static final String END_DATE = "endDate";
     public static final String EXECUTION_RULE = "executionRule";
     public static final String REQUESTED_EXECUTION_DATE = "requestedExecutionDate";
+    public static final String REQUESTED_EXECUTION_TIME = "requestedExecutionTime";
     public static final String DEBTOR_ACCOUNT = "debtorAccount";
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";

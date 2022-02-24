@@ -22,6 +22,7 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 .idea/
+.vscode/
 
 # maven target directories
 target
@@ -61,8 +62,10 @@ node_modules/
 
 # React dashboard ignore
 .DS_STORE
-**/node_modules
-**/dist
+**/node_modules/
+**/build/
+**/npm/
+**/dist/
 **/package-lock.json
 
 # Config files

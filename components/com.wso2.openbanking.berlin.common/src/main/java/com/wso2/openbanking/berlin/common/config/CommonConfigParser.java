@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
@@ -364,6 +365,10 @@ public class CommonConfigParser {
         return (String) getConfiguration().get(CommonConstants.OAUTH_METADATA_ENDPOINT);
     }
 
+    public boolean isFrequencyPerDayThrottlingEnabled() {
+        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_ENABLED));
+    }
+
     public int getConfiguredMinimumFreqPerDay() {
         return getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE) == null ? 4 :
                 Integer.parseInt((String) getConfiguration().get(CommonConstants.FREQ_PER_DAY_CONFIG_VALUE));
@@ -401,8 +406,17 @@ public class CommonConfigParser {
                 (String) getConfiguration().get(CommonConstants.MAX_FUTURE_PAYMENT_DAYS);
     }
 
-    public String getAccountReferenceType() {
-        return (String) getConfiguration().get(CommonConstants.ACCOUNT_REFERENCE_TYPE_PATH);
+    public List<String> getSupportedAccountReferenceTypes() {
+
+        Object supportedAccountReferenceTypes =
+                getConfiguration().get(CommonConstants.SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH);
+        List<String> accountReferenceTypes = new ArrayList<>();
+        if (supportedAccountReferenceTypes instanceof ArrayList) {
+            accountReferenceTypes.addAll((ArrayList) supportedAccountReferenceTypes);
+        } else if (supportedAccountReferenceTypes instanceof String) {
+            accountReferenceTypes.add((String) supportedAccountReferenceTypes);
+        }
+        return accountReferenceTypes;
     }
 
     public boolean isAuthorizationRequiredForCancellation() {
@@ -449,10 +463,6 @@ public class CommonConfigParser {
         }
     }
 
-    public boolean isMultiCurrencyEnabled() {
-        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.MULTI_CURRENCY_ENABLED));
-    }
-
     public boolean isMultipleRecurringConsentEnabled() {
         return Boolean.parseBoolean((String) getConfiguration()
                 .get(CommonConstants.MULTIPLE_RECURRING_CONSENT_ENABLED));
@@ -482,6 +492,7 @@ public class CommonConfigParser {
         return supportedSignatureAlgorithmsList;
     }
 
+    @Generated(message = "Skipped from tests because this method reads config from open-banking.xml")
     public boolean isPsd2RoleValidationEnabled() {
 
         Object psd2RoleValidationEnabledObj = OpenBankingConfigParser.getInstance()
@@ -493,5 +504,18 @@ public class CommonConfigParser {
 
             return ((String) getConfiguration().get(CommonConstants.ORG_ID_VALIDATION_REGEX)).trim();
 
+    }
+
+    public List<String> getRevocationValidationExcludedIssuers() {
+
+        Object excludedIssuers = OpenBankingConfigParser.getInstance()
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_EXCLUDED_ISSUERS);
+        List<String> revocationValidationExcludedIssuers = new ArrayList<>();
+        if (excludedIssuers instanceof String) {
+            revocationValidationExcludedIssuers.add((String) excludedIssuers);
+        } else if (excludedIssuers instanceof ArrayList) {
+            revocationValidationExcludedIssuers.addAll((ArrayList) excludedIssuers);
+        }
+        return revocationValidationExcludedIssuers;
     }
 }

@@ -18,7 +18,7 @@
     <groupId>com.wso2.openbanking</groupId>
     <artifactId>ob-compliance-toolkit-berlin</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-M3</version>
+    <version>1.0.0-RC1</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -42,6 +42,7 @@
             </activation>
             <modules>
                 <module>components</module>
+                <module>react-apps</module>
             </modules>
             <properties>
                 <npm.executable>npm</npm.executable>
@@ -57,6 +58,7 @@
             </activation>
             <modules>
                 <module>components</module>
+                <module>react-apps</module>
                 <module>toolkits</module>
             </modules>
             <properties>

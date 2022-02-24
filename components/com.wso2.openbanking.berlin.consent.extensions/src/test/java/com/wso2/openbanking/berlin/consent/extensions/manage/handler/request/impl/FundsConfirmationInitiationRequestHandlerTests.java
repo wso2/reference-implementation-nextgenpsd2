@@ -20,7 +20,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
@@ -41,7 +40,6 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.ws.rs.HttpMethod;
 
 import static org.mockito.Mockito.doReturn;
@@ -81,7 +79,8 @@ public class FundsConfirmationInitiationRequestHandlerTests extends PowerMockTes
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
         doReturn("v2").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(TestUtil.getSampleSupportedScaMethods()).when(commonConfigParserMock).getSupportedScaMethods();
         doReturn(TestUtil.getSampleSupportedScaApproaches()).when(commonConfigParserMock).getSupportedScaApproaches();
         doReturn(TestConstants.WELL_KNOWN_ENDPOINT).when(commonConfigParserMock).getOauthMetadataEndpoint();

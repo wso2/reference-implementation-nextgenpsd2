@@ -81,11 +81,10 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
             ConsentResource consentResource = new ConsentResource(consentManageData.getClientId(),
                     requestPayload.toJSONString(), paymentConsentType, TransactionStatusEnum.RCVD.name());
 
-            String tenantEnsuredPSUId = ConsentExtensionUtil
-                    .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
             String authStatus = isExplicitAuth ? null : ScaStatusEnum.RECEIVED.toString();
             try {
-                createdConsent = consentCoreService.createAuthorizableConsent(consentResource, tenantEnsuredPSUId,
+                createdConsent = consentCoreService.createAuthorizableConsent(consentResource,
+                        headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER),
                         authStatus, AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {
@@ -151,7 +150,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
      */
     protected void validateRequestPayload(JSONObject payload) {
 
-        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
     }
 
@@ -179,7 +178,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
         consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_SERVICE, paymentService);
         consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_PRODUCT, paymentProduct);
-        consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
+        consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         if (!isExplicitAuth) {

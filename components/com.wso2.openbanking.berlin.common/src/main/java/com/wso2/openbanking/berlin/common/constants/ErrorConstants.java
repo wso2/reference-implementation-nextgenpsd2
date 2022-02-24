@@ -25,6 +25,7 @@ public class ErrorConstants {
 
     // Error messages
     public static final String X_REQUEST_ID_MISSING = "X-Request-ID header is missing in the request";
+    public static final String DATE_MISSING = "Date header is missing in the request";
     public static final String CONSENT_ID_MISSING = "Consent-ID header is missing in the request";
     public static final String PATCH_NOT_SUPPORTED = "The PATCH method is not supported";
     public static final String DELETE_NOT_SUPPORTED = "The DELETE method is not supported";
@@ -59,8 +60,8 @@ public class ErrorConstants {
     public static final String CONSENT_ID_AND_SCOPE_MISMATCH = "The provided consent Id mismatches with the scope " +
             "type (\"ais, pis, piis\")";
     public static final String NO_MATCHING_USER_FOR_CONSENT = "No matching user for consent";
-    public static final String NO_MATCHING_ACCOUNTS_FOR_PERMISSIONS = "No matching accounts found for " +
-            "requested permissions";
+    public static final String NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID = "Provided account Id does not have requested" +
+            " permissions";
     public static final String NO_MATCHING_ACCOUNT_FOR_ACCOUNT_ID = "No matching account found for " +
             "requested account id";
     public static final String ACCOUNT_ID_CANNOT_BE_EMPTY = "Account id cannot be empty";
@@ -71,7 +72,7 @@ public class ErrorConstants {
     public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "Provided account references do not exist or not valid";
 
     // Payments related error messages
-    public static final String DEBTOR_ACCOUNT_MISSING = "Debtor account is missing in payments payload";
+    public static final String ACCOUNT_REFERENCE_OBJECT_MISSING = "Account reference object is missing in payload";
     public static final String CREDITOR_ACCOUNT_MISSING = "Creditor account is missing in payments payload";
     public static final String CREDITOR_ACCOUNT_REFERENCE_MISSING = "Creditor account reference is missing in " +
             "payments payload";
@@ -83,15 +84,20 @@ public class ErrorConstants {
     public static final String START_DATE_INVALID = "Invalid start date";
     public static final String FREQUENCY_MISSING = "Frequency is missing in periodic payments payload";
     public static final String END_DATE_NOT_FUTURE = "End date must be a future date";
+    public static final String START_DATE_NOT_FUTURE = "Start date must be a future date";
     public static final String END_DATE_NOT_VALID = "Invalid end date";
     public static final String DATES_INCONSISTENT = "End date must be greater than start date";
     public static final String INVALID_EXECUTION_RULE = "Execution rule should be either \"following\" or " +
             "\"preceding\"";
-    public static final String INVALID_ACCOUNT_REFERENCE_TYPE = "Provided account reference type is not supported";
-    public static final String ACCOUNT_REFERENCE_TYPE_MISSING = "Account reference type is missing";
+    public static final String INVALID_ACCOUNT_REFERENCE = "Provided account reference is invalid or not supported";
+    public static final String ACCOUNT_REFERENCE_IS_EMPTY = "Account reference is empty";
     public static final String EXECUTION_DATE_NOT_FUTURE = "The execution date must be a future date";
     public static final String PAYMENT_EXECUTION_DATE_EXCEEDED = "The execution date provided in the request is after" +
             " the execution date supported by the ASPSP";
+    public static final String EXECUTION_DATE_TIME_ERROR = "Requested execution date and requested execution time " +
+            "cannot coexist in the payload";
+    public static final String INVALID_DATA_IN_PAYMENTS = "Invalid data present in payment objects (\"debtorAccount\"" +
+            ",\"requestedExecutionTime\",\"requestedExecutionDate\")";
     public static final String CONSENT_INITIATION_ERROR = "Error occurred while initiating payment consent";
     public static final String CONSENT_ATTRIBUTE_INITIATION_ERROR = "Error occurred while storing consent " +
             "attributes";
@@ -103,6 +109,8 @@ public class ErrorConstants {
             "different consent type";
     public static final String AUTH_ID_CONSENT_ID_MISMATCH = "No available authorisation resource with given " +
             "authorisation Id matched with the requested different consent type";
+    public static final String APPROVE_WITH_NO_ACCOUNTS_ERROR = "Cannot approve the consent without any account " +
+            "related data";
     public static final String RESPONSE_CONSTRUCT_ERROR = "Error occurred while constructing response";
     public static final String JSON_PARSE_ERROR = "Error occurred while parsing JSON";
     public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +
@@ -115,6 +123,8 @@ public class ErrorConstants {
     public static final String CANNOT_CREATE_PAYMENT_CANCELLATION = "Cannot create cancellation for payment in " +
             "status %s";
     public static final String CANCELLATION_NOT_APPLICABLE = "Cancellation not applicable for Single payments";
+    public static final String PAYMENT_INITIATION_HANDLE_ERROR = "Error occurred while handling the payment " +
+            "initiation request";
 
     // Accounts related error messages
     public static final String MANDATORY_ELEMENTS_MISSING = "Invalid request payload, mandatory elements are missing";
@@ -139,12 +149,25 @@ public class ErrorConstants {
     public static final String CODE = "code";
     public static final String TEXT = "text";
 
+    // path of fields in request
+    public static final String PATH_IDEM_KEY = "Header.X-Request-ID";
+
+    //low level textual error code
+    public static final String HEADER_MISSING = "Header Missing";
+    public static final String HEADER_INVALID = "Header Invalid";
+
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT = "Idempotency check failed.:" +
+            ErrorConstants.PATH_IDEM_KEY;
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_ERROR = "Error while handling Idempotency check.:" +
+            ErrorConstants.PATH_IDEM_KEY;
+
     // Executors related error messages
     public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";
     public static final String DIGEST_HEADER_MISSING = "Digest header not passed through the request";
     public static final String SIGNING_CERT_MISSING = "TPP signing certificate header not passed through the request";
     public static final String SIGNING_CERT_INVALID = "Signature certificate header is invalid";
     public static final String SIGNING_CERT_REVOKED = "Signature certificate is revoked";
+    public static final String DIGEST_VALIDATION_ERROR = "Message digest validation failed";
     public static final String DATE_HEADER_MISSING = "Date header not passed through the request";
     public static final String INVALID_DIGEST_HEADER = "Invalid Digest header";
     public static final String INVALID_SIGNATURE_HEADER = "Invalid Signature header";

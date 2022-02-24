@@ -1,0 +1,17 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+WSO2 Open Banking Berlin Toolkit - Self Care Portal Webapp
+
+
+From: 'an unknown organization'
+  - JSON in Java (https://github.com/douglascrockford/JSON-java) org.json:json:jar:20140107
+    License: The JSON License  (http://json.org/license.html)
+  - WSO2 Carbon Orbit - JSON (org.json) (http://wso2.org) org.json.wso2:json:bundle:3.0.0.wso2v1
+
+
+
+
+

@@ -46,4 +46,6 @@ rm ${WSO2_OB_APIM_HOME}/repository/deployment/server/webapps/api#openbanking#bac
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
 cp -r ${TOOLKIT_HOME}/carbon-home/* "${WSO2_OB_APIM_HOME}"/
+echo -e "\nCopying .swagger-validator file\n"
+cp ${TOOLKIT_HOME}/carbon-home/.swagger-validator "${WSO2_OB_APIM_HOME}"/
 echo -e "\nComplete!\n"

@@ -35,6 +35,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -113,10 +114,20 @@ public class AccountConsentUtil {
                     ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE));
         }
 
-        // TODO: check for account ref type from config (account ref validation)
-
         log.debug("Validating account permissions");
         permission = getPermissionByValidatingAccountAccessAttribute(accessObject);
+
+        if (StringUtils.equals(permission, PermissionEnum.DEDICATED_ACCOUNTS.toString())) {
+            log.debug("Validating account reference objects");
+            JSONArray accounts = (JSONArray) accessObject.get(AccessMethodEnum.ACCOUNTS.toString());
+            JSONArray balances = (JSONArray) accessObject.get(AccessMethodEnum.BALANCES.toString());
+            JSONArray transactions = (JSONArray) accessObject.get(AccessMethodEnum.TRANSACTIONS.toString());
+
+            validateAccountRefObjects(accounts);
+            validateAccountRefObjects(balances);
+            validateAccountRefObjects(transactions);
+        }
+
 
         log.debug("Validating frequency per day and recurring indicator");
         if ((int) payload.get(ConsentExtensionConstants.FREQUENCY_PER_DAY) < 1) {
@@ -157,6 +168,21 @@ public class AccountConsentUtil {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SESSIONS_NOT_SUPPORTED,
                     ErrorConstants.COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED));
+        }
+    }
+
+    /**
+     * Validates the individual account references in case of dedicated accounts initiation.
+     *
+     * @param accountRefs account refs object array
+     */
+    public static void validateAccountRefObjects(JSONArray accountRefs) {
+
+        if (accountRefs != null) {
+            for (Object accountRef : accountRefs) {
+                JSONObject accountRefObject = (JSONObject) accountRef;
+                CommonConsentUtil.validateAccountRefObject(accountRefObject);
+            }
         }
     }
 
@@ -439,7 +465,7 @@ public class AccountConsentUtil {
         if (scaMethods.size() > 1) {
             responseObject.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
 
         return responseObject;

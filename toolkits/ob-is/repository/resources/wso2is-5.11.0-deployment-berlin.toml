@@ -185,8 +185,6 @@ device.enable = true
 [[oauth.custom_response_type]]
 name = "code"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
-
-[[oauth.custom_response_type]]
 validator = "com.wso2.openbanking.berlin.identity.response.type.validators.BerlinCodeResponseTypeValidator"
 
 [[oauth.custom_response_type]]
@@ -452,7 +450,7 @@ client_certificate_encode=true
 [open_banking_berlin.consent]
 payable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/payable"
 shareable_account_retrieval_endpoint = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/v130/accounts/shareable"
-acc_ref_type = "iban"
+supported_acc_ref_types = ["iban", "bban", "maskedPan"]
 supported_challenge_methods = ["S256"]
 
 [open_banking_berlin.consent.accounts]
@@ -483,9 +481,6 @@ name = "SMS OTP on Mobile"
 mapped_approach = "REDIRECT"
 explanation = "SMS based one time password"
 default.enable = true
-
-[open_banking_berlin.consent.multi_currency]
-enable=false
 
 [open_banking_berlin.consent.api_versions]
 ais = "v1"

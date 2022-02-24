@@ -109,6 +109,24 @@ pool_options.validationQuery="SELECT 1"
 pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
 
+# for Open Banking  data
+[[datasource]]
+id="WSO2OB_DB"
+url = "DB_OB_STORE_URL"
+username = "DB_USER"
+password = "DB_PASS"
+driver = "DB_DRIVER"
+jmx_enable=false
+pool_options.maxActive = "150"
+pool_options.maxWait = "60000"
+pool_options.minIdle = "5"
+pool_options.testOnBorrow = true
+pool_options.validationQuery="SELECT 1"
+#Use below for oracle
+#validationQuery="SELECT 1 FROM DUAL"
+pool_options.validationInterval="30000"
+pool_options.defaultAutoCommit=false
+
 [tenant_mgt]
 enable_email_domain = true
 
@@ -405,6 +423,10 @@ url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
 username="$ref{super_admin.username}"
 password="$ref{super_admin.password}"
 
+[open_banking.gateway]
+request_router="com.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouter"
+consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
+
 #============executors=========================
 [[open_banking.gateway.openbanking_gateway_executors.type]]
 name = "Default"
@@ -425,6 +447,30 @@ name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecuto
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+priority = 1000
+
+[[open_banking.gateway.openbanking_gateway_executors.type]]
+name = "Payments"
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutor"
+priority = 1
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutor"
+priority = 2
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.tpp.validation.executor.APITPPValidationExecutor"
+priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
@@ -453,8 +499,8 @@ class = "com.wso2.openbanking.accelerator.gateway.executor.core.OBExtensionListe
 type = "THROTTLING"
 class = "com.wso2.openbanking.accelerator.gateway.throttling.OBThrottlingExtensionImpl"
 
-#[open_banking.gateway.throttling]
-#throttling_data_publisher = "com.wso2.openbanking.sample.throttling.publisher.SampleThrottlingDataPublisher"
+[open_banking.gateway.throttling]
+throttling_data_publisher = "com.wso2.openbanking.berlin.gateway.throttling.CustomThrottleDataPublisherImpl"
 
 #keymanager name
 [open_banking.keyManager]
@@ -492,10 +538,14 @@ cache_expiry = 3600
 enabled = true
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "accounts"
-roles = "AISP, PISP"
+roles = "AISP, ASPSP"
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "payments"
 roles = "PISP"
+[[open_banking.gateway.tpp_management.allowed_scopes]]
+name = "fundsconfirmations"
+roles = "CBPII"
+
 
 #===================for Connection pool====================
 [open_banking.http_connection_pool]
@@ -505,9 +555,6 @@ max_connections_per_route = 1500
 #============to increase the https header size===============
 [transport.https.properties]
 maxHttpHeaderSize = 16384
-
-[open_banking.gateway.consent.validation]
-endpoint = "https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
 
 #===================Berlin Toolkit====================
 [open_banking_berlin.consent]
@@ -527,7 +574,7 @@ submission.enable=false
 class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
 
 [[open_banking.keymanager.application.type.attributes]]
-name="REGULATORY"
+name="regulatory"
 label="Regulatory Application"
 type="select"
 tooltip="Is this a Regulatory Application?"
@@ -541,9 +588,9 @@ priority="1"
 name = "SP_CERTIFICATE"
 label="Application Certificate"
 type="input"
-tooltip="Application Certificate"
+tooltip="Application Certificate - Mandatory if private_key_jwt Token method is selected"
 default=""
-required="true"
+required="false"
 mask="false"
 multiple="false"
 priority="2"
@@ -551,9 +598,9 @@ priority="2"
 name="ORG_ID"
 label="Organization Id"
 type="input"
-tooltip="Organization Id"
+tooltip="Organization Id - Mandatory if regulatory property is set to true"
 default=""
-required="true"
+required="false"
 mask="false"
 multiple="false"
 priority="3"
@@ -571,7 +618,7 @@ priority="4"
 name="token_endpoint_auth_method"
 label="Token Auth Method"
 type="select"
-tooltip="Token Auth Method"
+tooltip="Token Auth Method (private_key_jwt should only be used if regulatory property is set to true"
 default=""
 values="private_key_jwt,tls_client_auth"
 required="true"
@@ -586,3 +633,5 @@ supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
 #[open_banking.berlin.keymanager.org_id_validation]
 #regex=""
 
+[open_banking_berlin.payment.initiation.idempotency]
+enabled="true"

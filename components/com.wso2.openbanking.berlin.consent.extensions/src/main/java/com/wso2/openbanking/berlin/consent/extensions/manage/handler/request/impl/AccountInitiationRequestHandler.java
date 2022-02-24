@@ -28,7 +28,6 @@ import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
@@ -90,11 +89,10 @@ public class AccountInitiationRequestHandler implements RequestHandler {
             String validUntilString = requestPayload.getAsString(ConsentExtensionConstants.VALID_UNTIL);
             consentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
 
-            String tenantEnsuredPSUId = ConsentExtensionUtil
-                    .appendSuperTenantDomain(headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER));
             String authStatus = isExplicitAuth ? null : ScaStatusEnum.RECEIVED.toString();
             try {
-                createdConsent = consentCoreService.createAuthorizableConsent(consentResource, tenantEnsuredPSUId,
+                createdConsent = consentCoreService.createAuthorizableConsent(consentResource,
+                        headersMap.get(ConsentExtensionConstants.PSU_ID_HEADER),
                         authStatus, AuthTypeEnum.AUTHORISATION.toString(),
                         !isExplicitAuth);
             } catch (ConsentManagementException e) {

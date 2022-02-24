@@ -16,7 +16,7 @@
     <parent>
         <artifactId>ob-compliance-toolkit-berlin</artifactId>
         <groupId>com.wso2.openbanking</groupId>
-        <version>1.0.0-M3</version>
+        <version>1.0.0-RC1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -96,6 +96,8 @@
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*Exception.class</exclude>
+                        <exclude>**/IdempotencyCacheKey.class</exclude>
+                        <exclude>**/IdempotencyValidationCache.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -136,7 +138,8 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- Add coverage after implementing tests -->
+                                            <!-- Increase coverage after implementing tests -->
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

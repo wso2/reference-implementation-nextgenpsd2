@@ -40,13 +40,7 @@ public class FundsConfirmationSubmissionValidator implements SubmissionValidator
 
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
 
-        log.debug("Validating payload");
-        if (!FundsConfirmationValidationUtil.isPayloadValid(detailedConsentResource, consentValidationResult,
-                consentValidateData.getPayload())) {
-            return;
-        }
-
-        log.debug("Checking if consent is not in a valid state");
+        log.debug("Checking if consent: " + consentValidateData.getConsentId() + " is not in a valid state");
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
             consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
@@ -55,7 +49,11 @@ public class FundsConfirmationSubmissionValidator implements SubmissionValidator
             return;
         }
 
-        log.debug("Consent is Authorized by User");
+        if (!FundsConfirmationValidationUtil.isPayloadValid(detailedConsentResource, consentValidationResult,
+                consentValidateData.getPayload())) {
+            return;
+        }
+
         consentValidationResult.getConsentInformation()
                 .appendField(ConsentExtensionConstants.PAYLOAD, consentValidateData.getPayload());
         consentValidationResult.setValid(true);

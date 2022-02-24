@@ -14,7 +14,6 @@ package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.im
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
@@ -27,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Class to handle periodic payments initiation request.
@@ -39,7 +37,8 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
     @Override
     protected void validateRequestPayload(JSONObject payload) {
 
-        PaymentConsentUtil.validateDebtorAccount(payload, CommonConfigParser.getInstance().getAccountReferenceType());
+        LocalDate startDate;
+        PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
 
         log.debug("Validating periodic payments payload for start date");
@@ -51,9 +50,12 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
                     ErrorConstants.START_DATE_MISSING));
         } else {
             log.debug("Validating start date for correct date format");
-            ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.START_DATE),
+            startDate = ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.START_DATE),
                     TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.START_DATE_INVALID);
+
+            log.debug("Validating whether the start date is a future date");
+            PaymentConsentUtil.validateFutureDate(startDate, ErrorConstants.START_DATE_NOT_FUTURE);
         }
 
         log.debug("Validating periodic payments payload for frequency");
@@ -71,9 +73,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
             LocalDate endDate =
                     ConsentExtensionUtil.parseDateToISO((String) payload.get(ConsentExtensionConstants.END_DATE),
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.END_DATE_NOT_VALID);
-            LocalDate startDate = LocalDate.parse(payload.get(ConsentExtensionConstants.START_DATE).toString(),
-                    DateTimeFormatter.ISO_DATE);
-            PaymentConsentUtil.validateFutureDate(endDate);
+            PaymentConsentUtil.validateFutureDate(endDate, ErrorConstants.END_DATE_NOT_FUTURE);
             PaymentConsentUtil.areDatesValid(startDate, endDate);
         }
 

@@ -12,6 +12,11 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.util;
 
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Test constants.
  */
@@ -23,7 +28,7 @@ public class TestConstants {
             "backend/services/v130/accounts/payable";
     public static final String SHAREABLE_ACCOUNT_RETRIEVAL_ENDPOINT = "http://localhost:9443/api/openbanking/berlin/" +
             "backend/services/v130/accounts/shareable";
-    public static final String USER_ID = "admin@wso2.com@carbon.super";
+    public static final String USER_ID = "admin@wso2.com";
     public static final String DIFFERENT_USER_ID = "psu@wso2.com@carbon.super";
     public static final String REDIRECT_URI = "https://www.wso2.com";
     public static final String SAMPLE_QUERY_PARAMS = "sampleQueryParams";
@@ -31,5 +36,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "invalid request path";
     public static final String SINGLE_CURRENCY_ACC_NUMBER = "DE73459340345034563141";
     public static final String MULTI_CURRENCY_ACC_NUMBER = "DE12345678901234567890";
+    public static final List<String> SUPPORTED_ACC_REF_TYPES = Arrays.asList(ConsentExtensionConstants.IBAN,
+            ConsentExtensionConstants.BBAN, ConsentExtensionConstants.MASKED_PAN);
 
 }

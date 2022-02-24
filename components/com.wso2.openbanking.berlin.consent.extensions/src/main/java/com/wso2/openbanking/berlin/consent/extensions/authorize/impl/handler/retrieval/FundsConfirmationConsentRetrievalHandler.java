@@ -86,19 +86,19 @@ public class FundsConfirmationConsentRetrievalHandler implements ConsentRetrieva
         if (receipt.containsKey(ConsentExtensionConstants.CARD_NUMBER)
                 && receipt.getAsString(ConsentExtensionConstants.CARD_NUMBER) != null) {
             String cardNumber = receipt.getAsString(ConsentExtensionConstants.CARD_NUMBER);
-            consentDataArray.add(ConsentExtensionConstants.CARD_NUMBER_TITLE + " : " + cardNumber);
+            consentDataArray.add(ConsentExtensionConstants.CARD_NUMBER_TITLE + ": " + cardNumber);
         }
 
         if (receipt.containsKey(ConsentExtensionConstants.CARD_EXPIRY_DATE)
                 && receipt.getAsString(ConsentExtensionConstants.CARD_EXPIRY_DATE) != null) {
             String cardExpiryDate = receipt.getAsString(ConsentExtensionConstants.CARD_EXPIRY_DATE);
-            consentDataArray.add(ConsentExtensionConstants.CARD_EXPIRY_DATE_TITLE + " : " + cardExpiryDate);
+            consentDataArray.add(ConsentExtensionConstants.CARD_EXPIRY_DATE_TITLE + ": " + cardExpiryDate);
         }
 
         if (receipt.containsKey(ConsentExtensionConstants.CARD_INFORMATION)
                 && receipt.getAsString(ConsentExtensionConstants.CARD_INFORMATION) != null) {
             String cardInformation = receipt.getAsString(ConsentExtensionConstants.CARD_INFORMATION);
-            consentDataArray.add(ConsentExtensionConstants.CARD_INFORMATION_TITLE + " : " + cardInformation);
+            consentDataArray.add(ConsentExtensionConstants.CARD_INFORMATION_TITLE + ": " + cardInformation);
         }
 
         dataElement.appendField(ConsentExtensionConstants.TITLE,

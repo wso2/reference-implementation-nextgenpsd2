@@ -24,6 +24,31 @@ import org.testng.annotations.DataProvider;
  */
 public class TestDataProvider {
 
+    @DataProvider(name = "ValidAccReferencePayloadTestDataProvider")
+    Object[][] getValidAccReferencePayloadTestDataProvider() {
+
+        return new Object[][]{
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_1},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_2},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_3},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_4},
+                {TestPayloads.VALID_ACCOUNT_REFERENCE_5}
+        };
+    }
+
+    @DataProvider(name = "InvalidAccReferencePayloadTestDataProvider")
+    Object[][] getInvalidAccReferencePayloadTestDataProvider() {
+
+        return new Object[][]{
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_1},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_2},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_3},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_4},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_5},
+                {TestPayloads.UNSUPPORTED_ACCOUNT_REFERENCE_6}
+        };
+    }
+
     @DataProvider(name = "InvalidAccountInitiationPayloadTestDataProvider")
     Object[][] getInvalidAccountInitiationPayloadTestDataProvider() {
 

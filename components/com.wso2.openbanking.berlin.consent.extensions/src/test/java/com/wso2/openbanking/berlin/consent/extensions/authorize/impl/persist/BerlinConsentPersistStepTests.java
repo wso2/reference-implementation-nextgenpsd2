@@ -128,7 +128,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 consentData);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(new AuthorizationResource()).when(consentCoreServiceMock)
                 .updateAuthorizationStatus(Mockito.anyString(), Mockito.anyString());
 
@@ -204,7 +205,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 consentData);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(new AuthorizationResource()).when(consentCoreServiceMock)
                 .updateAuthorizationStatus(Mockito.anyString(), Mockito.anyString());
 
@@ -245,7 +247,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 consentData);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(new AuthorizationResource()).when(consentCoreServiceMock)
                 .updateAuthorizationStatus(Mockito.anyString(), Mockito.anyString());
 
@@ -296,7 +299,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 consentData);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(new AuthorizationResource()).when(consentCoreServiceMock)
                 .updateAuthorizationStatus(Mockito.anyString(), Mockito.anyString());
 
@@ -346,7 +350,8 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                 consentData);
 
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn(new AuthorizationResource()).when(consentCoreServiceMock)
                 .updateAuthorizationStatus(Mockito.anyString(), Mockito.anyString());
 

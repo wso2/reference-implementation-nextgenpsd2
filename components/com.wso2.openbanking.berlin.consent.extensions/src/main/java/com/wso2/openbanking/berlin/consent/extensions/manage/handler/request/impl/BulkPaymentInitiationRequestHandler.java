@@ -42,7 +42,15 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
 
         CommonConfigParser configParser = CommonConfigParser.getInstance();
         String maxPaymentExecutionDays = configParser.getMaxFuturePaymentDays();
-        PaymentConsentUtil.validateDebtorAccount(payload, configParser.getAccountReferenceType());
+        PaymentConsentUtil.validateDebtorAccount(payload);
+
+        if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
+                && payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME) != null) {
+            log.error(ErrorConstants.EXECUTION_DATE_TIME_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.EXECUTION_DATE_TIME_ERROR));
+        }
 
         log.debug("Validating requested execution date");
         if (payload.get(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
@@ -93,6 +101,15 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
         log.debug("Iterating and validating payment objects");
         for (Object payment : payments) {
             PaymentConsentUtil.validateCommonPaymentElements((JSONObject) payment);
+
+            if (((JSONObject) payment).containsKey(ConsentExtensionConstants.DEBTOR_ACCOUNT)
+                    || ((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME)
+                    || ((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
+                log.error("Invalid data elements are present in payment objects");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.INVALID_DATA_IN_PAYMENTS));
+            }
         }
     }
 }

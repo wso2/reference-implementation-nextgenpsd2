@@ -21,8 +21,8 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestUtil;
 import net.minidev.json.parser.JSONParser;
@@ -80,7 +80,8 @@ public class PaymentInitiationRequestHandlerTests extends PowerMockTestCase {
         commonConfigParserMock = PowerMockito.mock(CommonConfigParser.class);
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
-        doReturn(ConsentExtensionConstants.IBAN).when(commonConfigParserMock).getAccountReferenceType();
+        doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
+                .getSupportedAccountReferenceTypes();
         doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
 

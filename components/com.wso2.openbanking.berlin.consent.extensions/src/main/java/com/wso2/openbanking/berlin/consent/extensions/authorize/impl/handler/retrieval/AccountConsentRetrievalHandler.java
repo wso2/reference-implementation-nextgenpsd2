@@ -86,16 +86,16 @@ public class AccountConsentRetrievalHandler implements ConsentRetrievalHandler {
 
         // construct accounts data
         String recurringIndicator = receipt.getAsString(ConsentExtensionConstants.RECURRING_INDICATOR);
-        consentDataArray.add(ConsentExtensionConstants.RECURRING_INDICATOR_TITLE + " : " + recurringIndicator);
+        consentDataArray.add(ConsentExtensionConstants.RECURRING_INDICATOR_TITLE + ": " + recurringIndicator);
 
         String validUntilDate = receipt.getAsString(ConsentExtensionConstants.VALID_UNTIL);
-        consentDataArray.add(ConsentExtensionConstants.VALID_UNTIL_TITLE + " : " + validUntilDate);
+        consentDataArray.add(ConsentExtensionConstants.VALID_UNTIL_TITLE + ": " + validUntilDate);
 
         String frequencyPerDay = receipt.getAsString(ConsentExtensionConstants.FREQUENCY_PER_DAY);
-        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_PER_DAY_TITLE + " : " + frequencyPerDay);
+        consentDataArray.add(ConsentExtensionConstants.FREQUENCY_PER_DAY_TITLE + ": " + frequencyPerDay);
 
         String combinedServiceIndicator = receipt.getAsString(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR);
-        consentDataArray.add(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR_TITLE + " : "
+        consentDataArray.add(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR_TITLE + ": "
                 + combinedServiceIndicator);
 
         dataElement.appendField(ConsentExtensionConstants.TITLE,

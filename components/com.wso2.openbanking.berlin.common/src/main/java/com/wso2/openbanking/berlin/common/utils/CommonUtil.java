@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.common.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
@@ -25,6 +26,10 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -243,4 +248,44 @@ public class CommonUtil {
         return uuidPattern.matcher(stringUuid.trim()).matches();
     }
 
+    /**
+     * Method to compare whether JSON payloads are equal
+     *
+     * @param jsonString1    JSON payload retrieved from database
+     * @param jsonString2    JSON payload received from current request
+     * @return
+     * @throws IOException
+     */
+    public static boolean isJSONPayloadSimilar(String jsonString1, String jsonString2) throws IOException {
+
+        JsonNode expectedNode = new ObjectMapper().readTree(jsonString1);
+        JsonNode actualNode = new ObjectMapper().readTree(jsonString2);
+        return expectedNode.equals(actualNode);
+    }
+
+    /**
+     * Method to check whether difference between two dates is less than the configured time
+     *
+     * @param createdTime    Created Time of the request
+     * @return
+     */
+    public static boolean isRequestReceivedWithinAllowedTime(String createdTime) {
+
+        if (createdTime == null) {
+            return true;
+        }
+        String allowedTimeDuration = (String) CommonConfigParser.getInstance().getConfiguration()
+                .get(CommonConstants.IDEMPOTENCY_ALLOWED_TIME);
+        if (allowedTimeDuration != null) {
+            OffsetDateTime createdDate = OffsetDateTime.parse(createdTime, DateTimeFormatter.RFC_1123_DATE_TIME);
+            OffsetDateTime currDate = OffsetDateTime.now(createdDate.getOffset());
+
+            long diffInHours = Duration.between(createdDate, currDate).toHours();
+            return diffInHours <= Long.parseLong(allowedTimeDuration);
+        } else {
+            log.error("Idempotency Allowed duration is null");
+            return false;
+        }
+
+    }
 }

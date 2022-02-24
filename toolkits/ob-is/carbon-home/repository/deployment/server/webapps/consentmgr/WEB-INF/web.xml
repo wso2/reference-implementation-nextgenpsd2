@@ -1,0 +1,44 @@
+<!-- Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+    This software is the property of WSO2 Inc. and its suppliers, if any.
+    Dissemination of any information or reproduction of any material contained
+    herein is strictly forbidden, unless permitted by WSO2 in accordance with
+    the WSO2 Commercial License available at http://wso2.com/licenses. For specific
+    language governing the permissions and limitations under this license,
+    please see the license as well as any agreement you’ve entered into with
+    WSO2 governing the purchase of this software and any associated services.-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+     http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+    <display-name>consentmgr</display-name>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/index.html</location>
+    </error-page>
+
+    <!-- context parameters -->
+    <context-param>
+        <param-name>identityServerBaseUrl</param-name>
+        <param-value>https://localhost:9446</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>apiManagerServerUrl</param-name>
+        <param-value>https://localhost:8243</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>scpClientKey</param-name>
+        <param-value>{scp-client-id}</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>scpClientSecret</param-name>
+        <param-value>{scp-client-secret}</param-value>
+    </context-param>
+
+</web-app>

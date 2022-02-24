@@ -20,12 +20,12 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -103,7 +103,20 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 AccessMethodEnum.TRANSACTIONS.toString());
 
         if (accountIdMapWithPermissions.isEmpty()) {
-            return;
+            // Updating the consent and auth statuses during bank offered consent deny scenario when
+            // accounts are not selected
+            if (!isApproved) {
+                consentCoreService.updateConsentStatus(consentResource.getConsentID(),
+                        ConsentStatusEnum.REJECTED.toString());
+                consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
+                // TODO: (improvement) issue for accelerator to update user of auth resource method in core service
+                // https://github.com/wso2-enterprise/financial-open-banking/issues/7175
+                return;
+            } else {
+                log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+            }
         }
 
         ConsentPersistHandlerService consentPersistHandlerService =
@@ -132,7 +145,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
     }
 
     /**
-     * Mapping account Ids and currency info with permissions.
+     * Mapping account reference info with permissions.
      *
      * @param accountRefObjects account reference objects
      * @param accessMethod      access method
@@ -145,12 +158,12 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
 
         for (Object object : accountRefObjects) {
             JSONObject accountRefObject = (JSONObject) object;
-            String accountIdWithCurrency = ConsentExtensionUtil.getAccountIdWithCurrency(accountRefObject);
-            if (accountIdMapWithPermissions.containsKey(accountIdWithCurrency)) {
-                ArrayList<String> currentPermissions = accountIdMapWithPermissions.get(accountIdWithCurrency);
+            String accountReference = ConsentExtensionUtil.getAccountReferenceToPersist(accountRefObject);
+            if (accountIdMapWithPermissions.containsKey(accountReference)) {
+                ArrayList<String> currentPermissions = accountIdMapWithPermissions.get(accountReference);
                 if (!currentPermissions.contains(accessMethod)) {
                     currentPermissions.add(accessMethod);
-                    accountIdMapWithPermissions.put(accountIdWithCurrency, currentPermissions);
+                    accountIdMapWithPermissions.put(accountReference, currentPermissions);
                 }
             } else {
                 ArrayList<String> permissions = new ArrayList<>();
@@ -162,7 +175,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                     permissions.add(AccessMethodEnum.ACCOUNTS.toString());
                 }
 
-                accountIdMapWithPermissions.put(accountIdWithCurrency, permissions);
+                accountIdMapWithPermissions.put(accountReference, permissions);
             }
         }
     }
@@ -227,19 +240,19 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
     private JSONArray getAccountRefObjectsForMappingResources(ArrayList<ConsentMappingResource> mappingResources) {
 
         JSONArray accountRefObjects = new JSONArray();
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
 
         for (ConsentMappingResource mappingResource : mappingResources) {
             JSONObject accountRefObject = new JSONObject();
             String accountId = mappingResource.getAccountID();
-            if (accountId.contains(CommonConstants.DELIMITER)) {
-                String[] accountDetails = accountId.split(CommonConstants.DELIMITER);
-                String accountNumber = accountDetails[0].trim();
-                String currencyString = accountDetails[1].trim();
-                accountRefObject.put(configuredAccountReference, accountNumber);
-                accountRefObject.put(ConsentExtensionConstants.CURRENCY, currencyString);
+            String[] accountDetails = accountId.split(CommonConstants.DELIMITER);
+            String accountRefType = accountDetails[0].trim();
+            String accountNumber = accountDetails[1].trim();
+            if (accountDetails.length > 2) {
+                String currency = accountDetails[2].trim();
+                accountRefObject.put(accountRefType, accountNumber);
+                accountRefObject.put(ConsentExtensionConstants.CURRENCY, currency);
             } else {
-                accountRefObject.put(configuredAccountReference, accountId);
+                accountRefObject.put(accountRefType, accountNumber);
             }
             accountRefObjects.appendElement(accountRefObject);
         }

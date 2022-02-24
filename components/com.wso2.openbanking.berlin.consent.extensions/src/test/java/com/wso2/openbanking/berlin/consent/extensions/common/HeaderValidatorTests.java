@@ -72,7 +72,7 @@ public class HeaderValidatorTests {
     public void testEmptyPsuIpAddress() {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER, "");
+        headers.put(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER, "");
 
         HeaderValidator.validatePsuIpAddress(headers);
     }
@@ -90,7 +90,7 @@ public class HeaderValidatorTests {
     public void testInvalidXRequestId() {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, "abc");
+        headers.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, "abc");
 
         HeaderValidator.validateXRequestId(headers);
     }
@@ -99,7 +99,7 @@ public class HeaderValidatorTests {
     public void testEmptyXRequestId() {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, "");
+        headers.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, "");
 
         HeaderValidator.validateXRequestId(headers);
     }
@@ -154,15 +154,15 @@ public class HeaderValidatorTests {
     public void testMandateHeaderPresent() {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, "1b91e649-3d06-4e16-ada7-bf5af2136b44");
+        headers.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, "1b91e649-3d06-4e16-ada7-bf5af2136b44");
 
-        HeaderValidator.mandateHeader(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER);
+        HeaderValidator.mandateHeader(headers, ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER);
     }
 
     @Test(expectedExceptions = ConsentException.class)
     public void testMandateHeaderMissing() {
 
-        HeaderValidator.mandateHeader(new HashMap<>(), ConsentExtensionConstants.X_REQUEST_ID_HEADER);
+        HeaderValidator.mandateHeader(new HashMap<>(), ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER);
     }
 
     @Test

@@ -16,6 +16,8 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
+import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
 import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
@@ -70,7 +72,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String PSU_CORPORATE_ID_HEADER = "PSU-Corporate-ID";
     private static final String TPP_REDIRECT_URI_HEADER = "TPP-Redirect-URI";
     private static final String X_REQUEST_ID_HEADER = "X-Request-ID";
-    private static final String DATE_HEADER = "date";
+    private static final String DATE_HEADER = "Date";
     private static final String TPP_SIGNATURE_CERTIFICATE_HEADER = "TPP-Signature-Certificate";
 
     private static final String SIGNATURE_HEADER = "Signature";
@@ -86,143 +88,144 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
 
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
-        
-        Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
-        String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
-        String requestPayload = obapiRequestContext.getRequestPayload();
 
-        try {
-            // Validate whether the required headers are present.
-            validateHeaders(headersMap);
+        if (!obapiRequestContext.isError()) {
 
-            X509Certificate parsedSigningCert;
-            Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
-            if (x509Certificate.isPresent()) {
-                parsedSigningCert = x509Certificate.get();
-                log.debug("Signature certificate parsing successful");
-            } else {
-                log.error(ErrorConstants.CERT_PARSE_EROR);
+            Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
+            String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
+            String requestPayload = obapiRequestContext.getRequestPayload();
+
+            try {
+                // Validate whether the required headers are present.
+                validateHeaders(headersMap);
+
+                X509Certificate parsedSigningCert;
+                Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
+                if (x509Certificate.isPresent()) {
+                    parsedSigningCert = x509Certificate.get();
+                    log.debug("Signature certificate parsing successful");
+                } else {
+                    log.error(ErrorConstants.CERT_PARSE_EROR);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            ErrorConstants.CERT_PARSE_EROR);
+                    return;
+                }
+
+                // Expiry validation
+                validateCertExpiration(parsedSigningCert, obapiRequestContext);
+
+                // Revocation validation
+                if (!isValidCertStatus(parsedSigningCert)) {
+                    log.error(ErrorConstants.SIGNING_CERT_REVOKED);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_REVOKED.toString(),
+                            ErrorConstants.SIGNING_CERT_REVOKED);
+                    return;
+                }
+
+                // Digest validation
+                String digestHeader = headersMap.get(DIGEST_HEADER);
+                if (!validateDigest(digestHeader, requestPayload)) {
+                    log.error(ErrorConstants.DIGEST_VALIDATION_ERROR);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                            ErrorConstants.DIGEST_VALIDATION_ERROR);
+                    return;
+                }
+
+                // Validate signature
+                if (!validateSignature(headersMap, parsedSigningCert)) {
+                    log.error(ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                            ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
+                    return;
+                } else {
+                    log.debug("Signature validation successfully completed");
+                }
+            } catch (SignatureCertMissingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        ErrorConstants.SIGNING_CERT_MISSING);
+            } catch (DigestValidationException e) {
+                log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.INVALID_DIGEST_HEADER);
+            }  catch (SignatureMissingException e) {
+                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
+                        ErrorConstants.SIGNATURE_HEADER_MISSING);
+            } catch (DigestMissingException e) {
+                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.DIGEST_HEADER_MISSING);
+            } catch (CertificateValidationException | CertificateEncodingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                        ErrorConstants.CERT_PARSE_EROR);
-                return;
-            }
-
-            // Expiry validation
-            validateCertExpiration(parsedSigningCert, obapiRequestContext);
-
-            // Revocation validation
-            if (!isValidCertStatus(parsedSigningCert)) {
-                log.error(ErrorConstants.SIGNING_CERT_REVOKED);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_REVOKED.toString(),
-                        ErrorConstants.SIGNING_CERT_REVOKED);
-                return;
-            }
-
-            // Digest validation
-            String digestHeader = headersMap.get(DIGEST_HEADER);
-            if (!validateDigest(digestHeader, requestPayload)) {
-                log.error("Message digest validation failed");
+                        ErrorConstants.SIGNING_CERT_INVALID);
+            } catch (SignatureValidationException e) {
+                log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        "Message digest validation failed");
-                return;
+                        ErrorConstants.INVALID_SIGNATURE_HEADER);
             }
-
-            // Validate signature
-            if (!validateSignature(headersMap, parsedSigningCert)) {
-                log.error(ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
-                return;
-            } else {
-                log.debug("Signature validation successfully completed");
-            }
-        } catch (SignatureCertMissingException e) {
-            log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                    ErrorConstants.SIGNING_CERT_MISSING);
-        } catch (DigestValidationException e) {
-            log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.INVALID_DIGEST_HEADER);
-        }  catch (SignatureMissingException e) {
-            log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
-                    ErrorConstants.SIGNATURE_HEADER_MISSING);
-        } catch (DigestMissingException e) {
-            log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.DIGEST_HEADER_MISSING);
-        } catch (CertificateValidationException | CertificateEncodingException e) {
-            log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                    ErrorConstants.SIGNING_CERT_INVALID);
-        } catch (SignatureValidationException e) {
-            log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
-            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                    ErrorConstants.INVALID_SIGNATURE_HEADER);
         }
     }
 
     @Override
     public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
-        // TODO: uncomment after https://github.com/wso2-enterprise/financial-open-banking/issues/7072 is fixed
+        if (!obapiRequestContext.isError()) {
 
-        // Retrieve transport certificate from the request
-//        javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
-//        javax.security.cert.X509Certificate transportCert;
-//        Optional<java.security.cert.X509Certificate> convertedTransportCert;
-//
-//        if (x509Certificates.length != 0) {
-//            transportCert = x509Certificates[0];
-//            convertedTransportCert = CertificateValidationUtils.convert(transportCert);
-//        } else {
-//            log.error("Transport certificate not found in request context");
-//            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-//                    "Couldn't do organization ID validation since transport certificate not found in" +
-//                            " request context");
-//            return;
-//        }
-//
-//        CertificateContent content;
-//
-//        try {
-//            // Extract certificate content
-//            if (convertedTransportCert.isPresent()) {
-//                content = CertificateContentExtractor.extract(convertedTransportCert.get());
-//            } else {
-//                log.error("Error while processing transport certificate");
-//                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-//                        "Couldn't do organization ID validation since an error occurred while processing " +
-//                                "transport certificate");
-//                return;
-//            }
-//        } catch (CertificateValidationException e) {
-//            log.error("Error while extracting transport certificate content", e);
-//            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-//                    "Couldn't do organization ID validation since an error occurred while extracting " +
-//                            "transport certificate");
-//            return;
-//        }
-//
-//        String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
-//        String certificateOrgId = content.getPspAuthorisationNumber();
-//
-//        if (StringUtils.isBlank(certificateOrgId)) {
-//            log.error("Unable to retrieve organization ID from transport certificate");
-//            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-//                    "An organization ID is not found in the provided certificate");
-//            return;
-//        } else {
-//            if (!StringUtils.equals(clientId, certificateOrgId)) {
-//                log.error("Client ID is not matching with the organization ID of the provided transport" +
-//                        " certificate");
-//                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-//                        "Organization ID mismatch with Client ID");
-//                return;
-//            }
-//        }
-//        log.debug("Organization ID validation is completed");
+            // Retrieve transport certificate from the request
+            javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
+            javax.security.cert.X509Certificate transportCert;
+            Optional<java.security.cert.X509Certificate> convertedTransportCert;
+
+            if (x509Certificates.length != 0) {
+                transportCert = x509Certificates[0];
+                convertedTransportCert = CertificateValidationUtils.convert(transportCert);
+            } else {
+                log.error("Transport certificate not found in request context");
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        "Transport certificate is missing. Cannot do organization ID validation.");
+                return;
+            }
+
+            CertificateContent content;
+
+            try {
+                // Extract certificate content
+                if (convertedTransportCert.isPresent()) {
+                    content = CertificateContentExtractor.extract(convertedTransportCert.get());
+                } else {
+                    log.error("Error while processing transport certificate");
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            "Invalid transport certificate. Cannot do organization ID validation.");
+                    return;
+                }
+            } catch (CertificateValidationException e) {
+                log.error("Error while extracting transport certificate content", e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                        "Transport certificate is invalid. Cannot do organization ID validation.");
+                return;
+            }
+
+            String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
+            String certificateOrgId = content.getPspAuthorisationNumber();
+
+            if (StringUtils.isBlank(certificateOrgId)) {
+                log.error("Unable to retrieve organization ID from transport certificate");
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                        "An organization ID is not found in the provided certificate");
+                return;
+            } else {
+                if (!StringUtils.equals(clientId, certificateOrgId)) {
+                    log.error("Client ID: " + clientId + " is not matching with the organization ID: "
+                            + certificateOrgId + " of transport certificate");
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            "Organization ID mismatch with Client ID");
+                    return;
+                }
+            }
+            log.debug("Organization ID validation is completed");
+        }
     }
 
     @Override
@@ -244,7 +247,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @throws SignatureCertMissingException thrown if the signature certificate is missing
      * @throws SignatureValidationException thrown if the mandatory headers of the signature are not present
      */
-    private void validateHeaders(Map<String, String> headersMap)
+    protected void validateHeaders(Map<String, String> headersMap)
             throws SignatureMissingException, DigestMissingException, SignatureCertMissingException,
             SignatureValidationException {
 
@@ -278,7 +281,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return return true if the digest validation is a success, false otherwise
      * @throws DigestValidationException thrown if an error occurs while digest validation
      */
-    private boolean validateDigest(String digestHeader, String requestPayload) throws DigestValidationException {
+    protected boolean validateDigest(String digestHeader, String requestPayload) throws DigestValidationException {
         try {
             String[] digestAttribute = digestHeader.split("=", 2);
             if (digestAttribute.length != 2) {
@@ -296,7 +299,14 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 log.error(ErrorConstants.INVALID_DIGEST_ALGORITHM);
                 throw new DigestValidationException(ErrorConstants.INVALID_DIGEST_ALGORITHM);
             }
-            byte[] digestHash = messageDigest.digest(requestPayload.getBytes(StandardCharsets.UTF_8));
+
+            byte[] digestHash;
+
+            if (StringUtils.isBlank(requestPayload)) {
+                digestHash = messageDigest.digest("{}".getBytes(StandardCharsets.UTF_8));
+            } else {
+                digestHash = messageDigest.digest(requestPayload.getBytes(StandardCharsets.UTF_8));
+            }
 
             StringBuilder digestHashHex = new StringBuilder();
             for (byte b : digestHash) {
@@ -323,12 +333,18 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return true if the signature validation is successful, false otherwise
      * @throws SignatureValidationException when an error occurs during signature validation
      */
-    private boolean validateSignature(Map<String, String> requestHeaders,
+    protected boolean validateSignature(Map<String, String> requestHeaders,
                                       java.security.cert.X509Certificate x509Certificate)
             throws SignatureValidationException {
 
         try {
-            String signatureHeader = requestHeaders.get(SIGNATURE_HEADER);
+            // For signature validation, the order of the headers are considered.
+            // A case-insensitive treeMap is initialized since the headers need to be retrieved without considering
+            // case-sensitivity for generating signing string.
+            Map<String, String> orderedRequestHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            orderedRequestHeaders.putAll(requestHeaders);
+
+            String signatureHeader = orderedRequestHeaders.get(SIGNATURE_HEADER);
             String[] signatureElements = signatureHeader.split("\",");
             Map<String, String> signatureMap = getSignatureMap(signatureElements);
 
@@ -343,7 +359,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 throw new SignatureValidationException("Invalid keyId element in the Signature header");
             }
 
-            Signature signature = null;
+            Signature signature;
             String requestSignatureAlgorithm = x509Certificate.getSigAlgName();
             CommonConfigParser configParser = getConfigParser();
             if (configParser.getSupportedSignatureAlgorithms().contains(requestSignatureAlgorithm)) {
@@ -357,14 +373,14 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             signature.initVerify(x509Certificate.getPublicKey());
             String[] headerElements;
             headerElements = signatureMap.get(HEADERS_ELEMENT).split(" ");
-            if (!validateHeaderElements(headerElements, requestHeaders)) {
+            if (!validateHeaderElements(headerElements, orderedRequestHeaders)) {
                 log.error("Signature header contains invalid header/s");
                 throw new SignatureValidationException("Invalid headers element in the Signature header");
             }
 
             byte[] decodedSignature = Base64.getDecoder()
                     .decode(signatureMap.get(SIGNATURE_ELEMENT).getBytes(StandardCharsets.UTF_8));
-            signature.update(generateSigningString(headerElements, requestHeaders)
+            signature.update(generateSigningString(headerElements, orderedRequestHeaders)
                     .getBytes(StandardCharsets.UTF_8));
             return signature.verify(decodedSignature);
         } catch (NoSuchAlgorithmException e) {
@@ -384,17 +400,12 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      *
      * @param signatureElements the elements of the signature of the request
      * @return the signature elements map
-     * @throws SignatureValidationException thrown if an invalid signature is found
      */
-    private Map<String, String> getSignatureMap(String[] signatureElements) throws SignatureValidationException {
+    private Map<String, String> getSignatureMap(String[] signatureElements) {
         Map<String, String> signatureMap = new HashMap<>();
         for (String signatureElement : signatureElements) {
             String[] signatureAttributes = signatureElement.replaceAll("\"", "").split("=",
                     2);
-            if (signatureAttributes.length != 2) {
-                log.error("Signature elements are not according to the specification");
-                throw new SignatureValidationException(ErrorConstants.INVALID_SIGNATURE_HEADER);
-            }
             if (!signatureMap.containsKey(signatureAttributes[0].trim())) {
                 signatureMap.put(signatureAttributes[0].trim(), signatureAttributes[1].trim());
             }
@@ -431,15 +442,24 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param requestHeaders request headers
      * @return true if all the required headers are included in the signature, false otherwise
      */
-    private boolean validateHeaderElements(String[] headerElements, Object requestHeaders) {
+    private boolean validateHeaderElements(String[] headerElements, Map<String, String> requestHeaders)
+            throws SignatureValidationException {
+
+        // According to the spec, the headers elements defined in signature header should be lowercase
+        for (String headerElement : headerElements) {
+            if (!StringUtils.isAllLowerCase(headerElement.replace("-", ""))) {
+                log.error("Header elements present in the signature are not lowercase");
+                throw new SignatureValidationException("The headers element of the signature element should " +
+                        "contain lowercase headers");
+            }
+        }
+
         boolean containsDigestHeader = false;
         boolean containsRequestIDHeader = false;
         boolean containsPSUIDHeader = false;
         boolean containsPSUCorporateIDHeader = false;
         boolean containsTPPRedirectURIHeader = false;
         boolean containsDateHeader = false;
-
-        TreeMap transportHeadersMap = (TreeMap) requestHeaders;
 
         for (String headerElement : headerElements) {
             if (headerElement.equalsIgnoreCase(DIGEST_HEADER)) {
@@ -464,9 +484,9 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
 
         // If any of the headers PSU-ID, PSU-Corporate-ID or TPP-Redirect-URI contains in the request, they need to
         // be also contained in the headers element of the Signature header
-        if ((transportHeadersMap.get(PSU_ID_HEADER) != null && !containsPSUIDHeader) ||
-                (transportHeadersMap.get(PSU_CORPORATE_ID_HEADER) != null && !containsPSUCorporateIDHeader) ||
-                (transportHeadersMap.get(TPP_REDIRECT_URI_HEADER) != null && !containsTPPRedirectURIHeader)) {
+        if ((requestHeaders.get(PSU_ID_HEADER) != null && !containsPSUIDHeader) ||
+                (requestHeaders.get(PSU_CORPORATE_ID_HEADER) != null && !containsPSUCorporateIDHeader) ||
+                (requestHeaders.get(TPP_REDIRECT_URI_HEADER) != null && !containsTPPRedirectURIHeader)) {
             return false;
         }
         return true;
@@ -479,17 +499,17 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param requestHeaders the headers passed through the request
      * @return the signing string of the request
      */
-    private String generateSigningString(String[] headerElements, Object requestHeaders) {
+    private String generateSigningString(String[] headerElements, Map<String, String> requestHeaders) {
 
         StringBuilder signingString = new StringBuilder();
         for (String header : headerElements) {
-            if (((TreeMap) requestHeaders).get(header) == null) {
+            if (requestHeaders.get(header) == null) {
                 log.error("Required header element not passed through the request header");
                 break;
             }
             signingString.append(StringUtils.lowerCase(header))
                     .append(": ")
-                    .append(((TreeMap) requestHeaders).get(header).toString())
+                    .append((requestHeaders).get(header))
                     .append("\n");
         }
         return signingString.substring(0, signingString.length() - 1);
@@ -519,6 +539,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return Optional X509Certificate
      * @throws CertificateValidationException when certificate generation fails
      */
+    @Generated(message = "Excluded from coverage since this is covered from other tests")
     public static Optional<X509Certificate> parseSignatureCert(String signingCert)
             throws CertificateValidationException {
 
@@ -543,6 +564,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @return true if certificate is in valid status, false otherwise
      * @throws CertificateEncodingException thrown if the certificate encoding is failed
      */
+    @Generated(message = "Excluding since this method is already covered from other tests")
     private boolean isValidCertStatus(X509Certificate signatureCertificate)
             throws CertificateEncodingException {
 
@@ -575,6 +597,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @param certificate signature certificate
      * @return true is the certificate is valid, false if revoked
      */
+    @Generated(message = "Excluding since this method is already covered from other tests")
     private boolean isCertRevocationSuccess(X509Certificate certificate) {
 
         int certificateRevocationValidationRetryCount = Integer.parseInt((String) getOpenBankingConfigParser()
@@ -603,8 +626,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
              *  This option can be used to skip certificate revocation validation for certificates which have been
              *  issued by a trusted locally generated CA.
              */
-            List<String> revocationValidationExcludedIssuers = (List<String>) getOpenBankingConfigParser()
-                    .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_EXCLUDED_ISSUERS);
+            List<String> revocationValidationExcludedIssuers = getConfigParser()
+                    .getRevocationValidationExcludedIssuers();
 
             if (revocationValidationExcludedIssuers != null
                     && revocationValidationExcludedIssuers.contains(certificate.getIssuerDN().getName())) {

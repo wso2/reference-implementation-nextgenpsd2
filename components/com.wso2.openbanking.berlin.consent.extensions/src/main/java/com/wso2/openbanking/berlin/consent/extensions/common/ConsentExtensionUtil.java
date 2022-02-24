@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.HttpMethod;
@@ -47,20 +48,50 @@ public class ConsentExtensionUtil {
     private static final Log log = LogFactory.getLog(ConsentExtensionUtil.class);
 
     /**
-     * Returns the string after appending the currency to it if available.
+     * Returns the extracted account reference type from the account reference object.
      *
      * @param accountRefObject account reference object
-     * @return account id or account id with currency
+     * @return account reference type
      */
-    public static String getAccountIdWithCurrency(JSONObject accountRefObject) {
+    public static String getAccountReferenceType(JSONObject accountRefObject) {
 
-        String configuredAccountReference = CommonConfigParser.getInstance().getAccountReferenceType();
-        String accountIdWithCurrency = accountRefObject.getAsString(configuredAccountReference);
+        List<String> configuredAccountReferences = CommonConfigParser.getInstance().getSupportedAccountReferenceTypes();
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.containsKey(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    public static String getAccountReferenceType(org.json.JSONObject accountRefObject) {
+
+        JSONObject mappedAccountRefObject = new JSONObject();
+
+        for (Object keyObj : accountRefObject.keySet()) {
+            String key = (String) keyObj;
+            mappedAccountRefObject.appendField(key, accountRefObject.get(key));
+        }
+
+        return getAccountReferenceType(mappedAccountRefObject);
+    }
+
+    /**
+     * Returns the string after appending the account reference type, account id and currency if available.
+     *
+     * @param accountRefObject account reference object
+     * @return account reference type, account id and currency
+     */
+    public static String getAccountReferenceToPersist(JSONObject accountRefObject) {
+
+        String configuredAccountReference = getAccountReferenceType(accountRefObject);
+        String accountReference = String.format("%s%s%s", configuredAccountReference, CommonConstants.DELIMITER,
+                accountRefObject.getAsString(configuredAccountReference));
         if (accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-            accountIdWithCurrency += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
+            accountReference += String.format("%s%s", CommonConstants.DELIMITER, accountRefObject
                     .getAsString(ConsentExtensionConstants.CURRENCY));
         }
-        return accountIdWithCurrency;
+        return accountReference;
     }
 
     /**
@@ -344,7 +375,7 @@ public class ConsentExtensionUtil {
 
         if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
             log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
-            throw new ConsentException(ResponseStatus.FORBIDDEN, ErrorUtil.constructBerlinError(null,
+            throw new ConsentException(ResponseStatus.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
                     ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
         }

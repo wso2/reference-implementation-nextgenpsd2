@@ -26,6 +26,7 @@ public class CommonConstants {
     public static final String SUPPORTED_SCA_APPROACHES_CONFIG_TAG = "SupportedSCAApproaches";
     public static final String SCA_REQUIRED = "ConsentManagement.SCA.Required";
     public static final String OAUTH_METADATA_ENDPOINT = "ConsentManagement.SCA.OAuthMetadataEndpoint";
+    public static final String FREQ_PER_DAY_ENABLED = "ConsentManagement.FrequencyPerDay.Enable";
     public static final String FREQ_PER_DAY_CONFIG_VALUE = "ConsentManagement.Accounts.FrequencyPerDay.Frequency";
     public static final String VALID_UNTIL_DATE_CAP_ENABLED = "ConsentManagement.Accounts.ValidUntilDateCap.Enabled";
     public static final String VALID_UNTIL_DAYS = "ConsentManagement.Accounts.ValidUntilDateCap.ValidUntilDays";
@@ -39,7 +40,8 @@ public class CommonConstants {
     public static final String SCA_MAPPED_APPROACH = "MappedApproach";
     public static final String SCA_DESCRIPTION = "Description";
     public static final String SCA_DEFAULT = "Default";
-    public static final String ACCOUNT_REFERENCE_TYPE_PATH = "ConsentManagement.AccountReferenceType";
+    public static final String SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH = "ConsentManagement" +
+            ".SupportedAccountReferenceTypes.AccountReferenceType";
     public static final String MAX_FUTURE_PAYMENT_DAYS = "ConsentManagement.Payments.BulkPayments" +
             ".MaximumFuturePaymentDays";
     public static final String TRANSACTION_FEE_ENABLED_PATH = "ConsentManagement.Payments.TransactionFee.Enable";
@@ -68,6 +70,15 @@ public class CommonConstants {
     public static final String AIS_SCOPE = "ais";
     public static final String PIS_SCOPE = "pis";
     public static final String PIIS_SCOPE = "piis";
+
+    public static final String IDEMPOTENCY_CACHE_ACCESS_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
+            ".CacheAccessExpiry";
+    public static final String IDEMPOTENCY_CACHE_MODIFY_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
+            ".CacheModifiedExpiry";
+    public static final String PAYMENT_INITIATION_IDEMPOTENCY_ENABLED = "ConsentManagement.Idempotency" +
+            ".PaymentInitiationIdempotencyEnabled";
+    public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
+            ".AllowedDuration";
     public static final String DELIMITER = ":";
 
     public static final String ORG_ID_VALIDATION_REGEX = "KeyManager.OrgIdValidationRegex";

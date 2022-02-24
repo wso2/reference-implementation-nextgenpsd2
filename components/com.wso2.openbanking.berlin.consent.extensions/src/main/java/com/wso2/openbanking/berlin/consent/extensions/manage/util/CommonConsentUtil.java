@@ -12,26 +12,132 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.manage.util;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
+import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.ScaApproach;
 import com.wso2.openbanking.berlin.common.models.ScaMethod;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
+import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains functions used for common consent flow.
  */
 public class CommonConsentUtil {
+
+    private static final Log log = LogFactory.getLog(CommonConsentUtil.class);
+
+    /**
+     * Validating the account reference object.
+     * A valid account reference object can have a single supported account reference
+     * type attribute and optionally a currency attribute.
+     *
+     * @param accountRefObject account reference object
+     */
+    public static void validateAccountRefObject(JSONObject accountRefObject) {
+
+        if (accountRefObject == null) {
+            log.error(ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
+        }
+
+        Set<String> accountRefKeys = accountRefObject.keySet();
+        boolean isAccountReferenceValid = true;
+        if (accountRefKeys.size() == 1) {
+            if (hasUnSupportedAccountRefTypes(accountRefKeys)) {
+                isAccountReferenceValid = false;
+            }
+        } else if (accountRefKeys.size() == 2) {
+            if (!accountRefKeys.contains(ConsentExtensionConstants.CURRENCY)
+                    || hasUnSupportedAccountRefTypes(accountRefKeys)) {
+                isAccountReferenceValid = false;
+            }
+        } else {
+            isAccountReferenceValid = false;
+        }
+
+        if (!isAccountReferenceValid) {
+            log.error(ErrorConstants.INVALID_ACCOUNT_REFERENCE);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.INVALID_ACCOUNT_REFERENCE));
+        }
+
+        String accountReference = getAccountReference(accountRefObject);
+        if (StringUtils.isBlank(accountReference)) {
+            log.error(ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY));
+        }
+    }
+
+    /**
+     * Checks if the account refs has an unsupported account ref.
+     *
+     * @param accountRefKeys account reference types sent in the initiation payload
+     * @return true if account references has un supported account ref type
+     */
+    private static boolean hasUnSupportedAccountRefTypes(Set<String> accountRefKeys) {
+
+        List<String> configuredAccountRefTypes = CommonConfigParser.getInstance().getSupportedAccountReferenceTypes();
+        for (String accountRef : accountRefKeys) {
+            // Skipping currency since it is not an account reference type
+            if (StringUtils.equals(accountRef, ConsentExtensionConstants.CURRENCY)) {
+                continue;
+            }
+            if (!configuredAccountRefTypes.contains(accountRef)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Extracts the account reference number from the provided account reference object.
+     *
+     * @param accountRefObject account reference object
+     * @return account reference number
+     */
+    public static String getAccountReference(JSONObject accountRefObject) {
+
+        String accountReference = "";
+
+        if (accountRefObject.containsKey(ConsentExtensionConstants.IBAN)) {
+            accountReference = accountRefObject.getAsString(ConsentExtensionConstants.IBAN);
+        } else if (accountRefObject.containsKey(ConsentExtensionConstants.BBAN)) {
+            accountReference = accountRefObject.getAsString(ConsentExtensionConstants.BBAN);
+        } else if (accountRefObject.containsKey(ConsentExtensionConstants.PAN)) {
+            accountReference = accountRefObject.getAsString(ConsentExtensionConstants.PAN);
+        } else if (accountRefObject.containsKey(ConsentExtensionConstants.MASKED_PAN)) {
+            accountReference = accountRefObject.getAsString(ConsentExtensionConstants.MASKED_PAN);
+        } else if (accountRefObject.containsKey(ConsentExtensionConstants.MSISDN)) {
+            accountReference = accountRefObject.getAsString(ConsentExtensionConstants.MSISDN);
+        }
+
+        return accountReference;
+    }
 
     /**
      * Method to construct start authorisation response.
@@ -96,7 +202,7 @@ public class CommonConsentUtil {
         if (scaMethods.size() > 1) {
             responseObject.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods);
+            responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
 
         return responseObject;
