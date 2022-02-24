@@ -15,6 +15,8 @@ package com.wso2.openbanking.berlin.keymanager;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
@@ -37,20 +39,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Berlin specific validation for app creation from dev portal
+ * Berlin specific validation for app creation from dev portal.
  */
 public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInterface {
 
     private static final Log log = LogFactory.getLog(BerlinKeyManagerExtensionImpl.class);
 
     /**
-     * Validate additional properties
+     * Validate additional properties.
      *
      * @param obAdditionalProperties OB Additional Properties Map
      * @throws APIManagementException when failed to validate a given property
@@ -76,7 +77,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Obtain the value from Configuration DTO object
+     * Obtain the value from Configuration DTO object.
      * @param obAdditionalProperties Additional Property Map
      * @param propertyName Property Name
      * @return value for given property
@@ -102,14 +103,21 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Validate certificate provided as user input
+     * Validate certificate provided as user input.
      * @param cert Certificate string
      * @param organizationId Organization ID
      * @throws APIManagementException
      */
     @Generated(message = "Excluding from code coverage since it is covered from other method")
     protected void validateCertificate(String cert, String organizationId) throws APIManagementException {
-        X509Certificate certificate = parseTransportCert(cert);
+        X509Certificate certificate;
+        try {
+            certificate = CertificateUtils.parseCertificate(cert);
+        } catch (OpenBankingException e) {
+            String msg = "Certificate unavailable";
+            log.error(msg);
+            throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
+        }
         if (CertificateValidationUtils.isExpired(certificate)) {
             String msg = "Provided certificate expired";
             log.error(msg);
@@ -130,7 +138,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Validate roles in the certificate
+     * Validate roles in the certificate.
      * @param certificate X509Certificate
      * @return isValid
      * @throws APIManagementException
@@ -157,7 +165,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Validate the organization ID in certificate against provided organization Id
+     * Validate the organization ID in certificate against provided organization Id.
      * @param certificate X509Certificate
      * @param organizationId organization ID
      * @return isValid
@@ -172,7 +180,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Validate organization ID pattern
+     * Validate organization ID pattern.
      * @param organizationId organization ID
      * @throws APIManagementException
      */
@@ -188,24 +196,6 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
         }
         if (log.isDebugEnabled()) {
             log.debug("Organization ID passed the regex validation");
-        }
-    }
-
-    @Generated(message = "Excluding from code coverage since it is covered from other method")
-    protected X509Certificate parseTransportCert(String spCertificate) throws APIManagementException {
-        try {
-            Optional<X509Certificate> certificate = CertificateValidationUtils.parseTransportCert(spCertificate);
-            if (certificate.isPresent()) {
-                return certificate.get();
-            } else {
-                String msg = "Certificate unavailable";
-                log.error(msg);
-                throw new APIManagementException(msg, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
-            }
-        } catch (CertificateValidationException e) {
-            String msg = "Error in parsing the provided certificate";
-            log.error(msg);
-            throw new APIManagementException(msg, e, ExceptionCodes.OAUTH2_APP_UPDATE_FAILED);
         }
     }
 
@@ -246,7 +236,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Do changes to app request before creating the app at toolkit level
+     * Do changes to app request before creating the app at toolkit level.
      *
      * @param additionalProperties Values for additional property list defined in the config
      * @throws APIManagementException when failed to validate a given property
@@ -263,7 +253,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Do changes to app request before updating the app at toolkit level
+     * Do changes to app request before updating the app at toolkit level.
      *
      * @param additionalProperties Values for additional property list defined in the config
      * @throws APIManagementException when failed to validate a given property
@@ -285,7 +275,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Check if the input value for a sp property is different from its value registered in the database
+     * Check if the input value for a sp property is different from its value registered in the database.
      * @param spProperties Service provider property array
      * @param propertyName Property name
      * @param additionalProperties Values for additional property list defined in the config
@@ -311,7 +301,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
     }
 
     /**
-     * Set Organization ID as the consumer key for regulatory apps
+     * Set Organization ID as the consumer key for regulatory apps.
      * @param oAuthAppRequest
      * @param additionalProperties
      * @throws APIManagementException
