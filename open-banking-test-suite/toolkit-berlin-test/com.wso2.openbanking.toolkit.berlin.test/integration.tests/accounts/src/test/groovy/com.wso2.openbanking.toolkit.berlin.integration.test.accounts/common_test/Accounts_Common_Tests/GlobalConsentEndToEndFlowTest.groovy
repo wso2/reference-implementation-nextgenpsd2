@@ -82,8 +82,22 @@ class GlobalConsentEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"], dependsOnMethods = "Generate User Access Token for Global Consent")
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
     void "TC0210015_Retrieve Specific Account from Global Consent"() {
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
@@ -92,8 +106,21 @@ class GlobalConsentEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"], dependsOnMethods = "Generate User Access Token for Global Consent")
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
     void "TC0210018_Retrieve Specific Account with Balances from Global Consent"() {
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
 
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
@@ -103,5 +130,23 @@ class GlobalConsentEndToEndFlowTest extends AbstractAccountsFlow {
 
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("account._links.balances"))
+    }
+
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
+    void "OB-1662_Reject Global Consent"() {
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doConsentDenyFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertEquals(code, "User denied the consent")
+
+        doStatusRetrieval(consentPath)
+
+        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
     }
 }

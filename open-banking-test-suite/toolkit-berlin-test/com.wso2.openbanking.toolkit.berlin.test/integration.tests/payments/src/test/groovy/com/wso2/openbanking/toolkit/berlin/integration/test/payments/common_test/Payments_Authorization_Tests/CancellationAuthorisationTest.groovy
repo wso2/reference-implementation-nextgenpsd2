@@ -18,8 +18,6 @@ import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
-import com.wso2.openbanking.test.framework.util.ConfigParser
-import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
@@ -37,17 +35,21 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     Map<String, String> map
     String consentPath
     String initiationPayload
+    String paymentType
 
     /**
      * Data Factory to Retrieve Explicit Authorization Data from the Data Provider
      * @param maps
+     *
+     * Note: The auth_cancellation.enable attribute should set to true in deployment.toml file
      */
-    @Factory(dataProvider = "ExplicitAuthorizationData", dataProviderClass = PaymentsDataProviders.class)
+    @Factory(dataProvider = "ExplicitAuthCancellationData", dataProviderClass = PaymentsDataProviders.class)
     CancellationAuthorisationTest(Map<String, String> maps) {
         this.map = maps
 
         consentPath = map.get("consentPath")
         initiationPayload = map.get("initiationPayload")
+        paymentType = map.get("paymentType")
 
     }
 
@@ -129,7 +131,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep {driver, context ->
                     Assert.assertTrue(driver.findElement(By.xpath(BerlinConstants.PAYMENTS_INTENT_TEXT_XPATH))
-                            .getText().contains("requests consent to cancel a periodic payment transaction"))
+                            .getText().contains("requests consent to cancel a ${paymentType} payment transaction"))
                     driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
                 }
                 .addStep(new WaitForRedirectAutomationStep())
@@ -173,7 +175,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
                 PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
     }
 
-    @Test (groups = ["1.3.6"])
+    @Test (groups = ["1.3.6"], priority = 1)
     void "OB-1523_Consent Implicit Authorisation for Payment Cancellation"() {
 
         //Consent Initiation
@@ -195,7 +197,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(code)
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+    @Test(groups = ["1.3.6"], priority = 1,
             dependsOnMethods = ["OB-1523_Consent Implicit Authorisation for Payment Cancellation"])
     void "OB-1524_Delete payment Consent after Implicit Authorisation"() {
 
@@ -208,7 +210,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(cancellationResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification.href"))
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+    @Test(groups = ["1.3.6"], priority = 1,
             dependsOnMethods = ["OB-1524_Delete payment Consent after Implicit Authorisation"])
     void "OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"() {
 
@@ -220,7 +222,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
+    @Test(groups = ["1.3.6"], priority = 1,
             dependsOnMethods = ["OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"])
     void "OB-1526_PSU Authorise Cancellation for Implicit Auth Consent"() {
 
@@ -229,7 +231,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep {driver, context ->
                     Assert.assertTrue(driver.findElement(By.xpath(BerlinConstants.PAYMENTS_INTENT_TEXT_XPATH))
-                            .getText().contains("requests consent to cancel a periodic payment transaction"))
+                            .getText().contains("requests consent to cancel"))
                     driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
                 }
                 .addStep(new WaitForRedirectAutomationStep())

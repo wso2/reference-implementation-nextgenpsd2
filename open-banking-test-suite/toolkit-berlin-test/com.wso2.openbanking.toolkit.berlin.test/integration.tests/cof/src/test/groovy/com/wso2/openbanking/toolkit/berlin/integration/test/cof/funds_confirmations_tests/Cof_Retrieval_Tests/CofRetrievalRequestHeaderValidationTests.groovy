@@ -63,9 +63,11 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .body(retrievalPayload)
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description")
-                .contains("Incorrect Access Token Type is provided"))
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).
+                toString().contains("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -84,8 +86,11 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "description")
-                .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (response, BerlinConstants.TPPMESSAGE_TEXT).
+                contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                        "'Authorization"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -105,8 +110,10 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "description")
-                .contains("Invalid Credentials. Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (response, BerlinConstants.TPPMESSAGE_TEXT).
+                contains("Token is not valid"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -272,11 +279,10 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                BerlinConstants.CONSENT_INVALID)
-        //TODO: Update error after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/7134
-        //Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-        //        "")
+                BerlinConstants.CONSENT_UNKNOWN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "Consent is not in a valid state")
     }
 }

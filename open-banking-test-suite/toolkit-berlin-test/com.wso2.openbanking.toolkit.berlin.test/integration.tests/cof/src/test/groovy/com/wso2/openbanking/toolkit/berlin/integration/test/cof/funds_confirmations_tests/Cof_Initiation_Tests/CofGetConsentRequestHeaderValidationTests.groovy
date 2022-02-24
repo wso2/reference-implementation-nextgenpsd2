@@ -65,8 +65,10 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "fault.description")
-                .contains("Incorrect Access Token Type is provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -170,8 +172,10 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
-                .contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains("Invalid Credentials. Make sure your API invocation call has a header: " +
                         "'Authorization"))
     }
 
@@ -196,8 +200,10 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
-                .contains("Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains("Token is not valid"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -221,7 +227,10 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, "description")
-                .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                        "'Authorization"))
     }
 }

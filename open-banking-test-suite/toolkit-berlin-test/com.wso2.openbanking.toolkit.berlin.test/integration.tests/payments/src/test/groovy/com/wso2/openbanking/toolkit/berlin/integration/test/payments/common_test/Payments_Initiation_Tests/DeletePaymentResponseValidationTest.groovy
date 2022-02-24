@@ -27,7 +27,7 @@ import org.testng.annotations.Test
  */
 class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
-    //Note: The <AuthorizeCancellation> tag should set to false in openbanking.xml
+    //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303001_Direct Payment Cancellation"(String consentPath, List<String> paymentProducts, String payload) {
@@ -95,7 +95,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         }
     }
 
-    //Note: The <AuthorizeCancellation> tag should set to false in openbanking.xml
+    //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
     @Test (groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303004_Delete Already Deleted Payment Consent"(String consentPath, List<String> paymentProducts,
@@ -125,6 +125,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         }
     }
 
+    //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303014_Delete an Authorised Payment Consent"(String consentPath, List<String> paymentProducts,

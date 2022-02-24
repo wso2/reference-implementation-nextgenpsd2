@@ -96,6 +96,6 @@ class DeleteConsentResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE)
                 .toString(), BerlinConstants.INVALID_STATUS_VALUE)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "${accountId} is already in terminatedByTpp state")
+                "The requested consent is already deleted")
     }
 }

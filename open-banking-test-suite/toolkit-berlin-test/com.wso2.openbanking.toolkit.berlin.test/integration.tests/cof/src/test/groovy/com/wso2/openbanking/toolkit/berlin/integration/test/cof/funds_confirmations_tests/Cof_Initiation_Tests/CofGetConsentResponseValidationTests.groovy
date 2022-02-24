@@ -63,9 +63,11 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
         //Get Consent
         def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/")
-        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_404)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_405)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.RESOURCE_UNKNOWN)
+                BerlinConstants.SERVICE_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Method not allowed for given API resource")
     }
 
     @Test (groups = ["1.3.6"])
@@ -77,9 +79,11 @@ class CofGetConsentResponseValidationTests extends AbstractCofFlow {
         //Get Consent
         def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}")
-        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_404)
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_405)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.RESOURCE_UNKNOWN)
+                BerlinConstants.SERVICE_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Method not allowed for given API resource")
     }
 
     @Test (groups = ["1.3.6"], priority = 2)

@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
@@ -58,6 +59,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccounts"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccounts.maskedPan"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -70,6 +72,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -82,7 +85,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
     }
 
@@ -127,6 +130,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
     }
 
@@ -142,7 +146,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
     }
 
@@ -157,7 +161,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
     }
 
@@ -189,7 +193,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -201,7 +205,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_BALANCES_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
         Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))
     }
 
@@ -214,6 +218,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get("$AccountsConstants.CARD_ACCOUNTS_PATH/balances")
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -225,6 +230,8 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH + "/fixed")
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_404)
+        Assert.assertNotNull(TestUtil.parseResponseBody(response, "description"),
+                "No matching resource found for given API Request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -247,7 +254,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.CARD_ACCOUNTS_BALANCES_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -271,7 +282,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .queryParam("bookingStatus", "booked")
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.6"], priority = 2)

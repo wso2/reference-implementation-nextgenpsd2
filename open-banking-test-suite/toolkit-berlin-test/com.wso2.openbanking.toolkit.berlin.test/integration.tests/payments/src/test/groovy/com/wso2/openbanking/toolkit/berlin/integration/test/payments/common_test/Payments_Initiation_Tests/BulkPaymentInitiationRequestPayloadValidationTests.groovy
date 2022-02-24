@@ -59,9 +59,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Debtor account is missing in payments payload")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -75,9 +74,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "No payments found in payments request body")
     }
 
     /**
@@ -87,58 +85,6 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
     void "TC0401022_Initiation Request with debtorAccount in iban attribute"() {
         String accountAttributes = PaymentsConstants.accountAttributeIban
         String debtorAcc = PaymentsConstants.debtorAccount1
-
-        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
-                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
-                PaymentsConstants.creditorName1, PaymentsConstants.creditorAccount1)
-
-        //Make Payment Initiation Request
-        doDefaultInitiation(bulkPaymentConsentPath, payload)
-
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(consentResponse.getHeader("Location"))
-        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
-        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
-
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-    }
-
-    /**
-     * This testcase only supports if AccountReferenceType is configured as 'bban' in open-banking.xml.
-     */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
-    void "TC0401023_Initiation Request with debtorAccount in bban attribute"() {
-        String accountAttributes = PaymentsConstants.accountAttributeBban
-        String debtorAcc = PaymentsConstants.bbanAccount
-
-        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
-                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
-                PaymentsConstants.creditorName1, debtorAcc)
-
-        //Make Payment Initiation Request
-        doDefaultInitiation(bulkPaymentConsentPath, payload)
-
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
-        Assert.assertNotNull(consentResponse.getHeader("Location"))
-        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
-        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
-
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-    }
-
-    /**
-     * This testcase only supports if AccountReferenceType is configured as 'pan' in open-banking.xml.
-     */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
-    void "TC0401024_Initiation Request with debtorAccount in pan attribute"() {
-        String accountAttributes = PaymentsConstants.accountAttributePan
-        String debtorAcc = PaymentsConstants.panAccount
 
         String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
                 PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
@@ -188,7 +134,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-         "Payments array cannot be empty for Bulk Payments")
+                "Empty payment element found in request body")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -211,14 +157,14 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
      * This testcase only supports if AccountReferenceType is configured as 'iban' in open-banking.xml.
      */
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "TC0401030_Initiation Request with payment entries having debtorAccount "() {
+    void "TC0401030_Initiation Request with payment entries having debtorAccount"() {
 
         String paymentArray = "[{\n" +
                 "                    \"instructedAmount\": {\n" +
                 "                        \"currency\": \"${PaymentsConstants.instructedAmountCurrency}\",\n" +
                 "                        \"amount\": \"${PaymentsConstants.instructedAmount}\"\n" +
                 "                    },\n" +
-                "                     \"debtorAccount\": {\n" +
+                "                    \"debtorAccount\": {\n" +
                 "                        \"iban\": \"${PaymentsConstants.debtorAccount1}\"\n" +
                 "                    },\n" +
                 "                    \"creditorName\": \"${PaymentsConstants.creditorName2}\",\n" +
@@ -248,9 +194,6 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                 "        \"currency\": \"${PaymentsConstants.instructedAmountCurrency}\",\n" +
                 "        \"amount\": \"${PaymentsConstants.instructedAmount}\"\n" +
                 "    },\n" +
-                "        \"debtorAccount\": {\n" +
-                "        \"iban\": \"${PaymentsConstants.debtorAccount1}\"\n" +
-                "    },\n" +
                 "        \"creditorName\": \"${PaymentsConstants.creditorName1}\",\n" +
                 "        \"creditorAccount\": {\n" +
                 "        \"iban\": \"${PaymentsConstants.creditorAccount1}\"\n" +
@@ -278,9 +221,6 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                 "        \"instructedAmount\": {\n" +
                 "        \"currency\": \"${PaymentsConstants.instructedAmountCurrency}\",\n" +
                 "        \"amount\": \"${PaymentsConstants.instructedAmount}\"\n" +
-                "    },\n" +
-                "        \"debtorAccount\": {\n" +
-                "        \"iban\": \"${PaymentsConstants.debtorAccount1}\"\n" +
                 "    },\n" +
                 "        \"creditorName\": \"${PaymentsConstants.creditorName1}\",\n" +
                 "        \"creditorAccount\": {\n" +
@@ -334,8 +274,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Requested execution date and requested execution time cannot coexist in the payload")
     }
 
     @Test (groups = ["1.3.6"])

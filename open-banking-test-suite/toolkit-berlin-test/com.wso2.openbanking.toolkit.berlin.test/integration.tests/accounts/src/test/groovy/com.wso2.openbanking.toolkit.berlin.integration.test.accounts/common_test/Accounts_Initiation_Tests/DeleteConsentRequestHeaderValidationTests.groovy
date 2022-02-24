@@ -13,7 +13,7 @@
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Initiation_Tests
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
-import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
+import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
@@ -56,28 +56,14 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertNotNull(userAccessToken)
 
         //Delete Consent By Passing User Access Token
-        def consentDeleteResponse = TestSuite.buildRequest()
-                .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .filter(new BerlinSignatureFilter())
-                .baseUri(ConfigParser.getInstance().getBaseURL())
+        def consentDeleteResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .delete("${consentPath}/${accountId}")
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140,
-                  TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue(consentDeleteResponse.getHeader("WWW-Authenticate")
-                        .contains("error=\"invalid token\""))
-                break
-
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "fault.description")
-                        .toString().contains ("Incorrect Access Token Type is provided"))
-                break
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -93,6 +79,8 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         //Delete Consent without X-Request-ID header
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -120,6 +108,8 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, "1234")
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -130,7 +120,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString (),"Input string \"1234\" is not a valid UUID")
+                .toString (),"Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -147,6 +137,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, "")
+                .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -156,7 +147,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'X-Request-ID' is required but is missing.")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -172,14 +163,16 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         //Delete Consent with invalid X-Request-ID header
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, "")
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .delete("${consentPath}/${accountId}")
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description").toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
+                .contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -195,15 +188,18 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         //Delete Consent with invalid X-Request-ID header
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, "")
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .delete("${consentPath}/${accountId}")
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description").toString().
-                        contains ("Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE)
+                .toString(), BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
+                .contains ("Token is not valid"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -219,14 +215,15 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         //Delete Consent with invalid X-Request-ID header
         def consentDeleteResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, "")
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .delete("${consentPath}/${accountId}")
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description").toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
+                .contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 }

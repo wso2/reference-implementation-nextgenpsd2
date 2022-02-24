@@ -62,7 +62,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Mandatory field StartDate is missing in Periodic-payments call")
+                "Start date is missing in periodic payments payload")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -77,7 +77,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Mandatory field Frequency is missing in Periodic-payments call")
+                "Frequency is missing in periodic payments payload")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -96,7 +96,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-        "Future dates provided in the request contains past dates, Please set correct Dates")
+        "Start date must be a future date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -115,7 +115,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Future dates provided in the request contains past dates, Please set correct Dates")
+                "Start date must be a future date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentFrequency", dataProviderClass = PaymentsDataProviders.class)
@@ -234,7 +234,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "End date should be a future date with compared to the Start date")
+                "End date must be greater than start date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -253,11 +253,11 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "End date should be a future date with compared to the Start date")
+                "End date must be greater than start date")
     }
 
 //    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
-//    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501039_Initiation Request by passing 00 for dayOfExecution value"() {
 
         String dayOfExecution = "00"
@@ -277,7 +277,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
     }
 
 //    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
-//    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501040_Initiation Request by passing 31 for dayOfExecution value"() {
 
         String dayOfExecution = "31"
@@ -301,7 +301,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
     }
 
 //    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
-//    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501041_Initiation Request by passing 32 for dayOfExecution value"() {
 
         String dayOfExecution = "32"

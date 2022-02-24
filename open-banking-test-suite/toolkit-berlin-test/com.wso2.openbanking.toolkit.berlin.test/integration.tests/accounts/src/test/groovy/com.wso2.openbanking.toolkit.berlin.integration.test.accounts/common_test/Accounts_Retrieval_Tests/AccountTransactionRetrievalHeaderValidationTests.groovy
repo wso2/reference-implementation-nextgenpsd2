@@ -14,7 +14,6 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
-import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
@@ -74,8 +73,10 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
-                        contains ("Incorrect Access Token Type is provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE), BerlinConstants
+                .TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                        contains ("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -92,8 +93,10 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -111,8 +114,10 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
-                        contains ("Invalid Credentials. Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE), BerlinConstants
+                .TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                contains("Token is not valid"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

@@ -25,7 +25,6 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.Accoun
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
-import sun.security.krb5.Config
 
 /**
  * Header Validation Tests on Get Consent Request.
@@ -67,16 +66,10 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case [TestConstants.SOLUTION_VERSION_130, TestConstants.SOLUTION_VERSION_140, TestConstants.SOLUTION_VERSION_150]:
-                Assert.assertTrue (retrievalResponse.getHeader ("WWW-Authenticate").contains ("error=\"invalid token\""))
-                break
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "fault.description").toString().
-                        contains ("Incorrect Access Token Type is provided"))
-                break
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -139,7 +132,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -189,8 +182,9 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
+                        "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -214,8 +208,10 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
-                        contains ("Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "Token is not valid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -239,7 +235,8 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
                 .get("${consentPath}/${accountId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(retrievalResponse, "description").toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
+                        "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
     }
 }

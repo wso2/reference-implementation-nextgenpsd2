@@ -151,7 +151,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"Unauthenticated authorization not found for Consent")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -174,8 +174,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"This consent has already been authorised by " +
-                "${PsuConfigReader.getPSU()}@carbon.super")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -212,8 +211,8 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
                             .LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
                     Assert.assertTrue(lblErrorResponse.getText().trim().contains("Cannot find an application associated " +
                             "with the given consumer key"))
-        }
-        .execute()
+                }
+                .execute()
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -224,9 +223,11 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
 
-        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[0].split("=")[1].toString(),
+                "UTF8")
+        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -279,7 +280,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutState(scopes, paymentId)
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
+
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[0].split("=")[1].toString(),
+                "UTF8")
 
         Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
     }
@@ -429,8 +433,6 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
     @Test (groups = ["1.3.6"])
     void "OB-1541_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
 
-        String psuId = "psu1@wso2.com"
-
         //Consent Initiation
         Response consentResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
@@ -465,7 +467,13 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
                 .body(initiationPayload)
                 .post(consentPath)
 
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
     }
 
     @Test(groups = ["1.3.6"])
@@ -564,6 +572,70 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         String authUrl = automation.currentUrl.get()
         def code = BerlinTestUtil.getCodeFromURL(authUrl)
         Assert.assertNotNull(authUrl.contains("state"))
+        Assert.assertNotNull(code)
+    }
+
+    /**
+     * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
+     */
+    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
+    void "TC0401023_Initiation Request with debtorAccount in bban attribute"() {
+
+        String bulkPaymentConsentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS
+        String accountAttributes = PaymentsConstants.accountAttributeBban
+        String debtorAcc = PaymentsConstants.bbanAccount
+
+        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
+                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
+                PaymentsConstants.creditorName1, PaymentsConstants.creditorAccount1)
+
+        //Make Payment Initiation Request
+        doDefaultInitiation(bulkPaymentConsentPath, payload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(consentResponse.getHeader("Location"))
+        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
+        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
+
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+    }
+
+    /**
+     * This testcase only supports if AccountReferenceType is configured as 'pan' in deployment.toml.
+     */
+    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
+    void "TC0401024_Initiation Request with debtorAccount in pan attribute"() {
+
+        String bulkPaymentConsentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS
+        String accountAttributes = PaymentsConstants.accountAttributePan
+        String debtorAcc = PaymentsConstants.panAccount
+
+        String payload = PaymentsInitiationPayloads.bulkPaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
+                PaymentsConstants.instructedAmount, accountAttributes, debtorAcc,
+                PaymentsConstants.creditorName1, PaymentsConstants.creditorAccount1)
+
+        //Make Payment Initiation Request
+        doDefaultInitiation(bulkPaymentConsentPath, payload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(consentResponse.getHeader("Location"))
+        Assert.assertNotNull(consentResponse.getHeader("X-Request-ID"))
+        Assert.assertEquals(consentResponse.getHeader("ASPSP-SCA-Approach"), "REDIRECT")
+
+        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(paymentId, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
+
+        doAuthorizationFlow()
         Assert.assertNotNull(code)
     }
 }

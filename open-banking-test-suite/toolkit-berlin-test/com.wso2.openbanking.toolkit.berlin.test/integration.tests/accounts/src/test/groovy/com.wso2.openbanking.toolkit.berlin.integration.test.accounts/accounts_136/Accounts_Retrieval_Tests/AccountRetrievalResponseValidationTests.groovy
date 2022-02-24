@@ -55,6 +55,14 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         //get userAccessToken for first recurring consent
         userAccessTokenForOldConsent = getUserAccessToken(oldAuthorizationCode)
 
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessTokenForOldConsent)
+                .header(BerlinConstants.CONSENT_ID_HEADER, oldConsentId)
+                .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+
         //initiate second recurring consent
         newConsentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .body(initiationPayload)
@@ -84,7 +92,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 
@@ -100,7 +112,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 
@@ -117,7 +133,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 
@@ -134,7 +154,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("transactionsDetails"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 
@@ -150,7 +174,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 
@@ -166,7 +194,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
             Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
             Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccounts"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.CONSENT_EXPIRED)
+            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("The consent is expired"))
         }
     }
 }

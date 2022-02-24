@@ -88,9 +88,9 @@ class AbstractPaymentsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -102,7 +102,7 @@ class AbstractPaymentsFlow {
 
         // Get User Access Token
         userAccessToken = BerlinRequestBuilder
-                .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), code)
+                .getUserToken(auth.getVerifier(), code)
     }
 
     void doConsentDenyFlow() {
@@ -112,9 +112,9 @@ class AbstractPaymentsFlow {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(BerlinConstants.PAYMENTS_DENY_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(BerlinConstants.PAYMENTS_DENY_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL
@@ -158,6 +158,7 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .body("{}")
                 .post("${consentPath}/${paymentId}/cancellation-authorisations")
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")

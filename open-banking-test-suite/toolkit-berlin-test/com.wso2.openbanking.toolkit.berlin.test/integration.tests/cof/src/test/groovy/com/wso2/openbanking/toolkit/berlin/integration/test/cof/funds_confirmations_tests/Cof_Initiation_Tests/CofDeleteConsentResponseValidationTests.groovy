@@ -112,7 +112,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
         deleteCofConsent(consentPath)
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString(),"${consentId} is already in terminatedByTpp state")
+                .toString(),"The requested consent is already deleted")
     }
 
     @Test (groups = ["1.3.6"])

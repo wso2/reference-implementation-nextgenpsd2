@@ -56,6 +56,10 @@ class BerlinConstants {
     static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
     static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE"
     static final String CANCELLATION_INVALID = "CANCELLATION_INVALID"
+    static final String TOKEN_INVALID = "TOKEN_INVALID"
+    static final String CONSENT_EXPIRED = "CONSENT_EXPIRED"
+    static final String SERVICE_INVALID = "SERVICE_INVALID"
+    static final String ACCESS_EXCEEDED = "ACCESS_EXCEEDED"
 
 
     static final int STATUS_CODE_204 = 204
@@ -69,6 +73,7 @@ class BerlinConstants {
     static final int STATUS_CODE_406 = 406
     static final int STATUS_CODE_202 = 202
     static final int STATUS_CODE_415 = 415
+    static final int STATUS_CODE_429 = 429
 
     static final enum AUTH_METHOD {
         PRIVATE_KEY_JWT
@@ -99,8 +104,10 @@ class BerlinConstants {
     static final String SCA_STATUS_PARAM = "scaStatus"
     static final String TRUSTED_BENEFICIARY_FLAG = "trustedBeneficiaryFlag"
 
-    static final String NORMAL_ACCOUNT = "DE98765432109876543210"
+    static final String CURRENT_ACCOUNT = "DE98765432109876543210"
     static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890"
+    static final String PAN_ACCOUNT = "5409050000000000"
+    static final String BBAN_ACCOUNT = "BARC12345612345678"
     static final String CURRENCY1 = "USD"
     static final String CURRENCY2 = "EUR"
     static final String CURRENCY3 = "GBP"
