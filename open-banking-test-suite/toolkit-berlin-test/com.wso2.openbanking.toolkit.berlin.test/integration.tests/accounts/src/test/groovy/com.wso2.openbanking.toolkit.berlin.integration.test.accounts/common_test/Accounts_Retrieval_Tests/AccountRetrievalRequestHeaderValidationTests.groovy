@@ -17,6 +17,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -75,8 +76,10 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
-                        contains ("Incorrect Access Token Type is provided"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                        contains("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -94,7 +97,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
+        Assert.assertTrue (TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
                         contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
@@ -114,8 +117,10 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertTrue (TestUtil.parseResponseBody(response, "description").toString().
-                        contains ("Invalid Credentials. Make sure you have provided the correct security credentials"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                        contains ("Token is not valid"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -274,7 +279,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .header(BerlinConstants.PSU_IP_ADDRESS, "823")
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -285,5 +290,35 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                 "String \"823.121.123.142\" is not a valid IPv4 address")
+    }
+
+    @Test
+    void "OB-1688_Account retrieval with user access token generated from refresh token grant"() {
+
+        //Authorise consent
+        preRetreivalFlow()
+
+        //Account Retrieval
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .get(AccountsConstants.ACCOUNTS_PATH + "/")
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+
+        //Generate User Access Token from refresh token
+        generateRefreshTokenUserAccessToken(BerlinRequestBuilder.refreshToken, null)
+        Assert.assertNotNull(userAccessToken)
+
+        //Account Retrieval with user access token generated from refresh token
+        def response2 = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .get(AccountsConstants.ACCOUNTS_PATH + "/")
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+
     }
 }

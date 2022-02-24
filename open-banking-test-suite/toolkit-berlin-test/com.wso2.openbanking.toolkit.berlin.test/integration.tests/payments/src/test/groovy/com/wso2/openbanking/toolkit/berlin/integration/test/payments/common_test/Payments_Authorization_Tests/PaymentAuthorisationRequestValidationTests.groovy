@@ -151,7 +151,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"Unauthenticated authorization not found for Consent")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -174,8 +174,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"This consent has already been authorised by " +
-                "${PsuConfigReader.getPSU()}@carbon.super")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -224,9 +223,11 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
 
-        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[0].split("=")[1].toString(),
+                "UTF8")
+        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -279,7 +280,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutState(scopes, paymentId)
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
+
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[0].split("=")[1].toString(),
+                "UTF8")
 
         Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
     }
@@ -463,7 +467,13 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
                 .body(initiationPayload)
                 .post(consentPath)
 
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+        //Do Implicit Authorisation
+        doAuthorizationFlow()
+        Assert.assertNotNull(automation.currentUrl.get().contains("state"))
+        Assert.assertNotNull(code)
     }
 
     @Test(groups = ["1.3.6"])

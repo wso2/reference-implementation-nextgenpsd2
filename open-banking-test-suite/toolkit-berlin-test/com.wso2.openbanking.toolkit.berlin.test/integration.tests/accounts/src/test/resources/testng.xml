@@ -85,6 +85,9 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.AccountTransactionRetrievalHeaderValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Retrieval_Tests.AccountRetrievalResponseValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.MultiCurrencyValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Retrieval_Tests.FrequencyPerDayResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Retrieval_Tests.BankOfferedRecurringConsentValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Retrieval_Tests.GlobalRecurringConsentValidationTests"/>
         </classes>
     </test>
 </suite>

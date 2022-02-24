@@ -13,15 +13,11 @@
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
-import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.berlin.common.utils.OAuthAuthorizationRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
-import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
-import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
-import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
@@ -55,6 +51,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
 
         createExplicitAuthorization(consentPath)
 
+        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7187
         Assert.assertNotNull(requestId)
         Assert.assertNotNull(authorisationId)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
@@ -112,8 +109,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, accountId)
         consentAuthorizeErrorFlowValidation(request)
 
-        Assert.assertEquals(oauthErrorCode,"This consent has already been authorised by " +
-                "${PsuConfigReader.getPSU()}@carbon.super")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
@@ -161,6 +157,8 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         //Create Explicit Authorisation Resources
         createExplicitAuthorization(consentPath)
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+
+        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7187
         requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
         Assert.assertNotNull(requestId)
         Assert.assertNotNull(authorisationId)
@@ -230,6 +228,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         //Create Authorisation Sub-resource
         createExplicitAuthorization(consentPath)
 
+        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7187
         Assert.assertNotNull(requestId)
         Assert.assertNotNull(authorisationId)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),

@@ -254,7 +254,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.CARD_ACCOUNTS_BALANCES_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -278,7 +282,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .queryParam("bookingStatus", "booked")
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.6"], priority = 2)

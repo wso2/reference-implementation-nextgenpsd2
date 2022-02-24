@@ -12,7 +12,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Berlin Group Integration">
-    <test name="Payments Flow Tests" parallel="false" enabled="true">
+    <test name="Payments Flow Tests" parallel="false" enabled="false">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -26,7 +26,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Common_Tests.PaymentsSCAFlowTest"/>
         </classes>
     </test>
-    <test name="Payments Initiation Flow Tests" parallel="false" enabled="true">
+    <test name="Payments Initiation Flow Tests" parallel="false" enabled="false">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -60,9 +60,9 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.PaymentAuthorisationRequestValidationTests"/>
+<!--            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.PaymentAuthorisationRequestValidationTests"/>-->
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.ExplicitAuthorisationTest"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.CancellationAuthorisationTest"/>
+<!--            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests.CancellationAuthorisationTest"/>-->
         </classes>
     </test>
 </suite>

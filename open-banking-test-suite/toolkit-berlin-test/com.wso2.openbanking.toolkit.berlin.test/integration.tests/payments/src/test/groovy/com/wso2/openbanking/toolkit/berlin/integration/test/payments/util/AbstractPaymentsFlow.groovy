@@ -102,7 +102,7 @@ class AbstractPaymentsFlow {
 
         // Get User Access Token
         userAccessToken = BerlinRequestBuilder
-                .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), code)
+                .getUserToken(auth.getVerifier(), code)
     }
 
     void doConsentDenyFlow() {
@@ -158,6 +158,7 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .body("{}")
                 .post("${consentPath}/${paymentId}/cancellation-authorisations")
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")

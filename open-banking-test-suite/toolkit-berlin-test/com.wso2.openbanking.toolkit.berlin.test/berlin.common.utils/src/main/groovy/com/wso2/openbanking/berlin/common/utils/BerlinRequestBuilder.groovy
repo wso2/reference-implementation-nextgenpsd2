@@ -51,6 +51,9 @@ import java.util.logging.Logger
 class BerlinRequestBuilder {
 
     static log = Logger.getLogger(BerlinRequestBuilder.class.toString())
+    static String accessTokenScope
+    static String refreshToken
+    static int expiryTime
 
     /**
      * Get Application Access Token
@@ -80,7 +83,7 @@ class BerlinRequestBuilder {
      * @param scopes scopes for token
      * @return access token
      */
-    static String getUserToken(BerlinConstants.AUTH_METHOD authMethod, BerlinConstants.SCOPES scopes, CodeVerifier verifier, String code) {
+    static String getUserToken(CodeVerifier verifier, String code) {
 
         def config = ConfigParser.getInstance()
 
@@ -111,11 +114,12 @@ class BerlinRequestBuilder {
         httpResponse.setContent(response.getBody().print())
 
         def accessToken = TokenResponse.parse(httpResponse).toSuccessResponse().tokens.accessToken
+        accessTokenScope = TestUtil.parseResponseBody(response, "scope")
+        refreshToken = TokenResponse.parse(httpResponse).toSuccessResponse().tokens.refreshToken
 
         log.info("Got user access token $accessToken")
 
         return accessToken
-
     }
 
     /**

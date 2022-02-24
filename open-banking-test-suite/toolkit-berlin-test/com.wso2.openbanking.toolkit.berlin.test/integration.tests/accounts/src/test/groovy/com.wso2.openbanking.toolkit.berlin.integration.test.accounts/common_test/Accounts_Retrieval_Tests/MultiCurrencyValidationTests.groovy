@@ -64,7 +64,7 @@ class MultiCurrencyValidationTests extends AbstractAccountsFlow {
 	}
 
 	@Test(groups = ["1.3.6"])
-	void "OB-1535_Sub Account Level tranaction retrieval of multi currency account"() {
+	void "OB-1535_Sub Account Level transaction retrieval of multi currency account"() {
 
 		initiationPayload = AccountsInitiationPayloads.subAccLevelMultiCurrencyInitiationPayload
 

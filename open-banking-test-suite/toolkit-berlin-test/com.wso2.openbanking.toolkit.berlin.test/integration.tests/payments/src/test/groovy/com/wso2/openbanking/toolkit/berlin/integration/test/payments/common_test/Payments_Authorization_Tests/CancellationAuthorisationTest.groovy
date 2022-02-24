@@ -40,6 +40,8 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     /**
      * Data Factory to Retrieve Explicit Authorization Data from the Data Provider
      * @param maps
+     *
+     * Note: The auth_cancellation.enable attribute should set to true in deployment.toml file
      */
     @Factory(dataProvider = "ExplicitAuthCancellationData", dataProviderClass = PaymentsDataProviders.class)
     CancellationAuthorisationTest(Map<String, String> maps) {
@@ -229,7 +231,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
                 .addStep(new BasicAuthAutomationStep(auth.authoriseUrl))
                 .addStep {driver, context ->
                     Assert.assertTrue(driver.findElement(By.xpath(BerlinConstants.PAYMENTS_INTENT_TEXT_XPATH))
-                            .getText().contains("requests consent to cancel a periodic payment transaction"))
+                            .getText().contains("requests consent to cancel"))
                     driver.findElement(By.xpath(BerlinConstants.PAYMENTS_SUBMIT_XPATH)).click()
                 }
                 .addStep(new WaitForRedirectAutomationStep())

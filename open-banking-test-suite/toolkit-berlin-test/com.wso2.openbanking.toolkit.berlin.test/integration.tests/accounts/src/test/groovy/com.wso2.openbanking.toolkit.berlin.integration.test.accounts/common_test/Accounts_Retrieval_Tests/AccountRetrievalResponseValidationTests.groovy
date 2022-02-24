@@ -14,6 +14,8 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
@@ -328,7 +330,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .queryParam("bookingStatus", "booked")
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -351,7 +357,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.BALANCES_PATH)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.6"])
@@ -366,7 +376,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         generateUserAccessToken()
         Assert.assertNotNull(userAccessToken)
-        Assert.assertNotNull(refreshToken)
     }
 
     /**
@@ -423,5 +432,69 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
+    void "OB-1668_Retrieve accounts more than one time with one-off dedicated account consent"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+
+        def initiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": false,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+           "frequencyPerDay": 1,
+           "combinedServiceIndicator": false
+        }"""
+                .stripIndent()
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+        //Authorize the Consent and Extract the Code
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
+        //Account Retrieval
+        for(int i=1; i<=2; i++) {
+            def response = BerlinRequestBuilder
+                    .buildBasicRequest(userAccessToken)
+                    .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                    .get(AccountsConstants.ACCOUNTS_PATH + "/")
+
+            if(i < 2) {
+                Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+                Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+            } else {
+                Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+                Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                        BerlinConstants.CONSENT_EXPIRED)
+                Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                        contains("The consent is expired"))
+            }
+        }
     }
 }

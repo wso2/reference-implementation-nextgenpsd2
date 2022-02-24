@@ -14,11 +14,17 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsDataProviders
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
 
@@ -368,7 +374,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
     }
 
     //TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4813
-//    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0301037_Initiation Request with empty creditorName in the payload"() {
 
         String payload = PaymentsInitiationPayloads.singlePaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
@@ -488,4 +494,140 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
                 "Currency types are mismatching")
     }
 
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
+    void "OB-1679_Initiation request with same x-request-id and same payload"() {
+
+        String payload = PaymentsInitiationPayloads.singlePaymentPayload
+        def xRequestId = UUID.randomUUID().toString()
+
+        //Make Payment Initiation Request - 1st time
+        def consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(payload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+        def paymentId1 = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        def consentStatus1 = TestUtil.parseResponseBody(consentResponse, "transactionStatus")
+
+        //Make Payment Initiation Request - 2st time
+        def consentResponse2 = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(payload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+        def paymentId2 = TestUtil.parseResponseBody(consentResponse2, "paymentId")
+        def consentStatus2 = TestUtil.parseResponseBody(consentResponse2, "transactionStatus")
+
+        Assert.assertEquals(paymentId1, paymentId2)
+        Assert.assertEquals(consentStatus1, consentStatus2)
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
+    void "OB-1680_Initiation request with same x-request-id and different payload"() {
+
+        def xRequestId = UUID.randomUUID().toString()
+
+        //Make Payment Initiation Request - 1st time
+        def consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(PaymentsInitiationPayloads.singlePaymentPayload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+
+        String payload = PaymentsInitiationPayloads.singlePaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency2,
+                PaymentsConstants.instructedAmount, PaymentsConstants.debtorAccount1, PaymentsConstants.creditorName1,
+                PaymentsConstants.creditorAccount1)
+
+        //Make Payment Initiation Request - 2st time
+        def consentResponse2 = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(payload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse2.statusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Idempotency check failed."))
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
+    void "OB-1684_Initiation request with same X-Request-Id and different access token"() {
+
+        String payload = PaymentsInitiationPayloads.singlePaymentPayload
+        def xRequestId = UUID.randomUUID().toString()
+
+        //Make Payment Initiation Request - 1st time
+        def consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(payload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+        def paymentId1 = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        def consentStatus1 = TestUtil.parseResponseBody(consentResponse, "transactionStatus")
+
+        //Create new Application Access Token
+        def applicationAccessToken2 = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD
+                .PRIVATE_KEY_JWT, scopes)
+
+        //Make Payment Initiation Request - 2st time
+        def consentResponse2 = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken2}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .body(payload)
+                .post(singlePaymentConsentPath)
+
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+    }
 }

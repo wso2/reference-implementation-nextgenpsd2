@@ -96,9 +96,22 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"],
-            dependsOnMethods = "Generate User Access Token for Consent with Account List of All Accounts")
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
     void "TC0210013_Retrieve Specific Account from a Consent with Account List of All Accounts"(){
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
@@ -107,9 +120,21 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"],
-            dependsOnMethods = "Generate User Access Token for Consent with Account List of All Accounts")
+    @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
     void "TC0210016_Retrieve Specific Account with Balances from a Consent with Account List of All Accounts"(){
+
+        //Do Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
 
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
@@ -121,7 +146,7 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("account._links.balances"))
     }
 
-    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
     void "OB-1661_Reject All Accounts Consent"() {
 
         //Do Account Initiation

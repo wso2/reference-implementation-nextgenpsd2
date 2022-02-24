@@ -91,9 +91,12 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
 
-        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+        String authUrl = automation.currentUrl.get()
+        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -598,7 +601,5 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(userAccessTokenResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(userAccessTokenResponse, "error_description"),
                 "No PKCE code verifier found.PKCE is mandatory for this oAuth 2.0 application.")
-
-
     }
 }

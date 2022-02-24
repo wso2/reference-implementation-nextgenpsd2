@@ -71,7 +71,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"access\"])")
+                "\"access\" object has missing required attributes")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -551,7 +551,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().
-                contains("String \"${validTime}\" is invalid against requested date format(s) yyyy-MM-dd"))
+                contains("Valid until date is invalid"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -735,4 +735,121 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
                 .contains("Unable to parse JSON - Unrecognized token 'four': was expecting 'null', 'true', 'false' or NaN"))
     }
+
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "OB-1669_Account initiation for onetime consent with frequency per day more than one"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+        def initiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": false,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+           "frequencyPerDay": 4,
+           "combinedServiceIndicator": false
+        }"""
+                .stripIndent()
+
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
+                .contains("Set frequency per day attribute as 1 for one time account access"))
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "OB-1673_Account Initiation for recurring consent with frequency per day exceeding default value"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+        def initiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": true,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+           "frequencyPerDay": 10,
+           "combinedServiceIndicator": false
+        }"""
+                .stripIndent()
+
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "OB-1674_Account Initiation for recurring consent with frequency per day lower than default value"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+        def initiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": true,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+           "frequencyPerDay": 1,
+           "combinedServiceIndicator": false
+        }"""
+                .stripIndent()
+
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
+                .contains("Frequency per day for recurring consent is lesser than the supported minimum value 4"))
+    }
+
 }

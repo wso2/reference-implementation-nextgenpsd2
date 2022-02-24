@@ -56,6 +56,10 @@ class BerlinConstants {
     static final String RESOURCE_UNKNOWN = "RESOURCE_UNKNOWN"
     static final String INVALID_STATUS_VALUE = "INVALID_STATUS_VALUE"
     static final String CANCELLATION_INVALID = "CANCELLATION_INVALID"
+    static final String TOKEN_INVALID = "TOKEN_INVALID"
+    static final String CONSENT_EXPIRED = "CONSENT_EXPIRED"
+    static final String SERVICE_INVALID = "SERVICE_INVALID"
+    static final String ACCESS_EXCEEDED = "ACCESS_EXCEEDED"
 
 
     static final int STATUS_CODE_204 = 204
@@ -69,6 +73,7 @@ class BerlinConstants {
     static final int STATUS_CODE_406 = 406
     static final int STATUS_CODE_202 = 202
     static final int STATUS_CODE_415 = 415
+    static final int STATUS_CODE_429 = 429
 
     static final enum AUTH_METHOD {
         PRIVATE_KEY_JWT

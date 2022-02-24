@@ -61,14 +61,17 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
-                            .toString().contains ("Incorrect Access Token Type is provided"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertTrue (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                    contains ("Incorrect Access Token Type provided"))
         }
     }
 
@@ -90,6 +93,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             //Delete Consent without X-Request-ID header
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -122,6 +126,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, "1234")
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -155,6 +160,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, "")
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
@@ -183,17 +189,21 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             doStatusRetrieval(paymentConsentPath)
             Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
-            //Delete Consent with invalid X-Request-ID header
+            //Delete Consent
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
-                    .header(BerlinConstants.X_REQUEST_ID, "")
+                    .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
-                            .toString().contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                    "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
+                            "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
         }
     }
 
@@ -212,19 +222,21 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             doStatusRetrieval(paymentConsentPath)
             Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
-            //Delete Consent with invalid X-Request-ID header
+            //Delete Consent
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
-                    .header(BerlinConstants.X_REQUEST_ID, "")
+                    .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer 1234")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
-                            .toString().contains ("Invalid Credentials. Make sure you have provided the correct " +
-                            "security credentials"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                    "Token is not valid")
         }
     }
 
@@ -243,18 +255,22 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             doStatusRetrieval(paymentConsentPath)
             Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
-            //Delete Consent with invalid X-Request-ID header
+            //Delete Consent
             def consentDeleteResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
-                    .header(BerlinConstants.X_REQUEST_ID, "")
+                    .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                    .header(BerlinConstants.Date, getCurrentDate())
                     .header(TestConstants.AUTHORIZATION_HEADER_KEY, "")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (TestUtil.parseResponseBody(consentDeleteResponse, "description")
-                            .toString().contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                    "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
+                            "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
         }
     }
 }

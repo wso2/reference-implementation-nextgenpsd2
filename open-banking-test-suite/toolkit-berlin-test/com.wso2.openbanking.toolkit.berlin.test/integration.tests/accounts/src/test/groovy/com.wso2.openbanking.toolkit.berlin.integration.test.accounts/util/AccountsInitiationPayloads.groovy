@@ -89,9 +89,9 @@ class AccountsInitiationPayloads {
                "access":{
                     "availableAccounts": "allAccounts"
                },
-               "recurringIndicator":false,
+               "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
-               "frequencyPerDay":1,
+               "frequencyPerDay":4,
                "combinedServiceIndicator":false
                
         }
@@ -102,9 +102,9 @@ class AccountsInitiationPayloads {
                "access":{  
                     "availableAccountsWithBalance": "allAccounts"
                },
-               "recurringIndicator":false,
+               "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-               "frequencyPerDay":1,
+               "frequencyPerDay":4,
                "combinedServiceIndicator":false
         }
     """.stripIndent()
@@ -114,9 +114,9 @@ class AccountsInitiationPayloads {
                "access":{  
                     "availableAccountsWithBalances": "allAccounts"
                },
-               "recurringIndicator":false,
+               "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-               "frequencyPerDay":1,
+               "frequencyPerDay":4,
                "combinedServiceIndicator":false
         }
     """.stripIndent()
@@ -126,9 +126,9 @@ class AccountsInitiationPayloads {
                "access":{
                     "allPsd2": "allAccounts"
                },
-               "recurringIndicator":false,
+               "recurringIndicator":true,
                "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
-               "frequencyPerDay":1,
+               "frequencyPerDay":4,
                "combinedServiceIndicator":false
         }
     """.stripIndent()

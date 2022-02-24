@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util
 
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
+import com.nimbusds.oauth2.sdk.TokenResponse
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
@@ -44,6 +45,7 @@ abstract class AbstractAccountsFlow {
     Response retrievalResponse
     Response consentDeleteResponse
     Response authorisationResponse
+    Response refreshTokenGrantTokenResponse
     String authorisationId
     String requestId
     BerlinOAuthAuthorization auth
@@ -106,7 +108,15 @@ abstract class AbstractAccountsFlow {
 
         // Get User Access Token
         userAccessToken = BerlinRequestBuilder
-                .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), code)
+                .getUserToken(auth.getVerifier(), code)
+    }
+
+    void generateRefreshTokenUserAccessToken(String refreshToken, BerlinConstants.SCOPES scopes) {
+
+        // Get User Access Token
+
+        refreshTokenGrantTokenResponse = BerlinRequestBuilder.getRefreshTokenGrantAccessToken(refreshToken, scopes)
+        userAccessToken = TestUtil.parseResponseBody(refreshTokenGrantTokenResponse, "access_token")
     }
 
     void doConsentDenyFlow() {
@@ -172,6 +182,8 @@ abstract class AbstractAccountsFlow {
                 .post("${consentPath}/${accountId}/authorisations")
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+
+        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7187
         requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
     }
 
@@ -206,7 +218,7 @@ abstract class AbstractAccountsFlow {
     String getUserAccessToken(String authorizationCode){
         // Get User Access Token
         userAccessToken = BerlinRequestBuilder
-                .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), authorizationCode)
+                .getUserToken(auth.getVerifier(), authorizationCode)
 
         return userAccessToken
     }

@@ -308,7 +308,9 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (consentResponse.getBody().jsonPath().getString("description").
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertTrue (TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
                             contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
         }
     }
@@ -335,9 +337,10 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
-                            .contains("Invalid Credentials. Make sure you have provided the correct " +
-                            "security credentials"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                    "Token is not valid")
         }
     }
 
@@ -376,8 +379,10 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, "description")
-                            .contains("Incorrect Access Token Type is provided"))
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertTrue (TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                    contains ("Incorrect Access Token Type provided"))
         }
     }
 

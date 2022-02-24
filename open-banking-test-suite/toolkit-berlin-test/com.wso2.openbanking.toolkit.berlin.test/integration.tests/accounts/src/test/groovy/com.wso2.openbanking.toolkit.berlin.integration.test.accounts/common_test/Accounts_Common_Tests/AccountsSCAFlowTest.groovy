@@ -64,7 +64,7 @@ class AccountsSCAFlowTest extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["TC0202013_Accounts Authorization for SCA implicit accept scenario"])
+           dependsOnMethods = ["TC0202013_Accounts Authorization for SCA implicit accept scenario"])
     void "TC0210011_Retrieval Request to get the details of a specific Account"() {
 
         def response = BerlinRequestBuilder
@@ -74,6 +74,7 @@ class AccountsSCAFlowTest extends AbstractAccountsFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
+
     }
 
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)

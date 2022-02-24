@@ -127,7 +127,7 @@ abstract class AbstractCofFlow {
 
         // Get User Access Token
         userAccessToken = BerlinRequestBuilder
-                .getUserToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT, scopes, auth.getVerifier(), code)
+                .getUserToken(auth.getVerifier(), code)
     }
 
     void doStatusRetrieval(String consentPath) {
