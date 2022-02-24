@@ -43,7 +43,7 @@ before start the test suite execution.
    - `<Application>`
       - `<ClientID>` = Application Client Id
       - `<ClientSecret>` = Application Client Secret
-      - `<RedirectURL>` = Application Redirect URL
+      - `<RedirectURL>` = Application Redirect URL (Eg: https://www.google.com/redirects/redirect1)
 
    - `<Transport><Truststore>`
       - `<Location>` = Path to the client-truststore.jks of wso2-obam.
@@ -52,7 +52,7 @@ before start the test suite execution.
    - `<NonRegulatoryApplication>`(This need to be configured only for the Non Regulatory Application related tests)
       - `<ClientID>` = Client Id of the Non Regulatory Application
       - `<ClientSecret>` = Client Secret of the Non Regulatory Application
-      - `<RedirectURL>` = Redirect URL of the Non Regulatory Application
+      - `<RedirectURL>` = Redirect URL of the Non Regulatory Application (Eg: https://www.google.com/redirects/redirect1)
 
    - `<PSUList><PSUInfo>` = Able to define multiple PSU configurations with the tags.
      (There are 2 TPP configurations available by default)

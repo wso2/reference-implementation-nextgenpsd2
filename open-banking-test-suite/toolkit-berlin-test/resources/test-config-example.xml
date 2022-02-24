@@ -115,7 +115,7 @@
     <NonRegulatoryApplication>
         <ClientID>NonRegulatoryApplication.ClientID</ClientID>
         <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
-        <RedirectURL>https://www.google.com</RedirectURL>
+        <RedirectURL>https://www.google.com/redirects/redirect1</RedirectURL>
     </NonRegulatoryApplication>
     <!-- PSU Info -->
     <PSUList>
