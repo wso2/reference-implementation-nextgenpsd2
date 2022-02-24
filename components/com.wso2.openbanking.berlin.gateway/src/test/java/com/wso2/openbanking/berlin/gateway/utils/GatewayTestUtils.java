@@ -212,26 +212,6 @@ public class GatewayTestUtils {
 
     }
 
-    public static Optional<java.security.cert.X509Certificate> parseCertificate(String certString)
-            throws java.security.cert.CertificateException,
-            CertificateValidationException {
-
-        java.security.cert.X509Certificate certificate;
-        if (StringUtils.isNotBlank(certString)) {
-            // decoding pem formatted transport cert
-            byte[] decodedCert = Base64.getDecoder().decode(StringUtils.deleteWhitespace(certString
-                    .replace(BEGIN_CERT, "")
-                    .replace(END_CERT, "").replace("\n", "")));
-
-            certificate = (java.security.cert.X509Certificate) CertificateFactory.getInstance(X509_CERT_INSTANCE_NAME)
-                    .generateCertificate(new ByteArrayInputStream(decodedCert));
-        } else {
-            log.error("Certificate is missing");
-            throw new CertificateValidationException("Invalid request. Certificate is missing");
-        }
-        return Optional.ofNullable(certificate);
-    }
-
     public static synchronized X509Certificate getTestSignatureCertificate()
             throws CertificateException {
 
