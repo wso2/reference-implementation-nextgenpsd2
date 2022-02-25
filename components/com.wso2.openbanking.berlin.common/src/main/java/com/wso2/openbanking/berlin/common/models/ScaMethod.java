@@ -23,7 +23,7 @@ import com.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 public class ScaMethod {
 
     private String authenticationType;
-    private String version;
+    private String authenticationVersion;
     private String authenticationMethodId;
     private String name;
     private ScaApproachEnum mappedApproach;
@@ -42,12 +42,12 @@ public class ScaMethod {
         this.authenticationType = authenticationType;
     }
 
-    public String getVersion() {
-        return version;
+    public String getAuthenticationVersion() {
+        return authenticationVersion;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setAuthenticationVersion(String authenticationVersion) {
+        this.authenticationVersion = authenticationVersion;
     }
 
     public String getAuthenticationMethodId() {

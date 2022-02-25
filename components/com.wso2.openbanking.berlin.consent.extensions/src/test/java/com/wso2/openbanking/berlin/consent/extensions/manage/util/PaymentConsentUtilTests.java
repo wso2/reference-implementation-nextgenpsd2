@@ -18,6 +18,7 @@ import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -253,12 +254,12 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         Assert.assertNotNull(paymentCancellationResponse.get(ConsentExtensionConstants.LINKS));
         JSONObject chosenScaMethod = (JSONObject) paymentCancellationResponse
                 .get(ConsentExtensionConstants.CHOSEN_SCA_METHOD);
-        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_TYPE), scaMethod.get(CommonConstants.SCA_TYPE));
-        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_VERSION),
+        Assert.assertEquals(chosenScaMethod.get(TestConstants.SCA_TYPE), scaMethod.get(CommonConstants.SCA_TYPE));
+        Assert.assertEquals(chosenScaMethod.get(TestConstants.SCA_VERSION),
                 scaMethod.get(CommonConstants.SCA_VERSION));
-        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_ID), scaMethod.get(CommonConstants.SCA_ID));
-        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_NAME), scaMethod.get(CommonConstants.SCA_NAME));
-        Assert.assertEquals(chosenScaMethod.get(CommonConstants.SCA_DESCRIPTION),
+        Assert.assertEquals(chosenScaMethod.get(TestConstants.SCA_ID), scaMethod.get(CommonConstants.SCA_ID));
+        Assert.assertEquals(chosenScaMethod.get(TestConstants.SCA_NAME), scaMethod.get(CommonConstants.SCA_NAME));
+        Assert.assertEquals(chosenScaMethod.get(TestConstants.SCA_DESCRIPTION),
                 scaMethod.get(CommonConstants.SCA_DESCRIPTION));
 
         JSONObject links = (JSONObject) paymentCancellationResponse.get(ConsentExtensionConstants.LINKS);

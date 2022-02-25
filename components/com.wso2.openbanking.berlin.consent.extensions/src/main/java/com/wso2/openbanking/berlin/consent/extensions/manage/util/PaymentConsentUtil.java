@@ -441,14 +441,7 @@ public class PaymentConsentUtil {
 
         JSONArray chosenSCAMethods = new JSONArray();
         for (ScaMethod scaMethod : scaMethods) {
-            JSONObject scaMethodJson = new JSONObject();
-            scaMethodJson.appendField(CommonConstants.SCA_TYPE, scaMethod.getAuthenticationType());
-            scaMethodJson.appendField(CommonConstants.SCA_VERSION, scaMethod.getVersion());
-            scaMethodJson.appendField(CommonConstants.SCA_ID, scaMethod.getAuthenticationMethodId());
-            scaMethodJson.appendField(CommonConstants.SCA_NAME, scaMethod.getName());
-            scaMethodJson.appendField(CommonConstants.SCA_DESCRIPTION, scaMethod.getDescription());
-
-            chosenSCAMethods.add(scaMethodJson);
+            chosenSCAMethods.add(CommonUtil.convertObjectToJson(scaMethod));
         }
 
         if (scaMethods.size() > 1) {
