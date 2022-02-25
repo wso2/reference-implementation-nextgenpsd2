@@ -12,26 +12,22 @@
 
 package com.wso2.openbanking.berlin.gateway.utils;
 
-import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
 import com.wso2.openbanking.berlin.gateway.test.GatewayTestConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 

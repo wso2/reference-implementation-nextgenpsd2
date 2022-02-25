@@ -45,6 +45,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -326,7 +327,7 @@ public class AccountConsentUtil {
 
         LocalDate validUntilDate = ConsentExtensionUtil.parseDateToISO(validUntil, TPPMessage.CodeEnum.FORMAT_ERROR,
                 ErrorConstants.VALID_UNTIL_DATE_INVALID);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
         if (validUntilDate.isBefore(today)) {
             String errorMessage = "validUntil has to be today, %s or a future date";
             log.error(String.format(errorMessage, today));
@@ -336,7 +337,7 @@ public class AccountConsentUtil {
         }
         LocalDate maximumValidUntil = LocalDate.parse(ConsentExtensionConstants.MAXIMUM_VALID_DATE);
         if (isValidUntilDateCapEnabled &&
-                (validUntil.compareTo(LocalDateTime.now().
+                (validUntil.compareTo(today.
                         plusDays(validUntilDaysCap).
                         format(DateTimeFormatter.ISO_LOCAL_DATE)) > 0)) {
             /*
@@ -385,7 +386,7 @@ public class AccountConsentUtil {
                 ZoneId.of(ConsentExtensionConstants.UTC));
         LocalDate updatedDate = updatedDateTime.toLocalDate();
 
-        LocalDate currDate = LocalDate.now();
+        LocalDate currDate = LocalDate.now(ZoneOffset.UTC);
         LocalDate expTimeAfter90Days = updatedDate.plusDays(90);
         if (currDate.isBefore(expDate) || currDate.isEqual(expDate)) {
 

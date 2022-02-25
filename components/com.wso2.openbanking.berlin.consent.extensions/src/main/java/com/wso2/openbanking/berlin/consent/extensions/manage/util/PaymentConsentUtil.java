@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class PaymentConsentUtil {
      */
     public static void validateFutureDate(LocalDate date, String errorMessage) {
 
-        if (!date.isAfter(LocalDate.now())) {
+        if (!date.isAfter(LocalDate.now(ZoneOffset.UTC))) {
             log.error(errorMessage);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -178,7 +179,7 @@ public class PaymentConsentUtil {
                                     .REQUESTED_EXECUTION_DATE), TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
                             ErrorConstants.REQUESTED_EXECUTION_DATE_INVALID);
 
-            LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now(ZoneOffset.UTC);
 
             if (!requestedExecutionDate.isAfter(today)) { //Checks whether the requested execution date is a future date
                 log.error(ErrorConstants.EXECUTION_DATE_NOT_FUTURE);
