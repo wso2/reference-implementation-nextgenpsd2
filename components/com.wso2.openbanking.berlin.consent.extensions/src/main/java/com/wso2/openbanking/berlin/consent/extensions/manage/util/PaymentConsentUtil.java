@@ -180,12 +180,14 @@ public class PaymentConsentUtil {
 
             LocalDate today = LocalDate.now();
 
-            if (!requestedExecutionDate.isAfter(today)) {
+            if (!requestedExecutionDate.isAfter(today)) { //Checks whether the requested execution date is a future date
                 log.error(ErrorConstants.EXECUTION_DATE_NOT_FUTURE);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                         TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
                         ErrorConstants.EXECUTION_DATE_NOT_FUTURE));
             } else if (StringUtils.isNotBlank(maxPaymentExecutionDays)) {
+                /* this block checks whether the requested execution date is within the maximum number of payment
+                 execution days allowed by the ASPSP */
                 long maxNumberPaymentExecutionDays = Long.parseLong(maxPaymentExecutionDays);
                 if (ChronoUnit.DAYS.between(today.plusDays(maxNumberPaymentExecutionDays),
                         requestedExecutionDate) > 0) {
