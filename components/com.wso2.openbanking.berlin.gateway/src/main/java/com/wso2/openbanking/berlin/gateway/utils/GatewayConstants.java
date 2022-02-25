@@ -29,6 +29,16 @@ public class GatewayConstants {
     public static final String NO_ENTITY_BODY = "NO_ENTITY_BODY";
     public static final String PAYLOAD_FORMING_ERROR = "Error while forming fault payload";
     public static final String PAYLOAD_SETTING_ERROR = "Error while setting the json payload";
+    public static final String THROTTLE_FAILURE_IDENTIFIER = "900806";
+    public static final String AUTH_FAILURE_IDENTIFIER = "9";
+
+    // Schema validation constants
+    public static final String SCHEMA_VALIDATION_FAILURE_IDENTIFIER = "Schema validation failed in the Request:";
+    public static final String PAYMENT_PRODUCT_ERROR_PATTERN = "Instance value \\(.*?\\) not found in enum " +
+            "\\(possible values: \\[\\\"sepa-credit-transfers\\\",\\\"instant-sepa-credit-transfers\\\"," +
+            "\\\"target-2-payments\\\",\\\"cross-border-credit-transfers\\\"," +
+            "\\\"pain\\.001\\-sepa\\-credit\\-transfers\\\",\\\"pain\\.001\\-instant\\-sepa\\-credit\\-transfers\\\"," +
+            "\\\"pain\\.001\\-target\\-2-payments\\\",\\\"pain\\.001-cross-border-credit-transfers\\\"\\]\\)";
 
     public static final int API_AUTH_GENERAL_ERROR = 900900;
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;
