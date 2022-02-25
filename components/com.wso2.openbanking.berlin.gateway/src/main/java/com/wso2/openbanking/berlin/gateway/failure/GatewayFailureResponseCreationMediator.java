@@ -80,11 +80,13 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
         String berlinErrorCode;
         int status;
 
-        errorDetail = errorDetail.replace(GatewayConstants.SCHEMA_VALIDATION_ERROR_IDENTIFIER, "").trim();
+        errorDetail = errorDetail.replace(GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER, "").trim();
         if (errorDetail.endsWith(",")) {
             errorDetail = errorDetail.substring(0, errorDetail.length() - 1);
         }
 
+        // TODO: Handle error response creation for Schema Validation failures
+        // https://github.com/wso2-enterprise/financial-open-banking/issues/7218
         if (errorDetail.matches(GatewayConstants.PAYMENT_PRODUCT_ERROR_PATTERN)) {
             berlinErrorCode = TPPMessage.CodeEnum.PRODUCT_UNKNOWN.toString();
             status = HttpStatus.SC_NOT_FOUND;
