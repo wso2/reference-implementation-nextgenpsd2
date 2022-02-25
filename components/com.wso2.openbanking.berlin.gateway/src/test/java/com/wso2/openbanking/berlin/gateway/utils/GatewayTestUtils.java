@@ -12,7 +12,8 @@
 
 package com.wso2.openbanking.berlin.gateway.utils;
 
-import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
@@ -34,6 +35,7 @@ public class GatewayTestUtils {
 
     private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     private static final String END_CERT = "-----END CERTIFICATE-----";
+    private static final String X509_CERT_INSTANCE_NAME = "X.509";
 
     private static java.security.cert.X509Certificate expiredSelfCertificate = null;
     private static java.security.cert.X509Certificate testClientCertificateIssuer = null;
@@ -215,28 +217,25 @@ public class GatewayTestUtils {
     }
 
     public static synchronized java.security.cert.X509Certificate getExpiredSelfCertificate()
-            throws CertificateValidationException {
+            throws OpenBankingException {
         if (expiredSelfCertificate == null) {
-            expiredSelfCertificate = CertificateValidationUtils
-                    .parseTransportCert(EXPIRED_SELF_CERT).orElse(null);
+            expiredSelfCertificate = CertificateUtils.parseCertificate(EXPIRED_SELF_CERT);
         }
         return expiredSelfCertificate;
     }
 
     public static synchronized java.security.cert.X509Certificate getTestSigningCertificate()
-            throws CertificateValidationException {
+            throws OpenBankingException {
         if (testEidasCertificate == null) {
-            testEidasCertificate = CertificateValidationUtils.parseTransportCert(TEST_SIGNATURE_CERT)
-                    .orElse(null);
+            testEidasCertificate = CertificateUtils.parseCertificate(TEST_SIGNATURE_CERT);
         }
         return testEidasCertificate;
     }
 
     public static synchronized java.security.cert.X509Certificate getTestClientCertificateIssuer()
-            throws CertificateValidationException {
+            throws OpenBankingException {
         if (testClientCertificateIssuer == null) {
-            testClientCertificateIssuer = CertificateValidationUtils
-                    .parseTransportCert(TEST_CLIENT_CERT_ISSUER).orElse(null);
+            testClientCertificateIssuer = CertificateUtils.parseCertificate(TEST_CLIENT_CERT_ISSUER);
         }
         return testClientCertificateIssuer;
     }

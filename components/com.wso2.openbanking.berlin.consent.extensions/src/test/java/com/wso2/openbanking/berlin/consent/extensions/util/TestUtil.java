@@ -39,6 +39,7 @@ import org.testng.Assert;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -162,7 +163,8 @@ public class TestUtil {
 
     public static String getCurrentDate(int addDays) {
 
-        return LocalDate.parse(LocalDate.now().plusDays(addDays).toString(), DateTimeFormatter.ISO_DATE).toString();
+        return LocalDate.parse(LocalDate.now(ZoneOffset.UTC).plusDays(addDays).toString(), DateTimeFormatter.ISO_DATE)
+                .toString();
     }
 
     public static List<Map<String, String>> getSampleSupportedScaApproaches() {

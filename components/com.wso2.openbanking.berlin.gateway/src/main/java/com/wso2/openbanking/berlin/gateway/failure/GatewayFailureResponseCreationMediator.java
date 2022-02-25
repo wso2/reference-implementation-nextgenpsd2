@@ -147,12 +147,11 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
     private static JSONObject getThrottleFailureResponse(String errorMessage, String errorDetail) {
 
         JSONObject errorData = new JSONObject();
-        int status = 429;
         String errorText = (errorDetail == null) ? errorMessage : errorDetail;
         JSONObject errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
                 TPPMessage.CodeEnum.ACCESS_EXCEEDED, errorText);
 
-        errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.STATUS_CODE, 429);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
         return errorData;
     }

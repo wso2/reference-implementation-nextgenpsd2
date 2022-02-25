@@ -17,7 +17,7 @@ package com.wso2.openbanking.berlin.keymanager;
  */
 public class BerlinKeyManagerConstants {
 
-    public static final String SP_CERTIFICATE = "SP_CERTIFICATE";
+    public static final String SP_CERTIFICATE = "sp_certificate";
     public static final String REGULATORY = "REGULATORY";
-    public static final String ORG_ID = "ORG_ID";
+    public static final String ORG_ID = "organization_id";
 }

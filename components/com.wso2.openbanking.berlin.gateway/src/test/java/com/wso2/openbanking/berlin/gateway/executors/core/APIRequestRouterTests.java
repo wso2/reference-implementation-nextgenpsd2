@@ -93,15 +93,19 @@ public class APIRequestRouterTests {
 
         OBAPIRequestContext obapiRequestContext = Mockito.mock(OBAPIRequestContext.class);
         OBAPIResponseContext obapiResponseContext = Mockito.mock(OBAPIResponseContext.class);
+        MsgInfoDTO msgInfoDTO = Mockito.mock(MsgInfoDTO.class);
+        Info apiInfo = Mockito.mock(Info.class);
+        openAPI.setInfo(apiInfo);
         Map<String, Object> extensions = new HashMap<>();
         Map<String, String> contextProps = new HashMap<>();
-        extensions.put(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP,
-                APIRequestRouterConstants.API_TYPE_NON_REGULATORY);
-        contextProps.put(APIRequestRouterConstants.API_TYPE_CUSTOM_PROP,
-                APIRequestRouterConstants.API_TYPE_NON_REGULATORY);
+        extensions.put(GatewayConstants.API_TYPE_CUSTOM_PROP, APIRequestRouterConstants.PAYMENTS_TYPE);
+        contextProps.put(GatewayConstants.API_TYPE_CUSTOM_PROP, APIRequestRouterConstants.PAYMENTS_TYPE);
         openAPI.setExtensions(extensions);
         Mockito.when(obapiRequestContext.getOpenAPI()).thenReturn(openAPI);
+        Mockito.when(obapiRequestContext.getMsgInfo()).thenReturn(msgInfoDTO);
         Mockito.when(obapiResponseContext.getContextProps()).thenReturn(contextProps);
+        Mockito.when(obapiResponseContext.getMsgInfo()).thenReturn(msgInfoDTO);
+        Mockito.when(msgInfoDTO.getResource()).thenReturn("/PizzaShack");
         Assert.assertEquals(apiRequestRouter.getExecutorsForRequest(obapiRequestContext).size(), 0);
         Assert.assertEquals(apiRequestRouter.getExecutorsForResponse(obapiResponseContext).size(), 0);
     }

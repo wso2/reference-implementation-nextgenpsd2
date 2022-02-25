@@ -33,6 +33,7 @@ public class GatewayTestConstants {
 
     public static final Map<String, Map<Integer, String>> FULL_VALIDATOR_MAP = Stream.of(
                     new AbstractMap.SimpleImmutableEntry<>("Default", VALID_EXECUTOR_MAP),
-                    new AbstractMap.SimpleImmutableEntry<>("Payments", VALID_EXECUTOR_MAP))
+                    new AbstractMap.SimpleImmutableEntry<>("Payments", VALID_EXECUTOR_MAP),
+                    new AbstractMap.SimpleImmutableEntry<>("Accounts", VALID_EXECUTOR_MAP))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 }

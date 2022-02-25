@@ -21,5 +21,11 @@ public class APIRequestRouterConstants {
     public static final String API_TYPE_NON_REGULATORY = "non-regulatory";
     public static final String DEFAULT = "Default";
     public static final String PAYMENTS = "Payments";
+    public static final String ACCOUNTS = "Accounts";
+    public static final String FUNDS_CONFIRMATIONS = "FundsConfirmations";
     public static final String PAYMENTS_TYPE = "payments";
+    public static final String ACCOUNTS_TYPE = "accounts";
+    public static final String ACCOUNTS_INITIATION_TYPE = "consents";
+    public static final String FUNDS_CONFIRMATIONS_TYPE = "funds-confirmations";
+    public static final String CONFIRMATION_OF_FUNDS_TYPE = "confirmation-of-funds";
 }

@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -84,7 +85,7 @@ public class FundsConfirmationConsentUtil {
         LocalDate parsedCardExpiryDate = ConsentExtensionUtil.parseDateToISO(cardExpiryDate,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.CARD_EXPIRY_DATE_INVALID);
 
-        if (parsedCardExpiryDate.isBefore(LocalDate.now())) {
+        if (parsedCardExpiryDate.isBefore(LocalDate.now(ZoneOffset.UTC))) {
             String errorMessage = String.format("The provided card expiry date %s is a past date",
                     parsedCardExpiryDate);
             log.error(errorMessage);

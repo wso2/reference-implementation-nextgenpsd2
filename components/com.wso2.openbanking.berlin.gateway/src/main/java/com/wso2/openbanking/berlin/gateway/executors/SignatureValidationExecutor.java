@@ -15,6 +15,8 @@ package com.wso2.openbanking.berlin.gateway.executors;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.CertificateUtils;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContent;
 import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
@@ -39,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -49,7 +50,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
@@ -95,16 +95,35 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
             String requestPayload = obapiRequestContext.getRequestPayload();
 
+            // Validate whether the required headers are present.
             try {
-                // Validate whether the required headers are present.
                 validateHeaders(headersMap);
+            } catch (SignatureCertMissingException e) {
+                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        ErrorConstants.SIGNING_CERT_MISSING);
+                return;
+            } catch (DigestMissingException e) {
+                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
+                        ErrorConstants.DIGEST_HEADER_MISSING);
+                return;
+            } catch (SignatureMissingException e) {
+                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
+                        ErrorConstants.SIGNATURE_HEADER_MISSING);
+                return;
+            } catch (SignatureValidationException e) {
+                log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                        ErrorConstants.X_REQUEST_ID_MISSING);
+                return;
+            }
 
-                X509Certificate parsedSigningCert;
-                Optional<X509Certificate> x509Certificate = parseSignatureCert(signatureCertificateHeader);
-                if (x509Certificate.isPresent()) {
-                    parsedSigningCert = x509Certificate.get();
-                    log.debug("Signature certificate parsing successful");
-                } else {
+            try {
+                X509Certificate x509Certificate = CertificateUtils
+                        .parseCertificate(signatureCertificateHeader);
+                if (x509Certificate == null) {
                     log.error(ErrorConstants.CERT_PARSE_EROR);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                             ErrorConstants.CERT_PARSE_EROR);
@@ -112,10 +131,10 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 }
 
                 // Expiry validation
-                validateCertExpiration(parsedSigningCert, obapiRequestContext);
+                validateCertExpiration(x509Certificate, obapiRequestContext);
 
                 // Revocation validation
-                if (!isValidCertStatus(parsedSigningCert)) {
+                if (!isValidCertStatus(x509Certificate)) {
                     log.error(ErrorConstants.SIGNING_CERT_REVOKED);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_REVOKED.toString(),
                             ErrorConstants.SIGNING_CERT_REVOKED);
@@ -132,7 +151,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 }
 
                 // Validate signature
-                if (!validateSignature(headersMap, parsedSigningCert)) {
+                if (!validateSignature(headersMap, x509Certificate)) {
                     log.error(ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
                             ErrorConstants.SIGNATURE_VERIFICATION_FAIL);
@@ -140,23 +159,11 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 } else {
                     log.debug("Signature validation successfully completed");
                 }
-            } catch (SignatureCertMissingException e) {
-                log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                        ErrorConstants.SIGNING_CERT_MISSING);
             } catch (DigestValidationException e) {
                 log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
                         ErrorConstants.INVALID_DIGEST_HEADER);
-            }  catch (SignatureMissingException e) {
-                log.error(ErrorConstants.SIGNATURE_HEADER_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_MISSING.toString(),
-                        ErrorConstants.SIGNATURE_HEADER_MISSING);
-            } catch (DigestMissingException e) {
-                log.error(ErrorConstants.DIGEST_HEADER_MISSING, e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
-                        ErrorConstants.DIGEST_HEADER_MISSING);
-            } catch (CertificateValidationException | CertificateEncodingException e) {
+            } catch (OpenBankingException | CertificateException e) {
                 log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                         ErrorConstants.SIGNING_CERT_INVALID);
@@ -530,30 +537,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         } else {
             log.debug("TPP-Signature-Certificate expiry validation completed");
         }
-    }
-
-    /**
-     * Generate a X509 Certificate initialized with the data read from the obapiRequestContext.
-     *
-     * @param signingCert Signature certificate in string format
-     * @return Optional X509Certificate
-     * @throws CertificateValidationException when certificate generation fails
-     */
-    @Generated(message = "Excluded from coverage since this is covered from other tests")
-    public static Optional<X509Certificate> parseSignatureCert(String signingCert)
-            throws CertificateValidationException {
-
-        X509Certificate signatureCertificate;
-        try {
-            byte[] decodedSignatureCert = Base64.getDecoder().decode(signingCert
-                    .replace(CERT_BEGIN_STRING, "").replace(CERT_END_STRING, ""));
-            signatureCertificate = (X509Certificate) CertificateFactory.getInstance(X509_CERT_INSTANCE_NAME)
-                    .generateCertificate(new ByteArrayInputStream(decodedSignatureCert));
-        } catch (CertificateException e) {
-            log.error("Exception while parsing X509 signature certificate", e);
-            throw new CertificateValidationException("Signature certificate is invalid");
-        }
-        return Optional.ofNullable(signatureCertificate);
     }
 
     /**

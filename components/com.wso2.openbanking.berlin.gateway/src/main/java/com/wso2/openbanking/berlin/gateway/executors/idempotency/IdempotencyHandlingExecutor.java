@@ -12,37 +12,36 @@
 
 package com.wso2.openbanking.berlin.gateway.executors.idempotency;
 
-import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
-import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.gateway.executors.cache.IdempotencyCacheKey;
 import com.wso2.openbanking.berlin.gateway.executors.cache.IdempotencyValidationCache;
 import com.wso2.openbanking.berlin.gateway.executors.utils.GatewayConstants;
+import com.wso2.openbanking.berlin.gateway.utils.GatewayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.HttpMethod;
 
 /**
- * Idempotency handling executor
+ * Idempotency handling executor.
  */
 public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
 
     private static final Log log = LogFactory.getLog(IdempotencyHandlingExecutor.class);
     /**
-     * Method to handle pre request
+     * Method to handle pre request.
      *
      * @param obapiRequestContext OB request context object
      */
@@ -52,7 +51,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post request
+     * Method to handle post request.
      *
      * @param obapiRequestContext OB request context object
      */
@@ -82,9 +81,8 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
 
         if (StringUtils.isEmpty(idempotencyKey)) {
             log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-            obapiRequestContext.setError(true);
-            obapiRequestContext.setErrors(handleIdempotencyErrors(obapiRequestContext,
-                    ErrorConstants.X_REQUEST_ID_MISSING, ErrorConstants.HEADER_MISSING));
+            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.X_REQUEST_ID_MISSING);
             return;
         }
 
@@ -127,9 +125,8 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
                 } else {
                     //Payloads are not similar, hence returning an error
                     log.error(ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT);
-                    obapiRequestContext.setError(true);
-                    obapiRequestContext.setErrors(handleIdempotencyErrors(obapiRequestContext,
-                            ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT, ErrorConstants.HEADER_INVALID));
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                            ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_FRAUDULENT);
                 }
             } else {
                 log.debug("Object not found in cache. Adding the request to cache.");
@@ -138,9 +135,8 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
             }
         } catch (IOException e) {
             log.error(ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_ERROR);
-            obapiRequestContext.setError(true);
-            obapiRequestContext.setErrors(handleIdempotencyErrors(obapiRequestContext,
-                    ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_ERROR, ErrorConstants.HEADER_INVALID));
+            GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_ERROR);
             return;
         }
         //Adding idempotency key to the context properties
@@ -149,7 +145,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to store properties to cache
+     * Method to store properties to cache.
      *
      * @param key                 unique cache key
      * @param idempotentDetails   properties to store
@@ -173,24 +169,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle errors in Idempotency validation
-     *
-     * @param obapiRequestContext
-     * @param message
-     * @return
-     */
-    protected ArrayList<OpenBankingExecutorError> handleIdempotencyErrors(OBAPIRequestContext obapiRequestContext,
-                                                                String message, String errorCode) {
-
-        OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
-                ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR, message, OpenBankingErrorCodes.BAD_REQUEST_CODE);
-        ArrayList<OpenBankingExecutorError> executorErrors = obapiRequestContext.getErrors();
-        executorErrors.add(error);
-        return executorErrors;
-    }
-
-    /**
-     * Method to check whether Idempotency handling is required
+     * Method to check whether Idempotency handling is required.
      *
      * @return
      */
@@ -204,7 +183,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to check whether the request is a payment request
+     * Method to check whether the request is a payment request.
      *
      * @param resource
      * @return
@@ -216,7 +195,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle pre response
+     * Method to handle pre response.
      *
      * @param obapiResponseContext OB response context object
      */
@@ -226,7 +205,7 @@ public class IdempotencyHandlingExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post     response
+     * Method to handle post response.
      *
      * @param obapiResponseContext OB response context object
      */
