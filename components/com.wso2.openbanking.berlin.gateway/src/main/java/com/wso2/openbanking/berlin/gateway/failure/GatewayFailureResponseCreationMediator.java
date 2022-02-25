@@ -48,13 +48,13 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
 
             JSONObject errorData;
 
-            if (Integer.toString(errorCode).equals("900806")) {
+            if (Integer.toString(errorCode).equals(GatewayConstants.THROTTLE_FAILURE_IDENTIFIER)) {
                 errorData = getThrottleFailureResponse(errorMessage, errorDetail);
-            } else if (Integer.toString(errorCode).startsWith("9")) {
+            } else if (Integer.toString(errorCode).startsWith(GatewayConstants.AUTH_FAILURE_IDENTIFIER)) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage, errorDetail);
-            } else if (errorCode == 405) {
+            } else if (errorCode == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                 errorData = getMethodNotAllowedFailureResponse(errorMessage);
-            } else if (errorDetail.startsWith(GatewayConstants.SCHEMA_VALIDATION_ERROR_IDENTIFIER)) {
+            } else if (errorDetail.startsWith(GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER)) {
                 errorData = getSchemaValidationFailureResponse(errorCode, errorDetail);
             } else {
                 return true;
