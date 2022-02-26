@@ -182,7 +182,7 @@ public class CommonUtilTests {
 
         ScaMethod scaMethod = new ScaMethod();
         scaMethod.setAuthenticationType("SMS_OTP");
-        scaMethod.setVersion("1.0");
+        scaMethod.setAuthenticationVersion("1.0");
         scaMethod.setAuthenticationMethodId("sms-otp");
         scaMethod.setName("SMS OTP on Mobile");
         scaMethod.setMappedApproach(ScaApproachEnum.REDIRECT);

@@ -38,5 +38,11 @@ public class TestConstants {
     public static final String MULTI_CURRENCY_ACC_NUMBER = "DE12345678901234567890";
     public static final List<String> SUPPORTED_ACC_REF_TYPES = Arrays.asList(ConsentExtensionConstants.IBAN,
             ConsentExtensionConstants.BBAN, ConsentExtensionConstants.MASKED_PAN);
+    public static final String SCA_TYPE = "authenticationType";
+    public static final String SCA_ID = "authenticationMethodId";
+    public static final String SCA_VERSION = "authenticationVersion";
+    public static final String SCA_NAME = "name";
+    public static final String SCA_DESCRIPTION = "explanation";
+
 
 }

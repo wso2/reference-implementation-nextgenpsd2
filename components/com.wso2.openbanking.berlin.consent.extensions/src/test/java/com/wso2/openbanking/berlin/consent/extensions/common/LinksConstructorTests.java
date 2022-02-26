@@ -52,7 +52,7 @@ public class LinksConstructorTests {
         redirectScaApproach.setDefault(true);
 
         redirectScaMethod.setAuthenticationType("SMS_OTP");
-        redirectScaMethod.setVersion("1.0");
+        redirectScaMethod.setAuthenticationVersion("1.0");
         redirectScaMethod.setAuthenticationMethodId("sms-otp");
         redirectScaMethod.setName("SMS OTP on Mobile");
         redirectScaMethod.setMappedApproach(ScaApproachEnum.REDIRECT);
@@ -60,7 +60,7 @@ public class LinksConstructorTests {
         redirectScaMethod.setDefault(true);
 
         decoupledScaMethod.setAuthenticationType("PUSH_OTP");
-        decoupledScaMethod.setVersion("1.0");
+        decoupledScaMethod.setAuthenticationVersion("1.0");
         decoupledScaMethod.setAuthenticationMethodId("push-otp");
         decoupledScaMethod.setName("PUSH OTP on Mobile app");
         decoupledScaMethod.setMappedApproach(ScaApproachEnum.DECOUPLED);

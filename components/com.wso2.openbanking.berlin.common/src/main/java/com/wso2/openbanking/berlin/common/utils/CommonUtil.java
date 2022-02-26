@@ -58,7 +58,7 @@ public class CommonUtil {
             ScaMethod scaMethod = new ScaMethod();
 
             scaMethod.setAuthenticationType(supportedScaMethod.get(CommonConstants.SCA_TYPE));
-            scaMethod.setVersion(supportedScaMethod.get(CommonConstants.SCA_VERSION));
+            scaMethod.setAuthenticationVersion(supportedScaMethod.get(CommonConstants.SCA_VERSION));
             scaMethod.setAuthenticationMethodId(supportedScaMethod.get(CommonConstants.SCA_ID));
             scaMethod.setName(supportedScaMethod.get(CommonConstants.SCA_NAME));
             scaMethod.setMappedApproach(ScaApproachEnum.fromValue(supportedScaMethod
