@@ -441,13 +441,13 @@ public class AccountService {
                 "\"name\": \"Main\",\n" +
                 "\"product\": \"Basic Credit\",\n" +
                 "\"status\": \"enabled\",\n" +
-                "\"creditLimit\": { \"currency\": \"EUR\", \"amount\": 15000 }, \"balances\": [\n" +
+                "\"creditLimit\": { \"currency\": \"EUR\", \"amount\": \"15000.00\" }, \"balances\": [\n" +
                 "{\n" +
                 "\"balanceType\": \"interimBooked\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 14355.78 }\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"14355.78\" }\n" +
                 "},{\n" +
-                "\"balanceType\": \"nonBilled\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 4175.86 }\n" +
+                "\"balanceType\": \"nonInvoiced\",\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"4175.86\" }\n" +
                 "} ],\n" +
                 "      \"_links\": {\n" +
                 "        \"transactions\": {\n" +
@@ -493,13 +493,13 @@ public class AccountService {
                 "\"name\": \"Main\",\n" +
                 "\"product\": \"Basic Credit\",\n" +
                 "\"status\": \"enabled\",\n" +
-                "\"creditLimit\": { \"currency\": \"EUR\", \"amount\": 15000 }, \"balances\": [\n" +
+                "\"creditLimit\": { \"currency\": \"EUR\", \"amount\": \"15000.00\" }, \"balances\": [\n" +
                 "{\n" +
                 "\"balanceType\": \"interimBooked\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 14355.78 }\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"14355.78\" }\n" +
                 "},{\n" +
-                "\"balanceType\": \"nonBilled\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 4175.86 }\n" +
+                "\"balanceType\": \"nonInvoiced\",\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"4175.86\" }\n" +
                 "} ],\n" +
                 "      \"_links\": {\n" +
                 "        \"transactions\": {\n" +
@@ -542,10 +542,10 @@ public class AccountService {
                 "\"cardAccount\": {\"maskedPan\": \"525412******3241\"}, \"balances\":[\n" +
                 "{\n" +
                 "\"balanceType\": \"interimBooked\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 14355.78 }\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"14355.78\" }\n" +
                 "},{\n" +
-                "\"balanceType\": \"nonBilled\",\n" +
-                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": 4175.86 }\n" +
+                "\"balanceType\": \"nonInvoiced\",\n" +
+                "\"balanceAmount\": { \"currency\": \"EUR\", \"amount\": \"4175.86\" }\n" +
                 "} ]\n" +
                 "}";
 
