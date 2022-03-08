@@ -65,16 +65,12 @@ public class AccountValidationUtil {
             return;
         }
 
-        /*
-         * If the request is a card account request, permission validation will always be done against the consent.
-         *  Card account id validation should be done from the bank. If the request is not a card account request,
-         *  permission validation will be based on the account id validation configuration, if enabled, permissions
-         *  will be validated against the account id (if block). If disabled, permissions will be validated against the
-         *  consent (else block).
-         */
-        if (isAccountIdValidationEnabled
-                && !pathList.contains(ConsentExtensionConstants.CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER)) {
-            if (AccountValidationUtil
+        if (isAccountIdValidationEnabled) {
+            // Skipping card accounts validation and letting bank handle them regardless of
+            // if account id validation is enabled or disabled
+            if (pathList.contains(ConsentExtensionConstants.CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER)) {
+                consentValidationResult.setValid(true);
+            } else if (AccountValidationUtil
                     .hasValidPermissionsForAccountId(accountId, accessMethod, mappingResources)) {
                 consentValidationResult.setValid(true);
             } else {
