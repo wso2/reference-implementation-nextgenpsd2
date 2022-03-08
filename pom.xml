@@ -18,7 +18,7 @@
     <groupId>com.wso2.openbanking</groupId>
     <artifactId>ob-compliance-toolkit-berlin</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-RC2</version>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>org.wso2</groupId>
