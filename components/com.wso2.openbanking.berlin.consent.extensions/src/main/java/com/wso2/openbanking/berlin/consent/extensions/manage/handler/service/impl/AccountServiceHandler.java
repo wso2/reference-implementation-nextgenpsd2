@@ -183,8 +183,8 @@ public class AccountServiceHandler implements ServiceHandler {
                 || StringUtils.equals(ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
                 consentResource.getCurrentStatus())) {
             log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
-            throw new ConsentException(ResponseStatus.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INVALID_STATUS_VALUE,
                     ErrorConstants.CONSENT_ALREADY_DELETED));
         }
 
