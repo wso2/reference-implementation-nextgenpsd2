@@ -12,7 +12,11 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.Non_Regulatory_Token_Generation_Tests
 
-import com.nimbusds.oauth2.sdk.*
+import com.nimbusds.oauth2.sdk.AuthorizationCode
+import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant
+import com.nimbusds.oauth2.sdk.AuthorizationGrant
+import com.nimbusds.oauth2.sdk.TokenRequest
+import com.nimbusds.oauth2.sdk.TokenResponse
 import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.nimbusds.oauth2.sdk.id.ClientID
