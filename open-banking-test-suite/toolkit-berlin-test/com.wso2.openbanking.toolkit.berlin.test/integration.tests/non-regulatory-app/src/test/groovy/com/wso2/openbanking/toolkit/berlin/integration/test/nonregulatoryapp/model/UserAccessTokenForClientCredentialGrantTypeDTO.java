@@ -101,5 +101,4 @@ public class UserAccessTokenForClientCredentialGrantTypeDTO {
                 .concat(TestConstants.REDIRECT_URI_KEY+"=" + getRedirectUri());
 
     }
-
 }

@@ -12,15 +12,17 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.util
 
-import com.nimbusds.oauth2.sdk.*
+import com.nimbusds.oauth2.sdk.AuthorizationCode
+import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant
+import com.nimbusds.oauth2.sdk.AuthorizationGrant
+import com.nimbusds.oauth2.sdk.TokenRequest
+import com.nimbusds.oauth2.sdk.TokenResponse
 import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.nimbusds.oauth2.sdk.id.ClientID
-import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.BasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
-import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
@@ -30,8 +32,6 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.mod
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import org.openqa.selenium.By
-import org.openqa.selenium.JavascriptExecutor
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.testng.annotations.BeforeClass
 
