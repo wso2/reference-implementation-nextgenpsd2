@@ -16,6 +16,7 @@ import com.nimbusds.oauth2.sdk.*
 import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.nimbusds.oauth2.sdk.id.ClientID
+import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
@@ -122,7 +123,7 @@ class TokenGenWithAuthorizationCodeValidationTests extends AbstractNonRegulatory
 
         Assert.assertEquals(response.statusCode(), NonRegulatoryConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(response, NonRegulatoryConstants.ERROR_DESCRIPTION),
-                "Client Authentication failed.")
+                "Unsupported Client Authentication Method!")
         Assert.assertEquals(TestUtil.parseResponseBody(response, NonRegulatoryConstants.ERROR), "invalid_client")
     }
 
@@ -268,5 +269,9 @@ class TokenGenWithAuthorizationCodeValidationTests extends AbstractNonRegulatory
                 .get(apiPath)
 
         Assert.assertEquals(apiResponse.statusCode(), 403)
+        Assert.assertEquals(TestUtil.parseResponseBody(apiResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.TOKEN_INVALID)
+        Assert.assertTrue (TestUtil.parseResponseBody (apiResponse, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Token does not consist of the required permissions for this resource"))
     }
 }

@@ -15,6 +15,7 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.No
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto
 import com.wso2.openbanking.test.framework.request.AccessToken
 import com.wso2.openbanking.test.framework.util.ConfigParser
@@ -24,11 +25,13 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.mod
 import com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.util.AbstractNonRegulatoryFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.nonregulatoryapp.util.NonRegulatoryConstants
 import io.restassured.RestAssured
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
 
 /**
  * Test Class for Token Generation With Client Credentials Validation
@@ -282,17 +285,21 @@ class TokenGenWithClientCredentialsValidationTests extends AbstractNonRegulatory
         String baseURI = config.getBaseURL()
 
         URI apiPath = new URI(baseURI.concat(NonRegulatoryConstants.BERLIN_ACCOUNTS_PATH))
+        def date = new SimpleDateFormat("EEE, d MMM YYYY HH:mm:ss z").format(new Date())
 
         apiResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(TestConstants.DATE, date)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .accept(NonRegulatoryConstants.CONTENT_TYPE)
-                .header(NonRegulatoryConstants.CHARSET, NonRegulatoryConstants.CHARSET_TYPE)
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(apiPath)
 
-        Assert.assertEquals(apiResponse.statusCode(), 401)
+        Assert.assertEquals(apiResponse.statusCode(), BerlinConstants.STATUS_CODE_403)
         Assert.assertEquals(TestUtil.parseResponseBody(apiResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody (apiResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Incorrect Access Token Type provided"))
+                contains ("Token does not consist of the required permissions for this resource"))
     }
 }
