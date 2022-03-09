@@ -158,7 +158,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                        contains ("X-Request-ID header is missing in the request"))
+                contains ("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -181,7 +181,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Invalid X-Request-ID header. Needs to be in UUID format")
+                "Input string \"1234\" is not a valid UUID")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

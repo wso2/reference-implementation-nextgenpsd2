@@ -102,7 +102,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -141,7 +141,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -180,7 +180,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -219,7 +219,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -259,7 +259,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 5,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -299,7 +299,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 1,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -339,7 +339,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 1,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -378,7 +378,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -418,16 +418,16 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 0,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                        "Frequency per day have to be greater than zero")
+                "[Path '/frequencyPerDay'] Numeric instance is lower than the required minimum " +
+                        "(minimum: 1, found: 0)")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -459,15 +459,15 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": "4",
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
+                .contains("Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -507,8 +507,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
+                .contains("Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -542,16 +542,16 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().
-                contains("Valid until date is invalid"))
+                contains("[Path '/validUntil'] String \"${validTime}\" is invalid against requested date " +
+                        "format(s) yyyy-MM-dd"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -585,7 +585,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -628,7 +628,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -653,7 +653,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
            "frequencyPerDay": 4,
            "combinedServiceIndicator": false
         }"""
-            .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
@@ -661,7 +661,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Unrecognized property 'account'")
+                "\"access\" object has missing required attributes")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -733,7 +733,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
-                .contains("Unable to parse JSON - Unrecognized token 'four': was expecting 'null', 'true', 'false' or NaN"))
+                .contains("Unable to parse JSON - Unrecognized token 'four': was expecting (JSON String, Number, Array, " +
+                        "Object or token 'null', 'true' or 'false')"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

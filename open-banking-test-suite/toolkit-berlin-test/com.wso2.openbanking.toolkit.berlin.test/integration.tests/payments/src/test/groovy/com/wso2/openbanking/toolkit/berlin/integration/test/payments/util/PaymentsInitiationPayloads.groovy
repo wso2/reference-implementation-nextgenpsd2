@@ -423,10 +423,6 @@ class PaymentsInitiationPayloads {
                         "currency": "${instructedAmountCurrency}",
                         "amount": "${instructedAmount}"
                     },
-                    "debtorAccount": {
-                        "iban": "${debtorAccount1}",
-                        "currency": "${instructedAmountCurrency}"
-                    },
                     "creditorName": "${creditorName1}",
                     "creditorAccount": {
                         "iban": "${creditorAccount1}"
@@ -711,7 +707,7 @@ class PaymentsInitiationPayloads {
 
     static final String bulkPaymentPayloadWithSingleAndFutureDatedEntries = """{
 
-            batchBookingPreferred": true,
+            "batchBookingPreferred": true,
             "debtorAccount": {
                 "iban": "${debtorAccount1}",
                 "currency": "${instructedAmountCurrency}"

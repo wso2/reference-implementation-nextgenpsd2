@@ -70,8 +70,10 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertTrue (retrievalResponse.getBody().xmlPath().getString("description").
-                            contains ("Incorrect Access Token Type is provided"))
+            Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
+                    BerlinConstants.TOKEN_INVALID)
+            Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                    contains("Incorrect Access Token Type provided"))
         }
     }
 
@@ -101,7 +103,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                            contains("Header parameter 'X-Request-ID' is required on path"))
+                    contains("X-Request-ID header is missing in the request"))
         }
     }
 
@@ -133,7 +135,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     BerlinConstants.FORMAT_ERROR)
 
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Invalid X-Request-ID header. Needs to be in UUID format")
+                    "Input string \"1234\" is not a valid UUID")
         }
     }
 
@@ -164,7 +166,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Parameter 'X-Request-ID' is required but is missing.")
+                    "X-Request-ID header is missing in the request")
         }
     }
 
@@ -191,8 +193,6 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                    BerlinConstants.TOKEN_INVALID)
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                     "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
                             "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
@@ -254,8 +254,6 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     .get("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                    BerlinConstants.TOKEN_INVALID)
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                     "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
         }

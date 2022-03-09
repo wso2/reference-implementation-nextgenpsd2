@@ -60,7 +60,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Debtor account is missing in payments payload")
+                "Account reference object is missing in payload")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -119,7 +119,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference type is missing")
+                "Account reference is empty")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

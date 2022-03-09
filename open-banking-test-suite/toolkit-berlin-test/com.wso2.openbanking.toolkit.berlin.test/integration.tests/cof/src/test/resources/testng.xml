@@ -12,7 +12,8 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Berlin Group Integration">
-    <test name="Funds Confirmation Flow Tests" parallel="false" enabled="true">
+
+    <test name="Funds Confirmation Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -26,7 +27,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Common_Tests.CofSCAFlowTest"/>
         </classes>
     </test>
-    <test name="Funds Confirmation Initiation Flow Tests" parallel="false" enabled="true">
+    <test name="Funds Confirmation Initiation Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -46,7 +47,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Initiation_Tests.MultiCurrencyValidationTests"/>
         </classes>
     </test>
-    <test name="Funds Confirmation Authorization Flow Tests" parallel="false" enabled="true">
+    <test name="Funds Confirmation Authorization Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -58,10 +59,10 @@
         </method-selectors>
         <classes>
             <class
-                    name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Authorization_Tests.CofAuthorizationRequestValidationTests"/>
+              name="com.wso2.openbanking.toolkit.berlin.integration.test.cof.funds_confirmations_tests.Cof_Authorization_Tests.CofAuthorizationRequestValidationTests"/>
         </classes>
     </test>
-    <test name="Funds Confirmation Retrieval Flow Tests" parallel="false" enabled="true">
+    <test name="Funds Confirmation Retrieval Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">

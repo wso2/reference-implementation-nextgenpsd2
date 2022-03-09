@@ -12,7 +12,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Berlin Group Integration">
-    <test name="Accounts Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -30,7 +30,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Common_Tests.BankOfferedConsentEndToEndFlow"/>
         </classes>
     </test>
-    <test name="Accounts Initiation Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Initiation Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -51,7 +51,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.accounts_136.Accounts_Initiation_Tests.AccountListConsentRequestPayloadValidationTests"/>
         </classes>
     </test>
-    <test name="Accounts Authorization Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Authorization Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">
@@ -67,7 +67,7 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_test.Accounts_Authorization_Tests.AccountsExplicitAuthorisation"/>
         </classes>
     </test>
-    <test name="Accounts Retrieval Flow Tests" parallel="false" enabled="true">
+    <test name="Accounts Retrieval Flow Tests" parallel="false" enabled="true" group-by-instances="true">
         <method-selectors>
             <method-selector>
                 <script language="beanshell">

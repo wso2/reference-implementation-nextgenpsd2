@@ -183,10 +183,10 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access"))
         Assert.assertEquals(retrievalResponse.jsonPath().getJsonObject("access.balances.iban")[0],
-                BerlinConstants.CURRENT_ACCOUNT)
+                BerlinConstants.MULTICURRENCY_ACCOUNT)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.accounts.iban")[0],
-                BerlinConstants.CURRENT_ACCOUNT)
+                BerlinConstants.MULTICURRENCY_ACCOUNT)
         Assert.assertNotNull(retrievalResponse.jsonPath().getJsonObject("access.transactions.iban")[0],
-                BerlinConstants.CURRENT_ACCOUNT)
+                BerlinConstants.MULTICURRENCY_ACCOUNT)
     }
 }

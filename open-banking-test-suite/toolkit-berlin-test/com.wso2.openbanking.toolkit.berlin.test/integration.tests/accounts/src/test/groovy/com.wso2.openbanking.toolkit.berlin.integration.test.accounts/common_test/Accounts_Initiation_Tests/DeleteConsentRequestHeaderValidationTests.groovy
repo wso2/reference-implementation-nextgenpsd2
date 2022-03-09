@@ -90,8 +90,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                        toString().contains("Header parameter 'X-Request-ID' is required on path '/consents/{consentId}'" +
-                        " but not found in request."))
+                toString().contains("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -118,9 +117,8 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertEquals (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString (),"Invalid X-Request-ID header. Needs to be in UUID format")
+                .toString (),"Input string \"1234\" is not a valid UUID")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -147,7 +145,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Invalid X-Request-ID header. Needs to be in UUID format")
+                "X-Request-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

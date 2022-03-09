@@ -50,7 +50,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Debtor account is missing in payments payload")
+                "Account reference object is missing in payload")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -69,7 +69,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference type is missing")
+                "Account reference is empty")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -254,7 +254,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
         Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
     }
-    
+
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0301031_Initiation Request with 14 digit amount value in the payload"() {
 
@@ -283,7 +283,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
     void "TC0301032_Initiation Request with more than 14 digit amount value in the payload"() {
 
         String payload = PaymentsInitiationPayloads.singlePaymentPayloadBuilder(PaymentsConstants.instructedAmountCurrency,
-                "1000000000001234.50", PaymentsConstants.debtorAccount1, PaymentsConstants.creditorName1,
+                "1000000000001234567.50", PaymentsConstants.debtorAccount1, PaymentsConstants.creditorName1,
                 PaymentsConstants.creditorAccount1)
 
         //Make Payment Initiation Request
@@ -487,11 +487,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
                 .body(payload)
                 .post(singlePaymentConsentPath)
 
-        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Currency types are mismatching")
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -583,7 +579,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+                contains ("Idempotency check failed.:Header.X-Request-ID"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)

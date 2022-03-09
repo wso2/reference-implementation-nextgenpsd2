@@ -50,13 +50,13 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
                "frequencyPerDay":1,
                "combinedServiceIndicator":false
         }"""
-        .stripIndent()
+                .stripIndent()
 
         doDefaultInitiation(consentPath, initiationPayload)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                              BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
                 "Requested permissions in the Payload are invalid")
     }
@@ -82,7 +82,7 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Unrecognized property 'allAccountsWithBalances'")
+                "\"access\" object has missing required attributes")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

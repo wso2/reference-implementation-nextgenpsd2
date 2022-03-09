@@ -96,7 +96,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-        "Start date must be a future date")
+                "Start date must be a future date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -276,7 +276,6 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
                 "")
     }
 
-//    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501040_Initiation Request by passing 31 for dayOfExecution value"() {
 

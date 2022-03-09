@@ -66,9 +66,9 @@ class FutureDatedPaymentInitiationRequestValidationTests extends AbstractPayment
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.EXECUTION_DATE_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Future dates provided in the request contains past dates, Please set correct Dates")
+                "The execution date must be a future date")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -83,8 +83,8 @@ class FutureDatedPaymentInitiationRequestValidationTests extends AbstractPayment
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.EXECUTION_DATE_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Future dates provided in the request contains past dates, Please set correct Dates")
+                "The execution date must be a future date")
     }
 }

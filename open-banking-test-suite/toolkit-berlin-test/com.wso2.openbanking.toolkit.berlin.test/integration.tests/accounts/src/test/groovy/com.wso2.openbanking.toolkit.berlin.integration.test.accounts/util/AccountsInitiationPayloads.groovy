@@ -232,46 +232,21 @@ class AccountsInitiationPayloads {
         }
     """.stripIndent()
 
-//    static final String defaultCardAccountInitiationPayload = """{
-//            "access":{
-//                "accounts":[
-//                    {
-//                        "maskedPan":"5409050000000000"
-//                    }
-//                ],
-//                "balances":[
-//                    {
-//                        "maskedPan":"5409050000000000"
-//                    }
-//                ],
-//                "transactions":[
-//                    {
-//                        "iban":"5409050000000000"
-//                    }
-//                ]
-//            },
-//            "recurringIndicator": true,
-//            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-//            "frequencyPerDay": 4,
-//            "combinedServiceIndicator": false
-//        }"""
-//            .stripIndent()
-
     static final String defaultCardAccountInitiationPayload = """{
             "access":{
                 "accounts":[
                     {  
-                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                        "maskedPan":"525412******3241"
                     }
                 ],
                 "balances":[
                     {  
-                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                        "maskedPan":"525412******3241"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                        "maskedPan":"525412******3241"
                     }
                 ]
             },
@@ -391,22 +366,64 @@ class AccountsInitiationPayloads {
             "access":{
                 "accounts":[
                     {  
-                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                        "bban":"${BerlinConstants.BBAN_ACCOUNT}"
                     }
                 ],
                 "balances":[
                     {  
-                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                        "bban":"${BerlinConstants.BBAN_ACCOUNT}"
                     }
                 ],
                 "transactions":[  
                     {  
-                        "pan":"${BerlinConstants.BBAN_ACCOUNT}"
+                        "bban":"${BerlinConstants.BBAN_ACCOUNT}"
                     }
                 ]
             },
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
+        }"""
+            .stripIndent()
+
+    static final String cardAccountPayloadWithoutBalancesPermission = """
+          {
+               "access":{
+                  "accounts":[
+                     {
+                        "maskedPan":"525412******3241",
+                        "currency":"${BerlinConstants.CURRENCY1}"
+                     }
+                  ],
+                  "transactions":[
+                     {
+                        "maskedPan":"525412******3241"
+                     }
+                  ]
+               },
+               "recurringIndicator":true,
+               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+               "frequencyPerDay":4,
+               "combinedServiceIndicator":false
+        }
+    """.stripIndent()
+
+    static final String cardAccountPayloadWithoutTransactionsPermission = """{
+            "access":{  
+                "accounts":[
+                    {  
+                        "maskedPan":"525412******3241"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "maskedPan":"525412******3241"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""

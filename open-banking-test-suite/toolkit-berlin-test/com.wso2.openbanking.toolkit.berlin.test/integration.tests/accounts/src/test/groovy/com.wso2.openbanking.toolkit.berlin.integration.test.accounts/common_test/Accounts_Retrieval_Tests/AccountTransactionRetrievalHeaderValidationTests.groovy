@@ -76,7 +76,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE), BerlinConstants
                 .TOKEN_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains ("Incorrect Access Token Type provided"))
+                contains ("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -93,8 +93,6 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 .get(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
                 contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
@@ -137,7 +135,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Header parameter 'X-Request-ID' is required on path"))
+                contains("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -179,7 +177,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Header parameter 'Consent-ID' is required on path"))
+                contains("Header parameter 'Consent-ID' is required on path"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

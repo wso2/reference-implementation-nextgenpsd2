@@ -103,7 +103,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                            contains("X-Request-ID header is missing in the request"))
+                    contains("X-Request-ID header is missing in the request"))
         }
     }
 
@@ -137,7 +137,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     BerlinConstants.FORMAT_ERROR)
 
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Invalid X-Request-ID header. Needs to be in UUID format")
+                    "Input string \"1234\" is not a valid UUID")
         }
     }
 
@@ -170,7 +170,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Invalid X-Request-ID header. Needs to be in UUID format")
+                    "X-Request-ID header is missing in the request")
         }
     }
 
@@ -199,8 +199,6 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                    BerlinConstants.TOKEN_INVALID)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                     "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
                             "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
@@ -266,8 +264,6 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                     .delete("${paymentConsentPath}/${paymentId}")
 
             Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                    BerlinConstants.TOKEN_INVALID)
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                     "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : " +
                             "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")

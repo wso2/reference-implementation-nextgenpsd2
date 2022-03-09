@@ -18,7 +18,7 @@
     <parent>
         <groupId>com.wso2.openbanking</groupId>
         <artifactId>com.wso2.openbanking.toolkit.berlin.test</artifactId>
-        <version>1.0.0-RC2</version>
+        <version>1.0.0-RC1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <dependencies>
@@ -89,6 +89,18 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <!-- I don't specify version at all (Spring Boot can autoconfigure plugin version) -->
+                <executions>
+                    <execution>
+                        <!-- changed <id> to <phase>, but I don't know whether it's important or not. -->
+                        <phase>integration-test</phase>
+                        <!-- ... no changes here: the same as in the question ... -->
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>

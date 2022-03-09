@@ -31,7 +31,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
     String consentPath = AccountsConstants.CONSENT_PATH
     String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
 
-    @BeforeClass (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    @BeforeClass (alwaysRun = true)
     void "Get User Access Token"() {
 
         //Do Account Initiation
@@ -50,13 +50,13 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
     //Account Retrieval - Accounts
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0209011_Retrieval Request to get the Account List"() {
 
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .get(AccountsConstants.ACCOUNTS_PATH + "/")
+                .get(AccountsConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
@@ -93,7 +93,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
     //Account Retrieval - Transaction
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0211011_Retrieval Request to Get Transactions List with booked booking status"() {
 
         def response = BerlinRequestBuilder
@@ -116,11 +116,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_BOOKINGSTATUS)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.PARAMETER_NOT_CONSISTENT)
-
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Query parameter 'bookingStatus' is required on path '/accounts/{account-id}/transactions' " +
+                        "but not found in request.")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -133,11 +133,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_BOOKINGSTATUS)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.PARAMETER_NOT_CONSISTENT)
-
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Instance value (\"cat\") not found in enum (possible values: " +
+                        "[\"information\",\"booked\",\"pending\",\"both\"])")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -196,10 +196,10 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_DATEFROM)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TIMESTAMP_INVALID)
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                contains("String \"2018-Jan-11\" is invalid against requested date format(s) yyyy-MM-dd"))
 
     }
 
@@ -238,7 +238,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("bookingStatus", "both")
                 .get(AccountsConstants.SPECIFIC_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -252,10 +251,13 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("bookingStatus", "booked")
                 .get("$AccountsConstants.ACCOUNTS_PATH/transactions")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -264,8 +266,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("bookingStatus", "both")
-                .queryParam("deltaList", "true")
                 .get(AccountsConstants.SPECIFIC_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -274,7 +274,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
     //Account Retrieval - Balances
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0213011_Retrieval Request to Get Balances Details from a given Account"() {
 
         def response = BerlinRequestBuilder
@@ -295,7 +295,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get("$AccountsConstants.ACCOUNTS_PATH/balances")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Provided account Id does not have requested permissions")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -379,7 +383,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
     }
 
     /**
-     * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
+     * This testcase only supports if AccountReferenceType is configured as 'pan' in deployment.toml.
      */
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], enabled = false)
     void "OB-1663_Accounts retrieval for consent with pan account reference"() {
@@ -395,7 +399,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         generateUserAccessToken()
         Assert.assertNotNull(userAccessToken)
-        Assert.assertNotNull(refreshToken)
 
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
@@ -409,7 +412,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
     /**
      * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
      */
-    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], enabled = false)
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "OB-1664_Accounts retrieval for consent with bban account reference"() {
 
         String initiationPayload = AccountsInitiationPayloads.initiationPayloadWithBban
@@ -423,7 +426,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         generateUserAccessToken()
         Assert.assertNotNull(userAccessToken)
-        Assert.assertNotNull(refreshToken)
 
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)

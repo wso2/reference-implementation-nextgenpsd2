@@ -120,8 +120,7 @@ class AccountsListRetrievalResponseValidationTests extends AbstractAccountsFlow 
         Assert.assertNotNull(userAccessToken)
 
         //Transaction Retrieval
-        def response = BerlinRequestBuilder
-                .buildBasicRequest(userAccessToken)
+        def response = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .queryParam("bookingStatus", "booked")
                 .get(AccountsConstants.TRANSACTIONS_PATH)

@@ -40,7 +40,7 @@ class MultiCurrencyValidationTests extends AbstractCofFlow {
 		Assert.assertNotNull(code)
 	}
 
-	@Test (groups = ["1.3.6"])
+	@Test (groups = ["1.3.6"], priority = 1)
 	void "OB-1573_Aggregation Level COF initiation of multi currency account"() {
 
 		def initiationPayload = CofInitiationPayloads.initiationPayloadForAggregateLevelMultiCurrency
@@ -50,7 +50,7 @@ class MultiCurrencyValidationTests extends AbstractCofFlow {
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
 	}
 
-	@Test (groups = ["1.3.6"], dependsOnMethods = "OB-1573_Aggregation Level COF initiation of multi currency account")
+	@Test (groups = ["1.3.6"], priority = 1, dependsOnMethods = "OB-1573_Aggregation Level COF initiation of multi currency account")
 	void "OB-1591_COF consent authorisation for aggregation level multi currency account"() {
 
 		doCofAuthorizationFlow()

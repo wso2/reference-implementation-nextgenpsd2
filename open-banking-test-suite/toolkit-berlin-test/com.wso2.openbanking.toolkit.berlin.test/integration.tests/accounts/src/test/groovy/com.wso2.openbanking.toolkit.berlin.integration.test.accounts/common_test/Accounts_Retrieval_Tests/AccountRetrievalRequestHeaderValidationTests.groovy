@@ -79,7 +79,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Incorrect Access Token Type provided"))
+                contains("Incorrect Access Token Type provided"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -98,7 +98,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertTrue (TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+                contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -120,7 +120,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains ("Token is not valid"))
+                contains ("Token is not valid"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -141,7 +141,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Header parameter 'X-Request-ID' is required on path"))
+                contains("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -164,7 +164,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                        "Input string \"1234\" is not a valid UUID")
+                "Input string \"1234\" is not a valid UUID")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -185,7 +185,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Header parameter 'Consent-ID' is required on path"))
+                contains("Header parameter 'Consent-ID' is required on path"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -205,7 +205,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
-            BerlinConstants.CONSENT_UNKNOWN)
+                BerlinConstants.CONSENT_UNKNOWN)
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -277,7 +277,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, BerlinRequestBuilder.getCurrentDate())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .header(BerlinConstants.PSU_IP_ADDRESS, "823")
+                .header(BerlinConstants.PSU_IP_ADDRESS, "823.121.123.142")
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
@@ -292,7 +292,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 "String \"823.121.123.142\" is not a valid IPv4 address")
     }
 
-    @Test
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "OB-1688_Account retrieval with user access token generated from refresh token grant"() {
 
         //Authorise consent
@@ -317,8 +317,8 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.ACCOUNTS_PATH + "/")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+        Assert.assertEquals(response2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response2.jsonPath().getJsonObject("accounts"))
 
     }
 }
