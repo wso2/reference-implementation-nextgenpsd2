@@ -30,7 +30,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
     String consentPath = AccountsConstants.CONSENT_PATH
     String initiationPayload = AccountsInitiationPayloads.defaultCardAccountInitiationPayload
 
-    @BeforeClass (groups = ["1.3.3", "1.3.6"])
+    @BeforeClass (alwaysRun = true)
     void "Get User Access Token"() {
 
         //Do Account Initiation
@@ -49,7 +49,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
 
     //Account Retrieval - Card Accounts
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0214011_Retrieval Request to Get a List of Available Card Accounts"() {
 
         def response = BerlinRequestBuilder
@@ -75,7 +75,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
         Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0217011_Retrieval Request to Get Transaction Details of a Card Account"() {
 
         def response = BerlinRequestBuilder
@@ -98,10 +98,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_BOOKINGSTATUS)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.PARAMETER_NOT_CONSISTENT)
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Query parameter 'bookingStatus' is required on path '/card-accounts/{account-id}/transactions' " +
+                        "but not found in request.")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -114,10 +115,11 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_BOOKINGSTATUS)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.PARAMETER_NOT_CONSISTENT)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "Instance value (\"cat\") not found in enum (possible values: " +
+                        "[\"information\",\"booked\",\"pending\",\"both\"])")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -176,10 +178,10 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
-                BerlinConstants.QUERY_DATEFROM)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TIMESTAMP_INVALID)
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+                "String \"2018-60-11\" is invalid against requested date format(s) yyyy-MM-dd")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -188,15 +190,13 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("bookingStatus", "both")
-                .queryParam("deltaList", "true")
                 .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount.maskedPan"))
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"])
+    @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0216011_Retrieval Request to Get Balance Details of a Card Account"() {
 
         def response = BerlinRequestBuilder
@@ -238,7 +238,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
     void "TC0216014_Get Balances Details of a Card Account without balance permission"() {
 
         //Do Account Initiation
-        doDefaultInitiation(consentPath,AccountsInitiationPayloads.initiationPayloadWithoutBalancesPermission)
+        doDefaultInitiation(consentPath,AccountsInitiationPayloads.cardAccountPayloadWithoutBalancesPermission)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
         //Authorize the Consent and Extract the Code
@@ -265,7 +265,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
     void "TC0217019_Get Transaction Details of a Card Account without transactions permission"() {
 
         //Do Account Initiation
-        doDefaultInitiation(consentPath,AccountsInitiationPayloads.initiationPayloadWithoutTransactionsPermission)
+        doDefaultInitiation(consentPath,AccountsInitiationPayloads.cardAccountPayloadWithoutTransactionsPermission)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
         //Authorize the Consent and Extract the Code
@@ -311,7 +311,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.CARD_ACCOUNTS_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
     }
 
     @Test (groups = ["1.3.6"])

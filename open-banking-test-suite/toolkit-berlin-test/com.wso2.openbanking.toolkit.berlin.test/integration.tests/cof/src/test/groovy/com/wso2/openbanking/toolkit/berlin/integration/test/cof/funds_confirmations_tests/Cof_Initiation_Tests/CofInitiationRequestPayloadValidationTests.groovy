@@ -50,8 +50,7 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Invalid request payload, an account reference type is not provided in initiation request " +
-                        "payload.")
+                "Provided account reference is invalid or not supported")
     }
 
     @Test (groups = ["1.3.6"])
@@ -74,8 +73,8 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                " String \"1234567890123456789012345678901234567890\" is too long (length: 40, maximum allowed: 35)")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                " String \"1234567890123456789012345678901234567890\" is too long (length: 40, maximum allowed: 35)"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -98,8 +97,8 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                " String \"2020-12-312\" is invalid against requested date format(s) yyyy-MM-dd")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "String \"2025-12-312\" is invalid against requested date format(s) yyyy-MM-dd"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -170,6 +169,6 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Provided account reference type is not supported")
+                "Provided account reference is invalid or not supported")
     }
 }

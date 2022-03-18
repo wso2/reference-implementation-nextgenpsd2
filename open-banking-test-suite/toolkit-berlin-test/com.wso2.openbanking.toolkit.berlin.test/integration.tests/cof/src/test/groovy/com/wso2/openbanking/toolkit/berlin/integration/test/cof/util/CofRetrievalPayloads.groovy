@@ -86,8 +86,7 @@ class CofRetrievalPayloads {
     {
         "cardNumber": "12345678901234",
         "account": {
-        "iban": "DE12345678901234567890",
-        "currency": "${CofConstants.currency}" 
+        "iban": "DE98765432109876543210"
         },
         "instructedAmount": {
             "currency": "EUR"
@@ -98,8 +97,7 @@ class CofRetrievalPayloads {
     {
         "cardNumber": "12345678901234",
         "account": {
-        "iban": "DE12345678901234567890",
-        "currency": "${CofConstants.currency}" 
+        "iban": "DE98765432109876543210"
         },
         "instructedAmount": {
             "currency": "EUR",
@@ -111,8 +109,7 @@ class CofRetrievalPayloads {
     {
         "cardNumber": "12345678901234",
         "account": {
-        "iban": "DE12345678901234567890",
-        "currency": "${CofConstants.currency}" 
+        "iban": "DE98765432109876543210"
         },
         "instructedAmount": {
             "amount": "123"
@@ -123,8 +120,7 @@ class CofRetrievalPayloads {
     {
         "cardNumber": "12345678901234",
         "account": {
-        "iban": "DE12345678901234567890",
-        "currency": "${CofConstants.currency}" 
+        "iban": "DE98765432109876543210"
         },
         "instructedAmount": {
             "currency": "",
@@ -136,8 +132,7 @@ class CofRetrievalPayloads {
     {
         "cardNumber": "12345678901234",
         "account": {
-        "iban": "DE12345678901234567890",
-        "currency": "${CofConstants.currency}" 
+        "iban": "DE98765432109876543210"
         },
         "instructedAmount": {
             "currency": "123",

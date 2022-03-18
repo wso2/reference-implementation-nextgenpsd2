@@ -89,9 +89,12 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutScope()
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
 
-        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
+        String authUrl = automation.currentUrl.get()
+        def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
+
+        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.6"])
@@ -132,7 +135,12 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, " ")
-        consentAuthorizeErrorFlowValidation(request)
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
+                .execute()
+
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
+                "UTF8")
 
         Assert.assertEquals(oauthErrorCode, "Error while retrieving consent data. No consent Id provided with scope")
     }
@@ -334,7 +342,12 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Authorize the cancelled consent
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithConfigurableParams(scopes, consentId)
-        consentAuthorizeErrorFlowValidation(request)
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
+                .execute()
+
+        def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
+                "UTF8")
 
         Assert.assertEquals(oauthErrorCode, "The consent is not in an applicable status for authorization")
     }

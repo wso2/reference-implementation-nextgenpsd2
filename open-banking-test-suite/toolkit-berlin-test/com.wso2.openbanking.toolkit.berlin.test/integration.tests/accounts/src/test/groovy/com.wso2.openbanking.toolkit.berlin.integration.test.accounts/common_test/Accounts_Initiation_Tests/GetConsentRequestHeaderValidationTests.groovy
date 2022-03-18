@@ -94,17 +94,8 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
-        switch (BerlinTestUtil.solutionVersion) {
-            case TestConstants.SOLUTION_VERSION_140:
-                Assert.assertEquals (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                        "Parameter 'X-Request-ID' is required but is missing.")
-                break
-            default:
-                Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString ().
-                        contains ("Header parameter 'X-Request-ID' is required on path '/consents/{consentId}' but not found in request."))
-                break
-        }
+        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
+                .contains ("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -130,9 +121,8 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Invalid X-Request-ID header. Needs to be in UUID format")
+                "Input string \"1234\" is not a valid UUID")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -159,7 +149,7 @@ class GetConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'X-Request-ID' is required but is missing.")
+                "X-Request-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

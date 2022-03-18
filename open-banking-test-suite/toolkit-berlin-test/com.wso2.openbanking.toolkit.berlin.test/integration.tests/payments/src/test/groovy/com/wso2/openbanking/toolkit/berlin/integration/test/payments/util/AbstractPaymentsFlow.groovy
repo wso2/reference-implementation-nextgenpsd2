@@ -54,7 +54,7 @@ class AbstractPaymentsFlow {
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.PAYMENTS
     String oauthErrorCode
 
-    @BeforeClass (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    @BeforeClass (alwaysRun = true)
     void setup(){
 
         TestSuite.init()

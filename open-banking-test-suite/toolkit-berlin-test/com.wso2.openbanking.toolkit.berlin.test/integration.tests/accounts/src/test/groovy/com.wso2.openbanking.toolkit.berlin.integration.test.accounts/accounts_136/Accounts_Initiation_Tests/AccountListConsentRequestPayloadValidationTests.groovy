@@ -46,8 +46,6 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_PATH),
-                "access.availableAccounts")
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().contains(
                 "Instance value (\"allAccountsWithBalances\") not found in enum "))
     }

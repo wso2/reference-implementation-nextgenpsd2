@@ -60,7 +60,7 @@ class BerlinConstants {
     static final String CONSENT_EXPIRED = "CONSENT_EXPIRED"
     static final String SERVICE_INVALID = "SERVICE_INVALID"
     static final String ACCESS_EXCEEDED = "ACCESS_EXCEEDED"
-
+    static final String EXECUTION_DATE_INVALID = "EXECUTION_DATE_INVALID"
 
     static final int STATUS_CODE_204 = 204
     static final int STATUS_CODE_201 = 201

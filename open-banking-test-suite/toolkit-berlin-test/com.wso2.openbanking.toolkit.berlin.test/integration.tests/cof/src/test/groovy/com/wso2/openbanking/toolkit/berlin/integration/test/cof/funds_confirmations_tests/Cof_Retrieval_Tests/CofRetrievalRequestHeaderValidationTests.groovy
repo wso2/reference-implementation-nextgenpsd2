@@ -63,7 +63,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .body(retrievalPayload)
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).
@@ -86,8 +86,6 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody (response, BerlinConstants.TPPMESSAGE_TEXT).
                 contains("Invalid Credentials. Make sure your API invocation call has a header: " +
                         "'Authorization"))
@@ -135,7 +133,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT)
-                .contains("Header parameter 'X-Request-ID' is required on path"))
+                .contains("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -159,7 +157,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'X-Request-ID' is required but is missing.")
+                "X-Request-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.6"])
@@ -205,7 +203,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                        contains("Missing mandatory header: Consent-ID"))
+                contains("Missing mandatory header: Consent-ID"))
     }
 
     @Test (groups = ["1.3.6"])

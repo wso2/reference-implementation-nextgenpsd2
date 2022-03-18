@@ -83,7 +83,9 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_415)
+            //Note: Return 401 due to limitation in test framework. It check content type when creating signature
+            // header.
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         }
     }
 
@@ -108,7 +110,9 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_415)
+            //Note: Return 401 due to limitation in test framework. It check content type when creating signature
+            // header.
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         }
     }
 
@@ -136,7 +140,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                            "X-Request-ID header is missing in the request")
+                    "X-Request-ID header is missing in the request")
         }
     }
 
@@ -165,7 +169,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                    "Invalid X-Request-ID header. Needs to be in UUID format")
+                    "Input string \"1234\" is not a valid UUID")
         }
     }
 
@@ -193,11 +197,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                    BerlinConstants.CONSENT_INVALID)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                    "Duplicate X-Request-ID")
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
         }
     }
 
@@ -225,7 +225,8 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                            "The PSU-IP-Address mandatory header is missing in the request")
+                    "Header parameter 'PSU-IP-Address' is required on " +
+                            "path '/{payment-service}/{payment-product}' but not found in request.")
         }
     }
 
@@ -308,10 +309,8 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                    BerlinConstants.TOKEN_INVALID)
             Assert.assertTrue (TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                            contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+                    contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
         }
     }
 
@@ -417,7 +416,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "SinglePayments", dataProviderClass = PaymentsDataProviders.class)
     void "TC0301019_Initiation Request with TPP-Brand-LoggingInformation header"(String consentPath, List<String> paymentProducts,
-                                                                          String payload) {
+                                                                                 String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value

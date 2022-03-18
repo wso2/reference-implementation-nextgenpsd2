@@ -33,6 +33,9 @@ class MultiCurrencyValidationTests extends AbstractPaymentsFlow {
 		doDefaultInitiation(consentPath, initiationPayload)
 
 		Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+
+		doAuthorizationFlow()
+		Assert.assertNotNull(code)
 	}
 
 	@Test (groups = ["1.3.6"])

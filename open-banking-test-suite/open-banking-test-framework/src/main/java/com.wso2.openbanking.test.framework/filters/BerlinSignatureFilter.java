@@ -70,19 +70,17 @@ public class BerlinSignatureFilter implements OrderedFilter {
                         .encodeToString(signatureCertificate.getEncoded()));
 
                 Headers headers = req.getHeaders();
-
-                // Validate mandatory headers.
-                if (!headers.hasHeaderWithName(TestConstants.X_REQUEST_ID)) {
-                    throw new TestFrameworkException(TestConstants.X_REQUEST_ID + " header not found");
-                }
-                if (!headers.hasHeaderWithName(TestConstants.DATE)) {
-                    throw new TestFrameworkException(TestConstants.DATE + " header not found");
-                }
-
+                Header xRequestId;
                 List<Header> headerRequiredForSignature = new ArrayList<>();
                 headerRequiredForSignature.add(digestHeader);
-                headerRequiredForSignature.add(headers.get(TestConstants.X_REQUEST_ID));
-                headerRequiredForSignature.add(headers.get(TestConstants.DATE));
+
+                // Validate mandatory headers.
+                if (headers.hasHeaderWithName(TestConstants.X_REQUEST_ID)) {
+                    headerRequiredForSignature.add(headers.get(TestConstants.X_REQUEST_ID));
+                }
+                if (headers.hasHeaderWithName(TestConstants.DATE)) {
+                    headerRequiredForSignature.add(headers.get(TestConstants.DATE));
+                }
 
                 // Add optional headers
                 if (headers.hasHeaderWithName(TestConstants.PSU_ID)) {

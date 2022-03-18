@@ -61,7 +61,7 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"account\"])")
+                "Invalid request payload, mandatory elements are missing")
     }
 
     @Test (groups = ["1.3.6"])
@@ -115,7 +115,7 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"instructedAmount\"])")
+                "Invalid request payload, mandatory elements are missing")
     }
 
     @Test (groups = ["1.3.6"])
@@ -131,9 +131,9 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.CONSENT_INVALID)
+                BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                " Object has missing required properties ([\"amount\"])")
+                "[Path '/instructedAmount'] Object has missing required properties ([\"amount\"])")
     }
 
     @Test (groups = ["1.3.6"])
@@ -165,7 +165,7 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                " Object has missing required properties ([\"currency\"])")
+                "[Path '/instructedAmount'] Object has missing required properties ([\"currency\"])")
     }
 
     @Test (groups = ["1.3.6"])

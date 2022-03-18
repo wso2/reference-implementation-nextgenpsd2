@@ -65,7 +65,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
     }
 
-    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Create Payment Consent for Cancellation"])
+    @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = "Create Payment Consent for Cancellation")
     void "OB-1517_Consent Explicit Authorisation for Payment Cancellation"() {
 
         createExplicitAuthorization(consentPath)
@@ -81,7 +81,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["OB-1517_Consent Explicit Authorisation for Payment Cancellation"])
+            dependsOnMethods = "OB-1517_Consent Explicit Authorisation for Payment Cancellation")
     void "Authenticate PSU on SCA Flow"() {
 
         doAuthorizationFlow()
@@ -98,7 +98,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
 
     }
 
-    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
+    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"], dependsOnMethods = "Authenticate PSU on SCA Flow")
     void "OB-1518_Delete payment Consent after Explicit Authorisation"() {
 
         def cancellationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -111,7 +111,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["OB-1518_Delete payment Consent after Explicit Authorisation"])
+            dependsOnMethods = "OB-1518_Delete payment Consent after Explicit Authorisation")
     void "OB-1519_Create Explicit Cancellation Sub-Resource"() {
 
         createExplicitCancellation(consentPath)
@@ -123,7 +123,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["OB-1519_Create Explicit Cancellation Sub-Resource"])
+            dependsOnMethods = "OB-1519_Create Explicit Cancellation Sub-Resource")
     void "OB-1522_PSU Authorise Cancellation for Explicit Auth Consent"() {
 
         def auth = new BerlinOAuthAuthorization(scopes, paymentId)
@@ -154,7 +154,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["OB-1522_PSU Authorise Cancellation for Explicit Auth Consent"])
+            dependsOnMethods = "OB-1522_PSU Authorise Cancellation for Explicit Auth Consent")
     void "OB-1520_Get List of Authorisation Cancellation sub-resources"() {
 
         def authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -167,7 +167,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dependsOnMethods = ["OB-1522_PSU Authorise Cancellation for Explicit Auth Consent"])
+            dependsOnMethods = "OB-1522_PSU Authorise Cancellation for Explicit Auth Consent")
     void "OB-1521_Get Authorisation Cancellation sub-resource status"() {
 
         getCancellationStatus(consentPath)
@@ -198,7 +198,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.6"], priority = 1,
-            dependsOnMethods = ["OB-1523_Consent Implicit Authorisation for Payment Cancellation"])
+            dependsOnMethods = "OB-1523_Consent Implicit Authorisation for Payment Cancellation")
     void "OB-1524_Delete payment Consent after Implicit Authorisation"() {
 
         def cancellationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -211,7 +211,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.6"], priority = 1,
-            dependsOnMethods = ["OB-1524_Delete payment Consent after Implicit Authorisation"])
+            dependsOnMethods = "OB-1524_Delete payment Consent after Implicit Authorisation")
     void "OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"() {
 
         createExplicitCancellation(consentPath)
@@ -223,7 +223,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.6"], priority = 1,
-            dependsOnMethods = ["OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent"])
+            dependsOnMethods = "OB-1525_Create Cancellation Sub-Resource for Implicit Auth Consent")
     void "OB-1526_PSU Authorise Cancellation for Implicit Auth Consent"() {
 
         def auth = new BerlinOAuthAuthorization(scopes, paymentId)

@@ -91,6 +91,18 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <!-- I don't specify version at all (Spring Boot can autoconfigure plugin version) -->
+                <executions>
+                    <execution>
+                        <!-- changed <id> to <phase>, but I don't know whether it's important or not. -->
+                        <phase>integration-test</phase>
+                        <!-- ... no changes here: the same as in the question ... -->
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
                 <executions>

@@ -67,7 +67,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -578,7 +578,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
     /**
      * This testcase only supports if AccountReferenceType is configured as 'bban' in deployment.toml.
      */
-    @Test (groups = ["1.3.3", "1.3.6"], enabled = false)
+    @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0401023_Initiation Request with debtorAccount in bban attribute"() {
 
         String bulkPaymentConsentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" +

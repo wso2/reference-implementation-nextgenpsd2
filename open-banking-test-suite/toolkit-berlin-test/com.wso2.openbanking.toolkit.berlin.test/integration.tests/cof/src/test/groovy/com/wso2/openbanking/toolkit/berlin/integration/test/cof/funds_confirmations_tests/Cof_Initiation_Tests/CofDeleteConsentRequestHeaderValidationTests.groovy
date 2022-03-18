@@ -94,7 +94,7 @@ class CofDeleteConsentRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                        toString().contains("X-Request-ID header is missing in the request"))
+                toString().contains("X-Request-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -172,8 +172,6 @@ class CofDeleteConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .delete("${consentPath}/${consentId}")
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
                 contains("Invalid Credentials. Make sure your API invocation call has a header: " +
                         "'Authorization"))
