@@ -68,36 +68,6 @@ public class BulkPaymentInitiationRequestHandler extends PaymentInitiationReques
         }
 
         // Validate each payment object present in bulk payments payload
-        validatePaymentElements(payments);
-    }
-
-    private void validatePaymentElements(JSONArray payments) {
-
-        log.debug("Iterating and validating payment objects");
-        for (Object payment : payments) {
-            PaymentConsentUtil.validateCommonPaymentElements((JSONObject) payment);
-
-            if (((JSONObject) payment).containsKey(ConsentExtensionConstants.DEBTOR_ACCOUNT)) {
-                log.error("Debtor account cannot be present in bulk payment objects");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format(ErrorConstants.INVALID_DATA_IN_PAYMENTS,
-                                ConsentExtensionConstants.DEBTOR_ACCOUNT)));
-            }
-            if (((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
-                log.error("Requested execution date cannot be present in bulk payment objects");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format(ErrorConstants.INVALID_DATA_IN_PAYMENTS,
-                                ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)));
-            }
-            if (((JSONObject) payment).containsKey(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME)) {
-                log.error("Requested execution time cannot be present in bulk payment objects");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format(ErrorConstants.INVALID_DATA_IN_PAYMENTS,
-                                ConsentExtensionConstants.REQUESTED_EXECUTION_TIME)));
-            }
-        }
+        PaymentConsentUtil.validatePaymentElements(payments);
     }
 }
