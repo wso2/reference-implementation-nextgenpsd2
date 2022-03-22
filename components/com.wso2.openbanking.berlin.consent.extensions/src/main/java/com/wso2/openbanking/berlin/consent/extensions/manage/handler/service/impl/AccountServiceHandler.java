@@ -115,8 +115,11 @@ public class AccountServiceHandler implements ServiceHandler {
 
         ConsentResource updatedConsentResource = null;
 
-        if (AccountConsentUtil.isConsentExpired(consentResource.getValidityPeriod(),
-                consentResource.getUpdatedTime())) {
+        if (AccountConsentUtil.isConsentExpired(consentResource.getValidityPeriod(), consentResource.getUpdatedTime())
+                && !(StringUtils.equals(consentResource.getCurrentStatus(),
+                ConsentStatusEnum.TERMINATED_BY_TPP.toString())
+                || StringUtils.equals(consentResource.getCurrentStatus(),
+                ConsentStatusEnum.REVOKED_BY_PSU.toString()))) {
             log.debug("The Consent is expired");
             try {
                 updatedConsentResource = coreService.updateConsentStatus(consentId,
