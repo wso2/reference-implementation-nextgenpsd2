@@ -191,6 +191,14 @@ public class AccountServiceHandler implements ServiceHandler {
                     ErrorConstants.CONSENT_ALREADY_DELETED));
         }
 
+        // Check whether the consent is already expired before deleting
+        if (StringUtils.equals(ConsentStatusEnum.EXPIRED.toString(), consentResource.getCurrentStatus())) {
+            log.error(ErrorConstants.CONSENT_ALREADY_EXPIRED);
+            throw new ConsentException(ResponseStatus.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
+                    ErrorConstants.CONSENT_ALREADY_EXPIRED));
+        }
+
         log.debug("Deleting consent resource and updating status");
         try {
             coreService.revokeConsent(consentId, ConsentStatusEnum.TERMINATED_BY_TPP.toString());

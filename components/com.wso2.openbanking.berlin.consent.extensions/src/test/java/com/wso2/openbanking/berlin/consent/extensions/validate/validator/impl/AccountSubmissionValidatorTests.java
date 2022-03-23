@@ -92,7 +92,8 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 UUID.randomUUID().toString(), AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
         detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
-        detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
+        detailedConsentResource.setUpdatedTime(AccountConsentUtil
+                .convertToUtcTimestamp(TestUtil.getCurrentDate(2)));
 
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
 
@@ -122,7 +123,8 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 authId, AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
         detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
-        detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
+        detailedConsentResource.setUpdatedTime(AccountConsentUtil
+                .convertToUtcTimestamp(TestUtil.getCurrentDate(2)));
         detailedConsentResource.setConsentMappingResources(TestUtil
                 .getSampleTestConsentMappingResourcesWithPermissions(authId));
 
@@ -154,7 +156,8 @@ public class AccountSubmissionValidatorTests extends PowerMockTestCase {
                 clientId, ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.VALID.toString(),
                 authId, AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
         detailedConsentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(futureDate));
-        detailedConsentResource.setUpdatedTime(AccountConsentUtil.convertToUtcTimestamp("2021-12-20"));
+        detailedConsentResource.setUpdatedTime(AccountConsentUtil
+                .convertToUtcTimestamp(TestUtil.getCurrentDate(2)));
         detailedConsentResource.setConsentMappingResources(TestUtil
                 .getSampleTestConsentMappingResourcesWithPermissions(authId));
 
