@@ -17,7 +17,7 @@ import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayConstants;
 import net.minidev.json.JSONObject;
 import org.apache.axis2.AxisFault;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
