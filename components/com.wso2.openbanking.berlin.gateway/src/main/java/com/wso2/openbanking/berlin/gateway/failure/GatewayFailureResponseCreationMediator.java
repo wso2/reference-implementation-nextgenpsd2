@@ -17,6 +17,7 @@ import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayConstants;
 import net.minidev.json.JSONObject;
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -54,6 +55,8 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
                 errorData = getAuthFailureResponse(errorCode, errorMessage, errorDetail);
             } else if (errorCode == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                 errorData = getMethodNotAllowedFailureResponse(errorMessage);
+            } else if (Integer.toString(errorCode).startsWith("4") && StringUtils.isEmpty(errorDetail)) {
+                errorData = getResourceFailureResponse(errorMessage);
             } else if (errorDetail.startsWith(GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER)) {
                 errorData = getSchemaValidationFailureResponse(errorCode, errorDetail);
             } else {
@@ -165,6 +168,19 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
         errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
                 TPPMessage.CodeEnum.SERVICE_INVALID_405, errorMessage);
         errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+
+        return errorData;
+    }
+
+    private static JSONObject getResourceFailureResponse(String errorMessage) {
+
+        JSONObject errorData = new JSONObject();
+        JSONObject errorResponse;
+
+        errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
+                TPPMessage.CodeEnum.RESOURCE_UNKNOWN_403, errorMessage);
+        errorData.put(GatewayConstants.STATUS_CODE, 403);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
 
         return errorData;

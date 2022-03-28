@@ -77,6 +77,15 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
         Assert.assertTrue(mediator.mediate(messageContext));
     }
 
+    @Test
+    public void testMediateForResourceFailureResponse() throws Exception {
+
+        MessageContext messageContext = getData();
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 404);
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL, null);
+        Assert.assertTrue(mediator.mediate(messageContext));
+    }
+
     private MessageContext getData() throws Exception {
 
         Map<String, Object> configs = new HashMap<>();
