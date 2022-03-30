@@ -96,8 +96,7 @@ public class ErrorConstants {
             " the execution date supported by the ASPSP";
     public static final String EXECUTION_DATE_TIME_ERROR = "Requested execution date and requested execution time " +
             "cannot coexist in the payload";
-    public static final String INVALID_DATA_IN_PAYMENTS = "Invalid data present in payment objects (\"debtorAccount\"" +
-            ",\"requestedExecutionTime\",\"requestedExecutionDate\")";
+    public static final String INVALID_DATA_IN_PAYMENTS = "Invalid data present in payment objects (%s)";
     public static final String CONSENT_INITIATION_ERROR = "Error occurred while initiating payment consent";
     public static final String CONSENT_ATTRIBUTE_INITIATION_ERROR = "Error occurred while storing consent " +
             "attributes";
