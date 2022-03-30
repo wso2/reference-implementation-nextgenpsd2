@@ -115,6 +115,7 @@ public class ErrorConstants {
     public static final String BANK_OFFERED_CONSENT_UPDATE_ERROR = "Error while trying to update consent receipt " +
             "with bank offered accounts";
     public static final String CONSENT_ALREADY_DELETED = "The requested consent is already deleted";
+    public static final String CONSENT_ALREADY_EXPIRED = "Cannot delete an expired consent";
     public static final String CONSENT_UPDATE_ERROR = "Error while updating the consent status";
     public static final String REQUESTED_EXECUTION_DATE_INVALID = "Requested execution date is invalid";
     public static final String NO_PAYMENTS_IN_BODY = "No payments found in payments request body";
