@@ -12,8 +12,11 @@
 
 package com.wso2.openbanking.berlin.gateway.failure;
 
+import com.atlassian.oai.validator.report.ImmutableValidationReport;
+import com.atlassian.oai.validator.report.ValidationReport;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayConstants;
 import graphql.Assert;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import org.apache.axiom.om.OMElement;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
@@ -27,8 +30,11 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -74,6 +80,31 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
 
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 405);
+        Assert.assertTrue(mediator.mediate(messageContext));
+    }
+
+    @Test
+    public void testMediateForSchemaValidationError() throws Exception {
+
+        MessageContext messageContext = getData();
+        ImmutableValidationReport mockReport = Mockito.mock(ImmutableValidationReport.class);
+        ValidationReport.Message mockMessage = Mockito.mock(ValidationReport.Message.class);
+        ValidationReport.MessageContext mockContext = Mockito.mock(ValidationReport.MessageContext.class);
+        Parameter mockParameter = Mockito.mock(Parameter.class);
+        List<ValidationReport.Message> mockMessagesList = new ArrayList<>();
+        mockMessagesList.add(mockMessage);
+        messageContext.setProperty(GatewayConstants.SCHEMA_VALIDATION_REPORT_IDENTIFIER, mockReport);
+        Mockito.when(mockReport.getMessages()).thenReturn(mockMessagesList);
+        Mockito.when(mockMessage.getMessage()).thenReturn("Instance value (\"cat\") not found in enum (possible " +
+                "values: [\"information\",\"booked\",\"pending\",\"both\"])");
+        Mockito.when(mockMessage.getKey()).thenReturn("validation.request.parameter.schema.enum");
+        Mockito.when(mockMessage.getContext()).thenReturn(Optional.of(mockContext));
+        Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
+        Mockito.when(mockParameter.getIn()).thenReturn("Query");
+        Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL,
+                GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER);
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
         Assert.assertTrue(mediator.mediate(messageContext));
     }
 
