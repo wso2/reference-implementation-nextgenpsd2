@@ -19,6 +19,7 @@ import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayConstants;
 import net.minidev.json.JSONObject;
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -102,7 +103,7 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
 
         if (schemaValidationReport != null) {
 
-            String path = "";
+            String path = StringUtils.EMPTY;
             Pattern payloadPath = Pattern.compile("'.*']");
             Pattern headerPath = Pattern.compile("'[a-zA-Z-]+'");
             Pattern date = Pattern.compile("\\sdate");
@@ -166,7 +167,9 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
                 } else {
                     berlinErrorCode = TPPMessage.CodeEnum.FORMAT_ERROR.toString();
                     // According to the specification, path should only be added to FORMAT_ERROR scenarios
-                    error.setPath(path);
+                    if (StringUtils.isNotBlank(path)) {
+                        error.setPath(path);
+                    }
                 }
 
                 error.setCategory(TPPMessage.CategoryEnum.ERROR);
