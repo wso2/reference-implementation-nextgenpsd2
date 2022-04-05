@@ -54,6 +54,8 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
                 errorData = getAuthFailureResponse(errorCode, errorMessage, errorDetail);
             } else if (errorCode == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                 errorData = getMethodNotAllowedFailureResponse(errorMessage);
+            } else if (Integer.toString(errorCode).startsWith("404")) {
+                errorData = getResourceFailureResponse(errorMessage);
             } else if (errorDetail.startsWith(GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER)) {
                 errorData = getSchemaValidationFailureResponse(errorCode, errorDetail);
             } else {
@@ -165,6 +167,25 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
         errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
                 TPPMessage.CodeEnum.SERVICE_INVALID_405, errorMessage);
         errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+
+        return errorData;
+    }
+
+    /**
+     * Constructs the error for resource failure scenarios.
+     *
+     * @param errorMessage error message
+     * @return a json object of the constructed error
+     */
+    private static JSONObject getResourceFailureResponse(String errorMessage) {
+
+        JSONObject errorData = new JSONObject();
+        JSONObject errorResponse;
+
+        errorResponse = ErrorUtil.constructBerlinError("", TPPMessage.CategoryEnum.ERROR,
+                TPPMessage.CodeEnum.RESOURCE_UNKNOWN_403, errorMessage);
+        errorData.put(GatewayConstants.STATUS_CODE, 403);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
 
         return errorData;
