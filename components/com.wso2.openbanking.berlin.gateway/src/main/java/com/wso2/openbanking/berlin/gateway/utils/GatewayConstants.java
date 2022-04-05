@@ -34,11 +34,10 @@ public class GatewayConstants {
 
     // Schema validation constants
     public static final String SCHEMA_VALIDATION_FAILURE_IDENTIFIER = "Schema validation failed in the Request:";
-    public static final String PAYMENT_PRODUCT_ERROR_PATTERN = "Instance value \\(.*?\\) not found in enum " +
-            "\\(possible values: \\[\\\"sepa-credit-transfers\\\",\\\"instant-sepa-credit-transfers\\\"," +
-            "\\\"target-2-payments\\\",\\\"cross-border-credit-transfers\\\"," +
-            "\\\"pain\\.001\\-sepa\\-credit\\-transfers\\\",\\\"pain\\.001\\-instant\\-sepa\\-credit\\-transfers\\\"," +
-            "\\\"pain\\.001\\-target\\-2-payments\\\",\\\"pain\\.001-cross-border-credit-transfers\\\"\\]\\)";
+    public static final String SCHEMA_VALIDATION_REPORT_IDENTIFIER = "schema-validation-report";
+    public static final String PATH_HEADER = "Header";
+    public static final String PATH_QUERY = "Query";
+    public static final String PATH_PAYMENT_PRODUCT = "Header.payment-product";
 
     public static final int API_AUTH_GENERAL_ERROR = 900900;
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;
