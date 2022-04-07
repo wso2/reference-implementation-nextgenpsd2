@@ -20,9 +20,9 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.factory.ServiceHandlerFactory;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,22 +38,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        if (!HeaderValidator.isHeaderStringPresent(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_MISSING));
-        }
-
-        if (!HeaderValidator.isHeaderValidUUID(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_INVALID);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_INVALID));
-        }
-
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
@@ -73,22 +58,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        if (!HeaderValidator.isHeaderStringPresent(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_MISSING));
-        }
-
-        if (!HeaderValidator.isHeaderValidUUID(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_INVALID);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_INVALID));
-        }
-
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
@@ -107,22 +77,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        if (!HeaderValidator.isHeaderStringPresent(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_MISSING));
-        }
-
-        if (!HeaderValidator.isHeaderValidUUID(consentManageData.getHeaders(),
-                ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_INVALID);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_INVALID));
-        }
-
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 

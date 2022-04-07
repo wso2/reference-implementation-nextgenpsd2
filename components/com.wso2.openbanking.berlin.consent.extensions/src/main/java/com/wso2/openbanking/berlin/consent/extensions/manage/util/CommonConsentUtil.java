@@ -27,6 +27,7 @@ import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -234,4 +235,20 @@ public class CommonConsentUtil {
         }
     }
 
+    public static void validateXRequestId(Map<String, String> headers) {
+
+        if (!HeaderValidator.isHeaderStringPresent(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.X_REQUEST_ID_MISSING));
+        }
+
+        if (!HeaderValidator.isHeaderValidUUID(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
+            log.error(ErrorConstants.X_REQUEST_ID_INVALID);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.X_REQUEST_ID_INVALID));
+        }
+    }
 }
