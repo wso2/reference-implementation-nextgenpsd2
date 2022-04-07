@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.validate.validator.util;
 
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,22 @@ public class CommonValidationUtil {
         }
 
         return false;
+    }
+
+    /**
+     * This method sets error details of consent validation errors to consent validation result.
+     *
+     * @param consentValidationResult consent validation result object
+     * @param statusCode status code of the error
+     * @param errorCode error code (Berlin error code)
+     * @param errorMessage error message
+     */
+    public static void handleConsentValidationError(ConsentValidationResult consentValidationResult, int statusCode,
+                                                    String errorCode, String errorMessage) {
+
+        consentValidationResult.setHttpCode(statusCode);
+        consentValidationResult.setErrorCode(errorCode);
+        consentValidationResult.setErrorMessage(errorMessage);
     }
 
 }

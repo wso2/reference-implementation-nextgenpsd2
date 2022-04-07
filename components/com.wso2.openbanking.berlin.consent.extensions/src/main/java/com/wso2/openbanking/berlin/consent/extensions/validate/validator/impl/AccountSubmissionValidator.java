@@ -68,18 +68,18 @@ public class AccountSubmissionValidator implements SubmissionValidator {
                 }
             }
             log.error(ErrorConstants.CONSENT_EXPIRED);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_EXPIRED.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_EXPIRED);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_EXPIRED.toString(),
+                    ErrorConstants.CONSENT_EXPIRED);
             return;
         }
 
         log.debug("Checking if consent: " + consentValidateData.getConsentId() + " is not in a valid state");
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
-            consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_INVALID_STATE);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                    ErrorConstants.CONSENT_INVALID_STATE);
             return;
         }
 
@@ -94,9 +94,9 @@ public class AccountSubmissionValidator implements SubmissionValidator {
 
             if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
                 log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
-                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
-                consentValidationResult.setErrorMessage(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_INVALID.toString(),
+                        ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
                 return;
             }
 

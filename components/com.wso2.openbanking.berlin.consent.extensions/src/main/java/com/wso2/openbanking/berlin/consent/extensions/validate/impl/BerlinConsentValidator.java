@@ -25,6 +25,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.factory.SubmissionValidatorFactory;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +43,23 @@ public class BerlinConsentValidator implements ConsentValidator {
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
             throws ConsentException {
 
-        HeaderValidator.validateXRequestId(consentValidateData.getHeaders());
+        // Validate X-Request-ID
+        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeaders(),
+                ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.X_REQUEST_ID_MISSING);
+            return;
+        }
+
+        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeaders(),
+                ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.X_REQUEST_ID_INVALID);
+            return;
+        }
+
         consentValidationResult.getConsentInformation()
                 .appendField(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                         consentValidateData.getHeaders().getAsString(ConsentExtensionConstants
@@ -52,7 +69,23 @@ public class BerlinConsentValidator implements ConsentValidator {
             HeaderValidator.validatePsuIpAddress(consentValidateData.getHeaders());
         }
 
-        HeaderValidator.validateConsentId(consentValidateData.getHeaders());
+        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeaders(),
+                ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+            log.error(ErrorConstants.CONSENT_ID_MISSING);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.CONSENT_ID_MISSING);
+            return;
+        }
+
+        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeaders(),
+                ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+            log.error(ErrorConstants.CONSENT_ID_INVALID);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                    ErrorConstants.CONSENT_ID_INVALID);
+            return;
+        }
 
         String consentIdHeader = consentValidateData.getHeaders()
                 .getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
@@ -71,9 +104,9 @@ public class BerlinConsentValidator implements ConsentValidator {
         if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)
                 || !StringUtils.equals(consentIdHeader, consentValidateData.getComprehensiveConsent().getConsentID())) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            consentValidationResult.setHttpCode(ResponseStatus.FORBIDDEN.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.FORBIDDEN.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
+                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             return;
         }
 
@@ -90,9 +123,9 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         if (!isPsuIdMatching) {
             log.error(ErrorConstants.NO_MATCHING_USER_FOR_CONSENT);
-            consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.PSU_CREDENTIALS_INVALID.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_USER_FOR_CONSENT);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.PSU_CREDENTIALS_INVALID.toString(),
+                    ErrorConstants.NO_MATCHING_USER_FOR_CONSENT);
             return;
         }
 
