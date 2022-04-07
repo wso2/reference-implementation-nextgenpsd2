@@ -113,7 +113,7 @@ public class AccountServiceHandler implements ServiceHandler {
         }
         ConsentExtensionUtil.validateConsentType(consentType, consentResource.getConsentType());
 
-        ConsentResource updatedConsentResource = null;
+        ConsentResource updatedConsentResource;
 
         if (AccountConsentUtil.isConsentExpired(consentResource.getValidityPeriod(), consentResource.getUpdatedTime())
                 && !(StringUtils.equals(consentResource.getCurrentStatus(),
@@ -129,10 +129,7 @@ public class AccountServiceHandler implements ServiceHandler {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         ErrorConstants.CONSENT_UPDATE_ERROR);
             }
-        }
-
-        if (updatedConsentResource != null) {
-            consentResource = updatedConsentResource;
+            consentResource.setCurrentStatus(updatedConsentResource.getCurrentStatus());
         }
 
         if (StringUtils.contains(requestPath, ConsentExtensionConstants.STATUS)) {
