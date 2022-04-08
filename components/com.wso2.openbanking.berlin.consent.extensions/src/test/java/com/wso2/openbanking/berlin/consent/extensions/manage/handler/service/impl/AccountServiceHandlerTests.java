@@ -44,6 +44,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -140,6 +142,10 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
                         ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2, consentId,
                         clientId);
 
+        consentResource.setValidityPeriod(LocalDate.parse(TestUtil.getCurrentDate(2))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+        consentResource.setUpdatedTime(LocalDate.parse(TestUtil.getCurrentDate(3))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         accountServiceHandler.handleGet(accountConsentManageData);
 
@@ -178,6 +184,10 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
                         ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
                         consentId, clientId);
 
+        consentResource.setValidityPeriod(LocalDate.parse(TestUtil.getCurrentDate(2))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+        consentResource.setUpdatedTime(LocalDate.parse(TestUtil.getCurrentDate(3))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         accountServiceHandler.handleGet(accountConsentManageData);
 
@@ -206,6 +216,13 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
                         ConsentTypeEnum.ACCOUNTS.toString(), "{\"key\":\"value\"123}",
                         consentId, clientId);
 
+        ConsentResource updatedConsentResource =
+                TestUtil.getSampleConsentResource(ConsentStatusEnum.EXPIRED.toString(),
+                        ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2,
+                        consentId, clientId);
+
+        doReturn(updatedConsentResource).when(consentCoreServiceMock).updateConsentStatus(Mockito.anyString(),
+                Mockito.anyString());
         doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
         accountServiceHandler.handleGet(accountConsentManageData);
     }
