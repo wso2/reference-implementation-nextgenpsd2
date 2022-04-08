@@ -80,8 +80,8 @@ public class AccountValidationUtil {
             } else {
                 log.error("The provided account Id: " + accountId + " does not contains necessary " +
                         "permission: " + accessMethod);
-                consentValidationResult.setHttpCode(ResponseStatus.UNAUTHORIZED.getStatusCode());
-                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_INVALID.toString());
+                consentValidationResult.setHttpCode(ResponseStatus.NOT_FOUND.getStatusCode());
+                consentValidationResult.setErrorCode(TPPMessage.CodeEnum.RESOURCE_UNKNOWN_404.toString());
                 consentValidationResult.setErrorMessage(ErrorConstants.NO_MATCHING_PERMISSIONS_FOR_ACCOUNT_ID);
             }
         } else {

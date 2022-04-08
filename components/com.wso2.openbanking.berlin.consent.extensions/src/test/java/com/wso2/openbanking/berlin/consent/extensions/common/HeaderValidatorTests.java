@@ -78,33 +78,6 @@ public class HeaderValidatorTests {
     }
 
     @Test
-    public void testValidXRequestId() {
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, "1b91e649-3d06-4e16-ada7-bf5af2136b44");
-
-        HeaderValidator.validateXRequestId(headers);
-    }
-
-    @Test(expectedExceptions = ConsentException.class)
-    public void testInvalidXRequestId() {
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, "abc");
-
-        HeaderValidator.validateXRequestId(headers);
-    }
-
-    @Test(expectedExceptions = ConsentException.class)
-    public void testEmptyXRequestId() {
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, "");
-
-        HeaderValidator.validateXRequestId(headers);
-    }
-
-    @Test
     public void testIsTppExplicitAuthorisationPreferred() {
 
         Map<String, String> headers = new HashMap<>();

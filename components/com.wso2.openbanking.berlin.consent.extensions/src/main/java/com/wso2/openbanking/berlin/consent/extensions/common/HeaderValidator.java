@@ -81,44 +81,57 @@ public class HeaderValidator {
     }
 
     /**
-     * Validates the X-Request-ID request header.
+     * Validates the presence of a provided header string in a headers map.
      *
-     * @param headers request headers
+     * @param headers the headers map
+     * @return true is present, false otherwise
      */
-    public static void validateXRequestId(Map<String, String> headers) {
-        log.debug("Validating the X-Request-ID header");
-        if (headers.containsKey(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            String xRequestId = headers.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
+    public static boolean isHeaderStringPresent(Map<String, String> headers, String header) {
 
-            if (StringUtils.isEmpty(xRequestId) || !CommonUtil.isValidUuid(xRequestId)) {
-                log.error(ErrorConstants.X_REQUEST_ID_INVALID);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        ErrorConstants.X_REQUEST_ID_INVALID));
-            }
-        } else {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_MISSING));
+        String headerString = null;
+        if (headers.containsKey(header)) {
+            headerString = headers.get(header);
         }
+        return StringUtils.isNotBlank(headerString);
     }
 
     /**
-     * Validates the X-Request-ID request header sent in a
-     * JSON object during consent validation.
+     * Validates the presence of a provided header string in a headers JSONObject.
      *
-     * @param headersObject headers object
+     * @param headers the headers JSONObject
+     * @return true is present, false otherwise
      */
-    public static void validateXRequestId(JSONObject headersObject) {
+    public static boolean isHeaderStringPresent(JSONObject headers, String header) {
 
-        Map<String, String> headerMap = new HashMap<>();
-
-        if (headersObject.containsKey(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
-            headerMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER,
-                    headersObject.getAsString(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER));
+        String headerString = null;
+        if (headers.containsKey(header)) {
+            headerString = (String) headers.get(header);
         }
-        validateXRequestId(headerMap);
+        return StringUtils.isNotBlank(headerString);
+    }
+
+    /**
+     * Validates a header string for the validity when a header map if provided.
+     * Checks whether the ID is a UUID.
+     *
+     * @param headers headers map
+     * @return true is the header is valid, false otherwise
+     */
+    public static boolean isHeaderValidUUID(Map<String, String> headers, String header) {
+
+        return CommonUtil.isValidUuid(headers.get(header));
+    }
+
+    /**
+     * Validates a header for the validity when a header JSONObject is provided.
+     * Checks whether the ID is a UUID.
+     *
+     * @param headers headers JSONObject
+     * @return true is the header is valid, false otherwise
+     */
+    public static boolean isHeaderValidUUID(JSONObject headers, String header) {
+
+        return CommonUtil.isValidUuid((String) headers.get(header));
     }
 
     /**
@@ -198,29 +211,4 @@ public class HeaderValidator {
                     header + " header is missing"));
         }
     }
-
-    /**
-     * Checks if the Consent-ID header is present and in proper format.
-     *
-     * @param headersObject headers object
-     */
-    public static void validateConsentId(JSONObject headersObject) {
-        log.debug("Validating the Consent-ID header");
-        if (ConsentExtensionUtil.checkCaseIgnoredHeader(headersObject, ConsentExtensionConstants.CONSENT_ID_HEADER)) {
-            String consentId = headersObject.getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
-
-            if (StringUtils.isEmpty(consentId) || !CommonUtil.isValidUuid(consentId)) {
-                log.error(ErrorConstants.CONSENT_ID_INVALID);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        ErrorConstants.CONSENT_ID_INVALID));
-            }
-        } else {
-            log.error(ErrorConstants.CONSENT_ID_MISSING);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.CONSENT_ID_MISSING));
-        }
-    }
-
 }

@@ -60,7 +60,7 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
         consentManageDataMock = mock(ConsentManageData.class);
 
         headersMap = new HashMap<>();
-        headersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, UUID.randomUUID().toString());
+        headersMap.put(ConsentExtensionConstants.X_REQUEST_ID_HEADER, UUID.randomUUID().toString());
 
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);

@@ -20,9 +20,9 @@ import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
-import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.factory.ServiceHandlerFactory;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +38,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handleGet(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        HeaderValidator.validateXRequestId(consentManageData.getHeaders());
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
@@ -58,7 +58,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handlePost(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        HeaderValidator.validateXRequestId(consentManageData.getHeaders());
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
@@ -77,7 +77,7 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
     public void handleDelete(ConsentManageData consentManageData) throws ConsentException {
 
         log.debug("Validating the X-Request-ID header");
-        HeaderValidator.validateXRequestId(consentManageData.getHeaders());
+        CommonConsentUtil.validateXRequestId(consentManageData.getHeaders());
         consentManageData.setResponseHeader(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 

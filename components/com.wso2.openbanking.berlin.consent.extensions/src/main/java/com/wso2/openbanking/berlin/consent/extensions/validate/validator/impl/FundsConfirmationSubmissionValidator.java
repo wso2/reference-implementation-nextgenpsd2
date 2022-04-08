@@ -22,6 +22,7 @@ import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.FundsConfirmationValidationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -43,9 +44,9 @@ public class FundsConfirmationSubmissionValidator implements SubmissionValidator
         log.debug("Checking if consent: " + consentValidateData.getConsentId() + " is not in a valid state");
         if (!StringUtils.equals(detailedConsentResource.getCurrentStatus(), ConsentStatusEnum.VALID.toString())) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
-            consentValidationResult.setHttpCode(ResponseStatus.BAD_REQUEST.getStatusCode());
-            consentValidationResult.setErrorCode(TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString());
-            consentValidationResult.setErrorMessage(ErrorConstants.CONSENT_INVALID_STATE);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                    ErrorConstants.CONSENT_INVALID_STATE);
             return;
         }
 
