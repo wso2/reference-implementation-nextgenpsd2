@@ -109,8 +109,8 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 consentCoreService.updateConsentStatus(consentResource.getConsentID(),
                         ConsentStatusEnum.REJECTED.toString());
                 consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
-                // TODO: (improvement) issue for accelerator to update user of auth resource method in core service
-                // https://github.com/wso2-enterprise/financial-open-banking/issues/7175
+                consentCoreService.updateUserAuthorization(authorisationId, StringUtils.removeEndIgnoreCase(userId,
+                        ConsentExtensionConstants.SUPER_TENANT_DOMAIN));
                 return;
             } else {
                 log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
