@@ -54,8 +54,13 @@ public class CustomThrottleDataPublisherImpl implements ThrottleDataPublisher {
         Map<String, Object> customKeyMap = new HashMap<>();
         Map<String, String> requestHeaders = requestContextDTO.getMsgInfo().getHeaders();
 
+        /* Request will be throttled only if it is initiated by the TPP.
+         * This is determined by the presence of PSU-IP-Address header in the retrieval request.
+         * According to the specification, if the header is present, the request is initiated by the PSU. Otherwise,
+         * the request is initiated by TPP.
+         */
         if (CommonConfigParser.getInstance().isFrequencyPerDayThrottlingEnabled()
-                && StringUtils.isNotBlank(requestHeaders.get(PSU_IP_ADDRESS))) {
+                && StringUtils.isBlank(requestHeaders.get(PSU_IP_ADDRESS))) {
 
             String electedResource = requestContextDTO.getMsgInfo().getElectedResource();
             String resourceString = requestContextDTO.getMsgInfo().getResource();
