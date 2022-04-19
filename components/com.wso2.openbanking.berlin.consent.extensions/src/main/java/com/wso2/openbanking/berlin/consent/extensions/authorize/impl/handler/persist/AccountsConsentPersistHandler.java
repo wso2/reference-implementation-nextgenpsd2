@@ -109,7 +109,7 @@ public class AccountsConsentPersistHandler implements ConsentPersistHandler {
                 consentCoreService.updateConsentStatus(consentResource.getConsentID(),
                         ConsentStatusEnum.REJECTED.toString());
                 consentCoreService.updateAuthorizationStatus(authorisationId, authStatus);
-                consentCoreService.updateUserAuthorization(authorisationId, StringUtils.removeEndIgnoreCase(userId,
+                consentCoreService.updateAuthorizationUser(authorisationId, StringUtils.removeEndIgnoreCase(userId,
                         ConsentExtensionConstants.SUPER_TENANT_DOMAIN));
                 return;
             } else {
