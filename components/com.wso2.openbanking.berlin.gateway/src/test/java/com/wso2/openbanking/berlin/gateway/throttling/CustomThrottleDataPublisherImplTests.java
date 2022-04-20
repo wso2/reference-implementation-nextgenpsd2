@@ -71,10 +71,10 @@ public class CustomThrottleDataPublisherImplTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testGetCustomPropertiesWithCustomerIp() {
+    public void testGetCustomPropertiesWithOutCustomerIp() {
 
         Map<String, String> headerMap = new HashMap<>();
-        headerMap.put(PSU_IP_ADDRESS, SAMPLE_IP_ADDRESS);
+        
         headerMap.put(CONSENT_ID_HEADER, SAMPLE_CONSENT_ID);
         Mockito.when(requestContextDTO.getMsgInfo()).thenReturn(msgInfoDTO);
         doReturn(true).when(commonConfigParserMock).isFrequencyPerDayThrottlingEnabled();
