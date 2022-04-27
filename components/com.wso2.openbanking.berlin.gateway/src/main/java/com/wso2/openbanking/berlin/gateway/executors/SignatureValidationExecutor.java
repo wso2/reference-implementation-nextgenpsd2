@@ -57,9 +57,11 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -158,6 +160,20 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                                         "registered application certificate", TPP_SIGNATURE_CERTIFICATE_HEADER));
                         return;
                     }
+                }
+
+                /* Validate the roles of the certificate provided with TPP-Signature-Certificate header with the
+                 *  roles of the registered application certificate
+                 */
+                if (!isCertificateRolesValid(signingCertificateContent)) {
+                    log.error(String.format("Roles of the certificate provided with %s header does not match " +
+                            "with the registered application certificate roles", TPP_SIGNATURE_CERTIFICATE_HEADER));
+                    GatewayUtils.handleFailure(obapiRequestContext,
+                            TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            String.format("Roles of the certificate provided with %s header does not match with " +
+                                            "the registered application certificate roles",
+                                    TPP_SIGNATURE_CERTIFICATE_HEADER));
+                    return;
                 }
 
                 // Expiry validation
@@ -694,6 +710,27 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             log.error("Failed to retrieve client ID from JWT claims");
         }
         return clientID;
+    }
+
+    /**
+     * Validates the roles of the provided certificate content if the role validation configuration is enabled.
+     * Otherwise, the role validation is skipped.
+     *
+     * @param certificateContent certificate content
+     * @return true if role validation is disabled or role validation is a success, false otherwise
+     */
+    private boolean isCertificateRolesValid(CertificateContent certificateContent) {
+
+        Set<String> allowedRoles = new HashSet<>();
+        if (CommonConfigParser.getInstance().isPsd2RoleValidationEnabled()) {
+            Map<String, List<String>> definedScopes = OpenBankingConfigParser.getInstance().getAllowedScopes();
+            for (Map.Entry<String, List<String>> scope : definedScopes.entrySet()) {
+                allowedRoles.addAll(scope.getValue());
+            }
+            List<String> providedRoles = certificateContent.getPspRoles();
+            return allowedRoles.containsAll(providedRoles);
+        }
+        return true;
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")
