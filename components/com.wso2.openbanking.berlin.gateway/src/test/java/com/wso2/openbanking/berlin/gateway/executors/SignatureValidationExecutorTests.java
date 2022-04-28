@@ -45,6 +45,10 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.common.gateway.dto.APIRequestInfoDTO;
 import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
@@ -52,7 +56,7 @@ import javax.security.cert.X509Certificate;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 
 /**
- * Unit tests for MTLSValidationExecutor.
+ * Unit tests for SignatureValidationExecutor.
  */
 @PrepareForTest({CertificateValidationUtils.class, CertificateContentExtractor.class, CommonConfigParser.class,
         CertificateRevocationCache.class, OpenBankingConfigParser.class, CertificateValidationUtils.class})
@@ -81,6 +85,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     private static final String sampleClientId = "12345";
     private java.security.cert.X509Certificate expiredPeerCertificate;
     private java.security.cert.X509Certificate signingCertificate;
+    private CertificateContent certificateContent;
     private java.security.cert.X509Certificate testPeerCertificateIssuer;
 
     @BeforeClass
@@ -92,6 +97,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         this.expiredPeerCertificate = GatewayTestUtils.getExpiredSelfCertificate();
         this.signingCertificate = GatewayTestUtils.getTestSigningCertificate();
         this.testPeerCertificateIssuer = GatewayTestUtils.getTestClientCertificateIssuer();
+        this.certificateContent = Mockito.mock(CertificateContent.class);
     }
 
     @BeforeMethod
@@ -343,6 +349,20 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     }
 
     @Test
+    public void testIsCertificateRolesValid() throws Exception {
+
+        List<String> roles = new ArrayList<>();
+        roles.add("AISP");
+        roles.add("ASPSP");
+        Map<String, List<String>> allowedScopes = new HashMap<>();
+        allowedScopes.put("accounts", roles);
+        doReturn(true).when(commonConfigParserMock).isPsd2RoleValidationEnabled();
+        doReturn(allowedScopes).when(openBankingConfigParserMock).getAllowedScopes();
+        Assert.assertTrue(WhiteboxImpl.invokeMethod(new SignatureValidationExecutor(),
+                "isCertificateRolesValid", certificateContent));
+    }
+
+    @Test
     public void testPreProcessRequestMethodWithoutCertRevocation() {
 
         MsgInfoDTO msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
@@ -386,6 +406,43 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         doReturn(TestData.SUPPORTED_HASH_ALGORITHMS).when(commonConfigParserMock).getSupportedHashAlgorithms();
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
+
+        certificateValidationUtilsMock = PowerMockito.mock(CertificateValidationUtils.class);
+        PowerMockito.mockStatic(CertificateValidationUtils.class);
+        PowerMockito.when(CertificateValidationUtils.getIssuerCertificateFromTruststore(
+                Mockito.any(java.security.cert.X509Certificate.class))).thenReturn(testPeerCertificateIssuer);
+
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
+    }
+
+    @Test
+    public void testPreProcessRequestMethodWithInvalidTPPSignatureCertRoles() throws CertificateValidationException {
+
+        MsgInfoDTO msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
+
+        Mockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
+        Mockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP);
+        Mockito.when(obapiRequestContextMock.getRequestPayload()).thenReturn(TestData.VALID_ACCOUNT_INITIATION_PAYLOAD);
+
+        CertificateRevocationCache mock = Mockito.mock(CertificateRevocationCache.class);
+        PowerMockito.mockStatic(CertificateRevocationCache.class);
+        PowerMockito.when(CertificateRevocationCache.getInstance()).thenReturn(mock);
+
+        doReturn("3").when(openBankingConfigParserMock)
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_RETRY_COUNT);
+        doReturn("true").when(openBankingConfigParserMock)
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_ENABLED);
+
+        doReturn(TestData.SUPPORTED_HASH_ALGORITHMS).when(commonConfigParserMock).getSupportedHashAlgorithms();
+        doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
+                .getSupportedSignatureAlgorithms();
+
+        List<String> roles = new ArrayList<>();
+        roles.add("PISP");
+        Map<String, List<String>> allowedScopes = new HashMap<>();
+        allowedScopes.put("accounts", roles);
+        doReturn(true).when(commonConfigParserMock).isPsd2RoleValidationEnabled();
+        doReturn(allowedScopes).when(openBankingConfigParserMock).getAllowedScopes();
 
         certificateValidationUtilsMock = PowerMockito.mock(CertificateValidationUtils.class);
         PowerMockito.mockStatic(CertificateValidationUtils.class);
