@@ -464,6 +464,7 @@ multiple_recurring_consent.enable = false
 [open_banking_berlin.consent.payments]
 auth_cancellation.enable = false
 bulk_payments.max_future_payment_days = ""
+debtor_acc_currency_validation.enable = true
 
 [open_banking_berlin.consent.sca]
 required = true

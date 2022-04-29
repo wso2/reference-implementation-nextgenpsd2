@@ -518,4 +518,10 @@ public class CommonConfigParser {
         }
         return revocationValidationExcludedIssuers;
     }
+
+    public boolean isPaymentDebtorAccountCurrencyValidationEnabled() {
+
+        return Boolean.parseBoolean((String) getConfiguration()
+                .get(CommonConstants.IS_PAYMENT_DEBTOR_ACCOUNT_CURRENCY_VALIDATION_ENABLED));
+    }
 }

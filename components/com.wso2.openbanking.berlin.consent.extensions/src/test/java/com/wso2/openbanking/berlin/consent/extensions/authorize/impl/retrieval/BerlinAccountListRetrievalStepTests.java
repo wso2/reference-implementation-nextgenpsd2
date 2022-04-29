@@ -343,7 +343,8 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
         consentData.setConsentResource(TestUtil.getSampleConsentResource(null,
                 ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD,
                 consentId, clientId));
-
+        doReturn(true).when(commonConfigParserMock)
+                .isPaymentDebtorAccountCurrencyValidationEnabled();
         jsonObject = TestUtil.getSamplePaymentConsentDataJSONObject(TestUtil
                 .getSampleAccountRefObject(ConsentExtensionConstants.IBAN, "DE000000",
                         "GBP"));

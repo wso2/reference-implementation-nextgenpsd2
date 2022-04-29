@@ -148,24 +148,28 @@ public class PISAccountListRetrievalHandler implements AccountListRetrievalHandl
         JSONArray filteredAccountRefObjects = ConsentAuthUtil.getFilteredAccountsForAccountNumber(accountRefObject,
                 accountArray);
 
-        if (filteredAccountRefObjects.size() > 1) {
-            // Multi currency account
-            if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
+        if (CommonConfigParser.getInstance().isPaymentDebtorAccountCurrencyValidationEnabled()) {
+            if (filteredAccountRefObjects.size() > 1) {
+                // Multi currency account
+                if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
+                    return null;
+                }
+                for (Object object : filteredAccountRefObjects) {
+                    JSONObject accountObject = (JSONObject) object;
+                    if (accountObject.getAsString(ConsentExtensionConstants.CURRENCY)
+                            .equalsIgnoreCase(accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY))) {
+                        return accountObject;
+                    }
+                }
+                return null;
+            } else if (filteredAccountRefObjects.size() == 1) {
+                if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
+                    return accountRefObject;
+                }
                 return null;
             }
-            for (Object object : filteredAccountRefObjects) {
-                JSONObject accountObject = (JSONObject) object;
-                if (accountObject.getAsString(ConsentExtensionConstants.CURRENCY)
-                        .equalsIgnoreCase(accountRefObject.getAsString(ConsentExtensionConstants.CURRENCY))) {
-                    return accountObject;
-                }
-            }
-            return null;
-        } else if (filteredAccountRefObjects.size() == 1) {
-            if (!accountRefObject.containsKey(ConsentExtensionConstants.CURRENCY)) {
-                return accountRefObject;
-            }
-            return null;
+        } else {
+            return accountRefObject;
         }
         return null;
     }
