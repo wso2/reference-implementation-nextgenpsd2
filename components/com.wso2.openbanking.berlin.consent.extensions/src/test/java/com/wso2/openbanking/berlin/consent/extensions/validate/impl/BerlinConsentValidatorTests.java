@@ -110,7 +110,7 @@ public class BerlinConsentValidatorTests extends PowerMockTestCase {
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
         berlinConsentValidator.validate(consentValidateData, consentValidationResult);
-        Assert.assertEquals(consentValidationResult.getHttpCode(), ResponseStatus.FORBIDDEN.getStatusCode());
+        Assert.assertEquals(consentValidationResult.getHttpCode(), ResponseStatus.NOT_FOUND.getStatusCode());
     }
 
     @Test

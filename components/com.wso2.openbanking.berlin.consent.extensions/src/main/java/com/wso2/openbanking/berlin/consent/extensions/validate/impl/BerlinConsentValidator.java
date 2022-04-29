@@ -105,7 +105,7 @@ public class BerlinConsentValidator implements ConsentValidator {
                 || !StringUtils.equals(consentIdHeader, consentValidateData.getComprehensiveConsent().getConsentID())) {
             log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.FORBIDDEN.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
+                    ResponseStatus.NOT_FOUND.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
                     ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
             return;
         }
