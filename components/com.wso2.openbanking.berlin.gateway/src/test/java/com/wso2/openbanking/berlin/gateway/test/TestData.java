@@ -72,7 +72,7 @@ public class TestData {
                "XkodfViHlLcQntGhj3l6KWAtLvbgbWDKRfs/iFph4IJDasL2n4uAR0Uunn/vIiTgDw2yFHJWS9tx3GOWD6xA/OnISM6lVn6kYU" +
                "euOVtQSFHRzbWo++2isi8iXiEOXaRw==");
        put("TPP-Signature-Certificate", GatewayTestUtils.TEST_SIGNATURE_CERT);
-       put("Authorization", "Bearer " + GatewayTestUtils.SAMPLE_JWT);
+       put("Authorization", GatewayTestUtils.SAMPLE_JWT);
 
     }};
 

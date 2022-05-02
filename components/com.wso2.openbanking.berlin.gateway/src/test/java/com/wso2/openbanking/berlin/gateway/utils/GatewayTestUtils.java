@@ -20,9 +20,12 @@ import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidat
 import com.wso2.openbanking.berlin.gateway.test.GatewayTestConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -250,5 +253,13 @@ public class GatewayTestUtils {
             testClientCertificateIssuer = CertificateUtils.parseCertificate(TEST_CLIENT_CERT_ISSUER);
         }
         return testClientCertificateIssuer;
+    }
+
+    public static String getPayloadFromJWT(String jwtString) {
+        return jwtString.split("\\.")[1];
+    }
+
+    public static JSONObject decodeBase64(String payload) throws UnsupportedEncodingException {
+        return new JSONObject(new String(Base64.getDecoder().decode(payload), String.valueOf(StandardCharsets.UTF_8)));
     }
 }

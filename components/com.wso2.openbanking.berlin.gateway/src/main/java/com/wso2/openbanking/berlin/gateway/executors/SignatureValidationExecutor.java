@@ -91,12 +91,12 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String CA = "CA";
 
     @Override
-    public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
+    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
         if (!obapiRequestContext.isError()) {
 
             Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
-            String authHeader = headersMap.get(AUTH_HEADER);
+            String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
             String requestPayload = obapiRequestContext.getRequestPayload();
 
@@ -126,8 +126,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             }
 
             try {
-                X509Certificate x509Certificate = CertificateUtils
-                        .parseCertificate(signatureCertificateHeader);
+                X509Certificate x509Certificate = CertificateUtils.parseCertificate(signatureCertificateHeader);
                 if (x509Certificate == null) {
                     log.error(ErrorConstants.CERT_PARSE_EROR);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
@@ -142,9 +141,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                  * the TPP application certificate by validating its organization ID with the client ID. Validating
                  * with the client ID is enough since the application certificate organization ID is already validated
                  * with the client ID during the client on-boarding process */
-                String clientId = extractClientIdFromJWT(authHeader);
                 if (StringUtils.isBlank(signingCertOrgId)) {
-                    log.error("Unable to retrieve organization ID from transport certificate");
+                    log.error("Unable to retrieve organization ID from certificate");
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                             String.format("An organization ID is not found in the provided certificate in %s header",
                                     TPP_SIGNATURE_CERTIFICATE_HEADER));
@@ -222,7 +220,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     }
 
     @Override
-    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
+    public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
         if (!obapiRequestContext.isError()) {
 
@@ -230,6 +228,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
             javax.security.cert.X509Certificate transportCert;
             Optional<java.security.cert.X509Certificate> convertedTransportCert;
+            String authHeader = obapiRequestContext.getMsgInfo().getHeaders().get(AUTH_HEADER);
+            String clientId = extractClientIdFromJWT(authHeader);
 
             if (x509Certificates.length != 0) {
                 transportCert = x509Certificates[0];
@@ -260,7 +260,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 return;
             }
 
-            String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             String certificateOrgId = content.getPspAuthorisationNumber();
 
             if (StringUtils.isBlank(certificateOrgId)) {

@@ -29,6 +29,7 @@ import com.wso2.openbanking.berlin.gateway.exceptions.SignatureMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureValidationException;
 import com.wso2.openbanking.berlin.gateway.test.TestData;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayTestUtils;
+import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -81,6 +82,9 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     @Mock
     OpenBankingConfigParser openBankingConfigParserMock;
 
+    @Mock
+    MsgInfoDTO msgInfoDTOMock;
+
     private X509Certificate transportCertificate;
     private static final String sampleClientId = "12345";
     private java.security.cert.X509Certificate expiredPeerCertificate;
@@ -98,6 +102,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         this.signingCertificate = GatewayTestUtils.getTestSigningCertificate();
         this.testPeerCertificateIssuer = GatewayTestUtils.getTestClientCertificateIssuer();
         this.certificateContent = Mockito.mock(CertificateContent.class);
+        this.msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
     }
 
     @BeforeMethod
@@ -110,6 +115,10 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         openBankingConfigParserMock = PowerMockito.mock(OpenBankingConfigParser.class);
         PowerMockito.mockStatic(OpenBankingConfigParser.class);
         PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+
+        msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
+        PowerMockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
+        PowerMockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP);
     }
 
     @ObjectFactory
@@ -118,14 +127,14 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testOrganizationIDValidationWithMatchingClientId() {
+    public void testOrganizationIDValidationWithMatchingClientId() throws CertificateException {
 
         X509Certificate[] x509Certificates = {transportCertificate};
         Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
         APIRequestInfoDTO apiRequestInfoDTO = new APIRequestInfoDTO();
         apiRequestInfoDTO.setConsumerKey("PSDGB-OB-Unknown0015800001HQQrZAAX");
         Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -133,7 +142,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
 
         javax.security.cert.X509Certificate[] x509Certificates = {};
         Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -146,7 +155,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         javax.security.cert.X509Certificate[] x509Certificates = {transportCertificate};
         Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
         PowerMockito.when(CertificateValidationUtils.convert(Mockito.any())).thenReturn(Optional.empty());
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -161,7 +170,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn("");
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -176,7 +185,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn(null);
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -191,7 +200,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateContentExtractor.extract(Mockito.any()))
                 .thenReturn(certificateContentMock);
         PowerMockito.when(certificateContentMock.getPspAuthorisationNumber()).thenReturn("mismatchingOrgId");
-        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
     }
 
     @Test
@@ -363,12 +372,24 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testPreProcessRequestMethodWithoutCertRevocation() {
+    public void testExtractClientIdFromJWT() throws Exception {
 
-        MsgInfoDTO msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
+        String payload = GatewayTestUtils.getPayloadFromJWT(GatewayTestUtils.SAMPLE_JWT);
+        JSONObject jwtClaims = GatewayTestUtils.decodeBase64(payload);
+        String clientIdInJWT = String.valueOf(jwtClaims.get("aud"));
 
-        Mockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
-        Mockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP);
+        Assert.assertNotNull(WhiteboxImpl.invokeMethod(new SignatureValidationExecutor(),
+                "extractClientIdFromJWT", GatewayTestUtils.SAMPLE_JWT));
+        Assert.assertEquals(clientIdInJWT, WhiteboxImpl.invokeMethod(new SignatureValidationExecutor(),
+                "extractClientIdFromJWT", GatewayTestUtils.SAMPLE_JWT));
+    }
+
+    @Test
+    public void testPostProcessRequestMethodWithoutCertRevocation() {
+
+        APIRequestInfoDTO apiRequestInfoDTOMock = Mockito.mock(APIRequestInfoDTO.class);
+        Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTOMock);
+        Mockito.when(apiRequestInfoDTOMock.getConsumerKey()).thenReturn("PSDGB-OB-Unknown0015800001HQQrZAAX");
         Mockito.when(obapiRequestContextMock.getRequestPayload()).thenReturn(TestData.VALID_ACCOUNT_INITIATION_PAYLOAD);
 
         CertificateRevocationCache mock = Mockito.mock(CertificateRevocationCache.class);
@@ -382,16 +403,15 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         doReturn(TestData.SUPPORTED_SIGNATURE_ALGORITHMS).when(commonConfigParserMock)
                 .getSupportedSignatureAlgorithms();
 
-        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
-    public void testPreProcessRequestMethodWithCertRevocation() throws CertificateValidationException {
+    public void testPostProcessRequestMethodWithCertRevocation() throws CertificateValidationException {
 
-        MsgInfoDTO msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
-
-        Mockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
-        Mockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP);
+        APIRequestInfoDTO apiRequestInfoDTOMock = Mockito.mock(APIRequestInfoDTO.class);
+        Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTOMock);
+        Mockito.when(apiRequestInfoDTOMock.getConsumerKey()).thenReturn("PSDGB-OB-Unknown0015800001HQQrZAAX");
         Mockito.when(obapiRequestContextMock.getRequestPayload()).thenReturn(TestData.VALID_ACCOUNT_INITIATION_PAYLOAD);
 
         CertificateRevocationCache mock = Mockito.mock(CertificateRevocationCache.class);
@@ -412,16 +432,15 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateValidationUtils.getIssuerCertificateFromTruststore(
                 Mockito.any(java.security.cert.X509Certificate.class))).thenReturn(testPeerCertificateIssuer);
 
-        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 
     @Test
-    public void testPreProcessRequestMethodWithInvalidTPPSignatureCertRoles() throws CertificateValidationException {
+    public void testPostProcessRequestMethodWithInvalidTPPSignatureCertRoles() throws CertificateValidationException {
 
-        MsgInfoDTO msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
-
-        Mockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
-        Mockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.VALID_ACCOUNTS_REQUEST_HEADERS_MAP);
+        APIRequestInfoDTO apiRequestInfoDTOMock = Mockito.mock(APIRequestInfoDTO.class);
+        Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTOMock);
+        Mockito.when(apiRequestInfoDTOMock.getConsumerKey()).thenReturn("PSDGB-OB-Unknown0015800001HQQrZAAX");
         Mockito.when(obapiRequestContextMock.getRequestPayload()).thenReturn(TestData.VALID_ACCOUNT_INITIATION_PAYLOAD);
 
         CertificateRevocationCache mock = Mockito.mock(CertificateRevocationCache.class);
@@ -449,6 +468,6 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         PowerMockito.when(CertificateValidationUtils.getIssuerCertificateFromTruststore(
                 Mockito.any(java.security.cert.X509Certificate.class))).thenReturn(testPeerCertificateIssuer);
 
-        new SignatureValidationExecutor().preProcessRequest(obapiRequestContextMock);
+        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
 }
