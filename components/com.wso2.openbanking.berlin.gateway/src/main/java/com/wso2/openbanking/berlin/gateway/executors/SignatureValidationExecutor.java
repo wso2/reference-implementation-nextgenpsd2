@@ -40,7 +40,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -54,9 +57,11 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -74,6 +79,9 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String X_REQUEST_ID_HEADER = "X-Request-ID";
     private static final String DATE_HEADER = "Date";
     private static final String TPP_SIGNATURE_CERTIFICATE_HEADER = "TPP-Signature-Certificate";
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String BEARER_TAG = "Bearer ";
+    private static final String AUD = "aud";
 
     private static final String SIGNATURE_HEADER = "Signature";
     private static final String SIGNATURE_ELEMENT = "signature";
@@ -82,16 +90,13 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String SN = "SN";
     private static final String CA = "CA";
 
-    private static final String CERT_BEGIN_STRING = "-----BEGIN CERTIFICATE-----";
-    private static final String CERT_END_STRING = "-----END CERTIFICATE-----";
-    private static final String X509_CERT_INSTANCE_NAME = "X.509";
-
     @Override
-    public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
+    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
         if (!obapiRequestContext.isError()) {
 
             Map<String, String> headersMap = obapiRequestContext.getMsgInfo().getHeaders();
+            String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
             String requestPayload = obapiRequestContext.getRequestPayload();
 
@@ -121,12 +126,51 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             }
 
             try {
-                X509Certificate x509Certificate = CertificateUtils
-                        .parseCertificate(signatureCertificateHeader);
+                X509Certificate x509Certificate = CertificateUtils.parseCertificate(signatureCertificateHeader);
                 if (x509Certificate == null) {
                     log.error(ErrorConstants.CERT_PARSE_EROR);
                     GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                             ErrorConstants.CERT_PARSE_EROR);
+                    return;
+                }
+
+                CertificateContent signingCertificateContent = CertificateContentExtractor.extract(x509Certificate);
+                String signingCertOrgId = signingCertificateContent.getPspAuthorisationNumber();
+
+                /* Validate whether the provided signature certificate with TPP-Signature-Certificate header matches
+                 * the TPP application certificate by validating its organization ID with the client ID. Validating
+                 * with the client ID is enough since the application certificate organization ID is already validated
+                 * with the client ID during the client on-boarding process */
+                if (StringUtils.isBlank(signingCertOrgId)) {
+                    log.error("Unable to retrieve organization ID from certificate");
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            String.format("An organization ID is not found in the provided certificate in %s header",
+                                    TPP_SIGNATURE_CERTIFICATE_HEADER));
+                    return;
+                } else {
+                    if (StringUtils.isNotBlank(clientId) && !StringUtils.equals(clientId, signingCertOrgId)) {
+                        log.error(String.format("Client ID: %s is not matching with the organization ID: %s " +
+                                "of certificate provided with %s header", clientId, signingCertOrgId,
+                                TPP_SIGNATURE_CERTIFICATE_HEADER));
+                        GatewayUtils.handleFailure(obapiRequestContext,
+                                TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                                String.format("Certificate provided with %s header does not match with the " +
+                                        "registered application certificate", TPP_SIGNATURE_CERTIFICATE_HEADER));
+                        return;
+                    }
+                }
+
+                /* Validate the roles of the certificate provided with TPP-Signature-Certificate header with the
+                 *  roles of the registered application certificate
+                 */
+                if (!isCertificateRolesValid(signingCertificateContent)) {
+                    log.error(String.format("Roles of the certificate provided with %s header does not match " +
+                            "with the registered application certificate roles", TPP_SIGNATURE_CERTIFICATE_HEADER));
+                    GatewayUtils.handleFailure(obapiRequestContext,
+                            TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            String.format("Roles of the certificate provided with %s header does not match with " +
+                                            "the registered application certificate roles",
+                                    TPP_SIGNATURE_CERTIFICATE_HEADER));
                     return;
                 }
 
@@ -163,7 +207,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 log.error(ErrorConstants.INVALID_DIGEST_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.SIGNATURE_INVALID.toString(),
                         ErrorConstants.INVALID_DIGEST_HEADER);
-            } catch (OpenBankingException | CertificateException e) {
+            } catch (OpenBankingException | CertificateException | CertificateValidationException e) {
                 log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
                         ErrorConstants.SIGNING_CERT_INVALID);
@@ -176,7 +220,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     }
 
     @Override
-    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
+    public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
         if (!obapiRequestContext.isError()) {
 
@@ -184,6 +228,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
             javax.security.cert.X509Certificate transportCert;
             Optional<java.security.cert.X509Certificate> convertedTransportCert;
+            String authHeader = obapiRequestContext.getMsgInfo().getHeaders().get(AUTH_HEADER);
+            String clientId = extractClientIdFromJWT(authHeader);
 
             if (x509Certificates.length != 0) {
                 transportCert = x509Certificates[0];
@@ -214,7 +260,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 return;
             }
 
-            String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             String certificateOrgId = content.getPspAuthorisationNumber();
 
             if (StringUtils.isBlank(certificateOrgId)) {
@@ -639,6 +684,52 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         }
         log.debug("Stored certificate validation status in cache");
         return isValid;
+    }
+
+    /**
+     * Extracts the client ID (AUD claim) from the JWT token.
+     *
+     * @param authHeaderJWT authorization header
+     * @return client ID
+     */
+    private String extractClientIdFromJWT(String authHeaderJWT) {
+
+        String clientID = null;
+
+        StringUtils.replace(authHeaderJWT, BEARER_TAG, StringUtils.EMPTY);
+
+        try {
+            JSONObject jwtClaims = com.wso2.openbanking.accelerator.gateway.util.GatewayUtils
+                    .decodeBase64(com.wso2.openbanking.accelerator.gateway.util.GatewayUtils
+                            .getPayloadFromJWT(authHeaderJWT));
+            if (!jwtClaims.isNull(AUD) && StringUtils.isNotBlank(jwtClaims.getString(AUD))) {
+                clientID = String.valueOf(jwtClaims.get(AUD));
+            }
+        } catch (UnsupportedEncodingException | JSONException | IllegalArgumentException e) {
+            log.error("Failed to retrieve client ID from JWT claims");
+        }
+        return clientID;
+    }
+
+    /**
+     * Validates the roles of the provided certificate content if the role validation configuration is enabled.
+     * Otherwise, the role validation is skipped.
+     *
+     * @param certificateContent certificate content
+     * @return true if role validation is disabled or role validation is a success, false otherwise
+     */
+    private boolean isCertificateRolesValid(CertificateContent certificateContent) {
+
+        Set<String> allowedRoles = new HashSet<>();
+        if (CommonConfigParser.getInstance().isPsd2RoleValidationEnabled()) {
+            Map<String, List<String>> definedScopes = OpenBankingConfigParser.getInstance().getAllowedScopes();
+            for (Map.Entry<String, List<String>> scope : definedScopes.entrySet()) {
+                allowedRoles.addAll(scope.getValue());
+            }
+            List<String> providedRoles = certificateContent.getPspRoles();
+            return allowedRoles.containsAll(providedRoles);
+        }
+        return true;
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")

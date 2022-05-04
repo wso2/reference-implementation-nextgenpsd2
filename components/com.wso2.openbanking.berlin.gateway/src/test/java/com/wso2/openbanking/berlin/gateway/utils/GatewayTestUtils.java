@@ -20,9 +20,12 @@ import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidat
 import com.wso2.openbanking.berlin.gateway.test.GatewayTestConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -163,6 +166,18 @@ public class GatewayTestUtils {
             "ZKdBTnkp/vPzPw==" +
             "-----END CERTIFICATE-----";
 
+    public static final String SAMPLE_JWT = "Bearer eyJ4NXQiOiJOVGRtWmpNNFpEazNOalkwWXpjNU1tWm1PR" +
+            "Gd3TVRFM01XWXdOREU1TVdSbFpEZzROemM0WkEiLCJraWQiOiJNell4TW1Ga09HWXdNV0kwWldObU5EY3hOR1l3WW1NNFpUQTNNV0k" +
+            "yTkRBelpHUXpOR00wWkdSbE5qSmtPREZrWkRSaU9URmtNV0ZoTXpVMlpHVmxOZ19SUzI1NiIsImFsZyI6IlJTMjU2In0.eyJzdWIiO" +
+            "iJhZG1pbkB3c28yLmNvbUBjYXJib24uc3VwZXIiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlBTREdCLU9CLVVua25vd24wMDE" +
+            "1ODAwMDAxSFFRclpBQVgiLCJuYmYiOjE2NTA5NTQ5NzUsImF6cCI6IlBTREdCLU9CLVVua25vd24wMDE1ODAwMDAxSFFRclpBQVgiL" +
+            "CJzY29wZSI6ImFjY291bnRzIiwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5NDQ2XC9vYXV0aDJcL3Rva2VuIiwiY25mIjp7Ing" +
+            "1dCNTMjU2IjoieWJlcWFJbTUwMElNUHkxOVZrUGZIUlRKTnQ5cXZfUXQ1am1IZHQtYkptYyJ9LCJleHAiOjE2NTA5NTg1NzUsImlhd" +
+            "CI6MTY1MDk1NDk3NSwianRpIjoiYzU4ZDEyMTEtNzE5MC00ZmU0LWI1MDktYTY2YmQyZDM0ZGJlIn0.AudZ4ojlzR3BsQpjD6JbNbk" +
+            "_wNa5kgfLTlZ8ZByJyKmw_UDOEOoQIeCPe_TQz-i7JEF9hmBPrLw7FGVYseyskM_amq8nQyFwonEmrPShLPPAqGjSyNmL3IZoQM-TJ" +
+            "n3sLS-l23DfYFZfjRgMYETTd2nPtfe4q_lNzmv4r2gsYsvpMcgZ7hzPp5X5SO6X3iSDmD3BGvNoE1V0hpkZGkte-uo6rM97z-icwlm" +
+            "h7dM7l9IvVAwmqxmZG1YL200kgD4bctwfry";
+
     private static final Log log = LogFactory.getLog(GatewayTestUtils.class);
     private static java.security.cert.X509Certificate testEidasCertificate = null;
     private static X509Certificate testClientCertificate = null;
@@ -238,5 +253,13 @@ public class GatewayTestUtils {
             testClientCertificateIssuer = CertificateUtils.parseCertificate(TEST_CLIENT_CERT_ISSUER);
         }
         return testClientCertificateIssuer;
+    }
+
+    public static String getPayloadFromJWT(String jwtString) {
+        return jwtString.split("\\.")[1];
+    }
+
+    public static JSONObject decodeBase64(String payload) throws UnsupportedEncodingException {
+        return new JSONObject(new String(Base64.getDecoder().decode(payload), String.valueOf(StandardCharsets.UTF_8)));
     }
 }
