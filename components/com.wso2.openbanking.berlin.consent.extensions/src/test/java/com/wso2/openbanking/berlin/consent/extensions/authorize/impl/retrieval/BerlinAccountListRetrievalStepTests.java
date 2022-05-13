@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.authorize.impl.handler.retrieval.PISAccountListRetrievalHandler;
 import com.wso2.openbanking.berlin.consent.extensions.common.AccessMethodEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.PermissionEnum;
@@ -42,6 +43,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
+import org.powermock.reflect.internal.WhiteboxImpl;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -533,6 +535,102 @@ public class BerlinAccountListRetrievalStepTests extends PowerMockTestCase {
                 .get(ConsentExtensionConstants.ACCESS_METHODS))));
         Assert.assertEquals(accountDetailList1
                 .getAsString(ConsentExtensionConstants.ACCOUNT_TYPE), ConsentExtensionConstants.STATIC_BULK);
+    }
+
+    @Test
+    public void testValidateAccountRefObjectWithValidData() throws Exception {
+
+        JSONObject accountRefObject = new JSONObject();
+        accountRefObject.put("iban", "DE12345678901234567890");
+        accountRefObject.put("currency", "EUR");
+
+        JSONObject account1 = new JSONObject();
+        account1.put("isDefault", true);
+        account1.put("iban", "DE12345678901234567890");
+        account1.put("currency", "USD");
+
+        JSONObject account2 = new JSONObject();
+        account2.put("isDefault", true);
+        account2.put("iban", "DE12345678901234567890");
+        account2.put("currency", "EUR");
+
+        JSONArray accountArray = new JSONArray();
+        accountArray.appendElement(account1);
+        accountArray.appendElement(account2);
+
+        doReturn(true).when(commonConfigParserMock).isPaymentDebtorAccountCurrencyValidationEnabled();
+        Assert.assertTrue(WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray) instanceof JSONObject);
+        Assert.assertEquals(((JSONObject) WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray))
+                .get(ConsentExtensionConstants.CURRENCY), accountRefObject.get(ConsentExtensionConstants.CURRENCY));
+    }
+
+    @Test
+    public void testValidateAccountRefObjectWithSingleAccountData() throws Exception {
+
+        JSONObject accountRefObject = new JSONObject();
+        accountRefObject.put("iban", "DE12345678901234567890");
+        accountRefObject.put("currency", "EUR");
+
+        JSONObject account2 = new JSONObject();
+        account2.put("isDefault", true);
+        account2.put("iban", "DE12345678901234567890");
+        account2.put("currency", "EUR");
+
+        JSONArray accountArray = new JSONArray();
+        accountArray.appendElement(account2);
+
+        doReturn(true).when(commonConfigParserMock).isPaymentDebtorAccountCurrencyValidationEnabled();
+        Assert.assertNull(WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray));
+    }
+
+    @Test
+    public void testValidateAccountRefObjectWithSingleAccountDataOfMismatchingCurrency() throws Exception {
+
+        JSONObject accountRefObject = new JSONObject();
+        accountRefObject.put("iban", "DE12345678901234567890");
+
+        JSONObject account2 = new JSONObject();
+        account2.put("isDefault", true);
+        account2.put("iban", "DE12345678901234567890");
+        account2.put("currency", "USD");
+
+        JSONArray accountArray = new JSONArray();
+        accountArray.appendElement(account2);
+
+        doReturn(true).when(commonConfigParserMock).isPaymentDebtorAccountCurrencyValidationEnabled();
+        Assert.assertTrue(WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray) instanceof JSONObject);
+        Assert.assertTrue(((JSONObject) WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray))
+                .containsValue("DE12345678901234567890"));
+    }
+
+    @Test
+    public void testValidateAccountRefObjectWithoutCurrencyData() throws Exception {
+
+        JSONObject accountRefObject = new JSONObject();
+        accountRefObject.put("iban", "DE12345678901234567890");
+
+        JSONObject account1 = new JSONObject();
+        account1.put("isDefault", true);
+        account1.put("iban", "DE12345678901234567890");
+        account1.put("currency", "USD");
+
+        JSONObject account2 = new JSONObject();
+        account2.put("isDefault", true);
+        account2.put("iban", "DE12345678901234567890");
+        account2.put("currency", "EUR");
+
+        JSONArray accountArray = new JSONArray();
+        accountArray.appendElement(account1);
+        accountArray.appendElement(account2);
+
+        doReturn(true).when(commonConfigParserMock).isPaymentDebtorAccountCurrencyValidationEnabled();
+        Assert.assertNull(WhiteboxImpl.invokeMethod(new PISAccountListRetrievalHandler(),
+                "getValidatedAccountRefObject", accountRefObject, accountArray));
     }
 
     private void mockBackend(String accountsFilePath) throws IOException, OpenBankingException {
