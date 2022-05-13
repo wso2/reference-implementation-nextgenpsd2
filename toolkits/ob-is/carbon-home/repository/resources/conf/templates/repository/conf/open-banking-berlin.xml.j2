@@ -192,6 +192,11 @@
                 {% endif %}
             </BulkPayments>
             <PeriodicPayments></PeriodicPayments>
+            {% if open_banking_berlin.consent.payments.debtor_acc_currency_validation.enable is defined %}
+            <EnableDebtorAccountCurrencyValidation>{{open_banking_berlin.consent.payments.debtor_acc_currency_validation.enable}}</EnableDebtorAccountCurrencyValidation>
+            {% else %}
+            <EnableDebtorAccountCurrencyValidation>true</EnableDebtorAccountCurrencyValidation>
+            {% endif %}
         </Payments>
     </ConsentManagement>
 </Server>
