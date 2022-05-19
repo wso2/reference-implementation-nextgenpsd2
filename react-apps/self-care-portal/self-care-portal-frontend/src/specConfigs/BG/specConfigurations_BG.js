@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import {dataOrigins, dataTypes, keyDateTypes, permissionBindTypes} from "../common";
+import {consentTypes, dataOrigins, dataTypes, keyDateTypes, permissionBindTypes} from "../common";
 
 export const specConfigurations_BG =
     {
@@ -41,11 +41,11 @@ export const specConfigurations_BG =
 
 export const lang_BG = [
     {
-        id: "authorised",
-        label: "Active",
+        id: "valid",
+        label: "Valid",
         labelBadgeVariant: "success",
         description:
-            "A list of applications that have active access to your account information",
+            "A list of consents that have active access to your account information",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -65,7 +65,7 @@ export const lang_BG = [
             {
                 heading: "Expiry Date",
                 dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.Data.ExpirationDateTime",
+                dataParameterKey: "receipt.validUntil",
                 failOverDataParameterKey: "",
                 dataType: dataTypes.date,
                 dateFormat: "DD MMM YYYY"
@@ -92,13 +92,13 @@ export const lang_BG = [
             {
                 title: "Your consent will expire on",
                 type: keyDateTypes.date,
-                dateParameterKey: "receipt.Data.ExpirationDateTime",
+                dateParameterKey: "validityPeriod",
                 dateFormat: "DD MMM YYYY"
             },
             {
                 title: "Sharing period",
                 type: keyDateTypes.dateRange,
-                dateParameterKey: "createdTimestamp,receipt.Data.ExpirationDateTime",
+                dateParameterKey: "createdTimestamp,validityPeriod",
                 dateFormat: "DD MMM YYYY"
             },
             {
@@ -107,6 +107,136 @@ export const lang_BG = [
                 dateParameterKey: "",
                 dateFormat: "",
                 text: "Ongoing"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "partiallyAuthorised",
+        label: "Partially Authorised",
+        labelBadgeVariant: "success",
+        description:
+            "A list of account information consents that are partially authorised",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "received",
+        label: "Received",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that are in received status to access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Received Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You received consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
             }
         ],
         accountsInfoLabel: "Accounts",
@@ -144,7 +274,7 @@ export const lang_BG = [
             {
                 heading: "Expiry Date",
                 dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.Data.ExpirationDateTime",
+                dataParameterKey: "receipt.validUntil",
                 failOverDataParameterKey: "",
                 dataType: dataTypes.date,
                 dateFormat: "DD MMM YYYY"
@@ -171,7 +301,7 @@ export const lang_BG = [
             {
                 title: "When consent was expired",
                 type: keyDateTypes.date,
-                dateParameterKey: "receipt.Data.ExpirationDateTime",
+                dateParameterKey: "validityPeriod",
                 dateFormat: "DD MMM YYYY"
             }
         ],
@@ -186,7 +316,79 @@ export const lang_BG = [
         }
     },
     {
-        id: "revoked",
+        id: "rejected",
+        label: "Rejected",
+        labelBadgeVariant: "secondary",
+        description:
+            "A list of consents that have rejected to access your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View consent expiry confirmation >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "When you gave consent",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "When consent was rejected",
+                type: keyDateTypes.date,
+                dateParameterKey: "updatedTimestamp",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we shared",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "revokedByPsu,terminatedByTpp",
         label: "Withdrawn",
         labelBadgeVariant: "secondary",
         description:
@@ -252,3 +454,837 @@ export const lang_BG = [
         }
     }
 ];
+
+
+export const account_lang_BG = [
+    {
+        id: "valid",
+        label: "Valid",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that have active access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "How often your data will be shared",
+                type: keyDateTypes.text,
+                dateParameterKey: "",
+                dateFormat: "",
+                text: "Ongoing"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "partiallyAuthorised",
+        label: "Partially Authorised",
+        labelBadgeVariant: "success",
+        description:
+            "A list of account information consents that are partially authorised",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "received",
+        label: "Received",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that are in received status to access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Received Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You received consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "expired",
+        label: "Expired",
+        labelBadgeVariant: "secondary",
+        description:
+            "A list of applications that have expired access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View consent expiry confirmation >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "When you gave consent",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "When consent was expired",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we shared",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "rejected",
+        label: "Rejected",
+        labelBadgeVariant: "secondary",
+        description:
+            "A list of consents that have rejected to access your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View consent expiry confirmation >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "When you gave consent",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "When consent was rejected",
+                type: keyDateTypes.date,
+                dateParameterKey: "updatedTimestamp",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we shared",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "revokedByPsu,terminatedByTpp",
+        label: "Withdrawn",
+        labelBadgeVariant: "secondary",
+        description:
+            "A list of applications of which consent to access your information was withdrawn",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Withdrawn Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "updatedTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View consent withdrawal confirmation >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "When you gave consent",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "You cancelled your consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "updatedTimestamp",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we shared",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    }
+];
+
+export const payments_lang_BG = [
+    {
+        id: "valid",
+        label: "Valid",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that have active access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "How often your data will be shared",
+                type: keyDateTypes.text,
+                dateParameterKey: "",
+                dateFormat: "",
+                text: "Ongoing"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "partiallyAuthorised",
+        label: "Partially Authorised",
+        labelBadgeVariant: "success",
+        description:
+            "A list of account information consents that are partially authorised",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "received",
+        label: "Received",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that are in received status to access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Received Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You received consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "expired",
+        label: "Expired",
+        labelBadgeVariant: "secondary",
+        description:
+            "A list of applications that have expired access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View consent expiry confirmation >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "When you gave consent",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "When consent was expired",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we shared",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+];
+
+export const cof_lang_BG = [
+    {
+        id: "partiallyAuthorised",
+        label: "Partially Authorised",
+        labelBadgeVariant: "success",
+        description:
+            "A list of account information consents that are partially authorised",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+    {
+        id: "received",
+        label: "Received",
+        labelBadgeVariant: "success",
+        description:
+            "A list of consents that are in received status to access to your account information",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "software_client_name",
+                failOverDataParameterKey: "software_id",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Received Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Expiry Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "receipt.validUntil",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.date,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You received consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Sharing period",
+                type: keyDateTypes.dateRange,
+                dateParameterKey: "createdTimestamp,validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
+            accreditDR: "Accredited Data Recipient:"
+        }
+    },
+];
+
+export const lang_BG_Temp = {
+    [consentTypes[0].id]: account_lang_BG,
+    [consentTypes[1].id]: payments_lang_BG,
+    [consentTypes[2].id]: cof_lang_BG
+}

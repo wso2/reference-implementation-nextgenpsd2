@@ -20,7 +20,7 @@ export const getApplicationInfo = async (clientIdList) => {
     var serverURL = CONFIG.SERVER_URL
     const requestConfig = {
         method: "GET",
-        url: `${serverURL}/api/openbanking/application/all/metadata`
+        url: `http://127.0.0.1:3002/`
     };
 
     return await axios

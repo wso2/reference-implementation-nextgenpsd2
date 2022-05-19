@@ -27,20 +27,20 @@ export const getConsentsFromAPI = (user, consentTypes) => {
     var userId = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
 
     // Accelerator only supporting the account consents type in SCP.
-    adminUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}`
-    defaultUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}&userIDs=${userId}`
+    adminUrl = `http://localhost:3001?consentTypes=${consentTypes}`
+    defaultUrl = `http://localhost:3001?consentTypes=${consentTypes}&userIDs=${userId}`
 
     var selectedUrl
     if (user.role === "customerCareOfficer") {
         selectedUrl = adminUrl;
     } else {
-        selectedUrl = defaultUrl
+        selectedUrl = adminUrl
     }
 
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
+            // "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${selectedUrl}`,
@@ -96,7 +96,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 
     let currentUserEmail = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
 
-    const serverURL = `${CONFIG.BACKEND_URL}/admin/search`;
+    const serverURL = `http://localhost:3001`;
     let defaultUrl = `${serverURL}?`;
     let searchUrl
     let paramList = [
@@ -113,7 +113,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
     if (user.role === "customerCareOfficer") {
         searchUrl = defaultUrl;
     } else {
-        searchUrl = defaultUrl + `&userIDs=${currentUserEmail}`;
+        searchUrl = defaultUrl ;
     }
 
     paramList.forEach(function (key, index) {
@@ -147,7 +147,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
+            // "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${searchUrl}`,

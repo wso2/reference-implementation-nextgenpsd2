@@ -60,7 +60,8 @@ export const DetailedAgreement = ({match}) => {
         return getLogoURL(appInfo, consent.clientId);
     });
     const [infoLabel, setInfoLabel] = useState(() => {
-        const labels = lang.filter((lbl) => lbl.id === consent.currentStatus.toLowerCase());
+        const labels = lang.filter((lbl) =>
+            lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
         return getInfoLabel(labels[0], consent);
     });
 
@@ -73,7 +74,8 @@ export const DetailedAgreement = ({match}) => {
     }, [consents]);
 
     useEffect(() => {
-        const labels = lang.filter((lbl) => lbl.id === consent.currentStatus.toLowerCase());
+        const labels = lang.filter((lbl) =>
+            lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
         setInfoLabel(getInfoLabel(labels[0], consent));
     }, [consent]);
 
