@@ -22,7 +22,7 @@ import {CONFIG} from "../config";
 import {getExpireTimeFromConsent} from "../services/utils";
 import {AccreditationDefault} from "../specConfigs/Default/componants/detailedAggrementPage/AccreditationDefault";
 
-export const Profile = ({consent, infoLabel, appicationName, logoURL}) => {
+export const Profile = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
 
 
     const [expireTime, setExpireTime] = useState(() => {
@@ -42,7 +42,7 @@ export const Profile = ({consent, infoLabel, appicationName, logoURL}) => {
                     expireDate={expireTime}
                 />
                 <ProfileMain consent={consent} infoLabel={infoLabel} appicationName={appicationName}
-                             logoURL={logoURL}/>
+                             logoURL={logoURL} consentType={consentType}/>
                 <hr className="horizontalLine"/>
                 <div className="infoBox">
                     {

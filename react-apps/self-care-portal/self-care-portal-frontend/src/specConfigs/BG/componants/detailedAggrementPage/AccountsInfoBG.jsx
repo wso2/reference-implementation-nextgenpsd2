@@ -16,11 +16,11 @@ import {permissionBindTypes} from "../../../common";
 
 let id = 0;
 
-export const AccountsInfoBG = ({consent}) => {
+export const AccountsInfoBG = ({consent, consentType}) => {
 
     const consentStatus = consent.currentStatus;
     const debtorAccounts = consent.consentMappingResources;
-    let keyDatesConfig = lang.filter((lbl) => lbl.id === consentStatus.toLowerCase())[0];
+    let keyDatesConfig = lang[consentType].filter((lbl) => lbl.id === consentStatus.toLowerCase())[0];
     return (
         <div className="accountsInfoBody">
             {specConfigurations.consent.permissionsView.permissionBindType ===

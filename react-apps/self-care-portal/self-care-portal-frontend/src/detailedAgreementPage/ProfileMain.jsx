@@ -12,14 +12,15 @@
 
 import {Container} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {withdrawLang} from "../specConfigs";
+import {lang, withdrawLang} from "../specConfigs";
 import ADRLogo from "../images/ADRLogo.png";
 import moment from "moment";
 import {specConfigurations} from "../specConfigs/specConfigurations";
 import {generatePDF, getExpireTimeFromConsent} from "../services/utils";
+import {useState} from "react";
 
 
-export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
+export const ProfileMain = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
 
     const consentConsentId = consent.consentId;
     const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
@@ -28,9 +29,18 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
         logoURL = ADRLogo
     }
 
+    const [filteredLang, setFilteredLang] = useState(() => {
+        const labels = lang[consentType].filter((lbl) =>
+            lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
+        return labels[0];
+    });
+    console.log(filteredLang.isRevocableConsent)
+    console.log("isNotExpired " + isNotExpired())
+
     function isNotExpired() {
         try {
             let expireTimeFromConsent = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
+            console.log(expireTimeFromConsent)
             if (!expireTimeFromConsent) {
                 return true;
             }
@@ -41,9 +51,8 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
         }
     }
 
-    const consentStatusLabel = (consent.currentStatus.toLowerCase() ===
-        specConfigurations.status.authorised.toLowerCase() && !isNotExpired())
-        ? specConfigurations.status.expired : infoLabel.label;
+    const consentStatusLabel = !isNotExpired() ? specConfigurations.status.expired : infoLabel.label;
+
     return (
         <Container className="profileMain">
             <img id="profileLogo" src={logoURL} width="50" height="50" alt="new"/>
@@ -55,8 +64,7 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL}) => {
                         {infoLabel.profile.confirmation}
                     </a>
                 </div>
-                {consent.currentStatus.toLowerCase() ===
-                specConfigurations.status.authorised.toLowerCase() && isNotExpired() ? (
+                {filteredLang !== undefined && filteredLang.isRevocableConsent && isNotExpired() ? (
                     <div className="actionButtons">
                         <div className="actionBtnDiv">
                             <Link

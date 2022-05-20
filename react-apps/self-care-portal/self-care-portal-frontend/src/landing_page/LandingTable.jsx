@@ -28,10 +28,9 @@ export const LandingTable = (props) => {
             </Row>
 
             <Table responsive="sm" className="landingTable">
-                <TableHeader statusTab={props.status}/>
+                <TableHeader statusTab={props.status} consentType={props.consentType}/>
                 <TableBody
-                    statusTab={props.status}
-                />
+                    statusTab={props.status} consentType={props.consentType}/>
             </Table>
         </>
     );

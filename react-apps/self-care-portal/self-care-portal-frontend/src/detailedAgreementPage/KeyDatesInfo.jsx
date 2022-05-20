@@ -10,24 +10,14 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import {lang, specConfigurations} from "../specConfigs/specConfigurations";
 import {keyDateTypes} from "../specConfigs/common";
 import React from "react";
 import moment from "moment";
 import {getValueFromConsent} from "../services";
-import {getExpireTimeFromConsent} from "../services/utils";
 
-export const KeyDatesInfo = ({consent, infoLabels}) => {
+export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
 
     let keyDatesConfig = infoLabels;
-    const consentStatus = consent.currentStatus;
-    const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
-    const expirationDateTime = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]")
-    let isExpired = (expirationDateTime !== "") ? moment(currentDate).isAfter(moment(expirationDateTime)) : false;
-
-    if (consentStatus === specConfigurations.status.authorised && isExpired) {
-        keyDatesConfig = lang.filter((lbl) => lbl.id === specConfigurations.status.expired.toLowerCase())[0];
-    }
 
     let keyDatesMap = keyDatesConfig.keyDates.map((keyDate) => {
         if (keyDate.type == keyDateTypes.date) {
