@@ -19,16 +19,16 @@ import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckCircle, faExclamationCircle, faExclamationTriangle,} from "@fortawesome/free-solid-svg-icons";
 import {useSelector} from "react-redux";
-import {withdrawLang, specConfigurations, permissionBindTypes} from "../specConfigs";
+import {permissionBindTypes, specConfigurations, withdrawLang} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import {FourOhFourError} from "../errorPage";
 import {PermissionItem} from "../detailedAgreementPage";
 import Axios from "axios";
 import {Modal} from "react-bootstrap";
 import {CONFIG} from "../config";
 import Cookies from "js-cookie";
 import User from "../data/User";
-import {getDisplayName, getValueFromConsent} from "../services";
+import {getDisplayName} from "../services";
+import {getPermissionListForConsent} from "../services/utils";
 
 export const WithdrawStep2 = ({match}) => {
     const [show, setShow] = useState(false);
@@ -111,26 +111,7 @@ export const WithdrawStep2 = ({match}) => {
             });
     };
 
-    let permissions = [];
-    if (specConfigurations.consent.permissionsView.permissionBindType ===
-        permissionBindTypes.samePermissionSetForAllAccounts) {
-        permissions = getValueFromConsent(
-            specConfigurations.consent.permissionsView.permissionsAttribute, consent)
-        if (permissions === "" || permissions === undefined) {
-            permissions = [];
-        }
-    } else {
-        permissions = {};
-        let detailedAccountsList = getValueFromConsent("consentMappingResources", consent);
-        detailedAccountsList.map((detailedAccount) => {
-            if (permissions[detailedAccount.accountId] === undefined) {
-                permissions[detailedAccount.accountId] = []
-                permissions[detailedAccount.accountId].push(detailedAccount.permission)
-            } else {
-                permissions[detailedAccount.accountId].push(detailedAccount.permission)
-            }
-        })
-    }
+    let permissions = getPermissionListForConsent(consent);
     return (
         <>
             {(
@@ -188,7 +169,8 @@ export const WithdrawStep2 = ({match}) => {
                                                     <h5>Account : {account}</h5>
                                                     <div className="dataClusters">
                                                         {permissions[account].map((permission) => (
-                                                            <PermissionItem permissionScope={permission} key={id = id + 1}/>
+                                                            <PermissionItem permissionScope={permission}
+                                                                            key={id = id + 1}/>
                                                         ))}
                                                     </div>
                                                 </>

@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import {specConfigurations, dataTypes} from "../specConfigs";
+import {specConfigurations, dataTypes, permissionBindTypes} from "../specConfigs";
 import moment from "moment";
 import jsPDF from "jspdf";
 
@@ -123,10 +123,14 @@ export function isExpiredConsent(consent, consentType) {
 }
 
 export function isEligibleToRevoke(consent, consentType) {
-    if (consentType === "accounts" || consentType === "funds-confirmations") {
+
+    if (isExpiredConsent(consent, consentType)) {
+        return false;
+    } else if (consentType === "accounts" || consentType === "funds-confirmations") {
         return (consent.currentStatus === "received" || consent.currentStatus === "valid" ||
             consent.currentStatus === "partiallyAuthorised")
-    } else if (consentType === "payments,periodic-payments,bulk-payments") {
+    } else if (consentType === "payments,periodic-payments,bulk-payments"
+        && consent.consentType === "periodic-payments") {
         return (consent.currentStatus === "ACCP" || consent.currentStatus === "RCVD" ||
             consent.currentStatus === "ACTC")
     } else {
@@ -136,6 +140,34 @@ export function isEligibleToRevoke(consent, consentType) {
 
 export function getConsentStatusLabel(consent, consentType, infoLabel) {
     return isExpiredConsent(consent, consentType) ? specConfigurations.status.expired : infoLabel.label;
+}
+
+export function getPermissionListForConsent(consent) {
+
+    let permissions = [];
+    if (specConfigurations.consent.permissionsView.permissionBindType ===
+        permissionBindTypes.samePermissionSetForAllAccounts) {
+        permissions = getValueFromConsent(
+            specConfigurations.consent.permissionsView.permissionsAttribute, consent)
+        if (permissions === "" || permissions === undefined) {
+            permissions = [];
+        }
+    } else {
+        permissions = {};
+        let detailedAccountsList = getValueFromConsent("consentMappingResources", consent);
+        detailedAccountsList.map((detailedAccount) => {
+            if (detailedAccount.permission !== "n/a") {
+                if (permissions[detailedAccount.accountId] === undefined) {
+                    permissions[detailedAccount.accountId] = []
+                    permissions[detailedAccount.accountId].push(detailedAccount.permission)
+                } else {
+                    permissions[detailedAccount.accountId].push(detailedAccount.permission)
+                }
+            }
+        })
+    }
+
+    return permissions;
 }
 
 export function generatePDF(consent, applicationName, consentStatus) {
