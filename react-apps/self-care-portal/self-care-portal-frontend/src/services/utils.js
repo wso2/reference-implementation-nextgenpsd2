@@ -123,7 +123,15 @@ export function isExpiredConsent(consent, consentType) {
 }
 
 export function isEligibleToRevoke(consent, consentType) {
-    return true;
+    if (consentType === "accounts" || consentType === "funds-confirmations") {
+        return (consent.currentStatus === "received" || consent.currentStatus === "valid" ||
+            consent.currentStatus === "partiallyAuthorised")
+    } else if (consentType === "payments,periodic-payments,bulk-payments") {
+        return (consent.currentStatus === "ACCP" || consent.currentStatus === "RCVD" ||
+            consent.currentStatus === "ACTC")
+    } else {
+        return false;
+    }
 }
 
 export function getConsentStatusLabel(consent, consentType, infoLabel) {
