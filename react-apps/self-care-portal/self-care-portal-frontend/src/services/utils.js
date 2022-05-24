@@ -98,7 +98,17 @@ export function getExpireTimeFromConsent(consent, format) {
     }
 }
 
-export function isExpiredConsent(consent) {
+export function isExpiredConsent(consent, consentType) {
+
+    // only account consents can expire.
+    if (consentType !== "accounts") {
+        return false;
+    } else if (consent.recurringIndicator !== undefined && consent.recurringIndicator === false) {
+        // once off consents does not have expiration.
+        return false;
+    } else if (consent.currentStatus !== "received" && consent.currentStatus !== "valid" && consent.currentStatus !== "partiallyAuthorised") {
+        return false;
+    }
     try {
         const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
         let expireTimeFromConsent = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
@@ -114,6 +124,10 @@ export function isExpiredConsent(consent) {
 
 export function isEligibleToRevoke(consent, consentType) {
     return true;
+}
+
+export function getConsentStatusLabel(consent, consentType, infoLabel) {
+    return isExpiredConsent(consent, consentType) ? specConfigurations.status.expired : infoLabel.label;
 }
 
 export function generatePDF(consent, applicationName, consentStatus) {

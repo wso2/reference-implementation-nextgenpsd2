@@ -24,22 +24,13 @@ import {AccreditationDefault} from "../specConfigs/Default/componants/detailedAg
 
 export const Profile = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
 
-
-    const [expireTime, setExpireTime] = useState(() => {
-        return getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
-    });
-
-    useEffect(() => {
-        setExpireTime(getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]"));
-    }, [consent]);
-
-
     return (
         <>
             <div className="profileBody">
                 <StatusLabel
+                    consent={consent}
+                    consentType={consentType}
                     infoLabel={infoLabel}
-                    expireDate={expireTime}
                 />
                 <ProfileMain consent={consent} infoLabel={infoLabel} appicationName={appicationName}
                              logoURL={logoURL} consentType={consentType}/>

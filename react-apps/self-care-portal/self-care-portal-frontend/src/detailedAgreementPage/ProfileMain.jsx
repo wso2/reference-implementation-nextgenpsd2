@@ -14,16 +14,13 @@ import {Container} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {lang, withdrawLang} from "../specConfigs";
 import ADRLogo from "../images/ADRLogo.png";
-import moment from "moment";
-import {specConfigurations} from "../specConfigs/specConfigurations";
-import {generatePDF, getExpireTimeFromConsent} from "../services/utils";
+import {generatePDF, getConsentStatusLabel, isEligibleToRevoke} from "../services/utils";
 import {useState} from "react";
 
 
 export const ProfileMain = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
 
     const consentConsentId = consent.consentId;
-    const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
 
     if (logoURL === undefined || logoURL === '') {
         logoURL = ADRLogo
@@ -35,21 +32,7 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL, consen
         return labels[0];
     });
 
-    function isNotExpired() {
-        try {
-            let expireTimeFromConsent = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
-            console.log(expireTimeFromConsent)
-            if (!expireTimeFromConsent) {
-                return true;
-            }
-            return moment(currentDate)
-                .isBefore(expireTimeFromConsent);
-        } catch (e) {
-            return true;
-        }
-    }
-
-    const consentStatusLabel = !isNotExpired() ? specConfigurations.status.expired : infoLabel.label;
+    const consentStatusLabel = getConsentStatusLabel(consent, consentType, infoLabel);
 
     return (
         <Container className="profileMain">
@@ -62,7 +45,7 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL, consen
                         {infoLabel.profile.confirmation}
                     </a>
                 </div>
-                {filteredLang !== undefined && filteredLang.isRevocableConsent && isNotExpired() ? (
+                {filteredLang !== undefined && filteredLang.isRevocableConsent && isEligibleToRevoke(consent, consentType) ? (
                     <div className="actionButtons">
                         <div className="actionBtnDiv">
                             <Link
