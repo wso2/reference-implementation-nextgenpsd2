@@ -24,91 +24,87 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
 import {getDisplayName} from "../services";
 
-export const WithdrawStep1 = ({ match }) => {
+export const WithdrawStep1 = ({match}) => {
 
-  const consents = useSelector((state) => state.consent.consents);
-  const appInfo = useSelector((state) => state.appInfo.appInfo);
+    const consents = useSelector((state) => state.consent.consents);
+    const appInfo = useSelector((state) => state.appInfo.appInfo);
 
-  useEffect(() => {
-    window.history.pushState(null, "", '/consentmgr');
-    window.onpopstate = function () {
-      window.location.href='/consentmgr';
-    };
-  }, []);
+    useEffect(() => {
+        window.history.pushState(null, "", '/consentmgr');
+        window.onpopstate = function () {
+            window.location.href = '/consentmgr';
+        };
+    }, []);
 
-  const matchedConsentId = match.params.id;
+    const matchedConsentId = match.params.id;
 
-  var matchedConsent;
-  var applicationName;
-  var consentStatus;
-  var consentConsentId;
-  var consent;
+    var matchedConsent;
+    var applicationName;
+    var consentConsentId;
+    var consent;
 
-  matchedConsent = consents.data.filter(
-    (consent) => consent.consentId === matchedConsentId
-  );
+    matchedConsent = consents.data.filter(
+        (consent) => consent.consentId === matchedConsentId
+    );
 
-  consent = matchedConsent[0];
-  applicationName = getDisplayName(appInfo, consent.clientId);
-  consentStatus = consent.currentStatus;
-  consentConsentId= consent.consentId;
+    consent = matchedConsent[0];
+    applicationName = getDisplayName(appInfo, consent.clientId);
+    consentConsentId = consent.consentId;
 
-  const location = useLocation();
+    const location = useLocation();
 
-  return (
-    <>
-      {consentStatus.toLowerCase() === specConfigurations.status.authorised.toLowerCase() ? (
-        <Container fluid className="withdrawContainer">
-          <div className="withdrawTitle">
-            <FontAwesomeIcon
-              className="withdrawWarnIcon fa-5x"
-              icon={faExclamationTriangle}
-            />
-            <h4 className="withdrawalHeading">
-              Stop sharing data with {applicationName}
-            </h4>
-            <ProgressBar now={50} label="1" />
-            <p className="infoHeading">{withdrawLang.infoHeading}</p>
-          </div>
-          <div className="withdrawInfo">
-            <h6 className="subHeadings">
-              <li>{withdrawLang.impactHeading}</li>
-            </h6>
-            <p>{withdrawLang.impactInfo}</p>
-            <h6 className="subHeadings">
-              <li>{withdrawLang.sharedDataHandling}</li>
-            </h6>
-            <p>{withdrawLang.sharedDataHandlingPara1}</p>
-            <p>{withdrawLang.sharedDataHandlingPara2}</p>
-          </div>
+    return (
+        <>
+            {(
+                <Container fluid className="withdrawContainer">
+                    <div className="withdrawTitle">
+                        <FontAwesomeIcon
+                            className="withdrawWarnIcon fa-5x"
+                            icon={faExclamationTriangle}
+                        />
+                        <h4 className="withdrawalHeading">
+                            Stop sharing data with {applicationName}
+                        </h4>
+                        <ProgressBar now={50} label="1"/>
+                        <p className="infoHeading">{withdrawLang.infoHeading}</p>
+                    </div>
+                    <div className="withdrawInfo">
+                        <h6 className="subHeadings">
+                            <li>{withdrawLang.impactHeading}</li>
+                        </h6>
+                        <p>{withdrawLang.impactInfo}</p>
+                        <h6 className="subHeadings">
+                            <li>{withdrawLang.sharedDataHandling}</li>
+                        </h6>
+                        <p>{withdrawLang.sharedDataHandlingPara1}</p>
+                        <p>{withdrawLang.sharedDataHandlingPara2}</p>
+                    </div>
 
-          <div className="actionButtons" id="withdrawStep1ActionBtns">
-            <div className="actionBtnDiv">
-              <Link
-                to = {`/consentmgr/${consentConsentId }`}
-                className="comButton"
-                id="withdrawFlowBackBtn"
-              >
-                {withdrawLang.backBtn}
-              </Link>
-            </div>
-            <div className="actionBtnDiv">
-              <Link
-                className="withdrawBtn"
-                id="withdrawBtn1"
-                to={{
-                  pathname: `/consentmgr/${consentConsentId}/withdrawal-step-2`,
-                  state: { prevPath: location.pathname },
-                }}
-              >
-                {withdrawLang.nextBtnStep1}
-              </Link>
-            </div>
-          </div>
-        </Container>
-      ) : (
-        <FourOhFourError />
-      )}
-    </>
-  );
-};
+                    <div className="actionButtons" id="withdrawStep1ActionBtns">
+                        <div className="actionBtnDiv">
+                            <Link
+                                to={`/consentmgr/${consentConsentId}`}
+                                className="comButton"
+                                id="withdrawFlowBackBtn"
+                            >
+                                {withdrawLang.backBtn}
+                            </Link>
+                        </div>
+                        <div className="actionBtnDiv">
+                            <Link
+                                className="withdrawBtn"
+                                id="withdrawBtn1"
+                                to={{
+                                    pathname: `/consentmgr/${consentConsentId}/withdrawal-step-2`,
+                                    state: {prevPath: location.pathname},
+                                }}
+                            >
+                                {withdrawLang.nextBtnStep1}
+                            </Link>
+                        </div>
+                    </div>
+                </Container>
+            )}
+        </>
+    );
+}

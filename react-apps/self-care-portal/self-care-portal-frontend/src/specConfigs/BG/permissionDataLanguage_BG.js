@@ -14,29 +14,20 @@ export const permissionDataLanguage_BG = [
     {
         scope: "accounts",
         dataCluster: "Accounts",
-        permissions: ["Name of account", "Type of account", "Account balance"],
+        permissions: ["Accounts"],
     },
     {
         scope: "transactions",
         dataCluster: "Transactions",
         permissions: [
-            "Account number",
-            "Account mail address",
-            "Interest rates",
-            "Fees",
-            "Discounts",
-            "Account terms",
+            "Transactions",
         ],
     },
     {
         scope: "balances",
         dataCluster: "Balances",
         permissions: [
-            "Incoming and outgoing transactions",
-            "Amounts",
-            "Dates",
-            "Descriptions of transactions",
-            "Who you have sent money to and received money from",
+            "Balances",
         ],
     }
 ];

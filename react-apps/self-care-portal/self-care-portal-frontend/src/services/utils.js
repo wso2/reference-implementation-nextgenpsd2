@@ -98,6 +98,24 @@ export function getExpireTimeFromConsent(consent, format) {
     }
 }
 
+export function isExpiredConsent(consent) {
+    try {
+        const currentDate = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
+        let expireTimeFromConsent = getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
+        if (!expireTimeFromConsent) {
+            return false;
+        }
+        return moment(currentDate)
+            .isAfter(expireTimeFromConsent);
+    } catch (e) {
+        return false;
+    }
+}
+
+export function isEligibleToRevoke(consent, consentType) {
+    return true;
+}
+
 export function generatePDF(consent, applicationName, consentStatus) {
 
     const pdf = new jsPDF("l", "mm", "a4");

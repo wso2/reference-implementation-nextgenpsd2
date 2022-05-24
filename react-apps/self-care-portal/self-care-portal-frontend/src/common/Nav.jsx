@@ -19,7 +19,7 @@ import Container from "react-bootstrap/Col";
 import userAvatar from "../images/userAvatar.png";
 import Image from "react-bootstrap/Image";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {logout} from "../login/logout";
 import {QRButton} from "../landing_page/Popup";
 import Popup from 'reactjs-popup';
@@ -31,10 +31,12 @@ import {getConsentsForSearch, setSearchObject} from "../store/actions";
 
 export const Nav = (user) => {
 
+    const location = useLocation()
     const dispatch = useDispatch();
     let searchObj = useSelector(state => state.searchObject);
     const appInfo = useSelector((state) => state.appInfo.appInfo);
     const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
+    const [showConsentTypeToggle, setShowConsentTypeToggle] = useState(true);
     const currentUser = useSelector(state => state.currentUser.user);
 
     useEffect(() => {
@@ -60,6 +62,13 @@ export const Nav = (user) => {
         return (<div> Show QR </div>)
     }
 
+    useEffect(() => {
+        if (location.pathname === "/consentmgr") {
+            setShowConsentTypeToggle(true)
+        } else {
+            setShowConsentTypeToggle(false)
+        }
+    }, [location.pathname])
     return (
         <Container className="nv">
             <Row className="Navbar">
@@ -78,12 +87,13 @@ export const Nav = (user) => {
                     </Link>
                 </Col>
                 <Col>
-                    <Tabs activeKey={consentTypeKey} onSelect={(k) => setConsentTypeKey(k)}>
+                    {showConsentTypeToggle && <Tabs activeKey={consentTypeKey} onSelect={(k) => setConsentTypeKey(k)}>
                         {consentTypes.map(({label, id}) => (
                             <Tab key={id} eventKey={id} title={label}>
                             </Tab>
                         ))}
-                    </Tabs>
+                    </Tabs>}
+
                 </Col>
                 <Col className="NavDropdown">
                     <NavDropdown

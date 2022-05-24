@@ -33,8 +33,8 @@ export const specConfigurations_BG =
         },
         application: {
             logoURLAttribute: "logo_uri",
-            displayNameAttribute: "software_client_name",
-            failOverDisplayNameAttribute: "software_id"
+            displayNameAttribute: "organization_id",
+            failOverDisplayNameAttribute: "DisplayName"
         }
     };
 
@@ -50,8 +50,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -113,24 +113,25 @@ export const account_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
         id: "partiallyAuthorised",
         label: "Partially Authorised",
         labelBadgeVariant: "success",
+        isRevocableConsent: true,
         description:
             "A list of account information consents that are partially authorised",
         tableHeaders: [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -171,10 +172,10 @@ export const account_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -188,8 +189,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -244,10 +245,10 @@ export const account_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -260,8 +261,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -310,82 +311,10 @@ export const account_lang_BG = [
         dataSharedLabel: "Data we shared",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
-        }
-    },
-    {
-        id: "rejected",
-        label: "Rejected",
-        labelBadgeVariant: "secondary",
-        description:
-            "A list of consents that have rejected to access your account information",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Expiry Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.validUntil",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.date,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View consent expiry confirmation >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "When you gave consent",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "When consent was rejected",
-                type: keyDateTypes.date,
-                dateParameterKey: "updatedTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we shared",
-        accreditation: {
-            accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
-            accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -398,8 +327,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -411,7 +340,7 @@ export const account_lang_BG = [
                 dateFormat: "DD MMM YYYY"
             },
             {
-                heading: "Withdrawn Date",
+                heading: "Revoked Date",
                 dataOrigin: dataOrigins.consent,
                 dataParameterKey: "updatedTimestamp",
                 failOverDataParameterKey: "",
@@ -448,10 +377,10 @@ export const account_lang_BG = [
         dataSharedLabel: "Data we shared",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     }
 ];
@@ -468,8 +397,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -504,10 +433,10 @@ export const payments_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -521,8 +450,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -557,76 +486,25 @@ export const payments_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
-        }
-    },
-    {
-        id: "RJCT",
-        label: "RJCT",
-        labelBadgeVariant: "secondary",
-        description:
-            "A list of consents that are in Rejected state",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
-        accreditation: {
-            accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
-            accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
         id: "ACTC",
         label: "ACTC",
         labelBadgeVariant: "secondary",
+        isRevocableConsent: true,
         description:
             "A list of consents that are in AcceptedTechnicalValidation state",
         tableHeaders: [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -661,10 +539,10 @@ export const payments_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -677,8 +555,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -713,10 +591,10 @@ export const payments_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -729,14 +607,22 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
                 heading: "Consented Date",
                 dataOrigin: dataOrigins.consent,
                 dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Revoked Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "updatedTimestamp",
                 failOverDataParameterKey: "",
                 dataType: dataTypes.timestamp,
                 dateFormat: "DD MMM YYYY"
@@ -765,62 +651,10 @@ export const payments_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
-        }
-    },
-    {
-        id: "PATC,PDNG,ACWP,ACWC,ACSP,ACSC",
-        label: "Other",
-        labelBadgeVariant: "secondary",
-        description:
-            "A list of consents that are in PATC,PDNG,ACWP,ACWC,ACSP,ACSC states",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
-        accreditation: {
-            accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
-            accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
 ];
@@ -837,8 +671,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -847,14 +681,6 @@ export const cof_lang_BG = [
                 dataParameterKey: "createdTimestamp",
                 failOverDataParameterKey: "",
                 dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Expiry Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.validUntil",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.date,
                 dateFormat: "DD MMM YYYY"
             },
             {
@@ -900,10 +726,69 @@ export const cof_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
+        }
+    },
+    {
+        id: "partiallyAuthorised",
+        label: "Partially Authorised",
+        labelBadgeVariant: "success",
+        isRevocableConsent: true,
+        description:
+            "A list of account information consents that are partially authorised",
+        tableHeaders: [
+            {
+                heading: "Service Provider",
+                dataOrigin: dataOrigins.applicationInfo,
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
+                dataType: dataTypes.rawData
+            },
+            {
+                heading: "Consented Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "createdTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                heading: "Action",
+                dataOrigin: dataOrigins.action,
+                dataParameterKey: "",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.rawData
+            },
+        ],
+        profile: {
+            confirmation: "View confirmation of consent >"
+        },
+        keyDatesInfoLabel: "Key Dates",
+        keyDates: [
+            {
+                title: "You granted consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Your consent will expire on",
+                type: keyDateTypes.date,
+                dateParameterKey: "validityPeriod",
+                dateFormat: "DD MMM YYYY"
+            }
+        ],
+        accountsInfoLabel: "Accounts",
+        dataSharedLabel: "Data we are sharing",
+        accreditation: {
+            accreditationLabel: "Accreditation",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
+            accreditWebsiteLinkText: "website",
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -917,8 +802,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -927,14 +812,6 @@ export const cof_lang_BG = [
                 dataParameterKey: "createdTimestamp",
                 failOverDataParameterKey: "",
                 dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Expiry Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.validUntil",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.date,
                 dateFormat: "DD MMM YYYY"
             },
             {
@@ -973,82 +850,10 @@ export const cof_lang_BG = [
         dataSharedLabel: "Data we are sharing",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
-        }
-    },
-    {
-        id: "rejected",
-        label: "Rejected",
-        labelBadgeVariant: "secondary",
-        description:
-            "A list of consents that are in rejected status",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Expiry Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.validUntil",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.date,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View consent expiry confirmation >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "When you gave consent",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "When consent was rejected",
-                type: keyDateTypes.date,
-                dateParameterKey: "updatedTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we shared",
-        accreditation: {
-            accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
-            accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     },
     {
@@ -1061,8 +866,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "software_client_name",
-                failOverDataParameterKey: "software_id",
+                dataParameterKey: "organization_id",
+                failOverDataParameterKey: "DisplayName",
                 dataType: dataTypes.rawData
             },
             {
@@ -1074,7 +879,7 @@ export const cof_lang_BG = [
                 dateFormat: "DD MMM YYYY"
             },
             {
-                heading: "Withdrawn Date",
+                heading: "Revoked Date",
                 dataOrigin: dataOrigins.consent,
                 dataParameterKey: "updatedTimestamp",
                 failOverDataParameterKey: "",
@@ -1111,10 +916,10 @@ export const cof_lang_BG = [
         dataSharedLabel: "Data we shared",
         accreditation: {
             accreditationLabel: "Accreditation",
-            accreditWebsite: "is an accredited data recipient. You can check their accreditation at",
+            accreditWebsite: "is an accredited API consumer application. You can check their accreditation at",
             accreditWebsiteLinkText: "website",
-            accreditWebsiteLink: "https://www.cdr.gov.au/find-a-provider",
-            accreditDR: "Accredited Data Recipient:"
+            accreditWebsiteLink: "https://www.berlin-group.org",
+            accreditDR: "Accredited API consumer application:"
         }
     }
 ];

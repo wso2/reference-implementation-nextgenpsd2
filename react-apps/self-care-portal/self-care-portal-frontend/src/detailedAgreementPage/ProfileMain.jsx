@@ -34,8 +34,6 @@ export const ProfileMain = ({consent, infoLabel, appicationName, logoURL, consen
             lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
         return labels[0];
     });
-    console.log(filteredLang.isRevocableConsent)
-    console.log("isNotExpired " + isNotExpired())
 
     function isNotExpired() {
         try {
