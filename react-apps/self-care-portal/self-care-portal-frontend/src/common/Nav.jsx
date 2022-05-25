@@ -107,7 +107,9 @@ export const Nav = (user) => {
                     className="navUserImage"
                     rounded
                 />
-                <span className="dropdown-userId">{user.email}</span>
+                <span className="dropdown-userId">
+                    {(user.email.endsWith("@carbon.super") ? (user.email.replace("@carbon.super", "")) : user.email)}
+                </span>
               </span>
                         }
                     >

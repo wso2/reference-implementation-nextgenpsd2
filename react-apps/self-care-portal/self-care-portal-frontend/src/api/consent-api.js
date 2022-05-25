@@ -21,26 +21,27 @@ import {specConfigurations} from "../specConfigs/specConfigurations";
  * Get the list of consents from the API.
  */
 export const getConsentsFromAPI = (user, consentTypes) => {
-    var adminUrl;
-    var defaultUrl;
+    let adminUrl;
+    let defaultUrl;
 
-    var userId = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
+    let tenantDomain = "@carbon.super";
+    let userId = (user.email.endsWith(tenantDomain) ? (user.email.replace(tenantDomain, "")) : user.email);
 
     // Accelerator only supporting the account consents type in SCP.
-    adminUrl = `http://localhost:3001?consentTypes=${consentTypes}`
-    defaultUrl = `http://localhost:3001?consentTypes=${consentTypes}&userIDs=${userId}`
+    adminUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}`
+    defaultUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}&userIDs=${userId}`
 
-    var selectedUrl
+    let selectedUrl
     if (user.role === "customerCareOfficer") {
         selectedUrl = adminUrl;
     } else {
-        selectedUrl = adminUrl
+        selectedUrl = defaultUrl
     }
 
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-            // "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
+            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${selectedUrl}`,
@@ -94,9 +95,10 @@ function getClientIdsFromSoftwareProvider(softwareProvider, appInfo) {
 
 export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 
-    let currentUserEmail = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
+    let tenantDomain = "@carbon.super";
+    let currentUserEmail = (user.email.endsWith(tenantDomain) ? (user.email.replace(tenantDomain, "")) : user.email);
 
-    const serverURL = `http://localhost:3001`;
+    const serverURL = `${CONFIG.BACKEND_URL}/admin/search`;
     let defaultUrl = `${serverURL}?`;
     let searchUrl
     let paramList = [
@@ -113,7 +115,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
     if (user.role === "customerCareOfficer") {
         searchUrl = defaultUrl;
     } else {
-        searchUrl = defaultUrl ;
+        searchUrl = defaultUrl + `&userIDs=${currentUserEmail}`;
     }
 
     paramList.forEach(function (key, index) {
@@ -147,7 +149,7 @@ export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-            // "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
+            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${searchUrl}`,
