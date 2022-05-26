@@ -431,7 +431,7 @@ validator="com.wso2.openbanking.berlin.consent.extensions.validate.impl.BerlinCo
 alias="wso2carbon"
 
 [open_banking.consent.admin]
-handler="com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler"
+handler="com.wso2.openbanking.berlin.consent.extensions.admin.impl.BGConsentAdminHandler"
 
 [open_banking.consent.periodical_expiration]
 # This property needs to be true in order to run the consent expiration periodical updater.
@@ -442,6 +442,9 @@ cron_value="0 0 0 * * ?"
 expired_consent_status_value="expired"
 # These consent statuses will only be consider when checking for expired consents. (Comma separated value list)
 eligible_statuses="valid"
+
+[open_banking.identity.application_information_webapp]
+sp_metadata_filter="com.wso2.openbanking.berlin.identity.sp.metadata.BGSPMetadataFilter"
 
 [open_banking.identity.mutualtls]
 #This property needs to be true if the certificate should be decoded when it is passed from the load balancer to the Gateway.
