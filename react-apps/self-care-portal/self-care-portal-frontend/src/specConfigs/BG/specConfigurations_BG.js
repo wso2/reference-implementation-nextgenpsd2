@@ -516,6 +516,14 @@ export const payments_lang_BG = [
                 dateFormat: "DD MMM YYYY"
             },
             {
+                heading: "Updated Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "updatedTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
                 heading: "Action",
                 dataOrigin: dataOrigins.action,
                 dataParameterKey: "",
@@ -532,6 +540,12 @@ export const payments_lang_BG = [
                 title: "You granted consent on",
                 type: keyDateTypes.date,
                 dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "Last updated time",
+                type: keyDateTypes.date,
+                dateParameterKey: "updatedTimestamp",
                 dateFormat: "DD MMM YYYY"
             }
         ],
@@ -568,6 +582,14 @@ export const payments_lang_BG = [
                 dateFormat: "DD MMM YYYY"
             },
             {
+                heading: "Revoked Date",
+                dataOrigin: dataOrigins.consent,
+                dataParameterKey: "updatedTimestamp",
+                failOverDataParameterKey: "",
+                dataType: dataTypes.timestamp,
+                dateFormat: "DD MMM YYYY"
+            },
+            {
                 heading: "Action",
                 dataOrigin: dataOrigins.action,
                 dataParameterKey: "",
@@ -584,6 +606,12 @@ export const payments_lang_BG = [
                 title: "You granted consent on",
                 type: keyDateTypes.date,
                 dateParameterKey: "createdTimestamp",
+                dateFormat: "DD MMM YYYY"
+            },
+            {
+                title: "You cancelled your consent on",
+                type: keyDateTypes.date,
+                dateParameterKey: "updatedTimestamp",
                 dateFormat: "DD MMM YYYY"
             }
         ],
@@ -658,6 +686,7 @@ export const payments_lang_BG = [
         }
     },
 ];
+// todo add canceled date in table header n detail view @ CANC in payments
 
 export const cof_lang_BG = [
     {
