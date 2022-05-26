@@ -686,7 +686,6 @@ export const payments_lang_BG = [
         }
     },
 ];
-// todo add canceled date in table header n detail view @ CANC in payments
 
 export const cof_lang_BG = [
     {

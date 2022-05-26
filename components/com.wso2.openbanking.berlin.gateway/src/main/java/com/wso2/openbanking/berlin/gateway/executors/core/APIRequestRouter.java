@@ -34,13 +34,7 @@ public class APIRequestRouter extends AbstractRequestRouter {
 
         String resource = obapiRequestContext.getMsgInfo().getResource();
 
-        if (GatewayConstants.API_TYPE_CONSENT
-                .equals(obapiRequestContext.getOpenAPI().getExtensions().get(GatewayConstants.API_TYPE_CUSTOM_PROP))) {
-            //add support for consent management portal APIs
-            obapiRequestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
-                    GatewayConstants.API_TYPE_CONSENT);
-            return this.getExecutorMap().get("Consent");
-        } else if (StringUtils.contains(resource, APIRequestRouterConstants.PAYMENTS_TYPE)) {
+        if (StringUtils.contains(resource, APIRequestRouterConstants.PAYMENTS_TYPE)) {
             obapiRequestContext.addContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP,
                     APIRequestRouterConstants.PAYMENTS_TYPE);
             return this.getExecutorMap().get(APIRequestRouterConstants.PAYMENTS);

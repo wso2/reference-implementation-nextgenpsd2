@@ -63,7 +63,6 @@ export const Nav = (user) => {
     }
 
     useEffect(() => {
-        console.log(location.pathname)
         if (location.pathname === "/consentmgr" || location.pathname === "/consentmgr/") {
             setShowConsentTypeToggle(true)
         } else {
