@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
 
     private static final Log log = LogFactory.getLog(BGConsentAdminHandler.class);
-    private static final String AUTHORISED = "authorised";
 
     private String validateAndGetQueryParam(Map queryParams, String key) {
 
@@ -64,7 +63,9 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
         if (consentId == null) {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory parameter consent ID not available");
         }
-        log.debug("Get existing consent resource for provided consent Id");
+        if (log.isDebugEnabled()) {
+            log.debug("Get existing consent resource for provided consent Id: " + consentId);
+        }
         ConsentCoreServiceImpl coreService = getConsentService();
         try {
             DetailedConsentResource consentResource = coreService.getDetailedConsent(consentId);
@@ -99,6 +100,13 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
 
     }
 
+    /**
+     * Method to validate and revoke Account consents
+     *
+     * @param consentResource  Consent resource
+     * @param coreService      consent core service instance
+     * @param consentAdminData consent admin date related to revoking consent
+     */
     private void validateAndRevokeAccountConsent(DetailedConsentResource consentResource,
                                                  ConsentCoreServiceImpl coreService,
                                                  ConsentAdminData consentAdminData) {
@@ -120,7 +128,6 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
                     ErrorConstants.CONSENT_ALREADY_EXPIRED));
         }
 
-        log.debug("Deleting consent resource and updating status");
         try {
 
             if (!consentAdminData.getQueryParams().containsKey("userId")) {
@@ -148,6 +155,12 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
         }
     }
 
+    /**
+     * Method to validate and revoke Payment consents
+     *
+     * @param consentResource Consent resource
+     * @param coreService     consent core service instance
+     */
     private void validateAndRevokePaymentConsent(DetailedConsentResource consentResource,
                                                  ConsentCoreServiceImpl coreService) {
 
@@ -159,7 +172,6 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
                     ErrorConstants.CANCELLATION_NOT_APPLICABLE));
         }
 
-        log.debug("Send an error if the consent is already deleted");
         if (StringUtils.equals(TransactionStatusEnum.CANC.name(), consentResource.getCurrentStatus())
                 || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), consentResource.getCurrentStatus())) {
             log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
@@ -169,9 +181,12 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
         }
 
         if (CommonConfigParser.getInstance().isAuthorizationRequiredForCancellation()) {
-            log.debug("TPP Prefers explicit authorisation for payment cancellation");
 
-            log.debug("Update consent with ACTC status");
+            if (log.isDebugEnabled()) {
+                log.debug("TPP Prefers explicit authorisation for payment cancellation : "
+                        + consentResource.getConsentID() + " , Update consent with ACTC status");
+            }
+
             try {
                 coreService.updateConsentStatus(consentResource.getConsentID(), TransactionStatusEnum.ACTC.name());
             } catch (ConsentManagementException e) {
@@ -181,8 +196,11 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
             }
 
         } else {
-            log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
-                    "an explicit authorisation");
+            if (log.isDebugEnabled()) {
+                log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
+                        "an explicit authorisation for consent : " + consentResource.getConsentID());
+            }
+
             try {
                 coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
 
@@ -206,9 +224,18 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
 
     }
 
+    /**
+     * Method to validate and revoke CoF consents
+     *
+     * @param consentResource  Consent resource
+     * @param coreService      consent core service instance
+     * @param consentAdminData consent admin date related to revoking consent
+     */
     private void validateAndRevokeCofConsent(DetailedConsentResource consentResource,
                                              ConsentCoreServiceImpl coreService, ConsentAdminData consentAdminData) {
 
+        // Both account and cof consents have same basic checks when it comes to revocation.
+        // #Ref FundsConfirmationServiceHandler
         validateAndRevokeAccountConsent(consentResource, coreService, consentAdminData);
     }
 
