@@ -22,6 +22,7 @@
             <class name="com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactoryTests"/>
             <class name="com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.factory.ServiceHandlerFactoryTests"/>
             <class name="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandlerTests"/>
+            <class name="com.wso2.openbanking.berlin.consent.extensions.admin.impl.BGConsentAdminHandlerTest"/>
             <class name="com.wso2.openbanking.berlin.consent.extensions.validate.validator.factory.SubmissionValidatorFactoryTests"/>
         </classes>
     </test>
