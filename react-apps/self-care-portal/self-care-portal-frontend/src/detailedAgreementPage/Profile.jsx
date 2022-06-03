@@ -55,7 +55,7 @@ export const Profile = ({consent, infoLabel, appicationName, logoURL, consentTyp
                     }
                 </div>
                 <div className="infoBox">
-                    <h6>Other important information</h6>
+                    <b>Other important information</b>
                     <p>
                         There may be additional important information not shown here. Please
                         check this sharing arrangement of {appicationName}’s
