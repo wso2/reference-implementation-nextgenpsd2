@@ -14,12 +14,11 @@ import React, {useEffect, useState} from "react";
 import Badge from "react-bootstrap/Badge";
 import {specConfigurations} from "../specConfigs/specConfigurations";
 import "../css/StatusLabel.css";
-import moment from "moment";
+import {isExpiredConsent} from "../services/utils";
 
-export const StatusLabel = ({infoLabel, expireDate}) => {
+export const StatusLabel = ({consent, consentType, infoLabel}) => {
 
-    const date_create = moment().format("YYYY-MM-DDTHH:mm:ss[Z]");
-    const [statusForLbl, setStatusForLbl] = useState("Active");
+    const [statusForLbl, setStatusForLbl] = useState("Valid");
     const [badge, setBadge] = useState("success");
 
 
@@ -30,10 +29,7 @@ export const StatusLabel = ({infoLabel, expireDate}) => {
 
     useEffect(() => {
         try {
-            if (!expireDate) {
-                defaultStatusLabel();
-            } else if (infoLabel.id === specConfigurations.status.authorised &&
-                !moment(date_create).isBefore(moment(expireDate))) {
+            if (isExpiredConsent(consent, consentType)) {
                 setBadge("secondary");
                 setStatusForLbl(specConfigurations.status.expired);
             } else {

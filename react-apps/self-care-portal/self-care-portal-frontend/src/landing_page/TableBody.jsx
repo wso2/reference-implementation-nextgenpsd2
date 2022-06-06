@@ -15,13 +15,20 @@ import {dataOrigins, dataTypes, lang} from "../specConfigs";
 import moment from "moment";
 import {useSelector} from "react-redux";
 import {getValueFromApplicationInfoWithFailOver, getValueFromConsentWithFailOver} from "../services/utils";
+import {useEffect, useState} from "react";
 
-let id = 0;
-export const TableBody = ({statusTab}) => {
+export const TableBody = ({statusTab, consentType}) => {
+    let id = 0;
 
     const consents = useSelector((state) => state.consent.consents);
     const appInfo = useSelector((state) => state.appInfo.appInfo);
-    const filteredTab = lang.filter((lbl) => lbl.id === statusTab)[0];
+    const [filteredTab, setFilteredTab] = useState(() => {
+        return lang[consentType].filter((lbl) => lbl.id === statusTab)[0];
+    });
+
+    useEffect(() => {
+        setFilteredTab(lang[consentType].filter((lbl) => lbl.id === statusTab)[0])
+    }, [consentType]);
 
     function renderRespectiveConfiguredValue(header, valueToView) {
         if (header.dataType === dataTypes.timestamp) {
@@ -44,13 +51,13 @@ export const TableBody = ({statusTab}) => {
             consents.data.length === 0 ? (
                 <tr id="noConsentsLbl" key={id = id + 1}>
                     <td id="lbl" colSpan={4} key={id = id + 1}>
-                        No {filteredTab.label} consents to display
+                        No {filteredTab !== undefined && filteredTab.label} consents to display
                     </td>
                 </tr>
             ) : consents.data.length > 0 ? (
                 consents.data.map((consent) => (
                         <tr key={id = id + 1}>
-                            {filteredTab.tableHeaders.map((header) => {
+                            {filteredTab !== undefined && filteredTab.tableHeaders.map((header) => {
                                     if (header.dataOrigin === dataOrigins.action) {
                                         return <ManageButton consentId={consent.consentId}/>
 

@@ -137,7 +137,11 @@ public class ApimReqHandlerServlet extends HttpServlet {
             LOG.error("Exception occurred while processing frontend request. Caused by, ", e);
             SCPError error = new SCPError("Request Forwarding Error!",
                     "Something went wrong during the authentication process. Please try signing in again.");
-            OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
+            // Consent revoke call might return error due to it's state,
+            // Therefore we need to omit the removal of cookies in such scenarios.
+            if (!req.getRequestURI().contains("/revoke")) {
+                OAuthService.getInstance().removeAllCookiesFromRequest(req, resp);
+            }
             Utils.returnResponse(resp, HttpStatus.SC_UNAUTHORIZED, new JSONObject(error));
         } catch (SessionTimeoutException e) {
             LOG.debug("Session timeout exception occurred while processing request. Caused by, ", e);

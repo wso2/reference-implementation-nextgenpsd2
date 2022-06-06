@@ -27,7 +27,16 @@ export const LandingTabs = () => {
     const appInfo = useSelector((state) => state.appInfo.appInfo);
 
     const [key, setKey] = useState(searchObj.consentStatuses);
+    const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
     const currentUser = useSelector(state => state.currentUser.user);
+
+    const [filteredLang, setFilteredLang] = useState(lang[consentTypeKey]);
+
+    useEffect(() => {
+        setFilteredLang(lang[searchObj.consentTypes]);
+        setKey(searchObj.consentStatuses)
+        setConsentTypeKey(searchObj.consentTypes)
+    }, [searchObj.consentTypes])
 
     useEffect(() => {
         let search = {
@@ -42,9 +51,10 @@ export const LandingTabs = () => {
     return (
         <div>
             <Tabs id="status-tab" activeKey={key} onSelect={(k) => setKey(k)}>
-                {lang.map(({label, id, description}) => (
+                {filteredLang.map(({label, id, description}) => (
                     <Tab key={id} eventKey={id} title={label}>
-                        <LandingTable status={id} description={description} currentTab={{key}}/>
+                        <LandingTable status={id} description={description} currentTab={key}
+                                      consentType={consentTypeKey}/>
                     </Tab>
                 ))}
             </Tabs>

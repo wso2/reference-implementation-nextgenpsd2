@@ -16,7 +16,7 @@ import {permissionBindTypes} from "../../../common";
 
 let id = 0;
 
-export const AccountsInfoUK = ({consent}) => {
+export const AccountsInfoUK = ({consent, consentType}) => {
 
     const consentStatus = consent.currentStatus;
     const debtorAccounts = consent.consentMappingResources;

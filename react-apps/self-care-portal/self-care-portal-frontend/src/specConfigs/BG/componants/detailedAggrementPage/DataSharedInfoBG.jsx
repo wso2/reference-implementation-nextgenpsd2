@@ -13,35 +13,16 @@
 import React from "react";
 import {specConfigurations} from "../../../specConfigurations";
 import {PermissionItem} from "../../../../detailedAgreementPage";
-import {getValueFromConsent} from "../../../../services";
 import {permissionBindTypes} from "../../../common";
+import {getPermissionListForConsent} from "../../../../services/utils";
 
 let id = 0;
 export const DataSharedInfoBG = ({consent, infoLabels}) => {
 
-    let permissions = [];
-    if (specConfigurations.consent.permissionsView.permissionBindType ===
-        permissionBindTypes.samePermissionSetForAllAccounts) {
-        permissions = getValueFromConsent(
-            specConfigurations.consent.permissionsView.permissionsAttribute, consent)
-        if (permissions === "" || permissions === undefined) {
-            permissions = [];
-        }
-    } else {
-        permissions = {};
-        let detailedAccountsList = getValueFromConsent("consentMappingResources", consent);
-        detailedAccountsList.map((detailedAccount) => {
-            if (permissions[detailedAccount.accountId] === undefined) {
-                permissions[detailedAccount.accountId] = []
-                permissions[detailedAccount.accountId].push(detailedAccount.permission)
-            } else {
-                permissions[detailedAccount.accountId].push(detailedAccount.permission)
-            }
-        })
-    }
+    let permissions = getPermissionListForConsent(consent);
     return (
         <div className="dataSharedBody">
-            <h5>{infoLabels.dataSharedLabel}</h5>
+            <h5>{infoLabels.dataSharedLabel} for <b>{consent.consentType}</b> consent</h5>
             {specConfigurations.consent.permissionsView.permissionBindType ===
             permissionBindTypes.differentPermissionsForEachAccount ?
                 (

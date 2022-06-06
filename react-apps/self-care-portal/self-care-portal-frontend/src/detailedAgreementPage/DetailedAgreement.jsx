@@ -33,8 +33,10 @@ export const DetailedAgreement = ({match}) => {
     const currentUser = useSelector(state => state.currentUser.user);
     const consents = useSelector((state) => state.consent.consents);
     const appInfo = useSelector((state) => state.appInfo.appInfo);
-    
+    const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
+
     const [consent, setConsent] = useState(() => {
+        setConsentTypeKey(searchObj.consentTypes);
         let search = {
             ...searchObj,
             limit: 1,
@@ -43,7 +45,8 @@ export const DetailedAgreement = ({match}) => {
             consentIDs: match.params.id,
             userIDs: "",
             clientIDs: "",
-            consentStatuses: ""
+            consentStatuses: "",
+            consentTypes: ""
         }
         dispatch(getConsentsForSearch(search, currentUser, appInfo));
         const matchedConsentId = match.params.id;
@@ -60,7 +63,8 @@ export const DetailedAgreement = ({match}) => {
         return getLogoURL(appInfo, consent.clientId);
     });
     const [infoLabel, setInfoLabel] = useState(() => {
-        const labels = lang.filter((lbl) => lbl.id === consent.currentStatus.toLowerCase());
+        const labels = lang[consentTypeKey].filter((lbl) =>
+            lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
         return getInfoLabel(labels[0], consent);
     });
 
@@ -73,7 +77,8 @@ export const DetailedAgreement = ({match}) => {
     }, [consents]);
 
     useEffect(() => {
-        const labels = lang.filter((lbl) => lbl.id === consent.currentStatus.toLowerCase());
+        const labels = lang[consentTypeKey].filter((lbl) =>
+            lbl.id.split(",").some(x => x.toLowerCase() === consent.currentStatus.toLowerCase()));
         setInfoLabel(getInfoLabel(labels[0], consent));
     }, [consent]);
 
@@ -89,7 +94,7 @@ export const DetailedAgreement = ({match}) => {
                     .filter(mapping => mapping.authorizationId === currentAuthResource.authorizationId);
                 if (mappings.every(consentMapping => consentMapping.mappingStatus === "inactive")) {
                     // every consent mapping is inactive
-                    return lang.filter((lbl) => lbl.id === specConfigurations.status.revoked.toLowerCase())[0];
+                    return lang[consentTypeKey].filter((lbl) => lbl.id === specConfigurations.status.revoked.toLowerCase())[0];
                 }
             }
         }
@@ -111,10 +116,11 @@ export const DetailedAgreement = ({match}) => {
             <Row id="detailRow">
                 <Col sm={4} id="profileCol">
                     <Profile consent={consent} infoLabel={infoLabel} appicationName={applicationName}
-                             logoURL={logoURL}/>
+                             logoURL={logoURL} consentType={consentTypeKey}/>
                 </Col>
                 <Col id="consentDetailCol">
-                    <SharingDetails consent={consent} infoLabels={infoLabel} appicationName={applicationName}/>
+                    <SharingDetails consent={consent} infoLabels={infoLabel} appicationName={applicationName}
+                                    consentType={consentTypeKey}/>
                 </Col>
             </Row>
         </Container>

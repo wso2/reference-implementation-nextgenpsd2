@@ -11,19 +11,23 @@
  */
 
 import {dataOrigins, lang} from "../specConfigs";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-export const TableHeader = ({statusTab}) => {
+export const TableHeader = ({statusTab, consentType}) => {
 
     const [filteredTab, setFilteredTab] = useState(() => {
-        return lang.filter((lbl) => lbl.id === statusTab)[0];
+        return lang[consentType].filter((lbl) => lbl.id === statusTab)[0];
     });
+
+    useEffect(() => {
+        setFilteredTab(lang[consentType].filter((lbl) => lbl.id === statusTab)[0]);
+    }, [consentType])
 
     return (
         <thead>
         <tr>
             <>
-                {filteredTab.tableHeaders
+                {filteredTab !== undefined && filteredTab.tableHeaders
                     .map((header) => {
                             if (header.dataOrigin === dataOrigins.action) {
                                 return <th className="headerAction">{header.heading}</th>

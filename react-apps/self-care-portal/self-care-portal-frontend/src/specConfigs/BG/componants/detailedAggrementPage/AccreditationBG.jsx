@@ -16,20 +16,8 @@ import CDRLogo from "../../../../images/CDRLogo.png";
 export const AccreditationBG = ({infoLabel, applicationName}) => {
     return (
         <>
-            <h6>{infoLabel.accreditation.accreditationLabel}</h6>
-            <p>
-                {applicationName} {infoLabel.accreditation.accreditWebsite} [
-                <a href={infoLabel.accreditation.accreditWebsiteLink} target="_blank" rel="noreferrer">
-                    {/* add website link */}
-                    {infoLabel.accreditation.accreditWebsiteLinkText}
-                </a>
-                ]
-            </p>
             <div className="accredBox">
-                <img id="cdrLogo" src={CDRLogo} alt="CDR"/>
                 <div className="accredInfo">
-                    <h6>{applicationName}</h6>
-                    {/* add accredited Data Recipient's number */}
                     <p>{infoLabel.accreditation.accreditDR} {applicationName}</p>
                 </div>
             </div>

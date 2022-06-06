@@ -22,27 +22,18 @@ import {CONFIG} from "../config";
 import {getExpireTimeFromConsent} from "../services/utils";
 import {AccreditationDefault} from "../specConfigs/Default/componants/detailedAggrementPage/AccreditationDefault";
 
-export const Profile = ({consent, infoLabel, appicationName, logoURL}) => {
-
-
-    const [expireTime, setExpireTime] = useState(() => {
-        return getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]");
-    });
-
-    useEffect(() => {
-        setExpireTime(getExpireTimeFromConsent(consent, "YYYY-MM-DDTHH:mm:ss[Z]"));
-    }, [consent]);
-
+export const Profile = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
 
     return (
         <>
             <div className="profileBody">
                 <StatusLabel
+                    consent={consent}
+                    consentType={consentType}
                     infoLabel={infoLabel}
-                    expireDate={expireTime}
                 />
                 <ProfileMain consent={consent} infoLabel={infoLabel} appicationName={appicationName}
-                             logoURL={logoURL}/>
+                             logoURL={logoURL} consentType={consentType}/>
                 <hr className="horizontalLine"/>
                 <div className="infoBox">
                     {
@@ -64,7 +55,7 @@ export const Profile = ({consent, infoLabel, appicationName, logoURL}) => {
                     }
                 </div>
                 <div className="infoBox">
-                    <h6>Other important information</h6>
+                    <b>Other important information</b>
                     <p>
                         There may be additional important information not shown here. Please
                         check this sharing arrangement of {appicationName}’s

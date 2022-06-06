@@ -21,16 +21,17 @@ import {specConfigurations} from "../specConfigs/specConfigurations";
  * Get the list of consents from the API.
  */
 export const getConsentsFromAPI = (user, consentTypes) => {
-    var adminUrl;
-    var defaultUrl;
+    let adminUrl;
+    let defaultUrl;
 
-    var userId = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
+    let tenantDomain = "@carbon.super";
+    let userId = (user.email.endsWith(tenantDomain) ? (user.email.replace(tenantDomain, "")) : user.email);
 
     // Accelerator only supporting the account consents type in SCP.
     adminUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}`
     defaultUrl = `${CONFIG.BACKEND_URL}/admin/search?consentTypes=${consentTypes}&userIDs=${userId}`
 
-    var selectedUrl
+    let selectedUrl
     if (user.role === "customerCareOfficer") {
         selectedUrl = adminUrl;
     } else {
@@ -94,7 +95,8 @@ function getClientIdsFromSoftwareProvider(softwareProvider, appInfo) {
 
 export const getConsentsFromAPIForSearch = (searchObj, user, appInfo) => {
 
-    let currentUserEmail = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
+    let tenantDomain = "@carbon.super";
+    let currentUserEmail = (user.email.endsWith(tenantDomain) ? (user.email.replace(tenantDomain, "")) : user.email);
 
     const serverURL = `${CONFIG.BACKEND_URL}/admin/search`;
     let defaultUrl = `${serverURL}?`;

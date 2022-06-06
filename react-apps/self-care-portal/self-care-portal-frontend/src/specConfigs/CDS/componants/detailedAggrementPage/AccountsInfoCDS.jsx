@@ -16,11 +16,11 @@ import {permissionBindTypes} from "../../../common";
 
 let id = 0;
 
-export const AccountsInfoCDS = ({consent}) => {
+export const AccountsInfoCDS = ({consent, consentType}) => {
 
     const consentStatus = consent.currentStatus;
     const debtorAccounts = consent.consentMappingResources;
-    const uniqueActiveAccountIds = [...new Set( debtorAccounts
+    const uniqueActiveAccountIds = [...new Set(debtorAccounts
         .filter(account => "active" === account.mappingStatus)
         .map(account => account.accountId))];
     let keyDatesConfig = lang.filter((lbl) => lbl.id === consentStatus.toLowerCase())[0];

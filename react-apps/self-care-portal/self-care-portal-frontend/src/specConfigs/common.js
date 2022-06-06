@@ -45,3 +45,18 @@ export const dataTypes = {
     // To indicate the dataType is a ISO 8601 date
     timestamp: "DATE_TIMESTAMP",
 }
+
+export const consentTypes = [
+    {
+        id: "accounts",
+        label: "Accounts"
+    },
+    {
+        id: "payments,periodic-payments,bulk-payments",
+        label: "Payments"
+    },
+    {
+        id: "funds-confirmations",
+        label: "Funds-Confirmations"
+    }
+]

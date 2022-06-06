@@ -15,16 +15,16 @@ import { KeyDatesInfo, AccountsInfo, DataSharedInfo } from '../detailedAgreement
 
 import "../css/SharingDetails.css"
 
-export const SharingDetails = ({consent, infoLabels}) => {
+export const SharingDetails = ({consent, infoLabels, consentType}) => {
     return(
         <>
         <hr id = "sharingDetailsHr" className = "horizontalLine" />
         <div id = "keyDatesBox" className = "infoBox">
-        <KeyDatesInfo consent = {consent} infoLabels = {infoLabels}/>
+        <KeyDatesInfo consent = {consent} infoLabels = {infoLabels} consentType={consentType}/>
         </div>
         <hr id = "sharingDetailsHr" className = "horizontalLine" />
         <div id = "accountInfoBox" className = "infoBox">
-        <AccountsInfo consent = {consent} infoLabels = {infoLabels} />
+        <AccountsInfo consent = {consent} infoLabels = {infoLabels} consentType={consentType}/>
         </div>
         <hr id = "sharingDetailsHr" className = "horizontalLine" />
         <div id = "dataInfoBox" className = "infoBox">

@@ -18,19 +18,19 @@ import {AccountsInfoBG} from "../specConfigs/BG/componants/detailedAggrementPage
 import {AccountsInfoDefault} from "../specConfigs/Default/componants/detailedAggrementPage/AccountsInfoDefault";
 
 
-export const AccountsInfo = ({consent}) => {
+export const AccountsInfo = ({consent, consentType}) => {
 
     return (
         <>
             {
                 CONFIG.SPEC === 'Default' ? (
-                    <AccountsInfoDefault consent={consent}/>
+                    <AccountsInfoDefault consent={consent} consentType={consentType}/>
                 ) : CONFIG.SPEC === 'CDS' ? (
-                    <AccountsInfoCDS consent={consent}/>
+                    <AccountsInfoCDS consent={consent} consentType={consentType}/>
                 ) : CONFIG.SPEC === 'UK' ? (
-                    <AccountsInfoUK consent={consent}/>
+                    <AccountsInfoUK consent={consent} consentType={consentType}/>
                 ) : CONFIG.SPEC === 'BG' ? (
-                    <AccountsInfoBG consent={consent}/>
+                    <AccountsInfoBG consent={consent} consentType={consentType}/>
                 ) : (
                     <div className="accountsInfoBody"/>
                 )
