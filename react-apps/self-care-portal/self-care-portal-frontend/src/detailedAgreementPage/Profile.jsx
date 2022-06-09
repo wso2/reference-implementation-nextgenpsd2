@@ -10,16 +10,13 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {Accreditation, ProfileMain, StatusLabel} from "../detailedAgreementPage";
-import {AccreditationCDS} from "../specConfigs/CDS/componants/detailedAggrementPage/AccreditationCDS";
-import {AccreditationUK} from "../specConfigs/UK/componants/detailedAggrementPage/AccreditationUK";
 import {AccreditationBG} from "../specConfigs/BG/componants/detailedAggrementPage/AccreditationBG";
 
 import "../css/Profile.css";
 import "../css/Buttons.css";
 import {CONFIG} from "../config";
-import {getExpireTimeFromConsent} from "../services/utils";
 import {AccreditationDefault} from "../specConfigs/Default/componants/detailedAggrementPage/AccreditationDefault";
 
 export const Profile = ({consent, infoLabel, appicationName, logoURL, consentType}) => {
@@ -40,12 +37,6 @@ export const Profile = ({consent, infoLabel, appicationName, logoURL, consentTyp
                         CONFIG.SPEC == 'Default' ? (
                             <AccreditationDefault infoLabel={infoLabel} accreditationNumber={appicationName}
                                                   applicationName={appicationName}/>
-                        ) : CONFIG.SPEC == 'CDS' ? (
-                            <AccreditationCDS infoLabel={infoLabel} accreditationNumber={appicationName}
-                                              applicationName={appicationName}/>
-                        ) : CONFIG.SPEC == 'UK' ? (
-                            <AccreditationUK infoLabel={infoLabel} accreditationNumber={appicationName}
-                                             applicationName={appicationName}/>
                         ) : CONFIG.SPEC == 'BG' ? (
                             <AccreditationBG infoLabel={infoLabel} applicationName={appicationName}/>
                         ) : (

@@ -12,8 +12,6 @@
 
 import React from "react";
 import {CONFIG} from "../config";
-import {AccountsInfoCDS} from "../specConfigs/CDS/componants/detailedAggrementPage/AccountsInfoCDS";
-import {AccountsInfoUK} from "../specConfigs/UK/componants/detailedAggrementPage/AccountsInfoUK";
 import {AccountsInfoBG} from "../specConfigs/BG/componants/detailedAggrementPage/AccountsInfoBG";
 import {AccountsInfoDefault} from "../specConfigs/Default/componants/detailedAggrementPage/AccountsInfoDefault";
 
@@ -25,10 +23,6 @@ export const AccountsInfo = ({consent, consentType}) => {
             {
                 CONFIG.SPEC === 'Default' ? (
                     <AccountsInfoDefault consent={consent} consentType={consentType}/>
-                ) : CONFIG.SPEC === 'CDS' ? (
-                    <AccountsInfoCDS consent={consent} consentType={consentType}/>
-                ) : CONFIG.SPEC === 'UK' ? (
-                    <AccountsInfoUK consent={consent} consentType={consentType}/>
                 ) : CONFIG.SPEC === 'BG' ? (
                     <AccountsInfoBG consent={consent} consentType={consentType}/>
                 ) : (

@@ -12,8 +12,6 @@
 
 import React from "react";
 import {CONFIG} from "../config";
-import {DataSharedInfoCDS} from "../specConfigs/CDS/componants/detailedAggrementPage/DataSharedInfoCDS";
-import {DataSharedInfoUK} from "../specConfigs/UK/componants/detailedAggrementPage/DataSharedInfoUK";
 import {DataSharedInfoBG} from "../specConfigs/BG/componants/detailedAggrementPage/DataSharedInfoBG";
 import {DataSharedInfoDefault} from "../specConfigs/Default/componants/detailedAggrementPage/DataSharedInfoDefault";
 
@@ -24,10 +22,6 @@ export const DataSharedInfo = ({consent, infoLabels}) => {
             {
                 CONFIG.SPEC === 'Default' ? (
                     <DataSharedInfoDefault consent={consent} infoLabels={infoLabels}/>
-                ) : CONFIG.SPEC === 'CDS' ? (
-                    <DataSharedInfoCDS consent={consent} infoLabels={infoLabels}/>
-                ) : CONFIG.SPEC === 'UK' ? (
-                    <DataSharedInfoUK consent={consent} infoLabels={infoLabels}/>
                 ) : CONFIG.SPEC === 'BG' ? (
                     <DataSharedInfoBG consent={consent} infoLabels={infoLabels}/>
                 ) : (
