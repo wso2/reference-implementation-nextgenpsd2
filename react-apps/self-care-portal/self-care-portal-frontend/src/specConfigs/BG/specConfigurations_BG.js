@@ -45,7 +45,7 @@ export const account_lang_BG = [
         labelBadgeVariant: "success",
         isRevocableConsent: true,
         description:
-            "A list of consents that are in ",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -110,135 +110,11 @@ export const account_lang_BG = [
         }
     },
     {
-        id: "partiallyAuthorised",
-        label: "Partially Authorised",
-        labelBadgeVariant: "success",
-        isRevocableConsent: true,
-        description:
-            "A list of account information consents that are partially authorised",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
-        id: "received",
-        label: "Received",
-        labelBadgeVariant: "success",
-        isRevocableConsent: true,
-        description:
-            "A list of consents that are in received status to access to your account information",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Received Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Expiry Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "receipt.validUntil",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.date,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You received consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Sharing period",
-                type: keyDateTypes.dateRange,
-                dateParameterKey: "createdTimestamp,validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
         id: "expired",
         label: "Expired",
         labelBadgeVariant: "secondary",
         description:
-            "A list of applications that have expired access to your account information",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -300,7 +176,7 @@ export const account_lang_BG = [
         label: "Revoked",
         labelBadgeVariant: "secondary",
         description:
-            "A list of applications of which consent to access your information was withdrawn",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -362,11 +238,11 @@ export const account_lang_BG = [
 export const payments_lang_BG = [
     {
         id: "ACCP",
-        label: "ACCP",
+        label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
         description:
-            "A list of consents that are in AcceptedCustomerProfile state",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -410,123 +286,11 @@ export const payments_lang_BG = [
         }
     },
     {
-        id: "RCVD",
-        label: "RCVD",
-        labelBadgeVariant: "success",
-        isRevocableConsent: true,
-        description:
-            "A list of consents that are in Received state",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
-        id: "ACTC",
-        label: "ACTC",
-        labelBadgeVariant: "secondary",
-        isRevocableConsent: true,
-        description:
-            "A list of consents that are in AcceptedTechnicalValidation state",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Updated Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "updatedTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Last updated time",
-                type: keyDateTypes.date,
-                dateParameterKey: "updatedTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
-        id: "CANC",
-        label: "CANC",
+        id: "REVOKED,CANC",
+        label: "Revoked",
         labelBadgeVariant: "secondary",
         description:
-            "A list of consents that are in Cancelled state",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -583,72 +347,16 @@ export const payments_lang_BG = [
             accreditDR: "API consumer application:"
         }
     },
-    {
-        id: "REVOKED",
-        label: "Revoked",
-        labelBadgeVariant: "secondary",
-        description:
-            "A list of consents that are in Revoked state",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Revoked Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "updatedTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
 ];
 
 export const cof_lang_BG = [
     {
         id: "valid",
-        label: "Valid",
+        label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
         description:
-            "A list of consents that are in `valid` status",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
@@ -682,141 +390,6 @@ export const cof_lang_BG = [
                 title: "You granted consent on",
                 type: keyDateTypes.date,
                 dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Sharing period",
-                type: keyDateTypes.dateRange,
-                dateParameterKey: "createdTimestamp,validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "How often your data will be shared",
-                type: keyDateTypes.text,
-                dateParameterKey: "",
-                dateFormat: "",
-                text: "Ongoing"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
-        id: "partiallyAuthorised",
-        label: "Partially Authorised",
-        labelBadgeVariant: "success",
-        isRevocableConsent: true,
-        description:
-            "A list of account information consents that are partially authorised",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Consented Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You granted consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            }
-        ],
-        accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
-        accreditation: {
-            accreditDR: "API consumer application:"
-        }
-    },
-    {
-        id: "received",
-        label: "Received",
-        labelBadgeVariant: "success",
-        isRevocableConsent: true,
-        description:
-            "A list of consents that are in `received` status",
-        tableHeaders: [
-            {
-                heading: "Service Provider",
-                dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "DisplayName",
-                failOverDataParameterKey: "organization_id",
-                dataType: dataTypes.rawData
-            },
-            {
-                heading: "Received Date",
-                dataOrigin: dataOrigins.consent,
-                dataParameterKey: "createdTimestamp",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.timestamp,
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                heading: "Action",
-                dataOrigin: dataOrigins.action,
-                dataParameterKey: "",
-                failOverDataParameterKey: "",
-                dataType: dataTypes.rawData
-            },
-        ],
-        profile: {
-            confirmation: "View confirmation of consent >"
-        },
-        keyDatesInfoLabel: "Key Dates",
-        keyDates: [
-            {
-                title: "You received consent on",
-                type: keyDateTypes.date,
-                dateParameterKey: "createdTimestamp",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Your consent will expire on",
-                type: keyDateTypes.date,
-                dateParameterKey: "validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
-                title: "Sharing period",
-                type: keyDateTypes.dateRange,
-                dateParameterKey: "createdTimestamp,validityPeriod",
                 dateFormat: "DD MMM YYYY"
             }
         ],
@@ -831,7 +404,7 @@ export const cof_lang_BG = [
         label: "Revoked",
         labelBadgeVariant: "secondary",
         description:
-            "A list of applications of which consent to access your information was withdrawn",
+            "A list of consents that are in",
         tableHeaders: [
             {
                 heading: "Service Provider",
