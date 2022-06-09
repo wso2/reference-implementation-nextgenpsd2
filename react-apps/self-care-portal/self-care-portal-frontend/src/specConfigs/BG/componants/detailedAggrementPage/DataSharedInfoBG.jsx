@@ -22,7 +22,7 @@ export const DataSharedInfoBG = ({consent, infoLabels}) => {
     let permissions = getPermissionListForConsent(consent);
     return (
         <div className="dataSharedBody">
-            <h5>{infoLabels.dataSharedLabel} for <b>{consent.consentType}</b> consent</h5>
+            <h5>{infoLabels.dataSharedLabel} <b>{consent.consentType}</b> consent.</h5>
             {specConfigurations.consent.permissionsView.permissionBindType ===
             permissionBindTypes.differentPermissionsForEachAccount ?
                 (

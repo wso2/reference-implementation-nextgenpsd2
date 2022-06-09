@@ -58,8 +58,7 @@ export const Profile = ({consent, infoLabel, appicationName, logoURL, consentTyp
                     <b>Other important information</b>
                     <p>
                         There may be additional important information not shown here. Please
-                        check this sharing arrangement of {appicationName}’s
-                        website/app.
+                        check this sharing arrangement of <b>{appicationName}’s</b> website/app.
                     </p>
                 </div>
             </div>

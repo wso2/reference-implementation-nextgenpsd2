@@ -64,6 +64,25 @@ export const KeyDatesInfo = ({consent, infoLabels, consentType}) => {
                     </>
                 )
             }
+        } else if (keyDate.type == keyDateTypes.value) {
+            try {
+                let valueParameterKey = keyDate.valueParameterKey;
+                let valueFromConsent = getValueFromConsent(valueParameterKey, consent);
+
+                return (
+                    <>
+                        <h6>{keyDate.title}</h6>
+                        <p className="infoItem">{keyDate.preText} <b>{valueFromConsent}</b> {keyDate.postText}</p>
+                    </>
+                )
+            } catch (e) {
+                return (
+                    <>
+                        <h6>{keyDate.title}</h6>
+                        <p className="infoItem"></p>
+                    </>
+                )
+            }
         } else {
             return (
                 <>

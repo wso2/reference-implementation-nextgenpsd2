@@ -33,25 +33,25 @@ export const specConfigurations_BG =
         },
         application: {
             logoURLAttribute: "logo_uri",
-            displayNameAttribute: "organization_id",
-            failOverDisplayNameAttribute: "DisplayName"
+            displayNameAttribute: "DisplayName",
+            failOverDisplayNameAttribute: "organization_id"
         }
     };
 
 export const account_lang_BG = [
     {
         id: "valid",
-        label: "Valid",
+        label: "Active",
         labelBadgeVariant: "success",
         isRevocableConsent: true,
         description:
-            "A list of consents that have active access to your account information",
+            "A list of consents that are in ",
         tableHeaders: [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -96,21 +96,15 @@ export const account_lang_BG = [
                 dateFormat: "DD MMM YYYY"
             },
             {
-                title: "Sharing period",
-                type: keyDateTypes.dateRange,
-                dateParameterKey: "createdTimestamp,validityPeriod",
-                dateFormat: "DD MMM YYYY"
-            },
-            {
                 title: "How often your data will be shared",
-                type: keyDateTypes.text,
-                dateParameterKey: "",
-                dateFormat: "",
-                text: "Ongoing"
+                type: keyDateTypes.value,
+                valueParameterKey: "consentFrequency",
+                preText: "Daily",
+                postText: "times"
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -126,8 +120,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -165,7 +159,7 @@ export const account_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -181,8 +175,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -234,7 +228,7 @@ export const account_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -249,8 +243,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -296,7 +290,7 @@ export const account_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we shared",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -311,8 +305,8 @@ export const account_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -358,7 +352,7 @@ export const account_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we shared",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -377,8 +371,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -410,7 +404,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -426,8 +420,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -459,7 +453,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -475,8 +469,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -522,7 +516,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -537,8 +531,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -584,7 +578,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -599,8 +593,8 @@ export const payments_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -640,7 +634,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -659,8 +653,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -711,7 +705,7 @@ export const cof_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -727,8 +721,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -766,7 +760,7 @@ export const cof_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -782,8 +776,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -827,7 +821,7 @@ export const cof_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we are sharing",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -842,8 +836,8 @@ export const cof_lang_BG = [
             {
                 heading: "Service Provider",
                 dataOrigin: dataOrigins.applicationInfo,
-                dataParameterKey: "organization_id",
-                failOverDataParameterKey: "DisplayName",
+                dataParameterKey: "DisplayName",
+                failOverDataParameterKey: "organization_id",
                 dataType: dataTypes.rawData
             },
             {
@@ -889,7 +883,7 @@ export const cof_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "Data we shared",
+        dataSharedLabel: "We share the following data via the",
         accreditation: {
             accreditDR: "API consumer application:"
         }
