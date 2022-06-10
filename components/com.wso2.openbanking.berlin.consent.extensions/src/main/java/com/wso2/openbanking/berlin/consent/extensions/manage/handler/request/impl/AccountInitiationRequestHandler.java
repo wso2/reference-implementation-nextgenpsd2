@@ -81,13 +81,19 @@ public class AccountInitiationRequestHandler implements RequestHandler {
                     ConsentTypeEnum.ACCOUNTS.toString(), ConsentStatusEnum.RECEIVED.toString());
 
             // Setting additional properties to consent resource
-            consentResource.setRecurringIndicator(Boolean.parseBoolean(requestPayload
-                    .getAsString(ConsentExtensionConstants.RECURRING_INDICATOR)));
+            boolean recurringIndicator = Boolean.parseBoolean(
+                    requestPayload.getAsString(ConsentExtensionConstants.RECURRING_INDICATOR));
+            consentResource.setRecurringIndicator(recurringIndicator);
             consentResource.setConsentFrequency((Integer) requestPayload
                     .getAsNumber(ConsentExtensionConstants.FREQUENCY_PER_DAY));
 
             String validUntilString = requestPayload.getAsString(ConsentExtensionConstants.VALID_UNTIL);
-            consentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
+            if (recurringIndicator) {
+                consentResource.setValidityPeriod(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
+            } else {
+                // setting null for one off consent's validity period
+                consentResource.setValidityPeriod(0);
+            }
 
             String authStatus = isExplicitAuth ? null : ScaStatusEnum.RECEIVED.toString();
             try {
@@ -110,7 +116,8 @@ public class AccountInitiationRequestHandler implements RequestHandler {
                             consentResource.getConsentID()));
                 }
                 consentCoreService.storeConsentAttributes(createdConsent.getConsentID(),
-                        getConsentAttributesToPersist(consentManageData, createdConsent, scaInfoMap, isExplicitAuth));
+                        getConsentAttributesToPersist(consentManageData, createdConsent, scaInfoMap, isExplicitAuth,
+                                recurringIndicator));
             } catch (ConsentManagementException e) {
                 log.error(ErrorConstants.CONSENT_ATTRIBUTE_INITIATION_ERROR, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -172,12 +179,13 @@ public class AccountInitiationRequestHandler implements RequestHandler {
      * @param consentManageData consent manage data
      * @param scaInfoMap        SCA details
      * @param isExplicitAuth    if explicit is preferred or not
+     * @param recurringIndicator    if onc off consent or not
      * @return map of consent attributes to store
      */
     protected Map<String, String> getConsentAttributesToPersist(ConsentManageData consentManageData,
                                                                 DetailedConsentResource createdConsent,
                                                                 Map<String, Object> scaInfoMap,
-                                                                boolean isExplicitAuth) {
+                                                                boolean isExplicitAuth, boolean recurringIndicator) {
 
         Map<String, String> headersMap = consentManageData.getHeaders();
 
@@ -187,8 +195,11 @@ public class AccountInitiationRequestHandler implements RequestHandler {
         consentAttributesMap.put(ConsentExtensionConstants.PERMISSION, AccountConsentUtil.getPermission());
 
         // Storing consent expire attribute to expire in background
-        consentAttributesMap.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE,
-                Long.toString(createdConsent.getValidityPeriod()));
+        if (recurringIndicator) {
+            // omit one off consents from appending expiration time
+            consentAttributesMap.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE,
+                    Long.toString(createdConsent.getValidityPeriod()));
+        }
 
         if (!isExplicitAuth) {
             CommonConsentUtil.storeInitiationScaInfoToConsentAttributes(consentAttributesMap, createdConsent,
