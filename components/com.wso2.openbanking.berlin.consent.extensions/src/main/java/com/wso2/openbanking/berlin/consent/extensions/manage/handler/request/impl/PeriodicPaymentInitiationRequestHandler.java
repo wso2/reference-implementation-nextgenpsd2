@@ -67,6 +67,14 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
                     ErrorConstants.FREQUENCY_MISSING));
         }
 
+        if (!ConsentExtensionConstants.SUPPORTED_PERIODIC_PAYMENT_FREQUENCY_CODES.contains(
+                payload.get(ConsentExtensionConstants.FREQUENCY).toString())) {
+            log.error(ErrorConstants.FREQUENCY_UNSUPPORTED);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.FREQUENCY_UNSUPPORTED));
+        }
+
         if (payload.get(ConsentExtensionConstants.END_DATE) != null && StringUtils.isNotBlank(payload.getAsString(
                 ConsentExtensionConstants.END_DATE))) {
             log.debug("Validating whether periodic payments end date if a future date");
