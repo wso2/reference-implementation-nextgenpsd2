@@ -458,7 +458,6 @@ supported_challenge_methods = ["S256"]
 
 [open_banking_berlin.consent.accounts]
 single_acc_no_retrieval_validation.enable = false
-freq_per_day.enable = true
 freq_per_day.value = 4
 valid_until_date_cap.enable = false
 valid_until_date_cap.value = 0
@@ -468,6 +467,9 @@ multiple_recurring_consent.enable = false
 auth_cancellation.enable = false
 bulk_payments.max_future_payment_days = ""
 debtor_acc_currency_validation.enable = true
+
+[open_banking_berlin.consent.cof]
+single_acc_no_retrieval_validation.enable = false
 
 [open_banking_berlin.consent.sca]
 required = true
