@@ -582,7 +582,6 @@ maxHttpHeaderSize = 16384
 
 #===================Berlin Toolkit====================
 [open_banking_berlin.consent]
-iban_acc_retrieval_validation.enable = "true"
 host = "APIM_HOSTNAME"
 port = "8243"
 
