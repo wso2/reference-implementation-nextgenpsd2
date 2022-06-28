@@ -213,6 +213,12 @@ public class ConsentExtensionConstants {
     public static final String CREDITOR_ADDRESS = "creditorAddress";
     public static final String REMITTANCE_INFO_UNSTRUCTURED = "remittanceInformationUnstructured";
     public static final String BATCH_BOOKING_PREFERRED = "batchBookingPreferred";
+    public static final List<String> SUPPORTED_PERIODIC_PAYMENT_FREQUENCY_CODES = Collections
+            .unmodifiableList(Arrays.asList(
+                    "Daily", "Weekly", "EveryTwoWeeks",
+                    "Monthly", "EveryTwoMonths", "Quarterly",
+                    "SemiAnnual", "Annual", "MonthlyVariable"
+            ));
 
     // Payment services
     public static final String PAYMENTS = "payments";
