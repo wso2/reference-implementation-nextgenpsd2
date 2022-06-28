@@ -369,12 +369,6 @@ authentication.basic.enable = true
 
 #================configs related to identity-event.properties=============
 
-[[event_handler]]
-name="userPostSelfRegistration"
-subscriptions=["POST_ADD_USER"]
-
-
-
 #data bridge config
 #[transport.receiver]
 #type = "binary"
