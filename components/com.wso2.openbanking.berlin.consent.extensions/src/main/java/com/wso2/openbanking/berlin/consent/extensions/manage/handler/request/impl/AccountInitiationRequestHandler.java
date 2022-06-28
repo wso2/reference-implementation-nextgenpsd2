@@ -179,7 +179,7 @@ public class AccountInitiationRequestHandler implements RequestHandler {
      * @param consentManageData consent manage data
      * @param scaInfoMap        SCA details
      * @param isExplicitAuth    if explicit is preferred or not
-     * @param recurringIndicator    if onc off consent or not
+     * @param recurringIndicator    if one off consent or not
      * @return map of consent attributes to store
      */
     protected Map<String, String> getConsentAttributesToPersist(ConsentManageData consentManageData,
