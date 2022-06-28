@@ -54,6 +54,8 @@ public class CommonConstants {
             ".Method";
     public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED = "ConsentManagement.Accounts." +
             "EnableAccountIDValidation";
+    public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED_FOR_COF_CONSENT = "ConsentManagement.COF." +
+            "EnableAccountIDValidation";
     public static final String SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +
             "ShareableAccountsRetrieveEndpoint";
     public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +

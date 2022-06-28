@@ -143,11 +143,6 @@
             <!-- Enable frequency per day throttling for eligible API GET calls -->
             <!--Minimum value is 4 unless agreed bilaterally between TPP and ASPSP-->
             <FrequencyPerDay>
-                {% if open_banking_berlin.consent.accounts.freq_per_day.enable is defined %}
-                <Enable>{{open_banking_berlin.consent.accounts.freq_per_day.enable}}</Enable>
-                {% else %}
-                <Enable>true</Enable>
-                {% endif %}
                 {% if open_banking_berlin.consent.accounts.freq_per_day.value is defined %}
                 <Frequency>{{open_banking_berlin.consent.accounts.freq_per_day.value}}</Frequency>
                 {% else %}
@@ -198,5 +193,14 @@
             <EnableDebtorAccountCurrencyValidation>true</EnableDebtorAccountCurrencyValidation>
             {% endif %}
         </Payments>
+
+        <COF>
+            <!--Enable IBAN validation for single accounts -->
+            {% if open_banking_berlin.consent.cof.single_acc_no_retrieval_validation.enable is defined %}
+            <EnableAccountIDValidation>{{open_banking_berlin.consent.cof.single_acc_no_retrieval_validation.enable}}</EnableAccountIDValidation>
+            {% else %}
+            <EnableAccountIDValidation>false</EnableAccountIDValidation>
+            {% endif %}
+        </COF>
     </ConsentManagement>
 </Server>
