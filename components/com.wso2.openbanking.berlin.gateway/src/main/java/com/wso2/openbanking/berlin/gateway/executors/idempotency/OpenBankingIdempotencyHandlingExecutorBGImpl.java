@@ -25,6 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,9 +44,11 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
 
         String createdTime = null;
 
-        //Retrieve created time from headers
+        // Retrieve created time from headers
         String createdTimeFromHeader = obapiResponseContext.getMsgInfo().getHeaders()
                 .get(GatewayConstants.CREATED_TIME);
+        OffsetDateTime time = OffsetDateTime.parse(createdTimeFromHeader, DateTimeFormatter.RFC_1123_DATE_TIME);
+        createdTimeFromHeader = time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         if (createdTimeFromHeader != null) {
             createdTime = createdTimeFromHeader;
         }
