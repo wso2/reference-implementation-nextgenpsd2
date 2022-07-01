@@ -96,8 +96,6 @@
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*Exception.class</exclude>
-                        <exclude>**/IdempotencyCacheKey.class</exclude>
-                        <exclude>**/IdempotencyValidationCache.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
