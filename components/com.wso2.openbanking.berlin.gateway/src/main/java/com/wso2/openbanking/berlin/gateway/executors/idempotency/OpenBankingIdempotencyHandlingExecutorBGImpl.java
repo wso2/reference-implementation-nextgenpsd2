@@ -78,12 +78,8 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
         //Retrieve headers and payload
         Map<String, String> requestHeaders = obapiRequestContext.getMsgInfo().getHeaders();
 
-        //Retrieve consumer key from headers
-        String consumerKey = obapiRequestContext.getApiRequestInfo().getConsumerKey();
         //Retrieve idempotency key from headers
         String idempotencyKey = requestHeaders.get(getIdempotencyKeyConstantFromConfig());
-        //Retrieve context properties
-        Map<String, String> contextProps = obapiRequestContext.getContextProps();
 
         if (StringUtils.isEmpty(idempotencyKey)) {
             log.error(ErrorConstants.EXECUTOR_IDEMPOTENCY_KEY_NOT_FOUND);
