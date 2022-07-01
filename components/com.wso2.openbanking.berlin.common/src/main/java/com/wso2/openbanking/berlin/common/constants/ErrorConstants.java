@@ -161,6 +161,8 @@ public class ErrorConstants {
             ErrorConstants.PATH_IDEM_KEY;
     public static final String EXECUTOR_IDEMPOTENCY_KEY_ERROR = "Error while handling Idempotency check.:" +
             ErrorConstants.PATH_IDEM_KEY;
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_NOT_FOUND = "Mandatory header x-idempotency key not found" +
+            " in the request.:" + ErrorConstants.PATH_IDEM_KEY;
 
     // Executors related error messages
     public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";
