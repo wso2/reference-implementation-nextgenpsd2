@@ -13,6 +13,7 @@
 package com.wso2.openbanking.berlin.gateway.executors.idempotency;
 
 import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.gateway.executor.idempotency.OpenBankingIdempotencyHandlingExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -59,12 +60,8 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
     public Map<String, Object> getPayloadFromRequest(OBAPIRequestContext obapiRequestContext) {
 
         Map<String, Object> map = new HashMap<>();
-        try {
-            map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
-            map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
-        } catch (Exception e) {
-            log.error("Error while getting payload from request. " + e);
-        }
+        map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
+        map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
         return map;
     }
 
@@ -113,6 +110,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
         return true;
     }
 
+    @Generated(message = "Ignoring since error cases are covered in accelerator unit tests")
     @Override
     protected ArrayList<OpenBankingExecutorError> handleIdempotencyErrors(OBAPIRequestContext obapiRequestContext,
                                                                           String message, String errorCode) {
@@ -121,7 +119,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
             errorCode = ErrorConstants.HEADER_INVALID;
         }
         OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
-                ErrorConstants.PAYMENT_INITIATION_HANDLE_ERROR, message,
+                IdempotencyConstants.Error.IDEMPOTENCY_HANDLE_ERROR, message,
                 OpenBankingErrorCodes.BAD_REQUEST_CODE);
         ArrayList<OpenBankingExecutorError> executorErrors = obapiRequestContext.getErrors();
         executorErrors.add(error);

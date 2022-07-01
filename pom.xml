@@ -585,6 +585,12 @@
                 <version>${org.json.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${com.hazelcast.hazelcast.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -642,6 +648,7 @@
         <axis2.imp.pkg.version.range>[1.6,2)</axis2.imp.pkg.version.range>
         <hibernate-validator>6.0.17.Final</hibernate-validator>
         <fasterxml.jackson.version>2.10.3</fasterxml.jackson.version>
+        <com.hazelcast.hazelcast.version>5.0.2</com.hazelcast.hazelcast.version>
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
