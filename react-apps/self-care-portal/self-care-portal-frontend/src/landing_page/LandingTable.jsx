@@ -23,7 +23,7 @@ export const LandingTable = (props) => {
         <>
             <Row className="infoSearchRow">
                 <Col sm={7} className="infoBox">
-                    <h5>{props.description}</h5>
+                    <h5>{props.description} <b>{props.status}</b> status</h5>
                 </Col>
             </Row>
 

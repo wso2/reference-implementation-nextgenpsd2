@@ -18,7 +18,7 @@ export const AccreditationBG = ({infoLabel, applicationName}) => {
         <>
             <div className="accredBox">
                 <div className="accredInfo">
-                    <p>{infoLabel.accreditation.accreditDR} {applicationName}</p>
+                    <p>{infoLabel.accreditation.accreditDR} <b>{applicationName}</b></p>
                 </div>
             </div>
         </>
