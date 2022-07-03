@@ -20,6 +20,7 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseCont
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 import com.wso2.openbanking.accelerator.gateway.util.IdempotencyConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
+import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.gateway.executors.utils.GatewayConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -60,7 +61,11 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
     public Map<String, Object> getPayloadFromRequest(OBAPIRequestContext obapiRequestContext) {
 
         Map<String, Object> map = new HashMap<>();
-        map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
+        if (obapiRequestContext.getRequestPayload() != null) {
+            map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
+        } else {
+            map.put(IdempotencyConstants.PAYLOAD, "");
+        }
         map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
         return map;
     }
@@ -116,7 +121,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
                                                                           String message, String errorCode) {
 
         if (Objects.equals(errorCode, IdempotencyConstants.Error.HEADER_INVALID)) {
-            errorCode = ErrorConstants.HEADER_INVALID;
+            errorCode = TPPMessage.CodeEnum.FORMAT_ERROR.toString();
         }
         OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
                 IdempotencyConstants.Error.IDEMPOTENCY_HANDLE_ERROR, message,
