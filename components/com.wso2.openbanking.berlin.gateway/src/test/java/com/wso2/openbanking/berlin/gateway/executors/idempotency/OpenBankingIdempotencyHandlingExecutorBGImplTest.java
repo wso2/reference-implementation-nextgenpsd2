@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.HttpMethod;
+
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -175,6 +177,42 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
 
     }
 
+    @Test(priority = 2)
+    public void testGetPayloadFromRequest() {
+
+        mockStatic(OpenBankingConfigParser.class);
+        when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.putAll(getDistributedCachingMockConfigurations());
+        configuration.putAll(getIdempotencyMockConfigurations());
+        Mockito.when(openBankingConfigParser.getConfiguration()).thenReturn(configuration);
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance())
+                .thenReturn(openBankingConfigParser);
+
+        when(obapiRequestContextMock.getRequestPayload()).thenReturn(sampleResponsePayload);
+        // Mocking request headers
+        when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put(idempotencyCacheKeyHeader, sampleIdempotencyKey);
+        when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
+
+        // Mocking elected resource
+        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.GET);
+
+        // Mocking consumer key
+        when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
+        when(apiRequestInfoDTO.getConsumerKey()).thenReturn(sampleConsumerKey);
+
+        OpenBankingIdempotencyHandlingExecutorBGImpl openBankingIdempotencyHandlingExecutorBG =
+                new OpenBankingIdempotencyHandlingExecutorBGImpl();
+        openBankingIdempotencyHandlingExecutorBG.postProcessRequest(obapiRequestContextMock);
+
+    }
+
     @Test(priority = 3)
     public void testPostProcessRequestWithInvalidIdempotency() {
 
@@ -211,7 +249,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
 
     }
 
-    @Test(priority = 3)
+    @Test(priority = 4)
     public void testPostProcessRequestWithContextError() {
 
         mockStatic(OpenBankingConfigParser.class);
@@ -235,7 +273,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
 
     }
 
-    @Test(priority = 4)
+    @Test(priority = 5)
     public void testPostProcessRequestWithPayload() {
 
         mockStatic(OpenBankingConfigParser.class);
@@ -259,7 +297,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
 
     }
 
-    @Test(priority = 1)
+    @Test(priority = 6)
     public void testPostProcessResponseForContextErrors() {
 
         mockStatic(OpenBankingConfigParser.class);
@@ -319,6 +357,78 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
                 .getFromCache(OpenBankingIdempotencyCacheKey.of(cacheKey));
 
         Assert.assertEquals(fromCache, expectedFromCache);
+    }
+
+    @Test(priority = 7)
+    public void testPostPayloadFromRequest() {
+
+        mockStatic(OpenBankingConfigParser.class);
+        when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.putAll(getDistributedCachingMockConfigurations());
+        configuration.putAll(getIdempotencyMockConfigurations());
+        Mockito.when(openBankingConfigParser.getConfiguration()).thenReturn(configuration);
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance())
+                .thenReturn(openBankingConfigParser);
+
+        when(obapiRequestContextMock.getRequestPayload()).thenReturn(sampleResponsePayload);
+        // Mocking request headers
+        when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put(idempotencyCacheKeyHeader, sampleIdempotencyKey);
+        when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
+
+        // Mocking elected resource
+        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.POST);
+
+        // Mocking consumer key
+        when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
+        when(apiRequestInfoDTO.getConsumerKey()).thenReturn(sampleConsumerKey);
+
+        OpenBankingIdempotencyHandlingExecutorBGImpl openBankingIdempotencyHandlingExecutorBG =
+                new OpenBankingIdempotencyHandlingExecutorBGImpl();
+        openBankingIdempotencyHandlingExecutorBG.postProcessRequest(obapiRequestContextMock);
+
+    }
+
+    @Test(priority = 7)
+    public void testDeletePayloadFromRequest() {
+
+        mockStatic(OpenBankingConfigParser.class);
+        when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.putAll(getDistributedCachingMockConfigurations());
+        configuration.putAll(getIdempotencyMockConfigurations());
+        Mockito.when(openBankingConfigParser.getConfiguration()).thenReturn(configuration);
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance())
+                .thenReturn(openBankingConfigParser);
+
+        when(obapiRequestContextMock.getRequestPayload()).thenReturn(sampleResponsePayload);
+        // Mocking request headers
+        when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put(idempotencyCacheKeyHeader, sampleIdempotencyKey);
+        when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
+
+        // Mocking elected resource
+        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.DELETE);
+
+        // Mocking consumer key
+        when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
+        when(apiRequestInfoDTO.getConsumerKey()).thenReturn(sampleConsumerKey);
+
+        OpenBankingIdempotencyHandlingExecutorBGImpl openBankingIdempotencyHandlingExecutorBG =
+                new OpenBankingIdempotencyHandlingExecutorBGImpl();
+        openBankingIdempotencyHandlingExecutorBG.postProcessRequest(obapiRequestContextMock);
+
     }
 
     private Map<String, Object> getDistributedCachingMockConfigurations() {

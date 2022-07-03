@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.ws.rs.HttpMethod;
 
 /**
  * OpenBankingIdempotencyHandlingExecutorImpl.
@@ -61,12 +62,21 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
     public Map<String, Object> getPayloadFromRequest(OBAPIRequestContext obapiRequestContext) {
 
         Map<String, Object> map = new HashMap<>();
+        String httpState = obapiRequestContext.getMsgInfo().getHttpMethod();
         if (obapiRequestContext.getRequestPayload() != null) {
             map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
         } else {
             map.put(IdempotencyConstants.PAYLOAD, "");
         }
-        map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
+        if (HttpMethod.POST.equals(httpState)) {
+            map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
+        } else if (HttpMethod.GET.equals(httpState)) {
+            map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_OK);
+        } else if (HttpMethod.DELETE.equals(httpState)) {
+            map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_NO_CONTENT);
+        } else {
+            map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
+        }
         return map;
     }
 
