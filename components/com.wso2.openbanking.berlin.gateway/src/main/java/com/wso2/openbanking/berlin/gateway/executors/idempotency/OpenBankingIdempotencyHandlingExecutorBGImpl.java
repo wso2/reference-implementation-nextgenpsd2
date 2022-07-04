@@ -66,7 +66,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
         if (obapiRequestContext.getRequestPayload() != null) {
             map.put(IdempotencyConstants.PAYLOAD, obapiRequestContext.getRequestPayload());
         } else {
-            map.put(IdempotencyConstants.PAYLOAD, System.currentTimeMillis());
+            map.put(IdempotencyConstants.PAYLOAD, "");
         }
         if (HttpMethod.POST.equals(httpState)) {
             map.put(IdempotencyConstants.HTTP_STATUS, HttpStatus.SC_CREATED);
