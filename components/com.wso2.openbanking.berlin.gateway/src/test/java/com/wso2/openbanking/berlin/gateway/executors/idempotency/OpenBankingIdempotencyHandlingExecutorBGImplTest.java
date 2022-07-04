@@ -120,7 +120,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(responseHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
 
         OpenBankingIdempotencyHandlingExecutorBGImpl openBankingIdempotencyHandlingExecutorBG =
                 new OpenBankingIdempotencyHandlingExecutorBGImpl();
@@ -165,7 +165,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
 
         // Mocking consumer key
         when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
@@ -200,7 +200,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
         when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.GET);
 
         // Mocking consumer key
@@ -237,7 +237,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
 
         // Mocking consumer key
         when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTO);
@@ -337,7 +337,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(responseHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
 
         OpenBankingIdempotencyHandlingExecutorBGImpl openBankingIdempotencyHandlingExecutorBG =
                 new OpenBankingIdempotencyHandlingExecutorBGImpl();
@@ -382,7 +382,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
         when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.POST);
 
         // Mocking consumer key
@@ -418,7 +418,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImplTest extends PowerMockT
         when(msgInfoDTO.getHeaders()).thenReturn(requestHeaders);
 
         // Mocking elected resource
-        when(msgInfoDTO.getElectedResource()).thenReturn(sampleElectedResource);
+        when(msgInfoDTO.getResource()).thenReturn(sampleElectedResource);
         when(msgInfoDTO.getHttpMethod()).thenReturn(HttpMethod.DELETE);
 
         // Mocking consumer key
