@@ -62,7 +62,7 @@ public class AccountsConsentPersistHandlerTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testConsentPersistWithValidData() throws URISyntaxException, ConsentManagementException {
+    public void testConsentPersist() throws URISyntaxException, ConsentManagementException {
 
         accountsConsentPersistHandler.consentPersist(consentPersistData, consentResource);
     }
