@@ -549,7 +549,7 @@ public class PaymentConsentUtil {
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.INVALID_DAY_OF_EXECUTION));
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 log.error("Error occurred while validating payload for dayOfExecution", e);
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                         TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
