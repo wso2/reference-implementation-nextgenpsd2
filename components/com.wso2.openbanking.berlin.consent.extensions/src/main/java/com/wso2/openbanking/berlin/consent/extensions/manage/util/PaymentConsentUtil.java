@@ -537,8 +537,7 @@ public class PaymentConsentUtil {
      */
     public static void validateDayOfExecution(JSONObject payload) {
 
-        if (payload.get(ConsentExtensionConstants.DAY_OF_EXECUTION) != null
-                || StringUtils.isNotBlank(payload.getAsString(ConsentExtensionConstants.DAY_OF_EXECUTION))) {
+        if (payload.get(ConsentExtensionConstants.DAY_OF_EXECUTION) != null) {
             log.debug("Validating payload for dayOfExecution");
             try {
                 int dayOfExecution = Integer.parseInt(
