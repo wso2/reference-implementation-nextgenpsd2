@@ -529,4 +529,31 @@ public class PaymentConsentUtil {
             }
         }
     }
+
+    /**
+     * Method to validate dayOfExecution in payload elements.
+     *
+     * @param payload request payload
+     */
+    public static void validateDayOfExecution(JSONObject payload) {
+
+        if (payload.get(ConsentExtensionConstants.DAY_OF_EXECUTION) != null) {
+            log.debug("Validating payload for dayOfExecution");
+            try {
+                int dayOfExecution = Integer.parseInt(
+                        payload.get(ConsentExtensionConstants.DAY_OF_EXECUTION).toString());
+                if (dayOfExecution > 31 || dayOfExecution < 1) {
+                    log.error("Invalid dayOfExecution value received : " + dayOfExecution);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            ErrorConstants.INVALID_DAY_OF_EXECUTION));
+                }
+            } catch (NumberFormatException e) {
+                log.error("Error occurred while validating payload for dayOfExecution", e);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.INVALID_DAY_OF_EXECUTION));
+            }
+        }
+    }
 }

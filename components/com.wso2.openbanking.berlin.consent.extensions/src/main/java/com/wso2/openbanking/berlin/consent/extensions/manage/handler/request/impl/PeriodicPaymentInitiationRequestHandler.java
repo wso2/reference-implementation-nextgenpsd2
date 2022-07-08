@@ -40,6 +40,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
         LocalDate startDate;
         PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
+        PaymentConsentUtil.validateDayOfExecution(payload);
 
         log.debug("Validating periodic payments payload for start date");
         if (payload.get(ConsentExtensionConstants.START_DATE) == null
