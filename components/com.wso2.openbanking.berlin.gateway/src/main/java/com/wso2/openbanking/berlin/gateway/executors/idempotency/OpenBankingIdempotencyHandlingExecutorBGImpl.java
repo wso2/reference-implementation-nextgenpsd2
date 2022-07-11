@@ -130,7 +130,7 @@ public class OpenBankingIdempotencyHandlingExecutorBGImpl extends OpenBankingIde
     protected ArrayList<OpenBankingExecutorError> handleIdempotencyErrors(OBAPIRequestContext obapiRequestContext,
                                                                           String message, String errorCode) {
 
-        if (Objects.equals(errorCode, IdempotencyConstants.Error.HEADER_INVALID)) {
+        if (StringUtils.equals(errorCode, IdempotencyConstants.Error.HEADER_INVALID)) {
             errorCode = TPPMessage.CodeEnum.FORMAT_ERROR.toString();
         }
         OpenBankingExecutorError error = new OpenBankingExecutorError(errorCode,
