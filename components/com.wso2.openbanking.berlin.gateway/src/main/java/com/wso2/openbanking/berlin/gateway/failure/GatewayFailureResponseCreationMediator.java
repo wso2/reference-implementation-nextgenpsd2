@@ -48,9 +48,9 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
     public static final String COLON = ":";
 
     // Payment consent initiation paths
-    public static final String PAYMENTS_SERVICE_PATH = "payments/";
-    public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "periodic-payments/";
-    public static final String BULK_PAYMENTS_SERVICE_PATH = "bulk-payments/";
+    public static final String PAYMENTS_SERVICE_PATH = "/payments";
+    public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "/periodic-payments";
+    public static final String BULK_PAYMENTS_SERVICE_PATH = "/bulk-payments";
 
     // swagger schema definitions order for Payment products
     public static final String PAYMENTS_SCHEMA_VALIDATION_REF = "/oneOf/0";
@@ -374,16 +374,16 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
                 path = messageContext.getRequestPath().get();
             }
         }
-        if (StringUtils.isBlank(path)) {
-            return message.getMessage();
-        }
-
         if (path.startsWith(PAYMENTS_SERVICE_PATH)) {
             schemaValidationRef = PAYMENTS_SCHEMA_VALIDATION_REF;
         } else if (path.startsWith(PERIODIC_PAYMENTS_SERVICE_PATH)) {
             schemaValidationRef = PERIODIC_PAYMENTS_SCHEMA_VALIDATION_REF;
         } else if (path.startsWith(BULK_PAYMENTS_SERVICE_PATH)) {
             schemaValidationRef = BULK_PAYMENTS_SCHEMA_VALIDATION_REF;
+        }
+
+        if (StringUtils.isBlank(path) || StringUtils.isBlank(schemaValidationRef)) {
+            return message.getMessage();
         }
 
         for (String msg : message.getAdditionalInfo()) {

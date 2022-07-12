@@ -137,7 +137,7 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
         Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
         Mockito.when(mockParameter.getIn()).thenReturn("Query");
         Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
-        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/payments/sepa-credit-transfers/"));
         Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
 
         ArrayList<String> additionalErrorMsgList = new ArrayList<>();
@@ -175,7 +175,7 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
         Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
         Mockito.when(mockParameter.getIn()).thenReturn("Query");
         Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
-        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("periodic-payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/periodic-payments/sepa-credit-transfers/"));
         Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
 
         ArrayList<String> additionalErrorMsgList = new ArrayList<>();
@@ -213,7 +213,7 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
         Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
         Mockito.when(mockParameter.getIn()).thenReturn("Query");
         Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
-        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("bulk-payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/bulk-payments/sepa-credit-transfers/"));
         Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
 
         ArrayList<String> additionalErrorMsgList = new ArrayList<>();
