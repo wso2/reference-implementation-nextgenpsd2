@@ -28,12 +28,5 @@
             <Enable>true</Enable>
             <Frequency>4</Frequency>
         </FrequencyPerDay>
-
-       <Idempotency>
-            <!-- Allowed idempotency duration in hours -->
-            <AllowedTimeDurationForIdempotency>1</AllowedTimeDurationForIdempotency>
-            <!-- Payment Initiation Idempotency enabled -->
-            <PaymentInitiationIdempotencyEnabled>true</PaymentInitiationIdempotencyEnabled>
-        </Idempotency>
     </ConsentManagement>
 </Server>

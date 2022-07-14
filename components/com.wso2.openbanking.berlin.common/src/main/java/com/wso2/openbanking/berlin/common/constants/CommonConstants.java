@@ -75,12 +75,6 @@ public class CommonConstants {
     public static final String PIS_SCOPE = "pis";
     public static final String PIIS_SCOPE = "piis";
 
-    public static final String IDEMPOTENCY_CACHE_ACCESS_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
-            ".CacheAccessExpiry";
-    public static final String IDEMPOTENCY_CACHE_MODIFY_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
-            ".CacheModifiedExpiry";
-    public static final String PAYMENT_INITIATION_IDEMPOTENCY_ENABLED = "ConsentManagement.Idempotency" +
-            ".PaymentInitiationIdempotencyEnabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
             ".AllowedDuration";
     public static final String DELIMITER = ":";

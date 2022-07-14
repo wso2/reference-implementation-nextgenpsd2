@@ -54,22 +54,6 @@
             <Frequency>4</Frequency>
             {% endif %}
         </FrequencyPerDay>
-
-        <Idempotency>
-            <!-- Allowed idempotency duration in hours -->
-            {% if open_banking_berlin.consent.idempotency.allowed_time is defined %}
-            <AllowedDuration>{{open_banking_berlin.consent.idempotency.allowed_time}}</AllowedDuration>
-            {% else %}
-            <AllowedDuration>1</AllowedDuration>
-            {% endif %}
-
-            <!-- Payment Initiation Idempotency enabled -->
-            {% if open_banking_berlin.payment.initiation.idempotency is defined %}
-            <PaymentInitiationIdempotencyEnabled>{{open_banking_berlin.payment.initiation.idempotency.enabled}}</PaymentInitiationIdempotencyEnabled>
-            {% else %}
-            <PaymentInitiationIdempotencyEnabled>false</PaymentInitiationIdempotencyEnabled>
-            {% endif %}
-        </Idempotency>
     </ConsentManagement>
 
     <KeyManager>
