@@ -219,12 +219,8 @@ public class TestUtil {
       if (log.isDebugEnabled()) {
         log.debug("Digest payload: " + payload);
       }
-      StringBuilder digestHashHex = new StringBuilder();
-      for (byte b : digestHash) {
-        digestHashHex.append(String.format("%02x", b));
-      }
       return Base64.getEncoder()
-              .encodeToString(new BigInteger(digestHashHex.toString(), 16).toByteArray());
+              .encodeToString(new BigInteger(digestHash).toByteArray());
     } catch (NoSuchAlgorithmException e) {
       throw new TestFrameworkException("Error occurred while generating the digest", e);
     }
