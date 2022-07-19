@@ -62,7 +62,7 @@ public class TestData {
        put("Date", "6 Feb 2022 21:06:45 IST");
        put("PSU-ID", "admin@wso2.com");
        put("PSU-ID-Type", "email");
-       put("Digest", "SHA-256=ANsITc6LgC2N6lZyCv+6s4X/Kl1EH9dNZq402rAarIR4");
+       put("Digest", "SHA-256=2whNzouALY3qVnIK/7qzhf8qXUQf101mrjTasBqshHg=");
        put("Signature", "keyId=\"SN=de730ec5733ead1b,CA=1.2.840." +
                "113549.1.9.1=#16116d616c7368616e694077736f322e636f6d," +
                "CN=OpenBanking Pre-Production Issuing CA,OU=OpenBanking,O=WSO2 (UK) LIMITED,L=COL,ST=WP,C=LK\"," +

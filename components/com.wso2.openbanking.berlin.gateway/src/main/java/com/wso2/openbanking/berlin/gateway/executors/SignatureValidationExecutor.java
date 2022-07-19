@@ -360,12 +360,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 digestHash = messageDigest.digest(requestPayload.getBytes(StandardCharsets.UTF_8));
             }
 
-            StringBuilder digestHashHex = new StringBuilder();
-            for (byte b : digestHash) {
-                digestHashHex.append(String.format("%02x", b));
-            }
             String generatedDigest = Base64.getEncoder()
-                    .encodeToString(new BigInteger(digestHashHex.toString(), 16).toByteArray());
+                    .encodeToString(new BigInteger(digestHash).toByteArray());
             if (generatedDigest.equals(digestValue)) {
                 log.debug("Digest validation successfully completed");
                 return true;
