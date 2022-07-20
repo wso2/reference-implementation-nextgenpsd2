@@ -139,7 +139,7 @@ class AllAvailableAccountsEndToEndFlowTest extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
 
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))

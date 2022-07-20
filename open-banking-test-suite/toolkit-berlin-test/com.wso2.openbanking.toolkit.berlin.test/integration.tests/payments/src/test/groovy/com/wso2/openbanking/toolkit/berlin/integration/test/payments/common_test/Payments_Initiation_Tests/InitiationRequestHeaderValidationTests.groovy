@@ -23,6 +23,7 @@ import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsDataProviders
+import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -170,34 +171,6 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
                     "Input string \"1234\" is not a valid UUID")
-        }
-    }
-
-    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0301010_Initiation Request with duplicate X-Request-ID Header"(String consentPath, List<String> paymentProducts,
-                                                                           String payload) {
-
-        paymentProducts.each { value ->
-            String paymentConsentPath = consentPath + "/" + value
-
-            doDefaultInitiation(paymentConsentPath, payload)
-            def xRequestId = consentResponse.getHeader(BerlinConstants.X_REQUEST_ID).toString()
-
-            //Make Payment Initiation Request
-            def consentResponse = TestSuite.buildRequest()
-                    .contentType(ContentType.JSON)
-                    .header(BerlinConstants.X_REQUEST_ID, xRequestId)
-                    .header(BerlinConstants.Date, getCurrentDate())
-                    .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
-                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-                    .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
-                    .header(BerlinConstants.PSU_TYPE, "email")
-                    .filter(new BerlinSignatureFilter())
-                    .body(payload)
-                    .baseUri(ConfigParser.getInstance().getBaseURL())
-                    .post(paymentConsentPath)
-
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
         }
     }
 
@@ -436,6 +409,98 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                     .post(paymentConsentPath)
 
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+        }
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "TC0301010_Initiation Request with duplicate X-Request-ID Header"(String consentPath, List<String> paymentProducts,
+                                                                           String payload) {
+
+        paymentProducts.each { value ->
+            String paymentConsentPath = consentPath + "/" + value
+
+            doDefaultInitiation(paymentConsentPath, payload)
+            def xRequestId = consentResponse.getHeader(BerlinConstants.X_REQUEST_ID).toString()
+
+            //Make Payment Initiation Request
+            def consentResponse = TestSuite.buildRequest()
+              .contentType(ContentType.JSON)
+              .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+              .header(BerlinConstants.Date, getCurrentDate())
+              .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+              .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+              .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+              .header(BerlinConstants.PSU_TYPE, "email")
+              .filter(new BerlinSignatureFilter())
+              .body(payload)
+              .baseUri(ConfigParser.getInstance().getBaseURL())
+              .post(paymentConsentPath)
+
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+            Assert.assertEquals(paymentId, TestUtil.parseResponseBody(consentResponse, "paymentId").toString())
+        }
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "OB-218_Initiation Request with same X-Request-ID and different payload"(String consentPath, List<String>
+      paymentProducts,
+                                                                           String payload) {
+
+        paymentProducts.each { value ->
+            String paymentConsentPath = consentPath + "/" + value
+
+            doDefaultInitiation(paymentConsentPath, payload)
+            def xRequestId = consentResponse.getHeader(BerlinConstants.X_REQUEST_ID).toString()
+
+            def payload2 = PaymentsInitiationPayloads.singlePaymentPayloadWithOptionalData
+            //Make Payment Initiation Request
+            def consentResponse = TestSuite.buildRequest()
+              .contentType(ContentType.JSON)
+              .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+              .header(BerlinConstants.Date, getCurrentDate())
+              .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+              .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+              .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+              .header(BerlinConstants.PSU_TYPE, "email")
+              .filter(new BerlinSignatureFilter())
+              .body(payload2)
+              .baseUri(ConfigParser.getInstance().getBaseURL())
+              .post(paymentConsentPath)
+
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+            Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+              BerlinConstants.FORMAT_ERROR)
+            Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
+              contains ("Idempotency check failed."))
+        }
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "OB-217_Initiation Request with different X-Request-ID and same payload"(String consentPath, List<String>
+      paymentProducts,
+                                                                           String payload) {
+
+        paymentProducts.each { value ->
+            String paymentConsentPath = consentPath + "/" + value
+
+            doDefaultInitiation(paymentConsentPath, payload)
+
+            //Make Payment Initiation Request
+            def consentResponse = TestSuite.buildRequest()
+              .contentType(ContentType.JSON)
+              .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+              .header(BerlinConstants.Date, getCurrentDate())
+              .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+              .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+              .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+              .header(BerlinConstants.PSU_TYPE, "email")
+              .filter(new BerlinSignatureFilter())
+              .body(payload)
+              .baseUri(ConfigParser.getInstance().getBaseURL())
+              .post(paymentConsentPath)
+
+            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+            Assert.assertNotEquals(paymentId, TestUtil.parseResponseBody(consentResponse, "paymentId").toString())
         }
     }
 }

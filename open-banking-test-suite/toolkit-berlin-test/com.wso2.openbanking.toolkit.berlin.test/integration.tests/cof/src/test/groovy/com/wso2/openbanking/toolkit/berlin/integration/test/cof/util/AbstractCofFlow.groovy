@@ -99,7 +99,7 @@ abstract class AbstractCofFlow {
     void consentAuthorizeErrorFlowValidation(AuthorizationRequest request){
 
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AuthAutomationSteps(request.toURI().toString()))
+                .addStep(new BasicAuthAutomationStep(request.toURI().toString()))
                 .execute()
 
         oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),

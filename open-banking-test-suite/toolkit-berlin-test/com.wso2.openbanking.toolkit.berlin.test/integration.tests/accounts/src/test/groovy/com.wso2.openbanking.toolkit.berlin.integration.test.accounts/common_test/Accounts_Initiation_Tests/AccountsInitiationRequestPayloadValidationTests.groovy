@@ -423,11 +423,12 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         doDefaultInitiation(consentPath, initiationPayload)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_PATH),
+         "frequencyPerDay")
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "[Path '/frequencyPerDay'] Numeric instance is lower than the required minimum " +
-                        "(minimum: 1, found: 0)")
+                "Numeric instance is lower than the required minimum (minimum: 1, found: 0)")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -548,10 +549,9 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().
-                contains("[Path '/validUntil'] String \"${validTime}\" is invalid against requested date " +
-                        "format(s) yyyy-MM-dd"))
+                contains("invalid against requested date format(s) yyyy-MM-dd"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

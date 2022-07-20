@@ -155,7 +155,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Mandatory field Frequency is missing in Periodic-payments call")
+                "Unsupported frequency in periodic payments payload")
     }
 
     @Test (groups = ["1.3.3"], dataProvider = "ExecutionRule", dataProviderClass = PaymentsDataProviders.class)

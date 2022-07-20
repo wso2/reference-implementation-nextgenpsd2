@@ -293,11 +293,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
 
-        Assert.assertEquals(retrievalResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse2, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+        Assert.assertEquals(retrievalResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -336,11 +332,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
 
-        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+        Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

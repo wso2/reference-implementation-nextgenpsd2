@@ -29,7 +29,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
     //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
     @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-            dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
+            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303001_Direct Payment Cancellation"(String consentPath, List<String> paymentProducts, String payload) {
 
         paymentProducts.each { value ->
@@ -119,7 +119,9 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
             //Delete Consent which is already deleted
             doConsentDelete(paymentConsentPath)
-            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_CODE),
+              BerlinConstants.CONSENT_INVALID)
             Assert.assertEquals(TestUtil.parseResponseBody(deleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                     "The requested consent is already deleted")
         }
