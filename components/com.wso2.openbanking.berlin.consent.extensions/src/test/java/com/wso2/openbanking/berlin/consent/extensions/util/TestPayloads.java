@@ -17,6 +17,7 @@ import net.minidev.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 public class TestPayloads {
@@ -49,6 +50,21 @@ public class TestPayloads {
     public static JSONObject getMandatoryValidateHeadersMap(String consentId, boolean isWithPsuIpAddress) {
 
         JSONObject validateHeadersObject = new JSONObject();
+        validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
+        validateHeadersObject.put(ConsentExtensionConstants.CONSENT_ID_HEADER, consentId);
+
+        if (isWithPsuIpAddress) {
+            validateHeadersObject.put(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER, "127.0.0.1");
+        }
+
+        return validateHeadersObject;
+    }
+
+    public static TreeMap<String, String> getMandatoryValidateHeadersTreeMap(String consentId,
+                                                                             boolean isWithPsuIpAddress) {
+
+        TreeMap<String, String> validateHeadersObject = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         validateHeadersObject.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
                 UUID.randomUUID().toString());
         validateHeadersObject.put(ConsentExtensionConstants.CONSENT_ID_HEADER, consentId);
