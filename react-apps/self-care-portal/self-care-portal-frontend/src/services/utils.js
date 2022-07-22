@@ -130,7 +130,7 @@ export function isEligibleToRevoke(consent, consentType) {
         return (consent.currentStatus === "received" || consent.currentStatus === "valid" ||
             consent.currentStatus === "partiallyAuthorised")
     } else if (consentType === "payments,periodic-payments,bulk-payments"
-        && consent.consentType === "periodic-payments") {
+        && (consent.consentType === "periodic-payments" || consent.consentType === "bulk-payments")) {
         return (consent.currentStatus === "ACCP" || consent.currentStatus === "RCVD" ||
             consent.currentStatus === "ACTC")
     } else {
