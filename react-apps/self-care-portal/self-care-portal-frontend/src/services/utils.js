@@ -193,7 +193,6 @@ export function generatePDF(consent, applicationName, consentStatus) {
     if (consent.consentType === "accounts") {
 
         pdf.text(20, 70, 'Expire date: ' + getExpireTimeFromConsent(consent, "DD-MMM-YYYY"));
-        pdf.text(20, 80, 'Data we are sharing on: ')
         let headers = [
             {'id': 'Account', 'name': "Account", 'width': 200, 'align': 'center', 'padding': 0},
             {'id': 'Permissions', 'name': "Permissions", 'width': 800, 'align': 'center', 'padding': 0},
@@ -211,9 +210,11 @@ export function generatePDF(consent, applicationName, consentStatus) {
                 }
             tableData.push(data);
         }
-        pdf.table(40, 90, tableData, headers, {autoSize: true});
+        if (tableData.length > 0) {
+            pdf.text(20, 80, 'Data we are sharing on: ')
+            pdf.table(40, 90, tableData, headers, {autoSize: true});
+        }
     } else {
-        pdf.text(20, 70, 'Data we are sharing on: ')
         let headers = [
             {'id': 'Account', 'name': "Account", 'width': 800, 'align': 'center', 'padding': 0}
         ]
@@ -222,7 +223,10 @@ export function generatePDF(consent, applicationName, consentStatus) {
             let data = {"Account": Object.keys(permissionListForConsent)[i]}
             tableData.push(data);
         }
-        pdf.table(40, 80, tableData, headers, {autoSize: true});
+        if (tableData.length > 0) {
+            pdf.text(20, 70, 'Data we are sharing on: ')
+            pdf.table(40, 80, tableData, headers, {autoSize: true});
+        }
     }
     pdf.save("consent.pdf");
 }
