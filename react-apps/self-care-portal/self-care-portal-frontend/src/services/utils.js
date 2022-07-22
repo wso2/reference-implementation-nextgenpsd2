@@ -163,6 +163,13 @@ export function getPermissionListForConsent(consent) {
                 } else {
                     permissions[detailedAccount.accountId].push(detailedAccount.permission)
                 }
+            } else {
+                if (permissions[detailedAccount.accountId] === undefined) {
+                    permissions[detailedAccount.accountId] = []
+                    permissions[detailedAccount.accountId].push("")
+                } else {
+                    permissions[detailedAccount.accountId].push("")
+                }
             }
         })
     }
@@ -172,48 +179,50 @@ export function getPermissionListForConsent(consent) {
 
 export function generatePDF(consent, applicationName, consentStatus) {
 
+    let permissionListForConsent = getPermissionListForConsent(consent);
     const pdf = new jsPDF("l", "mm", "a4");
-    let content01 = "";
-    let content02 = "";
-    let content03 = "";
     pdf.setFontSize(11);
-
-    const input = document.getElementsByClassName('permissionsUL');
-
-    try {
-        content01 = input[0].innerHTML.split("<li>");
-        content01 = content01.join("").split("</li>").join(", ");
-        content01 = content01.slice(0, -2);
-    } catch (e) {
-    }
-
-    try {
-        content02 = input[1].innerHTML.split("<li>");
-        content02 = content02.join("").split("</li>").join(", ");
-        content02 = content02.slice(0, -2);
-    } catch (e) {
-    }
-
-    try {
-        let debtorList = [];
-        consent.consentMappingResources.map((account) =>
-            account.mappingStatus === "active" ? debtorList.push(account.accountId) : <> </>
-        );
-        content03 = debtorList.join(",");
-    } catch (e) {
-    }
-
     pdf.text(20, 20, 'Consent infomation for consent ID: ' + consent.consentId)
     pdf.rect(15, 10, 265, 190);
     pdf.text(20, 30, "Status: " + consentStatus)
     pdf.text(20, 40, 'API Consumer Application : ' + applicationName)
-    pdf.text(20, 50, 'Create date: ' + moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY"))
-    pdf.text(20, 60, 'Expire date: ' + getExpireTimeFromConsent(consent, "DD-MMM-YYYY"));
-    pdf.text(20, 70, 'Data we are sharing on: ')
-    pdf.text(30, 80, 'Account name, type and balance: ')
-    pdf.text(40, 90, content01)
-    pdf.text(30, 100, 'Account numbers and features: ')
-    pdf.text(40, 110, content02)
-    pdf.text(20, 120, 'Accounts: ' + content03)
+    pdf.text(20, 50, 'Consent type : ' + consent.consentType)
+    pdf.text(20, 60, 'Create date: ' +
+        moment(new Date((consent.createdTimestamp) * 1000)).format("DD-MMM-YYYY"))
+
+    if (consent.consentType === "accounts") {
+
+        pdf.text(20, 70, 'Expire date: ' + getExpireTimeFromConsent(consent, "DD-MMM-YYYY"));
+        pdf.text(20, 80, 'Data we are sharing on: ')
+        let headers = [
+            {'id': 'Account', 'name': "Account", 'width': 200, 'align': 'center', 'padding': 0},
+            {'id': 'Permissions', 'name': "Permissions", 'width': 800, 'align': 'center', 'padding': 0},
+        ]
+        let tableData = [];
+        for (let i = 0; i < Object.keys(permissionListForConsent).length; i += 1) {
+            let permissions = "";
+            permissionListForConsent[Object.keys(permissionListForConsent)[i]].map((permission) => (
+                permissions = permissions + permission + " : "
+            ))
+            let data =
+                {
+                    "Account": Object.keys(permissionListForConsent)[i],
+                    "Permissions": permissions
+                }
+            tableData.push(data);
+        }
+        pdf.table(40, 90, tableData, headers, {autoSize: true});
+    } else {
+        pdf.text(20, 70, 'Data we are sharing on: ')
+        let headers = [
+            {'id': 'Account', 'name': "Account", 'width': 800, 'align': 'center', 'padding': 0}
+        ]
+        let tableData = [];
+        for (let i = 0; i < Object.keys(permissionListForConsent).length; i += 1) {
+            let data = {"Account": Object.keys(permissionListForConsent)[i]}
+            tableData.push(data);
+        }
+        pdf.table(40, 80, tableData, headers, {autoSize: true});
+    }
     pdf.save("consent.pdf");
 }
