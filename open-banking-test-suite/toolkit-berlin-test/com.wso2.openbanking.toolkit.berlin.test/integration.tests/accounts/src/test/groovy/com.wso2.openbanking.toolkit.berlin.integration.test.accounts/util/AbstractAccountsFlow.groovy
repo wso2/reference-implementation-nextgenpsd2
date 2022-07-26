@@ -13,7 +13,6 @@
 package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util
 
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
-import com.nimbusds.oauth2.sdk.TokenResponse
 import com.wso2.openbanking.berlin.common.utils.AuthAutomationSteps
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinOAuthAuthorization
@@ -140,7 +139,7 @@ abstract class AbstractAccountsFlow {
 
         // Delete the Consent
         consentDeleteResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .delete("${consentPath}/${accountId}")
+          .delete("${consentPath}/${accountId}")
     }
 
     static String getCurrentDate() {

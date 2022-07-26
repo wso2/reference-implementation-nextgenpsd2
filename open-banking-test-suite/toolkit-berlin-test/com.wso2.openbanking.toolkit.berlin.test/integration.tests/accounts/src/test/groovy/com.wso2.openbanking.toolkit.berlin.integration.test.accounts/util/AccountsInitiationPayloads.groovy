@@ -36,7 +36,7 @@ class AccountsInitiationPayloads {
                 ]
             },
             "recurringIndicator": true,
-            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+            "validUntil":"${BerlinTestUtil.getDateAndTime(4)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""

@@ -229,8 +229,10 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH + "/fixed")
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_404)
-        Assert.assertNotNull(TestUtil.parseResponseBody(response, "description"),
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertNotNull(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.RESOURCE_UNKNOWN)
+        Assert.assertNotNull(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
                 "No matching resource found for given API Request")
     }
 
@@ -320,11 +322,16 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.CARD_ACCOUNTS_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccounts"))
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
+          "Header.withBalance'")
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+          "Query parameter 'withBalance' is unexpected on path \"/card-accounts\"")
     }
 
     @Test (groups = ["1.3.6"])
@@ -333,11 +340,16 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.SPECIFIC_CARD_ACCOUNTS_PATH)
 
-        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))
+        Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_PATH),
+          "Header.withBalance'")
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+          "Query parameter 'withBalance' is unexpected on path \"/card-accounts/{account-id}\"")
     }
 
     @Test (groups = ["1.3.6"])
@@ -346,8 +358,9 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
-                .get(AccountsConstants.TRANSACTIONS_PATH)
+                .queryParam("withBalance", true)
+                .queryParam("bookingStatus", "booked")
+                .get(AccountsConstants.CARD_ACCOUNTS_TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("cardAccount"))

@@ -68,7 +68,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.ACCOUNTS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -83,7 +83,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -197,7 +197,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
                 contains("String \"2018-Jan-11\" is invalid against requested date format(s) yyyy-MM-dd"))
 
@@ -210,7 +210,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .queryParam("bookingStatus", "booked")
-                .queryParam("withBalance")
+                .queryParam("withBalance", true)
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -225,7 +225,7 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .queryParam("bookingStatus", "pending")
-                .queryParam("entryReferenceFrom")
+                .queryParam("entryReferenceFrom","2022-05-11")
                 .get(AccountsConstants.TRANSACTIONS_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
@@ -244,7 +244,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("transactionsDetails"))
     }
 
-    //Note: In a Production Server the error should be 404. [https://github.com/wso2/financial-open-banking/issues/3947]
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0212012_Retrieval Request to Get Transaction Details without specifying the Account Reference Id"() {
 
@@ -253,9 +252,9 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get("$AccountsConstants.ACCOUNTS_PATH/transactions")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_404)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.CONSENT_INVALID)
+                BerlinConstants.RESOURCE_UNKNOWN)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
                 "Provided account Id does not have requested permissions")
     }
@@ -286,7 +285,6 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
         Assert.assertNotNull(response.jsonPath().getJsonObject("balances"))
     }
 
-    //Note: In a Production Server the error should be 404. [https://github.com/wso2/financial-open-banking/issues/3947]
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0213012_Retrieval Request to Get Balances Details without specifying the Account Reference Id"() {
 
@@ -295,9 +293,9 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get("$AccountsConstants.ACCOUNTS_PATH/balances")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_404)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.CONSENT_INVALID)
+                BerlinConstants.RESOURCE_UNKNOWN)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
                 "Provided account Id does not have requested permissions")
     }
@@ -310,7 +308,11 @@ class AccountRetrievalResponseValidationTests extends AbstractAccountsFlow {
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.SPECIFIC_ACCOUNT_PATH + "/fixed")
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_404)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.RESOURCE_UNKNOWN)
+        Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
+          "No matching resource found for given API Request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)

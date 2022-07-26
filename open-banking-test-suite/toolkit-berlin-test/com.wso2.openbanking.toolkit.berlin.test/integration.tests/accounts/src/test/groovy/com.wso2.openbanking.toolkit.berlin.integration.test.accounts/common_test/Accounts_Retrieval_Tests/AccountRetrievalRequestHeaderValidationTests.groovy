@@ -162,9 +162,8 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -184,8 +183,8 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                contains("Header parameter 'Consent-ID' is required on path"))
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
+          ("Consent-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -205,7 +204,9 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                BerlinConstants.CONSENT_UNKNOWN)
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
+          "Invalid Consent-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -228,7 +229,7 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'Consent-ID' is required but is missing.")
+                "Consent-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -319,6 +320,91 @@ class AccountRetrievalRequestHeaderValidationTests extends AbstractAccountsFlow 
 
         Assert.assertEquals(response2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response2.jsonPath().getJsonObject("accounts"))
+    }
 
+    @Test (groups = ["1.3.6"])
+    void "OB-355_Account Retrieval Request with same user-access token and the same x-request-id"() {
+
+        preRetreivalFlow()
+
+        def xReqId = UUID.randomUUID().toString()
+
+        //Account Retrieval Request = 1st Time
+        def response = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+          .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+
+        //Account Retrieval Request = 2nd Time
+        def response2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+          .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response2.jsonPath().getJsonObject("accounts"))
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-356_Account Retrieval Request with different user-access token and the same x-request-id"() {
+
+        preRetreivalFlow()
+
+        def xReqId = UUID.randomUUID().toString()
+
+        //Account Retrieval Request = 1st Time
+        def response = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+          .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+
+        preRetreivalFlow()
+
+        //Account Retrieval Request = 1st Time
+        def response2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+          .get(AccountsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(response2.statusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response2.jsonPath().getJsonObject("accounts"))
     }
 }
