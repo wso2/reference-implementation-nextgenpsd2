@@ -199,14 +199,14 @@ export function generatePDF(consent, applicationName, consentStatus) {
         ]
         let tableData = [];
         for (let i = 0; i < Object.keys(permissionListForConsent).length; i += 1) {
-            let permissions = "";
+            let permissions = [];
             permissionListForConsent[Object.keys(permissionListForConsent)[i]].map((permission) => (
-                permissions = permissions + permission + ":"
+                permissions.push(permission)
             ))
             let data =
                 {
                     "Account": Object.keys(permissionListForConsent)[i],
-                    "Permissions": permissions
+                    "Permissions": permissions.join(":")
                 }
             tableData.push(data);
         }
