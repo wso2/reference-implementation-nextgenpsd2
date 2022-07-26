@@ -44,7 +44,7 @@ public class BerlinConsentValidator implements ConsentValidator {
             throws ConsentException {
 
         // Validate X-Request-ID
-        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeaders(),
+        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeadersMap(),
                 ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
                     ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
@@ -52,7 +52,7 @@ public class BerlinConsentValidator implements ConsentValidator {
             return;
         }
 
-        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeaders(),
+        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeadersMap(),
                 ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER)) {
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
                     ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
@@ -62,14 +62,15 @@ public class BerlinConsentValidator implements ConsentValidator {
 
         consentValidationResult.getConsentInformation()
                 .appendField(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
-                        consentValidateData.getHeaders().getAsString(ConsentExtensionConstants
+                        consentValidateData.getHeadersMap().get(ConsentExtensionConstants
                                 .X_REQUEST_ID_PROPER_CASE_HEADER));
 
-        if (consentValidateData.getHeaders().containsKey(ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)) {
-            HeaderValidator.validatePsuIpAddress(consentValidateData.getHeaders());
+        if (consentValidateData.getHeadersMap().containsKey(
+                ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)) {
+            HeaderValidator.validatePsuIpAddress(consentValidateData.getHeadersMap());
         }
 
-        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeaders(),
+        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeadersMap(),
                 ConsentExtensionConstants.CONSENT_ID_HEADER)) {
             log.error(ErrorConstants.CONSENT_ID_MISSING);
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
@@ -78,7 +79,7 @@ public class BerlinConsentValidator implements ConsentValidator {
             return;
         }
 
-        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeaders(),
+        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeadersMap(),
                 ConsentExtensionConstants.CONSENT_ID_HEADER)) {
             log.error(ErrorConstants.CONSENT_ID_INVALID);
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
@@ -87,8 +88,8 @@ public class BerlinConsentValidator implements ConsentValidator {
             return;
         }
 
-        String consentIdHeader = consentValidateData.getHeaders()
-                .getAsString(ConsentExtensionConstants.CONSENT_ID_HEADER);
+        String consentIdHeader = consentValidateData.getHeadersMap()
+                .get(ConsentExtensionConstants.CONSENT_ID_HEADER);
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
         int tenantIdOccurrences = StringUtils.countMatches(psuIdFromToken,
