@@ -168,10 +168,12 @@ export const WithdrawStep2 = ({match}) => {
                                                 return <>
                                                     <h5>Account : {account}</h5>
                                                     <div className="dataClusters">
-                                                        {permissions[account].map((permission) => (
-                                                            <PermissionItem permissionScope={permission}
-                                                                            key={id = id + 1}/>
-                                                        ))}
+                                                        {permissions[account].map((permission) => {
+                                                            if (permission !== "") {
+                                                                return <PermissionItem permissionScope={permission}
+                                                                                       key={id = id + 1}/>
+                                                            }
+                                                        })}
                                                     </div>
                                                 </>
                                             })

@@ -228,7 +228,7 @@ export const account_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
+        dataSharedLabel: "",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -342,7 +342,7 @@ export const payments_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
+        dataSharedLabel: "",
         accreditation: {
             accreditDR: "API consumer application:"
         }
@@ -456,7 +456,7 @@ export const cof_lang_BG = [
             }
         ],
         accountsInfoLabel: "Accounts",
-        dataSharedLabel: "We share the following data via the",
+        dataSharedLabel: "",
         accreditation: {
             accreditDR: "API consumer application:"
         }
