@@ -269,6 +269,7 @@ public class AccountService {
 
         if (accountID.equalsIgnoreCase(MULTICURRENCY_ACCOUNT)) {
             response = "{\n" +
+                    " \"account\": {\"iban\": \"DE12345678901234567890\"},\n" +
                     "\"balances\": [{\n" +
                     "\"balanceType\": \"closingBooked\",\n" +
                     "\"balanceAmount\": {\n" +
