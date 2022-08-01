@@ -41,6 +41,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 public class AccountService {
 
     private static final Log log = LogFactory.getLog(AccountService.class);
+    private static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890";
 
     @OPTIONS
     @Path("/accounts")
@@ -110,7 +111,53 @@ public class AccountService {
                 " \"_links\": {\n" +
                 "\"balances\": {\"href\": \"/accounts/3dc3d5b3-7023-4848-9853-" +
                 "f5400a64e81g/balances\" }}\n" +
-                " }\n" +
+                " },\n" +
+                "{\"resourceId\": \"3dc3d5b3-7023-4848-9853-f5400a64e80f\",\n" +
+                "\"iban\": \"DE12345678901234567890\",\n" +
+                "\"currency\": \"XXX\",\n" +
+                "\"product\": \"Multi currency account\",\n" +
+                "\"cashAccountType\": \"CACC\",\n" +
+                "\"name\": \"Aggregation Account\",\n" +
+                "\"_links\": {\n" +
+                "\"balances\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e333/balances\"\n" +
+                "},\n" +
+                "\"transactions\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e333/transactions\"\n" +
+                "}\n" +
+                "}\n" +
+                "}, {\n" +
+                "\"resourceId\": \"3dc3d5b3-7023-4848-9853-f5400a64e80f\",\n" +
+                "\"iban\": \"DE12345678901234567890\",\n" +
+                "\"currency\": \"EUR\",\n" +
+                "\"product\": \"Girokonto\",\n" +
+                "\"cashAccountType\": \"CACC\",\n" +
+                "\"name\": \"Main Account\",\n" +
+                "\"_links\": {\n" +
+                "\"balances\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f/balances\"\n" +
+                "},\n" +
+                "\"transactions\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f/transactions\"\n" +
+                "}\n" +
+                "}\n" +
+                "},\n" +
+                "{\n" +
+                "\"resourceId\": \"3dc3d5b3-7023-4848-9853-f5400a64e81g\",\n" +
+                "\"iban\": \"DE12345678901234567890\",\n" +
+                "\"currency\": \"USD\",\n" +
+                "\"product\": \"Fremdwährungskonto\",\n" +
+                "\"cashAccountType\": \"CACC\",\n" +
+                "\"name\": \"US Dollar Account\",\n" +
+                "\"_links\": {\n" +
+                "\"balances\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e81g/balances\"\n" +
+                "},\n" +
+                "\"transactions\": {\n" +
+                "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e81g/transactions\"\n" +
+                "}\n" +
+                "}\n" +
+                "}" +
                 "]}";
 
         return Response.ok(response).header(REQUEST_ID, requestID)
@@ -156,6 +203,28 @@ public class AccountService {
                 "/transactions\"}}\n" +
                 " }\n" +
                 "}";
+
+        if (accountID.equalsIgnoreCase(MULTICURRENCY_ACCOUNT)) {
+            response = "{\n" +
+                    "\"account\": {\n" +
+                    "\"resourceId\": \"3dc3d5b3-7023-4848-9853-f5400a64e80f\",\n" +
+                    "\"iban\": \"DE12345678901234567890\",\n" +
+                    "\"currency\": \"XXX\",\n" +
+                    "\"ownerName\": \"Heike Mustermann\",\n" +
+                    "\"product\": \"Multicurrency Account\",\n" +
+                    "\"cashAccountType\": \"CACC\",\n" +
+                    "\"name\": \"Aggregation Account\",\n" +
+                    "\"_links\": {\n" +
+                    "\"balances\": {\n" +
+                    "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f/balances\"\n" +
+                    "},\n" +
+                    "\"transactions\": {\n" +
+                    "\"href\": \"/v1/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f/transactions\"\n" +
+                    "}\n" +
+                    "}\n" +
+                    "}\n" +
+                    "}";
+        }
         return Response.ok(response).header(REQUEST_ID, requestID)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Credentials", "true")
@@ -198,6 +267,43 @@ public class AccountService {
                 " }]\n" +
                 "}";
 
+        if (accountID.equalsIgnoreCase(MULTICURRENCY_ACCOUNT)) {
+            response = "{\n" +
+                    "\"balances\": [{\n" +
+                    "\"balanceType\": \"closingBooked\",\n" +
+                    "\"balanceAmount\": {\n" +
+                    "\"currency\": \"EUR\",\n" +
+                    "\"amount\": \"500.00\"\n" +
+                    "},\n" +
+                    "\"referenceDate\": \"2017-10-25\"\n" +
+                    "},\n" +
+                    "{\n" +
+                    "\"balanceType\": \"expected\",\n" +
+                    "\"balanceAmount\": {\n" +
+                    "\"currency\": \"EUR\",\n" +
+                    "\"amount\": \"900.00\"\n" +
+                    "},\n" +
+                    "\"lastChangeDateTime\": \"2017-10-25T15:30:35.035Z\"\n" +
+                    "},\n" +
+                    "{\n" +
+                    "\"balanceType\": \"closingBooked\",\n" +
+                    "\"balanceAmount\": {\n" +
+                    "\"currency\": \"USD\",\n" +
+                    "\"amount\": \"350.00\"\n" +
+                    "},\n" +
+                    "\"referenceDate\": \"2017-10-25\"\n" +
+                    "},\n" +
+                    "{\n" +
+                    "\"balanceType\": \"expected\",\n" +
+                    "\"balanceAmount\": {\n" +
+                    "\"currency\": \"USD\",\n" +
+                    "\"amount\": \"350.00\"\n" +
+                    "},\n" +
+                    "\"lastChangeDateTime\": \"2017-10-24T14:30:21Z\"\n" +
+                    "}\n" +
+                    "]\n" +
+                    "}";
+        }
         return Response.ok(response).header(REQUEST_ID, requestID)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
@@ -228,81 +334,10 @@ public class AccountService {
         }
 
         String response;
-        if (!StringUtils.isBlank(accountID)) {
+        if (accountID.equalsIgnoreCase(MULTICURRENCY_ACCOUNT)) {
             response = "{\n" +
                     "  \"account\": {\n" +
-                    "    \"iban\": \"DE2310010010123456788\"\n" +
-                    "  },\n" +
-                    "  \"transactions\": {\n" +
-                    "    \"booked\": [\n" +
-                    "      {\n" +
-                    "        \"transactionId\": \"1234567\",\n" +
-                    "        \"creditorName\": \"John Miles\",\n" +
-                    "        \"creditorAccount\": {\n" +
-                    "          \"iban\": \"DE67100100101306118605\"\n" +
-                    "        },\n" +
-                    "        \"transactionAmount\": {\n" +
-                    "          \"currency\": \"EUR\",\n" +
-                    "          \"amount\": \"256.67\"\n" +
-                    "        },\n" +
-                    "        \"bookingDate\": \"2017-10-25\",\n" +
-                    "        \"valueDate\": \"2017-10-26\",\n" +
-                    "        \"remittanceInformationUnstructured\": \"Example 1\"\n" +
-                    "      },\n" +
-                    "      {\n" +
-                    "        \"transactionId\": \"1234568\",\n" +
-                    "        \"debtorName\": \"Paul Simpson\",\n" +
-                    "        \"debtorAccount\": {\n" +
-                    "          \"iban\": \"NL76RABO0359400371\"\n" +
-                    "        },\n" +
-                    "        \"transactionAmount\": {\n" +
-                    "          \"currency\": \"EUR\",\n" +
-                    "          \"amount\": \"343.01\"\n" +
-                    "        },\n" +
-                    "        \"bookingDate\": \"2017-10-25\",\n" +
-                    "        \"valueDate\": \"2017-10-26\",\n" +
-                    "        \"remittanceInformationUnstructured\": \"Example 2\"\n" +
-                    "      }\n" +
-                    "    ],\n" +
-                    "    \"_links\": {\n" +
-                    "      \"account\": {\n" +
-                    "        \"href\": \"/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f\"\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}";
-        } else if (!StringUtils.isBlank(accountID)) {
-            response = "{\n" +
-                    "  \"account\": {\n" +
-                    "    \"iban\": \"DE2310010010123456788\"\n" +
-                    "  },\n" +
-                    "  \"transactions\": {\n" +
-                    "    \"pending\": [\n" +
-                    "      {\n" +
-                    "        \"transactionId\": \"1234569\",\n" +
-                    "        \"creditorName\": \"Claude Renault\",\n" +
-                    "        \"creditorAccount\": {\n" +
-                    "          \"iban\": \"FR7612345987650123456789014\"\n" +
-                    "        },\n" +
-                    "        \"transactionAmount\": {\n" +
-                    "          \"currency\": \"EUR\",\n" +
-                    "          \"amount\": \"-100.03\"\n" +
-                    "        },\n" +
-                    "        \"valueDate\": \"2017-10-26\",\n" +
-                    "        \"remittanceInformationUnstructured\": \"Example 3\"\n" +
-                    "      }\n" +
-                    "    ],\n" +
-                    "    \"_links\": {\n" +
-                    "      \"account\": {\n" +
-                    "        \"href\": \"/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f\"\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}";
-        } else if (!StringUtils.isBlank(accountID)) {
-            response = "{\n" +
-                    "  \"account\": {\n" +
-                    "    \"iban\": \"DE2310010010123456788\"\n" +
+                    "    \"iban\": \"DE12345678901234567890\"\n" +
                     "  },\n" +
                     "  \"transactions\": {\n" +
                     "    \"booked\": [\n" +
@@ -348,6 +383,49 @@ public class AccountService {
                     "        },\n" +
                     "        \"valueDate\": \"2017-10-26\",\n" +
                     "        \"remittanceInformationUnstructured\": \"Example 3\"\n" +
+                    "      }\n" +
+                    "    ],\n" +
+                    "    \"_links\": {\n" +
+                    "      \"account\": {\n" +
+                    "        \"href\": \"/accounts/3dc3d5b3-7023-4848-9853-f5400a64e80f\"\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}";
+        } else if (!StringUtils.isBlank(accountID)) {
+            response = "{\n" +
+                    "  \"account\": {\n" +
+                    "    \"iban\": \"DE2310010010123456788\"\n" +
+                    "  },\n" +
+                    "  \"transactions\": {\n" +
+                    "    \"booked\": [\n" +
+                    "      {\n" +
+                    "        \"transactionId\": \"1234567\",\n" +
+                    "        \"creditorName\": \"John Miles\",\n" +
+                    "        \"creditorAccount\": {\n" +
+                    "          \"iban\": \"DE67100100101306118605\"\n" +
+                    "        },\n" +
+                    "        \"transactionAmount\": {\n" +
+                    "          \"currency\": \"EUR\",\n" +
+                    "          \"amount\": \"256.67\"\n" +
+                    "        },\n" +
+                    "        \"bookingDate\": \"2017-10-25\",\n" +
+                    "        \"valueDate\": \"2017-10-26\",\n" +
+                    "        \"remittanceInformationUnstructured\": \"Example 1\"\n" +
+                    "      },\n" +
+                    "      {\n" +
+                    "        \"transactionId\": \"1234568\",\n" +
+                    "        \"debtorName\": \"Paul Simpson\",\n" +
+                    "        \"debtorAccount\": {\n" +
+                    "          \"iban\": \"NL76RABO0359400371\"\n" +
+                    "        },\n" +
+                    "        \"transactionAmount\": {\n" +
+                    "          \"currency\": \"EUR\",\n" +
+                    "          \"amount\": \"343.01\"\n" +
+                    "        },\n" +
+                    "        \"bookingDate\": \"2017-10-25\",\n" +
+                    "        \"valueDate\": \"2017-10-26\",\n" +
+                    "        \"remittanceInformationUnstructured\": \"Example 2\"\n" +
                     "      }\n" +
                     "    ],\n" +
                     "    \"_links\": {\n" +
