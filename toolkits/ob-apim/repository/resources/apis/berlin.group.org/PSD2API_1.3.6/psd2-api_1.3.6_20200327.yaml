@@ -11630,7 +11630,7 @@ components:
       content:
         application/json:
           schema:
-            oneOf: #Different Payment products in JSON
+            anyOf: #Different Payment products in JSON
               - $ref: "#/components/schemas/paymentInitiation_json"
               - $ref: "#/components/schemas/periodicPaymentInitiation_json"
               - $ref: "#/components/schemas/bulkPaymentInitiation_json"

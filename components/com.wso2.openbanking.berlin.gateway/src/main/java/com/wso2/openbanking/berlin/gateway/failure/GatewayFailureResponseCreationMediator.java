@@ -53,9 +53,9 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
     public static final String BULK_PAYMENTS_SERVICE_PATH = "/bulk-payments";
 
     // swagger schema definitions order for Payment products
-    public static final String PAYMENTS_SCHEMA_VALIDATION_REF = "/oneOf/0";
-    public static final String PERIODIC_PAYMENTS_SCHEMA_VALIDATION_REF = "/oneOf/1";
-    public static final String BULK_PAYMENTS_SCHEMA_VALIDATION_REF = "/oneOf/2";
+    public static final String PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/0";
+    public static final String PERIODIC_PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/1";
+    public static final String BULK_PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/2";
 
     public GatewayFailureResponseCreationMediator() {
 
@@ -352,7 +352,7 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
      */
     private static boolean isSchemaFailedToMatchError(ValidationReport.Message message) {
 
-        return message.getMessage().contains("Instance failed to match exactly one schema");
+        return message.getMessage().contains("Instance failed to match");
     }
 
     /**
