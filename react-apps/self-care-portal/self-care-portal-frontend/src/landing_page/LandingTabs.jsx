@@ -10,25 +10,35 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {LandingTable} from "./LandingTable";
 import "../css/LandingTabs.css";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import {lang} from "../specConfigs";
-import {getConsentsForSearch, setSearchObject} from "../store/actions";
-import {useDispatch, useSelector} from "react-redux";
 import {PaginationTable} from "./PaginationTable";
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { ConsentContext } from "../context/ConsentContext";
+import { current } from "@reduxjs/toolkit";
+import { AcroFormButton } from "jspdf";
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext";
+
 
 export const LandingTabs = () => {
+    const {contextSearchObject,setContextSearchObject} = useContext(SearchObjectContext);
+    const {getContextConsentsForSearch} = useContext(ConsentContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
+    const {currentContextUser} = useContext(UserContext);
 
-    const dispatch = useDispatch();
-    let searchObj = useSelector(state => state.searchObject);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+
+    let searchObj = contextSearchObject;
+    const appInfo = contextAppInfo.appInfo;
+
 
     const [key, setKey] = useState(searchObj.consentStatuses);
     const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
-    const currentUser = useSelector(state => state.currentUser.user);
+    const currentUser = currentContextUser.user;
 
     const [filteredLang, setFilteredLang] = useState(lang[consentTypeKey]);
 
@@ -44,8 +54,8 @@ export const LandingTabs = () => {
             consentStatuses: key,
             offset: 0
         }
-        dispatch(setSearchObject(search));
-        dispatch(getConsentsForSearch(search, currentUser, appInfo));
+        setContextSearchObject(search);
+        getContextConsentsForSearch(search,currentUser,appInfo);
     }, [key])
 
     return (

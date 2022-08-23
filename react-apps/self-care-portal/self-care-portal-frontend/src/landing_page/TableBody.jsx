@@ -13,15 +13,19 @@
 import {ManageButton} from "../landing_page";
 import {dataOrigins, dataTypes, lang} from "../specConfigs";
 import moment from "moment";
-import {useSelector} from "react-redux";
 import {getValueFromApplicationInfoWithFailOver, getValueFromConsentWithFailOver} from "../services/utils";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
 
 export const TableBody = ({statusTab, consentType}) => {
     let id = 0;
 
-    const consents = useSelector((state) => state.consent.consents);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+    const {allContextConsents} = useContext(ConsentContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
+
+    const consents = allContextConsents.consents;
+    const appInfo = contextAppInfo.appInfo;
     const [filteredTab, setFilteredTab] = useState(() => {
         return lang[consentType].filter((lbl) => lbl.id === statusTab)[0];
     });

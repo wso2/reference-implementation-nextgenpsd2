@@ -10,16 +10,15 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useContext, useEffect, useState } from "react";
 import { Home } from "../landing_page";
-import { setUser } from "../store/actions";
 import { CONFIG } from "../config";
-
+import { UserContext } from "../context/UserContext";
 import User from "../data/User";
 
 export const Login = () => {
-  const dispatch = useDispatch();
+  const {setContextUser} = useContext(UserContext)
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setLoggedUser] = useState({});
@@ -32,8 +31,8 @@ export const Login = () => {
     setIsLoggedIn(user.isLogged);
     setIsLoading(false);
 
-    dispatch(setUser(user));
-  }, [dispatch]);
+    setContextUser(user);
+  },[]);
 
   const renderLoading = () => {
     return (
