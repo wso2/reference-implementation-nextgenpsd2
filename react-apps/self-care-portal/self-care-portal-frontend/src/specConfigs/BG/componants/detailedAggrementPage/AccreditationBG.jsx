@@ -11,7 +11,7 @@
  */
 
 import React from "react";
-import CDRLogo from "../../../../images/CDRLogo.png";
+import Logo from "../../../../images/Logo.png";
 
 export const AccreditationBG = ({infoLabel, applicationName}) => {
     return (
