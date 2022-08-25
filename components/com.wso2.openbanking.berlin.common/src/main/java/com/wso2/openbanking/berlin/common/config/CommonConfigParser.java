@@ -445,6 +445,12 @@ public class CommonConfigParser {
         return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.IS_ACCOUNT_ID_VALIDATION_ENABLED));
     }
 
+
+    public boolean isAccountIdValidationEnabledForCofConsent() {
+        return Boolean.parseBoolean((String) getConfiguration()
+                .get(CommonConstants.IS_ACCOUNT_ID_VALIDATION_ENABLED_FOR_COF_CONSENT));
+    }
+
     public String getShareableAccountsRetrieveEndpoint() {
         if (getConfiguration().get(CommonConstants.SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT) == null) {
             log.error("Shareable accounts retrieve endpoint is not set");

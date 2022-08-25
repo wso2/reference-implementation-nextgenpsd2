@@ -14,10 +14,16 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsDataProviders
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Factory
 import org.testng.annotations.Test
@@ -248,6 +254,102 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_403)
         Assert.assertEquals(TestUtil.parseResponseBody(authorisationResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.CONSENT_UNKNOWN)
+    }
+
+
+    @Test(groups = ["1.3.6"], priority = 1)
+    void "OB-360_Explicit Authorisation with same x-request-id and same consent id"() {
+
+        //Consent Initiation
+        doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
+
+        //Create Explicit Authorisation Resources
+        createExplicitAuthorization(consentPath)
+
+        authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+        requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
+        Assert.assertNotNull(requestId)
+        Assert.assertNotNull(authorisationId)
+        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+          PaymentsConstants.SCA_STATUS_RECEIVED)
+        Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
+
+        //Create Explicit Authorisation Resources 2
+        def  authorisationResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, requestId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+          .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+          .body("{}")
+          .post("${consentPath}/${paymentId}/authorisations")
+
+        def authorisationId2 = authorisationResponse2.jsonPath().get("authorisationId")
+        def requestId2 = authorisationResponse2.getHeader(BerlinConstants.X_REQUEST_ID)
+        Assert.assertEquals(requestId, requestId2)
+        Assert.assertEquals(authorisationId, authorisationId2)
+        Assert.assertEquals(authorisationResponse2.jsonPath().get("scaStatus"),
+          PaymentsConstants.SCA_STATUS_RECEIVED)
+        Assert.assertNotNull(authorisationResponse2.jsonPath().get("_links.scaOAuth.href"))
+    }
+
+    @Test(groups = ["1.3.6"], priority = 1)
+    void "OB-361_Explicit Authorisation with same x-request-id and different consent id"() {
+
+        //Consent Initiation
+        doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
+
+        //Create Explicit Authorisation Resources
+        createExplicitAuthorization(consentPath)
+
+        authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+        requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
+        Assert.assertNotNull(requestId)
+        Assert.assertNotNull(authorisationId)
+        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+          PaymentsConstants.SCA_STATUS_RECEIVED)
+        Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
+
+        //Consent Initiation 2
+        doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+
+        //Create Explicit Authorisation Resources 2
+        def authorisationResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, requestId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+          .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+          .body("{}")
+          .post("${consentPath}/${paymentId}/authorisations")
+
+        def authorisationId2 = authorisationResponse2.jsonPath().get("authorisationId")
+        def requestId2 = authorisationResponse2.getHeader(BerlinConstants.X_REQUEST_ID)
+        Assert.assertEquals(requestId, requestId2)
+        Assert.assertEquals(authorisationId, authorisationId2)
+        Assert.assertEquals(authorisationResponse2.jsonPath().get("scaStatus"),
+          PaymentsConstants.SCA_STATUS_RECEIVED)
+        Assert.assertNotNull(authorisationResponse2.jsonPath().get("_links.scaOAuth.href"))
     }
 
 }

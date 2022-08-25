@@ -54,6 +54,8 @@ public class CommonConstants {
             ".Method";
     public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED = "ConsentManagement.Accounts." +
             "EnableAccountIDValidation";
+    public static final String IS_ACCOUNT_ID_VALIDATION_ENABLED_FOR_COF_CONSENT = "ConsentManagement.COF." +
+            "EnableAccountIDValidation";
     public static final String SHAREABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +
             "ShareableAccountsRetrieveEndpoint";
     public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "ConsentManagement." +
@@ -73,12 +75,6 @@ public class CommonConstants {
     public static final String PIS_SCOPE = "pis";
     public static final String PIIS_SCOPE = "piis";
 
-    public static final String IDEMPOTENCY_CACHE_ACCESS_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
-            ".CacheAccessExpiry";
-    public static final String IDEMPOTENCY_CACHE_MODIFY_EXPIRY = "Gateway.Cache.IdempotencyValidationCache" +
-            ".CacheModifiedExpiry";
-    public static final String PAYMENT_INITIATION_IDEMPOTENCY_ENABLED = "ConsentManagement.Idempotency" +
-            ".PaymentInitiationIdempotencyEnabled";
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
             ".AllowedDuration";
     public static final String DELIMITER = ":";

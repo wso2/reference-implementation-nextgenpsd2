@@ -92,9 +92,9 @@ class DeleteConsentResponseValidationTests extends AbstractAccountsFlow {
 
         //Delete Consent which is already terminated
         deleteConsent(consentPath)
-        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE)
-                .toString(), BerlinConstants.INVALID_STATUS_VALUE)
+                .toString(), BerlinConstants.CONSENT_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
                 "The requested consent is already deleted")
     }

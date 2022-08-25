@@ -17,11 +17,13 @@ import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.AbstractPaymentsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsDataProviders
+import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
 import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -269,4 +271,92 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
                             "Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY'")
         }
     }
+
+    @Test(groups = ["1.3.3", "1.3.6"],
+      dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
+    void "OB-1681_Payment consent delete request with same X-Request-Id and same consent"(String consentPath, List<String>
+      paymentProducts, String payload) {
+
+        paymentProducts.each { value ->
+            String paymentConsentPath = consentPath + "/" + value
+
+            //Payment Initiation
+            doDefaultInitiation(paymentConsentPath, payload)
+            Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+            def xRequestId = UUID.randomUUID().toString()
+
+            //Delete Consent
+            def consentDeleteResponse = TestSuite.buildRequest()
+              .contentType(ContentType.JSON)
+              .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+              .header(BerlinConstants.Date, getCurrentDate())
+              .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+              .filter(new BerlinSignatureFilter())
+              .baseUri(ConfigParser.getInstance().getBaseURL())
+              .delete("${paymentConsentPath}/${paymentId}")
+
+            Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+
+            //Get Consent with same X-Request-ID header
+            def consentDeleteResponse2 = TestSuite.buildRequest()
+              .contentType(ContentType.JSON)
+              .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+              .header(BerlinConstants.Date, getCurrentDate())
+              .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+              .filter(new BerlinSignatureFilter())
+              .baseUri(ConfigParser.getInstance().getBaseURL())
+              .delete("${paymentConsentPath}/${paymentId}")
+
+            Assert.assertEquals(consentDeleteResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        }
+    }
+
+        @Test(groups = ["1.3.3", "1.3.6"],
+          dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
+    void "OB-1683_Payment consent retrieval request with the same X-Request-Id with different Consent"(String consentPath,
+                List<String> paymentProducts, String payload) {
+
+            paymentProducts.each { value ->
+                String paymentConsentPath = consentPath + "/" + value
+
+                //Payment Initiation
+                doDefaultInitiation(paymentConsentPath, payload)
+                Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+                def xRequestId = UUID.randomUUID().toString()
+
+                //Delete Consent
+                def retrievalResponse = TestSuite.buildRequest()
+                  .contentType(ContentType.JSON)
+                  .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                  .header(BerlinConstants.Date, getCurrentDate())
+                  .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                  .filter(new BerlinSignatureFilter())
+                  .baseUri(ConfigParser.getInstance().getBaseURL())
+                  .delete("${paymentConsentPath}/${paymentId}")
+
+                Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+
+                //Payment Initiation
+                doDefaultInitiation(paymentConsentPath, payload)
+                Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+                //Delete Consent
+                def retrievalResponse2 = TestSuite.buildRequest()
+                  .contentType(ContentType.JSON)
+                  .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                  .header(BerlinConstants.Date, getCurrentDate())
+                  .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                  .filter(new BerlinSignatureFilter())
+                  .baseUri(ConfigParser.getInstance().getBaseURL())
+                  .delete("${paymentConsentPath}/${paymentId}")
+
+                Assert.assertEquals(retrievalResponse2.statusCode(), BerlinConstants.STATUS_CODE_400)
+                Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse2, BerlinConstants.TPPMESSAGE_CODE),
+                  BerlinConstants.FORMAT_ERROR)
+                Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse2, BerlinConstants.TPPMESSAGE_TEXT).
+                  contains ("Idempotency check failed."))
+            }
+        }
 }

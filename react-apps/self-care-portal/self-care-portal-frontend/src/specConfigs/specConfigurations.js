@@ -11,8 +11,6 @@
  */
 
 import {CONFIG} from "../config";
-import {lang_CDS, specConfigurations_CDS} from "./CDS/specConfigurations_CDS";
-import {lang_UK, specConfigurations_UK} from "./UK/specConfigurations_UK";
 import {lang_BG, specConfigurations_BG} from "./BG/specConfigurations_BG";
 import {lang_Default, specConfigurations_Default} from "./Default/specConfigurations_Default";
 
@@ -25,16 +23,6 @@ let spec = CONFIG.SPEC;
 if (spec === "Default") {
     specConfigurations = specConfigurations_Default;
     lang = lang_Default;
-}
-
-if (spec === "CDS") {
-    specConfigurations = specConfigurations_CDS;
-    lang = lang_CDS;
-}
-
-if (spec === "UK") {
-    specConfigurations = specConfigurations_UK;
-    lang = lang_UK;
 }
 
 if (spec === "BG") {

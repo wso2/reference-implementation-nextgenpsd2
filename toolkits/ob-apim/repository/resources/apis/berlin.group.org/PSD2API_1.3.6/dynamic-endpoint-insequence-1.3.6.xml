@@ -22,21 +22,13 @@
 
     <filter regex=".*/accounts.*|.*/card-accounts.*" source="$ctx:endpointURI">
         <then>
-            <filter source="$ctx:AM_KEY_TYPE" regex="SANDBOX">
-                <then>
-                    <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/accounts"/>
-                </then>
-            </filter>
+            <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/accounts"/>
         </then>
     </filter>
 
     <filter regex=".*/funds-confirmations.*" source="$ctx:endpointURI">
         <then>
-            <filter source="$ctx:AM_KEY_TYPE" regex="SANDBOX">
-                <then>
-                    <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/funds-confirmations"/>
-                </then>
-            </filter>
+            <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/funds-confirmations"/>
         </then>
     </filter>
 

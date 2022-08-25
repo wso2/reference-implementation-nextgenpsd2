@@ -295,4 +295,46 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
                 contains ("Idempotency check failed."))
     }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-364_Initiation request with different x-request-id and same payload"() {
+
+        def date = getCurrentDate()
+
+        //Consent Initiation - First Time
+        def consentResponse = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+          .header(BerlinConstants.Date, date)
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .body(initiationPayload)
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        def consentId1 = TestUtil.parseResponseBody(consentResponse, "consentId").toString()
+
+        //Consent Initiation - Second Time
+        def consentResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+          .header(BerlinConstants.Date, date)
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .body(initiationPayload)
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .post(consentPath)
+
+        Assert.assertEquals(consentResponse2.statusCode(), BerlinConstants.STATUS_CODE_201)
+        def consentId2 = TestUtil.parseResponseBody(consentResponse2, "consentId").toString()
+
+        Assert.assertNotEquals(consentId1, consentId2)
+    }
 }

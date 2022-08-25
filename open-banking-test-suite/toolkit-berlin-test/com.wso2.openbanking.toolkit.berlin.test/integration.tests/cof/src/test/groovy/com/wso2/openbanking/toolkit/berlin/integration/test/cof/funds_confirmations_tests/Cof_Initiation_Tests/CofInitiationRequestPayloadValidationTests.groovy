@@ -96,7 +96,7 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
                 "String \"2025-12-312\" is invalid against requested date format(s) yyyy-MM-dd"))
     }

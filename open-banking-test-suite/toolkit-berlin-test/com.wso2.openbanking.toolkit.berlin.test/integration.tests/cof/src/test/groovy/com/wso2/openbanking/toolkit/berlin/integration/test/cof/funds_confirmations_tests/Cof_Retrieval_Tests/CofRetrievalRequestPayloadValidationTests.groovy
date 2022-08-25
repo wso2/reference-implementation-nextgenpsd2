@@ -75,11 +75,11 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .body(CofRetrievalPayloads.cofRetrievalPayloadWithInvalidIban)
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.CONSENT_INVALID)
+                BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains("No valid accounts for this consent"))
+                .contains("ECMA 262 regex \"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string \"INVALID_IBAN\""))
     }
 
     @Test (groups = ["1.3.6"])
@@ -93,11 +93,13 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .body(CofRetrievalPayloads.cofRetrievalPayloadWithEmptyIban)
                 .post(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.CONSENT_INVALID)
+          BerlinConstants.FORMAT_ERROR)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+                "account.iban")
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains("No valid accounts for this consent"))
+                .contains("ECMA 262 regex \"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string \"\""))
     }
 
     @Test (groups = ["1.3.6"])
@@ -130,10 +132,12 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+          "instructedAmount")
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                "[Path '/instructedAmount'] Object has missing required properties ([\"amount\"])")
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"amount\"])"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -148,8 +152,12 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+          "instructedAmount.amount")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains("\"^-?[0-9]{1,14}\$|-?[0-9]{1,14}\\.[0-9]{1,3}\$\" does not match input string \"\""))
+                .contains("ECMA 262 regex \"^-?([0-9]{1,14})(\\.[0-9]{1,3})?\$\" does not match input string \"\""))
     }
 
     @Test (groups = ["1.3.6"])
@@ -164,8 +172,12 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT),
-                "[Path '/instructedAmount'] Object has missing required properties ([\"currency\"])")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+          "instructedAmount")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"currency\"])"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -180,6 +192,10 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+          "instructedAmount.currency")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
                 .contains("\"[A-Z]{3}\" does not match input string \"\""))
     }
@@ -196,6 +212,10 @@ class CofRetrievalRequestPayloadValidationTests extends AbstractCofFlow {
                 .post(resourcePath)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_PATH),
+          "instructedAmount.currency")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE),
+          BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString()
                 .contains("\"[A-Z]{3}\" does not match input string \"123\""))
     }

@@ -67,7 +67,7 @@ public class FundsConfirmationValidationUtil {
         JSONObject accountRefObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
         ArrayList<ConsentMappingResource> mappingResources = detailedConsentResource.getConsentMappingResources();
         if (CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
-            if (CommonConfigParser.getInstance().isAccountIdValidationEnabled()) {
+            if (CommonConfigParser.getInstance().isAccountIdValidationEnabledForCofConsent()) {
                 ConsentMappingResource mappingResource = mappingResources.get(0);
                 if (isAccountMappingValid(accountRefObject, mappingResource)) {
                     isAccountMappingValid = true;

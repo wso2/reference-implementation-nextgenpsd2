@@ -179,9 +179,8 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
-
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.6"])
@@ -203,7 +202,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                contains("Missing mandatory header: Consent-ID"))
+                contains("Consent-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -224,7 +223,9 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                BerlinConstants.CONSENT_UNKNOWN)
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+          contains("Invalid Consent-ID header. Needs to be in UUID format"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -248,7 +249,7 @@ class CofRetrievalRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'Consent-ID' is required but is missing.")
+                "Consent-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.6"])

@@ -285,9 +285,9 @@ class TokenGenWithPasswordGrantValidationTests extends AbstractNonRegulatoryFlow
 
         Assert.assertEquals(apiResponse.statusCode(), 403)
         Assert.assertEquals(TestUtil.parseResponseBody(apiResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TOKEN_INVALID)
+          "CERTIFICATE_INVALID")
         Assert.assertTrue (TestUtil.parseResponseBody (apiResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Token does not consist of the required permissions for this resource"))
+                contains ("Organization ID mismatch with Client ID"))
     }
 
 }

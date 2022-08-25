@@ -22,7 +22,7 @@ export const DataSharedInfoBG = ({consent, infoLabels}) => {
     let permissions = getPermissionListForConsent(consent);
     return (
         <div className="dataSharedBody">
-            <h5>{infoLabels.dataSharedLabel} for <b>{consent.consentType}</b> consent</h5>
+            <h5>{infoLabels.dataSharedLabel} <b>{consent.consentType}</b> consent.</h5>
             {specConfigurations.consent.permissionsView.permissionBindType ===
             permissionBindTypes.differentPermissionsForEachAccount ?
                 (
@@ -30,9 +30,11 @@ export const DataSharedInfoBG = ({consent, infoLabels}) => {
                         return <>
                             <h5>Account : {account}</h5>
                             <div className="dataClusters">
-                                {permissions[account].map((permission) => (
-                                    <PermissionItem permissionScope={permission} key={id = id + 1}/>
-                                ))}
+                                {permissions[account].map((permission) => {
+                                    if (permission !== "") {
+                                        return <PermissionItem permissionScope={permission} key={id = id + 1}/>
+                                    }
+                                })}
                             </div>
                         </>
                     })

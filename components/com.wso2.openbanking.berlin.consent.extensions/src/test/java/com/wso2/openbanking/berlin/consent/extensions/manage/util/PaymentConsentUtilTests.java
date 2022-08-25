@@ -267,4 +267,34 @@ public class PaymentConsentUtilTests extends PowerMockTestCase {
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.START_AUTH_WITH_PSU_IDENTIFICATION));
         Assert.assertTrue(links.containsKey(ConsentExtensionConstants.STATUS));
     }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testValidateDayOfExecutionWithInvalidValue() throws ParseException {
+
+        JSONObject payload =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                        .parse(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD);
+        payload.put("dayOfExecution", "00");
+        PaymentConsentUtil.validateDayOfExecution(payload);
+    }
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testValidateDayOfExecutionWithInvalidNumber() throws ParseException {
+
+        JSONObject payload =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                        .parse(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD);
+        payload.put("dayOfExecution", "test");
+        PaymentConsentUtil.validateDayOfExecution(payload);
+    }
+
+    @Test
+    public void testValidateDayOfExecutionWithoutKey() throws ParseException {
+
+        JSONObject payload =
+                (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                        .parse(TestPayloads.VALID_PERIODICAL_PAYMENT_PAYLOAD);
+        payload.remove("dayOfExecution");
+        PaymentConsentUtil.validateDayOfExecution(payload);
+    }
 }

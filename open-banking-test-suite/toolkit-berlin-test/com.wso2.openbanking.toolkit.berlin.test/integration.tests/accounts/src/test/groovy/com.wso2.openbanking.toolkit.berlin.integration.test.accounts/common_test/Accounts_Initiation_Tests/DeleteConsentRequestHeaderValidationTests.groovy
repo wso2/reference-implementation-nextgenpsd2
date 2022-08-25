@@ -17,12 +17,14 @@ import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
 import io.restassured.http.ContentType
+import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 
@@ -223,5 +225,88 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
                 .contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-350_Delete the consent details with same X-Request-Id and same Consent_id"() {
+
+        def xReqId = UUID.randomUUID().toString()
+
+        //Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Delete Consent - 1st Time
+        consentDeleteResponse = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .delete("${consentPath}/${accountId}")
+
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+        Assert.assertNotNull(consentDeleteResponse.getHeader("X-Request-ID"))
+
+        //Delete Consent using X-Request-Id used in previous delete call
+        Response consentDeleteResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .delete("${consentPath}/${accountId}")
+
+        Assert.assertEquals(consentDeleteResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-351_Delete the consent details with same X-Request-Id and different Consent_id"() {
+
+        def xReqId = UUID.randomUUID().toString()
+
+        //Account Initiation
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Delete Consent = 1st Time
+        consentDeleteResponse = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .delete("${consentPath}/${accountId}")
+
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+        Assert.assertNotNull(consentDeleteResponse.getHeader("X-Request-ID"))
+
+        //Account Initiation - new Consent
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        //Delete Consent using X-Request-Id used in previous delete call
+        Response consentDeleteResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, xReqId)
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .delete("${consentPath}/${accountId}")
+
+        Assert.assertEquals(consentDeleteResponse2.statusCode(), BerlinConstants.STATUS_CODE_204)
     }
 }

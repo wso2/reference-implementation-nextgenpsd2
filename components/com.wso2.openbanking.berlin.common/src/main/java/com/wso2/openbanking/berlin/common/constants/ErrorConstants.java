@@ -83,6 +83,8 @@ public class ErrorConstants {
     public static final String START_DATE_MISSING = "Start date is missing in periodic payments payload";
     public static final String START_DATE_INVALID = "Invalid start date";
     public static final String FREQUENCY_MISSING = "Frequency is missing in periodic payments payload";
+    public static final String FREQUENCY_UNSUPPORTED = "Unsupported frequency in periodic payments payload";
+    public static final String INVALID_DAY_OF_EXECUTION = "Invalid dayOfExecution value";
     public static final String END_DATE_NOT_FUTURE = "End date must be a future date";
     public static final String START_DATE_NOT_FUTURE = "Start date must be a future date";
     public static final String END_DATE_NOT_VALID = "Invalid end date";
@@ -160,6 +162,8 @@ public class ErrorConstants {
             ErrorConstants.PATH_IDEM_KEY;
     public static final String EXECUTOR_IDEMPOTENCY_KEY_ERROR = "Error while handling Idempotency check.:" +
             ErrorConstants.PATH_IDEM_KEY;
+    public static final String EXECUTOR_IDEMPOTENCY_KEY_NOT_FOUND = "Mandatory header x-idempotency key not found" +
+            " in the request.:" + ErrorConstants.PATH_IDEM_KEY;
 
     // Executors related error messages
     public static final String SIGNATURE_HEADER_MISSING = "Signature header not passed through the request";

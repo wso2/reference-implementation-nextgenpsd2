@@ -14,10 +14,16 @@ package com.wso2.openbanking.toolkit.berlin.integration.test.accounts.common_tes
 
 import com.wso2.openbanking.berlin.common.utils.BerlinConstants
 import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
+import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.PsuConfigReader
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AbstractAccountsFlow
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsConstants
 import com.wso2.openbanking.toolkit.berlin.integration.test.accounts.util.AccountsInitiationPayloads
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -67,8 +73,15 @@ class FrequencyPerDayResponseValidationTests extends AbstractAccountsFlow {
     void "OB-1676_Send account retrieval request for the same consent exceeding number of times specified in frequency"() {
 
         //Send Account Retrieval call 10 times.
-        def response = BerlinRequestBuilder
-                .buildBasicRequest(userAccessToken)
+        def response = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+          .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .filter(new BerlinSignatureFilter())
+          .baseUri(ConfigParser.getInstance().getBaseURL())
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
                 .get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
 

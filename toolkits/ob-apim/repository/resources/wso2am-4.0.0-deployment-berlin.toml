@@ -206,10 +206,10 @@ config_endpoint = "https://analytics-event-auth.st.choreo.dev/auth/v1"
 auth_token = ""
 properties.'publisher.reporter.class' = "com.wso2.openbanking.accelerator.gateway.reporter.OBAnalyticsMetricReporter"
 
-[apim.key_manager]
-service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
-type = "WSO2-IS"
-key_manager_client_impl = "org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl"
+#[apim.key_manager]
+#service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
+#type = "WSO2-IS"
+#key_manager_client_impl = "org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl"
 #username = "$ref{super_admin.username}"
 #password = "$ref{super_admin.password}"
 #pool.init_idle_capacity = 50
@@ -369,12 +369,6 @@ authentication.basic.enable = true
 
 #================configs related to identity-event.properties=============
 
-[[event_handler]]
-name="userPostSelfRegistration"
-subscriptions=["POST_ADD_USER"]
-
-
-
 #data bridge config
 #[transport.receiver]
 #type = "binary"
@@ -446,8 +440,11 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -470,7 +467,7 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.IdempotencyHandlingExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
@@ -494,8 +491,11 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -582,16 +582,11 @@ maxHttpHeaderSize = 16384
 
 #===================Berlin Toolkit====================
 [open_banking_berlin.consent]
-iban_acc_retrieval_validation.enable = "true"
 host = "APIM_HOSTNAME"
 port = "8243"
 
 [open_banking_berlin.consent.freq_per_day]
 enable = true
-
-[open_banking_berlin.consent.idempotency]
-allowed_time=1
-submission.enable=false
 
 #============Application Creation Properties=========================
 [open_banking.keymanager.extension.impl]
@@ -636,5 +631,24 @@ supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
 #[open_banking.berlin.keymanager.org_id_validation]
 #regex=""
 
-[open_banking_berlin.payment.initiation.idempotency]
-enabled="true"
+#========================OB Distributed Cache Configurations===============================
+[open_banking.distributed_cache]
+enabled=true
+host_name="APIM_HOSTNAME"
+port=5701
+discovery_mechanism="TCP"
+#members=["192.168.1.0-7", "localhost:5703"]
+[open_banking.distributed_cache.properties]
+max_heartbeat=600
+max_master_confirmation=900
+merge_first_run_delay=60
+merge_next_run_delay=30
+logging_type="none"
+
+#========================OB Idempotency Configurations======================
+[open_banking.gateway.cache.idempotency_validation_cache]
+cache_time_to_live=1440
+[open_banking.gateway.idempotency]
+enabled=true
+allowed_time_duration=1440
+idempotency_key_header="X-Request-ID"

@@ -40,9 +40,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -121,7 +123,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             } catch (SignatureValidationException e) {
                 log.error(ErrorConstants.INVALID_SIGNATURE_HEADER, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
-                        ErrorConstants.X_REQUEST_ID_MISSING);
+                        e.getMessage());
                 return;
             }
 
@@ -360,12 +362,8 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 digestHash = messageDigest.digest(requestPayload.getBytes(StandardCharsets.UTF_8));
             }
 
-            StringBuilder digestHashHex = new StringBuilder();
-            for (byte b : digestHash) {
-                digestHashHex.append(String.format("%02x", b));
-            }
             String generatedDigest = Base64.getEncoder()
-                    .encodeToString(new BigInteger(digestHashHex.toString(), 16).toByteArray());
+                    .encodeToString(new BigInteger(digestHash).toByteArray());
             if (generatedDigest.equals(digestValue)) {
                 log.debug("Digest validation successfully completed");
                 return true;
@@ -415,7 +413,11 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             String requestSignatureAlgorithm = x509Certificate.getSigAlgName();
             CommonConfigParser configParser = getConfigParser();
             if (configParser.getSupportedSignatureAlgorithms().contains(requestSignatureAlgorithm)) {
-                signature = Signature.getInstance(requestSignatureAlgorithm);
+                // Use bouncycastle to get signature algorithm of X509CertificateObject.
+                // Signature instance is created using the algorithm from X509CertificateObject.
+                X509Certificate certificate = (X509Certificate) new CertificateFactory()
+                        .engineGenerateCertificate(new ByteArrayInputStream(x509Certificate.getEncoded()));
+                signature = Signature.getInstance(certificate.getSigAlgName());
             } else {
                 log.error("Provided signature algorithm is not supported");
                 throw new SignatureValidationException("Request signature algorithm " +
@@ -444,6 +446,9 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         } catch (InvalidKeyException e) {
             log.error("Invalid public key", e);
             throw new SignatureValidationException("Invalid public key", e);
+        } catch (CertificateException e) {
+            log.error(ErrorConstants.SIGNING_CERT_INVALID, e);
+            throw new SignatureValidationException(ErrorConstants.SIGNING_CERT_INVALID, e);
         }
     }
 

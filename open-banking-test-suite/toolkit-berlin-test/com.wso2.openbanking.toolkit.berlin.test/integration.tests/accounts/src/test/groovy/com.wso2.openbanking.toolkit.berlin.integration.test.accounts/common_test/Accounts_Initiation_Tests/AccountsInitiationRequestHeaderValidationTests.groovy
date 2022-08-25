@@ -234,7 +234,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         def consentResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(TestConstants.X_REQUEST_ID, xRequestId)
-                .header(BerlinConstants.Date, date)
+                .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .header(BerlinConstants.PSU_ID, "psu@wso2.com")
@@ -252,7 +252,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         def consentResponse2 = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(TestConstants.X_REQUEST_ID, xRequestId)
-                .header(BerlinConstants.Date, date)
+                .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                 .header(BerlinConstants.PSU_ID, "psu@wso2.com")
@@ -313,5 +313,47 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
                 contains ("Idempotency check failed."))
+    }
+
+    @Test (groups = ["1.3.6"])
+    void "OB-211_Initiation request with different x-request-id and same payload"() {
+
+        //Consent Initiation - First Time
+        def consentResponse = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "psu@wso2.com")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+          .filter(new BerlinSignatureFilter())
+          .body(initiationPayload)
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .post(consentPath)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        def consentId1 = TestUtil.parseResponseBody(consentResponse, "consentId").toString()
+
+        //Consent Initiation - Second Time
+        def consentResponse2 = TestSuite.buildRequest()
+          .contentType(ContentType.JSON)
+          .header(TestConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+          .header(BerlinConstants.Date, getCurrentDate())
+          .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+          .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+          .header(BerlinConstants.PSU_ID, "psu@wso2.com")
+          .header(BerlinConstants.PSU_TYPE, "email")
+          .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+          .filter(new BerlinSignatureFilter())
+          .body(initiationPayload)
+          .baseUri(ConfigParser.getInstance().getBaseURL())
+          .post(consentPath)
+
+        Assert.assertEquals(consentResponse2.statusCode(), BerlinConstants.STATUS_CODE_201)
+        def consentId2 = TestUtil.parseResponseBody(consentResponse2, "consentId").toString()
+
+        Assert.assertNotEquals(consentId1, consentId2)
     }
 }

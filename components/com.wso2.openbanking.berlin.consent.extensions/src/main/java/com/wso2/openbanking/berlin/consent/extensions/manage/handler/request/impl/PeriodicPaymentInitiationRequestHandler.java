@@ -40,6 +40,7 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
         LocalDate startDate;
         PaymentConsentUtil.validateDebtorAccount(payload);
         PaymentConsentUtil.validateCommonPaymentElements(payload);
+        PaymentConsentUtil.validateDayOfExecution(payload);
 
         log.debug("Validating periodic payments payload for start date");
         if (payload.get(ConsentExtensionConstants.START_DATE) == null
@@ -65,6 +66,14 @@ public class PeriodicPaymentInitiationRequestHandler extends PaymentInitiationRe
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                     ErrorConstants.FREQUENCY_MISSING));
+        }
+
+        if (!ConsentExtensionConstants.SUPPORTED_PERIODIC_PAYMENT_FREQUENCY_CODES.contains(
+                payload.get(ConsentExtensionConstants.FREQUENCY).toString())) {
+            log.error(ErrorConstants.FREQUENCY_UNSUPPORTED);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                    ErrorConstants.FREQUENCY_UNSUPPORTED));
         }
 
         if (payload.get(ConsentExtensionConstants.END_DATE) != null && StringUtils.isNotBlank(payload.getAsString(

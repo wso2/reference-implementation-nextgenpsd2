@@ -167,6 +167,42 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
     }
 
     @Test
+    public void testHandleGetForExpiredAccountConsent() throws ConsentManagementException, ParseException {
+
+        String accountsGetPath = ACCOUNTS_PATH + "/" + consentId;
+
+        Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
+
+        ConsentManageData accountConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
+                accountsGetPath, mockHttpServletRequest, mockHttpServletResponse, clientId, HttpMethod.GET,
+                TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2);
+
+        ConsentResource consentResource =
+                TestUtil.getSampleConsentResource(ConsentStatusEnum.RECEIVED.toString(),
+                        ConsentTypeEnum.ACCOUNTS.toString(), TestPayloads.VALID_ACCOUNTS_PAYLOAD_ALL_PSD2, consentId,
+                        clientId);
+
+        consentResource.setValidityPeriod(LocalDate.parse(TestUtil.getCurrentDate(0))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+        consentResource.setUpdatedTime(LocalDate.parse(TestUtil.getCurrentDate(3))
+                .atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+        consentResource.setRecurringIndicator(true);
+        doReturn(consentResource).when(consentCoreServiceMock).getConsent(Mockito.anyString(), Mockito.anyBoolean());
+        consentResource.setCurrentStatus(ConsentStatusEnum.EXPIRED.toString());
+        doReturn(consentResource).when(consentCoreServiceMock).updateConsentStatus(Mockito.anyString(),
+                Mockito.anyString());
+        accountServiceHandler.handleGet(accountConsentManageData);
+
+        Assert.assertNotNull(accountConsentManageData.getResponsePayload());
+        JSONObject accountsGetResponse = (JSONObject) accountConsentManageData.getResponsePayload();
+        Assert.assertEquals(ConsentStatusEnum.EXPIRED.toString(),
+                accountsGetResponse.get(ConsentExtensionConstants.CONSENT_STATUS));
+        Assert.assertEquals(ResponseStatus.OK.toString(), accountConsentManageData.getResponseStatus().toString());
+    }
+
+    @Test
     public void testHandleGetForAccountStatus() throws ConsentManagementException, ParseException {
 
         String accountsGetPath = ACCOUNTS_PATH + "/" + consentId + "/status";

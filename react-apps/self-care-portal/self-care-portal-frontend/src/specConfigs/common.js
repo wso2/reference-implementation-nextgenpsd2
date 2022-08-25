@@ -18,7 +18,9 @@ export const common = {
 export const keyDateTypes = {
     date: "Date",
     dateRange: "Date Range",
-    text: "Text"
+    text: "Text",
+    value: "Value",
+
 }
 
 export const permissionBindTypes = {

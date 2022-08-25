@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.gateway.failure;
 
+import com.atlassian.oai.validator.model.Request;
 import com.atlassian.oai.validator.report.ImmutableValidationReport;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayConstants;
@@ -114,6 +115,120 @@ public class GatewayFailureResponseCreationMediatorTests extends PowerMockTestCa
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 404);
         messageContext.setProperty(GatewayConstants.ERROR_DETAIL, null);
+        Assert.assertTrue(mediator.mediate(messageContext));
+    }
+
+    @Test
+    public void testMediateForPaymentInitiationSchemaValidationError() throws Exception {
+
+        MessageContext messageContext = getData();
+        ImmutableValidationReport mockReport = Mockito.mock(ImmutableValidationReport.class);
+        ValidationReport.Message mockMessage = Mockito.mock(ValidationReport.Message.class);
+        ValidationReport.MessageContext mockContext = Mockito.mock(ValidationReport.MessageContext.class);
+        Parameter mockParameter = Mockito.mock(Parameter.class);
+        List<ValidationReport.Message> mockMessagesList = new ArrayList<>();
+        mockMessagesList.add(mockMessage);
+        messageContext.setProperty(GatewayConstants.SCHEMA_VALIDATION_REPORT_IDENTIFIER, mockReport);
+        Mockito.when(mockReport.getMessages()).thenReturn(mockMessagesList);
+        Mockito.when(mockMessage.getMessage()).thenReturn("Instance failed to match exactly one schema " +
+                "(matched 0 out of 3)");
+        Mockito.when(mockMessage.getKey()).thenReturn("validation.request.body.schema.oneOf");
+        Mockito.when(mockMessage.getContext()).thenReturn(Optional.of(mockContext));
+        Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
+        Mockito.when(mockParameter.getIn()).thenReturn("Query");
+        Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
+
+        ArrayList<String> additionalErrorMsgList = new ArrayList<>();
+        additionalErrorMsgList.add("/oneOf/0: Object instance has properties which are not allowed by the schema: " +
+                "[\"dayOfExecution\",\"endDate\",\"executionRule\",\"frequency\",\"startDate\"]");
+        additionalErrorMsgList.add("/oneOf/1: Instance value (\"Biweekly\") not found in enum (possible values: " +
+                "[\"Daily\",\"Weekly\",\"EveryTwoWeeks\",\"Monthly\",\"EveryTwoMonths\",\"Quarterly\",\"SemiAnnual\"," +
+                "\"Annual\",\"MonthlyVariable\"])");
+        additionalErrorMsgList.add("/oneOf/2: Object has missing required properties ([\"payments\"])");
+        Mockito.when(mockMessage.getAdditionalInfo()).thenReturn(additionalErrorMsgList);
+
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL,
+                GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER);
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
+
+        Assert.assertTrue(mediator.mediate(messageContext));
+    }
+
+    @Test
+    public void testMediateForPeriodicPaymentInitiationSchemaValidationError() throws Exception {
+
+        MessageContext messageContext = getData();
+        ImmutableValidationReport mockReport = Mockito.mock(ImmutableValidationReport.class);
+        ValidationReport.Message mockMessage = Mockito.mock(ValidationReport.Message.class);
+        ValidationReport.MessageContext mockContext = Mockito.mock(ValidationReport.MessageContext.class);
+        Parameter mockParameter = Mockito.mock(Parameter.class);
+        List<ValidationReport.Message> mockMessagesList = new ArrayList<>();
+        mockMessagesList.add(mockMessage);
+        messageContext.setProperty(GatewayConstants.SCHEMA_VALIDATION_REPORT_IDENTIFIER, mockReport);
+        Mockito.when(mockReport.getMessages()).thenReturn(mockMessagesList);
+        Mockito.when(mockMessage.getMessage()).thenReturn("Instance failed to match exactly one schema " +
+                "(matched 0 out of 3)");
+        Mockito.when(mockMessage.getKey()).thenReturn("validation.request.body.schema.oneOf");
+        Mockito.when(mockMessage.getContext()).thenReturn(Optional.of(mockContext));
+        Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
+        Mockito.when(mockParameter.getIn()).thenReturn("Query");
+        Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/periodic-payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
+
+        ArrayList<String> additionalErrorMsgList = new ArrayList<>();
+        additionalErrorMsgList.add("/oneOf/0: Object instance has properties which are not allowed by the schema: " +
+                "[\"dayOfExecution\",\"endDate\",\"executionRule\",\"frequency\",\"startDate\"]");
+        additionalErrorMsgList.add("/oneOf/1: Instance value (\"Biweekly\") not found in enum (possible values: " +
+                "[\"Daily\",\"Weekly\",\"EveryTwoWeeks\",\"Monthly\",\"EveryTwoMonths\",\"Quarterly\",\"SemiAnnual\"," +
+                "\"Annual\",\"MonthlyVariable\"])");
+        additionalErrorMsgList.add("/oneOf/2: Object has missing required properties ([\"payments\"])");
+        Mockito.when(mockMessage.getAdditionalInfo()).thenReturn(additionalErrorMsgList);
+
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL,
+                GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER);
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
+
+        Assert.assertTrue(mediator.mediate(messageContext));
+    }
+
+    @Test
+    public void testMediateForBulkPaymentInitiationSchemaValidationError() throws Exception {
+
+        MessageContext messageContext = getData();
+        ImmutableValidationReport mockReport = Mockito.mock(ImmutableValidationReport.class);
+        ValidationReport.Message mockMessage = Mockito.mock(ValidationReport.Message.class);
+        ValidationReport.MessageContext mockContext = Mockito.mock(ValidationReport.MessageContext.class);
+        Parameter mockParameter = Mockito.mock(Parameter.class);
+        List<ValidationReport.Message> mockMessagesList = new ArrayList<>();
+        mockMessagesList.add(mockMessage);
+        messageContext.setProperty(GatewayConstants.SCHEMA_VALIDATION_REPORT_IDENTIFIER, mockReport);
+        Mockito.when(mockReport.getMessages()).thenReturn(mockMessagesList);
+        Mockito.when(mockMessage.getMessage()).thenReturn("Instance failed to match exactly one schema " +
+                "(matched 0 out of 3)");
+        Mockito.when(mockMessage.getKey()).thenReturn("validation.request.body.schema.oneOf");
+        Mockito.when(mockMessage.getContext()).thenReturn(Optional.of(mockContext));
+        Mockito.when(mockContext.getParameter()).thenReturn(Optional.of(mockParameter));
+        Mockito.when(mockParameter.getIn()).thenReturn("Query");
+        Mockito.when(mockParameter.getName()).thenReturn("bookingStatus");
+        Mockito.when(mockContext.getRequestPath()).thenReturn(Optional.of("/bulk-payments/sepa-credit-transfers/"));
+        Mockito.when(mockContext.getRequestMethod()).thenReturn(Optional.of(Request.Method.POST));
+
+        ArrayList<String> additionalErrorMsgList = new ArrayList<>();
+        additionalErrorMsgList.add("/oneOf/0: Object instance has properties which are not allowed by the schema: " +
+                "[\"dayOfExecution\",\"endDate\",\"executionRule\",\"frequency\",\"startDate\"]");
+        additionalErrorMsgList.add("/oneOf/1: Instance value (\"Biweekly\") not found in enum (possible values: " +
+                "[\"Daily\",\"Weekly\",\"EveryTwoWeeks\",\"Monthly\",\"EveryTwoMonths\",\"Quarterly\",\"SemiAnnual\"," +
+                "\"Annual\",\"MonthlyVariable\"])");
+        additionalErrorMsgList.add("/oneOf/2: Object has missing required properties ([\"payments\"])");
+        Mockito.when(mockMessage.getAdditionalInfo()).thenReturn(additionalErrorMsgList);
+
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL,
+                GatewayConstants.SCHEMA_VALIDATION_FAILURE_IDENTIFIER);
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
+
         Assert.assertTrue(mediator.mediate(messageContext));
     }
 

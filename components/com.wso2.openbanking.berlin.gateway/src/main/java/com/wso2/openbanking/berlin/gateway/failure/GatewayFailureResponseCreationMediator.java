@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.berlin.gateway.failure;
 
+import com.atlassian.oai.validator.model.Request;
 import com.atlassian.oai.validator.report.ImmutableValidationReport;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -32,6 +33,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +43,19 @@ import java.util.regex.Pattern;
 public class GatewayFailureResponseCreationMediator extends AbstractMediator {
 
     private static final Log log = LogFactory.getLog(GatewayFailureResponseCreationMediator.class);
+
+    public static final String EMPTY_SPACE = " ";
+    public static final String COLON = ":";
+
+    // Payment consent initiation paths
+    public static final String PAYMENTS_SERVICE_PATH = "/payments";
+    public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "/periodic-payments";
+    public static final String BULK_PAYMENTS_SERVICE_PATH = "/bulk-payments";
+
+    // swagger schema definitions order for Payment products
+    public static final String PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/0";
+    public static final String PERIODIC_PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/1";
+    public static final String BULK_PAYMENTS_SCHEMA_VALIDATION_REF = "/anyOf/2";
 
     public GatewayFailureResponseCreationMediator() {
 
@@ -90,7 +105,7 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
      * report and constructs the Berlin specific errors.
      *
      * @param schemaValidationReport schema validation report
-     * @param errorCode error code
+     * @param errorCode              error code
      * @return a json object of the constructed error/s
      */
     private static JSONObject getSchemaValidationFailureResponse(ImmutableValidationReport schemaValidationReport,
@@ -149,9 +164,16 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
                     }
                     if (message.getMessage().matches(regexErrorMessage)) {
                         errorMessage = message.getMessage().split("']")[1];
+
+                    } else if (isPaymentInitiationRequest(message) && isSchemaFailedToMatchError(message)) {
+
+                        // Improve Error msg for payment initiation requests without mandatory payload elements
+                        // https://github.com/wso2-enterprise/financial-open-banking/issues/4437
+                        errorMessage = getImprovedErrorMessageForPaymentInitiationRequest(message);
                     } else {
                         errorMessage = message.getMessage();
                     }
+
                 }
 
                 TPPMessage error = new TPPMessage();
@@ -295,4 +317,83 @@ public class GatewayFailureResponseCreationMediator extends AbstractMediator {
             log.error(GatewayConstants.PAYLOAD_SETTING_ERROR, axisFault);
         }
     }
+
+    /**
+     * Method to identify schema validation issue is from payment initiation request.
+     *
+     * @param message schema validation error msg
+     * @return
+     */
+    private static boolean isPaymentInitiationRequest(ValidationReport.Message message) {
+
+        Request.Method method = null;
+        String path = "";
+        Optional<ValidationReport.MessageContext> context = message.getContext();
+        if (context.isPresent()) {
+            ValidationReport.MessageContext messageContext = context.get();
+            if (messageContext.getRequestMethod().isPresent()) {
+                method = messageContext.getRequestMethod().get();
+            }
+            if (messageContext.getRequestPath().isPresent()) {
+                path = messageContext.getRequestPath().get();
+            }
+            // Payment initiation request.
+            return method == Request.Method.POST && (path.startsWith(PAYMENTS_SERVICE_PATH) ||
+                    path.startsWith(BULK_PAYMENTS_SERVICE_PATH) || path.startsWith(PERIODIC_PAYMENTS_SERVICE_PATH));
+        }
+        return false;
+    }
+
+    /**
+     * Method to verify schema failed to match error
+     *
+     * @param message
+     * @return
+     */
+    private static boolean isSchemaFailedToMatchError(ValidationReport.Message message) {
+
+        return message.getMessage().contains("Instance failed to match");
+    }
+
+    /**
+     * Method to get improved error message for payment initiation request
+     *
+     * @param message
+     * @return
+     */
+    private static String getImprovedErrorMessageForPaymentInitiationRequest(ValidationReport.Message message) {
+
+        String path = "";
+        String schemaValidationRef = "";
+        StringBuilder improvedError = new StringBuilder(message.getMessage());
+
+        Optional<ValidationReport.MessageContext> context = message.getContext();
+        if (context.isPresent()) {
+            ValidationReport.MessageContext messageContext = context.get();
+            if (messageContext.getRequestPath().isPresent()) {
+                path = messageContext.getRequestPath().get();
+            }
+        }
+        if (path.startsWith(PAYMENTS_SERVICE_PATH)) {
+            schemaValidationRef = PAYMENTS_SCHEMA_VALIDATION_REF;
+        } else if (path.startsWith(PERIODIC_PAYMENTS_SERVICE_PATH)) {
+            schemaValidationRef = PERIODIC_PAYMENTS_SCHEMA_VALIDATION_REF;
+        } else if (path.startsWith(BULK_PAYMENTS_SERVICE_PATH)) {
+            schemaValidationRef = BULK_PAYMENTS_SCHEMA_VALIDATION_REF;
+        }
+
+        if (StringUtils.isBlank(path) || StringUtils.isBlank(schemaValidationRef)) {
+            return message.getMessage();
+        }
+
+        for (String msg : message.getAdditionalInfo()) {
+            if (msg.startsWith(schemaValidationRef)) {
+                improvedError.append(EMPTY_SPACE)
+                        .append(msg.replace(schemaValidationRef, ""))
+                        .append(EMPTY_SPACE);
+            }
+        }
+        return improvedError.toString();
+    }
+
 }
