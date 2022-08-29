@@ -20,5 +20,6 @@ export const CONFIG = {
     REDIRECT_URI: window.env.SERVER_URL + "/consentmgr/scp_oauth2_callback",
     BACKEND_URL: window.env.SERVER_URL + "/consentmgr/scp",
     NUMBER_OF_CONSENTS: window.env.NUMBER_OF_CONSENTS,
-    VERSION: window.env.VERSION
+    VERSION: window.env.VERSION,
+    IS_DEV_TOOLS_ENABLE: window.env.IS_DEV_TOOLS_ENABLE 
 };
