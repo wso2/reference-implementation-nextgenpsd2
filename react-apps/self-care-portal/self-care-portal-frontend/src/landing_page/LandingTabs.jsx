@@ -19,7 +19,6 @@ import {lang} from "../specConfigs";
 import {PaginationTable} from "./PaginationTable";
 import { SearchObjectContext } from "../context/SearchObjectContext";
 import { ConsentContext } from "../context/ConsentContext";
-import { current } from "@reduxjs/toolkit";
 import { AcroFormButton } from "jspdf";
 import { AppInfoContext } from "../context/AppInfoContext";
 import { UserContext } from "../context/UserContext";
