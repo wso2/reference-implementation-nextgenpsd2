@@ -17,8 +17,15 @@ import SearchObjectContextProvider from './SearchObjectContext';
 import UserContextProvider from './UserContext';
 import DeviceRegistrationContextProvider from './DeviceRegistrationContext';
 
-const contextProviderArray = [DeviceRegistrationContextProvider,AppInfoContextProvider,ConsentContextProvider,SearchObjectContextProvider,UserContextProvider]
+//Higher wrapper provider component should be placed after lower wrapper provider components.
 
+const contextProviderArray = [
+    DeviceRegistrationContextProvider,
+    AppInfoContextProvider,
+    ConsentContextProvider,
+    SearchObjectContextProvider,
+    UserContextProvider
+]
 
 const AppContextProvider = (props) => {
     return ( 
