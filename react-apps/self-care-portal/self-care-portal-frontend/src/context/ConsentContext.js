@@ -13,7 +13,7 @@
 import React, { useState, createContext, useContext } from 'react'
 import { getConsentsFromAPI, getConsentsFromAPIForSearch } from '../api';
 import { consentTypes } from '../specConfigs';
-import {UserContext} from "./UserContext"
+import { UserContext } from "./UserContext"
 
 export const ConsentContext = createContext();
 

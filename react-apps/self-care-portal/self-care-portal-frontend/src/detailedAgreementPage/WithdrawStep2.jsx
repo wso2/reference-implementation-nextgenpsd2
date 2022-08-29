@@ -42,7 +42,7 @@ export const WithdrawStep2 = ({match}) => {
 
     const {allContextConsents} = useContext(ConsentContext);
     const {contextAppInfo} = useContext(AppInfoContext);
-    const {currentContextUser} =  useContext(UserContext);
+    const {currentContextUser} = useContext(UserContext);
 
     const consents = allContextConsents.consents;
     const appInfo = contextAppInfo.appInfo;

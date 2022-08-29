@@ -28,13 +28,13 @@ import {consentTypes, lang} from "../specConfigs";
 import Tab from "react-bootstrap/Tab";
 import { SearchObjectContext } from "../context/SearchObjectContext";
 import { ConsentContext } from "../context/ConsentContext";
-import {AppInfoContext} from "../context/AppInfoContext";
-import {UserContext} from "../context/UserContext"
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext"
 
 export const Nav = (user) => {
     const {contextSearchObject,setContextSearchObject} = useContext(SearchObjectContext);
     const {getContextConsentsForSearch} = useContext(ConsentContext);
-    const {contextAppInfo}=useContext(AppInfoContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
     const {currentContextUser} = useContext(UserContext);
     const location = useLocation()
     let searchObj = contextSearchObject;

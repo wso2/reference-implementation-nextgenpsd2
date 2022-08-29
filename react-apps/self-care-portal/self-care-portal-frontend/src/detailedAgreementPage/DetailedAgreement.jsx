@@ -30,7 +30,7 @@ import { AppInfoContext } from "../context/AppInfoContext";
 
 export const DetailedAgreement = ({match}) => {
     const {allContextConsents,getContextConsentsForSearch} = useContext(ConsentContext);
-    const {contextSearchObject}=useContext(SearchObjectContext);
+    const {contextSearchObject} = useContext(SearchObjectContext);
     const {currentContextUser} = useContext(UserContext);
     const {contextAppInfo} = useContext(AppInfoContext)
 
