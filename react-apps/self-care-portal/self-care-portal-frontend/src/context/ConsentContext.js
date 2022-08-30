@@ -74,7 +74,7 @@ const ConsentContextProvider = (props) => {
                 setContextConsentsMetadata(response.data)
             })
             .catch((error)=>{
-                /*Log the error */
+                setResponseError(error.response.data)
             })
             .finally(()=>setContextConsentsRequestLoadingStatus(false))   
     };
