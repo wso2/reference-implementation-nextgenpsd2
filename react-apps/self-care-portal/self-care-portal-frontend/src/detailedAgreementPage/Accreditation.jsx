@@ -26,7 +26,7 @@ export const Accreditation = ({infoLabel, accreditationNumber, applicationName})
                 ]
             </p>
             <div className="accredBox">
-                <img id="Logo" src={Logo} alt="Logo"/>
+                <img id="logo" src={Logo} alt="Logo"/>
                 <div className="accredInfo">
                     <h6>{applicationName}</h6>
                     {/* add accredited Data Recipient's number */}
