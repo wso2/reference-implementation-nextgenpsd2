@@ -10,20 +10,20 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import "../css/Popup.css";
 import QRCode  from "qrcode.react";
-import {useDispatch, useSelector} from "react-redux";
-import { getDeviceRegistrationInfo } from "../store/actions";
 import { getAccessToken } from "../data/User";
+import { DeviceRegistrationContext } from "../context/DeviceRegistrationContext";
 
 export const QRButton = (props) => {
-  const dispatch = useDispatch();
-  const deviceRegistrationData = useSelector((state) => state.device.deviceRegistrationData);
+  const {deviceRegistrationContextData,getDeviceRegistrationContextInfo} =useContext(DeviceRegistrationContext);
+
+  const deviceRegistrationData = deviceRegistrationContextData.deviceRegistrationData;
 
   useEffect(() => {
     const accessToken = getAccessToken();
-    dispatch(getDeviceRegistrationInfo(accessToken));
+    getDeviceRegistrationContextInfo(accessToken);
     const dropDownMenu = document.getElementsByClassName("dropdown-menu")[0];
     dropDownMenu.style.opacity = 0;
     dropDownMenu.style.pointerEvents = 'none';

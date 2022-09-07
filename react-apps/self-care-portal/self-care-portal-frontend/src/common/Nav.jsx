@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import "../css/Nav.css";
 import wso2Logo from "../images/wso2Logo.png";
 import Row from "react-bootstrap/Row";
@@ -26,18 +26,22 @@ import Popup from 'reactjs-popup';
 import Tabs from "react-bootstrap/Tabs";
 import {consentTypes, lang} from "../specConfigs";
 import Tab from "react-bootstrap/Tab";
-import {useDispatch, useSelector} from "react-redux";
-import {getConsentsForSearch, setSearchObject} from "../store/actions";
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext"
 
 export const Nav = (user) => {
-
+    const {contextSearchObject,setContextSearchObject} = useContext(SearchObjectContext);
+    const {getContextConsentsForSearch} = useContext(ConsentContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
+    const {currentContextUser} = useContext(UserContext);
     const location = useLocation()
-    const dispatch = useDispatch();
-    let searchObj = useSelector(state => state.searchObject);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+    let searchObj = contextSearchObject;
+    const appInfo = contextAppInfo.appInfo;
     const [consentTypeKey, setConsentTypeKey] = useState(searchObj.consentTypes);
     const [showConsentTypeToggle, setShowConsentTypeToggle] = useState(true);
-    const currentUser = useSelector(state => state.currentUser.user);
+    const currentUser = currentContextUser.user;
 
     useEffect(() => {
         let search = {
@@ -50,8 +54,8 @@ export const Nav = (user) => {
             consentStatuses: lang[consentTypeKey][0].id,
             offset: 0
         }
-        dispatch(setSearchObject(search));
-        dispatch(getConsentsForSearch(search, currentUser, appInfo));
+        setContextSearchObject(search);
+        getContextConsentsForSearch(search,currentUser,appInfo);
     }, [consentTypeKey])
 
     const handleLogout = () => {

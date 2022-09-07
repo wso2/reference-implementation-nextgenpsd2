@@ -10,33 +10,38 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {Nav, Footer} from "../common";
 import {Body} from "../landing_page";
 import {Switch, Route} from "react-router-dom";
 import {DetailedAgreement, WithdrawStep1, WithdrawStep2, ProtectedWithdrawRoute} from "../detailedAgreementPage";
 import {FourOhFourError} from '../errorPage'
-import {useDispatch, useSelector} from "react-redux";
-import {getConsents} from "../store/actions";
-import {getAppInfo} from "../store/actions";
 import {BrowserRouter as Router} from "react-router-dom";
 import {ResponseError} from "../errorPage";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext";
 
 export const Home = (user) => {
-    const dispatch = useDispatch();
-    const consents = useSelector((state) => state.consent.consents);
-    const error = useSelector(state => state.currentUser.error);
+    const {allContextConsents,getContextConsents} = useContext(ConsentContext);
+    const {getContextAppInfo} = useContext(AppInfoContext);
+    const {currentContextUser} = useContext(UserContext);
+
+    const consents = allContextConsents.consents;
+    const error = currentContextUser.error;
+
     // Default consent type to view : accounts
     // We are only supporting the account consents in SCP.
     const consentTypes = "accounts";
 
     useEffect(() => {
-        dispatch(getConsents(user, consentTypes));
+        getContextConsents(user,consentTypes);
     }, [user]);
 
     useEffect(() => {
         if (consents.length !== 0) {
-            dispatch(getAppInfo());
+            getContextAppInfo();
+
         }
     }, [consents]);
 

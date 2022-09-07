@@ -11,23 +11,28 @@
  */
 
 import "../css/Pagination.css";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-import {getConsentsForSearch, setSearchObject} from "../store/actions";
-import {useDispatch, useSelector} from "react-redux";
 import ReactPaginate from 'react-paginate';
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { ConsentContext } from "../context/ConsentContext";
+import { UserContext } from "../context/UserContext";
+import { AppInfoContext } from "../context/AppInfoContext";
 
 export const PaginationTable = ({currentTab}) => {
+    const {contextSearchObject,contextSearchUtilState,setContextSearchObject} = useContext(SearchObjectContext);
+    const {allContextConsents,getContextConsentsForSearch} = useContext(ConsentContext);
+    const {currentContextUser} = useContext(UserContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
 
-    const dispatch = useDispatch();
-    const currentUser = useSelector(state => state.currentUser.user);
-    let searchObj = useSelector(state => state.searchObject);
-    const consentMetadata = useSelector((state) => state.consent.metadata);
-    const searchOnClickState = useSelector(state => state.searchUtilState);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+    const currentUser = currentContextUser.user;
+    let searchObj = contextSearchObject;
+    const consentMetadata = allContextConsents.metadata;
+    const searchOnClickState = contextSearchUtilState;
+    const appInfo = contextAppInfo.appInfo;
 
     const [postsPerPage, setPostsPerPage] = useState(searchObj.limit);
     const [noOfPages, setNoOfPages] = useState(1);
@@ -40,7 +45,7 @@ export const PaginationTable = ({currentTab}) => {
             limit: postsPerPage,
             offset: 0
         }
-        dispatch(setSearchObject(search))
+        setContextSearchObject(search)
         doSearchConsents(search)
         setCurrentPage(0);
     }, [postsPerPage]);
@@ -76,13 +81,13 @@ export const PaginationTable = ({currentTab}) => {
             ...searchObj,
             offset: offset
         }
-        dispatch(setSearchObject(search))
+        setContextSearchObject(search)
         doSearchConsents(search)
         setCurrentPage(selectedPage);
     }
 
     function doSearchConsents(search) {
-        dispatch(getConsentsForSearch(search, currentUser, appInfo));
+        getContextConsentsForSearch(search,currentUser,appInfo);
     }
 
     // to reset the page to 1 when tab changes

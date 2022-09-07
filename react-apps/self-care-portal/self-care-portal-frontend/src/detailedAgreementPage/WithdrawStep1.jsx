@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {Link, useLocation} from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import "../css/Buttons.css";
@@ -18,16 +18,20 @@ import "../css/DetailedAgreement.css";
 import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
-import {useSelector} from "react-redux";
 import {withdrawLang, specConfigurations} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
 import {getDisplayName} from "../services";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
 
 export const WithdrawStep1 = ({match}) => {
+    const {allContextConsents} = useContext(ConsentContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
+    
+    const consents = allContextConsents.consents;
+    const appInfo = contextAppInfo.appInfo;
 
-    const consents = useSelector((state) => state.consent.consents);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
 
     useEffect(() => {
         window.history.pushState(null, "", '/consentmgr');

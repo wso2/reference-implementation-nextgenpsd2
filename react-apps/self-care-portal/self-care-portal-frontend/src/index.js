@@ -15,14 +15,19 @@ import ReactDOM from "react-dom";
 import "./css/index.css";
 import { App } from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { Provider } from "react-redux";
-import { store } from "./store";
+import AppContextProvider from "./context/AppContext";
+import {disableReactDevTools} from "@fvilers/disable-react-devtools";
+import { CONFIG } from "./config";
+
+if (!CONFIG.IS_DEV_TOOLS_ENABLE) {
+  disableReactDevTools();
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+      <AppContextProvider>
+          <App />
+      </AppContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

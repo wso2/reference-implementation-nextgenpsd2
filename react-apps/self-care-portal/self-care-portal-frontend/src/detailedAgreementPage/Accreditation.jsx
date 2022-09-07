@@ -11,7 +11,7 @@
  */
 
 import React from "react";
-import CDRLogo from "../images/CDRLogo.png";
+import Logo from "../images/Logo.png";
 
 export const Accreditation = ({infoLabel, accreditationNumber, applicationName}) => {
     return (
@@ -26,7 +26,7 @@ export const Accreditation = ({infoLabel, accreditationNumber, applicationName})
                 ]
             </p>
             <div className="accredBox">
-                <img id="cdrLogo" src={CDRLogo} alt="CDR"/>
+                <img id="logo" src={Logo} alt="Logo"/>
                 <div className="accredInfo">
                     <h6>{applicationName}</h6>
                     {/* add accredited Data Recipient's number */}

@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import "../css/Buttons.css";
 import "../css/Search.css";
 import Row from "react-bootstrap/Row";
@@ -19,21 +19,24 @@ import {faBars, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import {Col} from "react-bootstrap";
-import {useDispatch, useSelector} from "react-redux";
-import {getConsentsForSearch, setSearchObject, setSearchUtilState} from "../store/actions";
 import {CONFIG} from "../config";
 import DateRange from "react-date-range/dist/components/DateRange";
 import moment from "moment";
-
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext";
 
 export const AdvanceSearch = () => {
-
-    const dispatch = useDispatch();
-
-    let searchObj = useSelector(state => state.searchObject);
-    const currentUser = useSelector(state => state.currentUser.user);
-    const searchOnClickState = useSelector(state => state.searchUtilState);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+    const {contextSearchObject,contextSearchUtilState,setContextSearchObject,setContextSearchUtilState} = useContext(SearchObjectContext);
+    const {getContextConsentsForSearch} = useContext(ConsentContext);
+    const {contextAppInfo} = useContext(AppInfoContext);
+    const {currentContextUser} = useContext(UserContext);
+    
+    let searchObj = contextSearchObject;
+    const currentUser = currentContextUser.user;
+    const searchOnClickState = contextSearchUtilState;
+    const appInfo = contextAppInfo.appInfo;
 
     const [calendarVisibility, setCalendarVisibility] = useState(false);
     const [advanceSearchVisibility, setAdvanceSearchVisibility] = useState(false);
@@ -82,7 +85,7 @@ export const AdvanceSearch = () => {
 
 
     function doSearchConsents(search) {
-        dispatch(getConsentsForSearch(search, currentUser, appInfo));
+        getContextConsentsForSearch(search,currentUser,appInfo);
     }
 
     return (
@@ -95,7 +98,7 @@ export const AdvanceSearch = () => {
                         title="view advance search options"
                         onClick={() => {
                             let a = {...searchObj, hideAdvanceSearchOptions: !searchObj.hideAdvanceSearchOptions}
-                            dispatch(setSearchObject(a));
+                            setContextSearchObject(a)
                         }}
                     >
                         <FontAwesomeIcon icon={faBars} className="sIcon"/>
@@ -223,8 +226,8 @@ export const AdvanceSearch = () => {
                                     userIDs: searchUser,
                                     clientIDs: softwareId,
                                 }
-                                dispatch(setSearchObject(search))
-                                dispatch(setSearchUtilState(!searchOnClickState))
+                                setContextSearchObject(search)
+                                setContextSearchUtilState(!searchOnClickState)
                                 doSearchConsents(search)
                             }}
                         >
@@ -245,7 +248,7 @@ export const AdvanceSearch = () => {
                                     userIDs: "",
                                     clientIDs: "",
                                 }
-                                dispatch(setSearchObject(search))
+                                setContextSearchObject(search)
                                 let elems = document.getElementsByClassName("calandarArea");
                                 for (var i = 0; i < elems.length; i += 1) {
                                     document.getElementsByClassName("calandarArea")[
