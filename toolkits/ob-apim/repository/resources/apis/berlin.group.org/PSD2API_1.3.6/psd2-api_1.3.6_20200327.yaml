@@ -260,7 +260,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -315,7 +315,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -352,7 +352,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -415,7 +415,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -441,7 +441,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -496,7 +496,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -533,7 +533,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -592,7 +592,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -618,7 +618,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -673,7 +673,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -710,7 +710,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -769,7 +769,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
@@ -796,7 +796,7 @@ paths:
         #####################################################
         - {}
         - BearerAuthOAuth: []
-        - TPPOAuth2Security:
+        - PSUOAuth2Security:
             - payments
       parameters:
         #path
@@ -852,7 +852,7 @@ paths:
           $ref: "#/components/responses/INTERNAL_SERVER_ERROR_500_PIS"
         '503':
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_PIS"
-      x-auth-type: Application
+      x-auth-type: Application User
       x-throttling-tier: Unlimited
       x-scope: payments
 
