@@ -25,10 +25,7 @@
                             <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
                         </then>
                         <else>
-                            <!-- Add the backend URL for payments here and remove the log mediator -->
-                            <log level="custom">
-                                <property name="text" value="This payments GET requests are going to the backend"/>
-                            </log>
+                            <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/payments"/>
                         </else>
                     </filter>
                 </then>
@@ -36,9 +33,7 @@
                     <filter regex="DELETE" source="get-property('api.ut.HTTP_METHOD')">
                         <then>
                             <!-- Add the backend URL for payments here and remove the log mediator -->
-                            <log level="custom">
-                                <property name="text" value="This payments DELETE request is going to the backend"/>
-                            </log>
+                            <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/payments"/>
                         </then>
                         <else>
                             <header name="To" value="https://localhost:9446/api/openbanking/consent/manage" />
