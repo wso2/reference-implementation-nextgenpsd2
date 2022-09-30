@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -215,7 +216,8 @@ public class PaymentService {
                     .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Credentials", "true")
                     .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Content-Type, X-Token, Origin, Accept, Authorization, " +
+                    .header("Access-Control-Allow-Headers", "Content-Type, X-Token, Origin, Accept, " +
+                            "Authorization, " +
                             "Content-Range, Content-Disposition, Content-Description")
                     .allow("OPTIONS").build();
         } else {
@@ -224,5 +226,111 @@ public class PaymentService {
             responseJSON.put(MESSAGE, "X-Request_ID not found");
             return Response.status(FORBIDDEN).entity(responseJson.toJSONString()).build();
         }
+    }
+
+    /**
+     * Cancel a bulk-payment.
+     *
+     * @param paymentId ID of the payment.
+     * @param requestID ID of the request.
+     * @return Bulk payment delete response.
+     */
+    @DELETE
+    @Path("/bulk-payments/{payment-product}/{PaymentId}")
+    @Produces("application/json")
+    public Response deleteBulkPayment(@PathParam("PaymentId") String paymentId,
+                                   @HeaderParam("X-Request-ID") String requestID) {
+
+        log.info("DELETE /bulk-payments/{PaymentId} endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
+            return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
+        }
+
+        String response = "{\n" +
+                "    \"transactionStatus\": \"ACTC\",\n" +
+                "    \"chosenScaMethod\": {\n" +
+                "        \"authenticationVersion\": \"1.0\",\n" +
+                "        \"name\": \"SMS OTP on Mobile\",\n" +
+                "        \"authenticationType\": \"SMS_OTP\",\n" +
+                "        \"explanation\": \"SMS based one time password\",\n" +
+                "        \"authenticationMethodId\": \"sms-otp\"\n" +
+                "    },\n" +
+                "    \"_links\": {\n" +
+                "        \"self\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
+                "        },\n" +
+                "        \"startAuthorisationWithPsuIdentification\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
+                "        },\n" +
+                "        \"status\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        return Response.accepted(response).header(REQUEST_ID, requestID)
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Credentials", "true")
+                .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type, X-Token, Origin, Accept, Authorization, " +
+                        "Content-Range, Content-Disposition, Content-Description")
+                .allow("OPTIONS").build();
+    }
+
+    /**
+     * Cancel a periodic-payment.
+     *
+     * @param paymentId ID of the payment.
+     * @param requestID ID of the request.
+     * @return Periodic payment delete response.
+     */
+    @DELETE
+    @Path("/periodic-payments/{payment-product}/{PaymentId}")
+    @Produces("application/json")
+    public Response deletePeriodicPayment(@PathParam("PaymentId") String paymentId,
+                                      @HeaderParam("X-Request-ID") String requestID) {
+
+        log.info("DELETE /bulk-payments/{PaymentId} endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
+            return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
+        }
+
+        String response = "{\n" +
+                "    \"transactionStatus\": \"ACTC\",\n" +
+                "    \"chosenScaMethod\": {\n" +
+                "        \"authenticationVersion\": \"1.0\",\n" +
+                "        \"name\": \"SMS OTP on Mobile\",\n" +
+                "        \"authenticationType\": \"SMS_OTP\",\n" +
+                "        \"explanation\": \"SMS based one time password\",\n" +
+                "        \"authenticationMethodId\": \"sms-otp\"\n" +
+                "    },\n" +
+                "    \"_links\": {\n" +
+                "        \"self\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
+                "        },\n" +
+                "        \"startAuthorisationWithPsuIdentification\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
+                "        },\n" +
+                "        \"status\": {\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        return Response.accepted(response).header(REQUEST_ID, requestID)
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Credentials", "true")
+                .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type, X-Token, Origin, Accept, Authorization, " +
+                        "Content-Range, Content-Disposition, Content-Description")
+                .allow("OPTIONS").build();
     }
 }
