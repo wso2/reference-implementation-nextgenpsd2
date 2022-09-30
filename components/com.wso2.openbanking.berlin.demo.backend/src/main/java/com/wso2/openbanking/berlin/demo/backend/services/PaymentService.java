@@ -38,7 +38,7 @@ public class PaymentService {
      * @return Payment details.
      */
     @GET
-    @Path("/payments/{PaymentId}")
+    @Path("/payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getPayment(@PathParam("PaymentId") String paymentId,
                                @HeaderParam("X-Request-ID") String requestID) {
@@ -83,10 +83,10 @@ public class PaymentService {
      * @return Bulk payment details.
      */
     @GET
-    @Path("/bulk-payments/{PaymentId}")
+    @Path("/bulk-payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getBulkPayment(@PathParam("PaymentId") String paymentId,
-                               @HeaderParam("X-Request-ID") String requestID) {
+                                   @HeaderParam("X-Request-ID") String requestID) {
 
         log.info("GET /bulk-payments/{PaymentId} endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID);
@@ -144,10 +144,10 @@ public class PaymentService {
      * @return Pariodic payment details.
      */
     @GET
-    @Path("/periodic-payments/{PaymentId}")
+    @Path("/periodic-payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getPeriodicPayment(@PathParam("PaymentId") String paymentId,
-                               @HeaderParam("X-Request-ID") String requestID) {
+                                       @HeaderParam("X-Request-ID") String requestID) {
 
         log.info("GET /periodic-payments/{PaymentId} endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID);
@@ -193,7 +193,7 @@ public class PaymentService {
      * @return Periodic payment details.
      */
     @GET
-    @Path("/{payment-service}/{PaymentId}/status")
+    @Path("/{payment-service}/{payment-product}/{PaymentId}/status")
     @Produces("application/json")
     public Response getPaymentStatus(@PathParam("payment-service") String paymentService,
                                      @PathParam("PaymentId") String paymentId,
