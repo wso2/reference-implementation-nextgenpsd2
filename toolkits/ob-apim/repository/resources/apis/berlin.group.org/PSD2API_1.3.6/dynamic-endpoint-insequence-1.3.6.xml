@@ -32,7 +32,6 @@
                 <else>
                     <filter regex="DELETE" source="get-property('api.ut.HTTP_METHOD')">
                         <then>
-                            <!-- Add the backend URL for payments here and remove the log mediator -->
                             <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/payments"/>
                         </then>
                         <else>
