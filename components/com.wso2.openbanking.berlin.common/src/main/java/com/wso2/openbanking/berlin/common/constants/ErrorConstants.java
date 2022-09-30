@@ -68,6 +68,8 @@ public class ErrorConstants {
     public static final String NO_VALID_ACCOUNTS_FOR_CONSENT = "No valid accounts for this consent";
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
+    public static final String AUTHORISATION_NOT_PSU_AUTHENTICATED_STATE = "Authorisation resource is not in " +
+            "a PSU Authenticated state";
     public static final String INCORRECT_CONSENT_DATA = "Received invalid consent data";
     public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "Provided account references do not exist or not valid";
 
