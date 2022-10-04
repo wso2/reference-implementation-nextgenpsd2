@@ -258,15 +258,15 @@ public class PaymentService {
                 "    },\n" +
                 "    \"_links\": {\n" +
                 "        \"self\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
                 "        },\n" +
                 "        \"startAuthorisationWithPsuIdentification\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
                 "        },\n" +
                 "        \"status\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
                 "        }\n" +
                 "    }\n" +
@@ -311,15 +311,15 @@ public class PaymentService {
                 "    },\n" +
                 "    \"_links\": {\n" +
                 "        \"self\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
                 "        },\n" +
                 "        \"startAuthorisationWithPsuIdentification\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
                 "        },\n" +
                 "        \"status\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/0055f9d7-0d83-4e05-86b1-3e6ec793750e" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
                 "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
                 "        }\n" +
                 "    }\n" +
