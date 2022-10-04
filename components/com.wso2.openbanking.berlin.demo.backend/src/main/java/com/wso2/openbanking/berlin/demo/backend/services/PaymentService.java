@@ -28,9 +28,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 public class PaymentService {
 
     private static final Log log = LogFactory.getLog(PaymentService.class);
-
-    private static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890";
-
+    
     /**
      * Get details of a payment.
      *
