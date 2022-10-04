@@ -77,18 +77,19 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
             log.debug("Checking if the authorisation resource of consent: " + consentValidateData.getConsentId()
                     + " is in psuAuthenticated state");
         }
-        if (!authorizationResources.isEmpty()) {
-            for (AuthorizationResource authResource : authorizationResources) {
-                if (!StringUtils.equals(authResource.getAuthorizationStatus(),
-                        ScaStatusEnum.PSU_AUTHENTICATED.toString())) {
-                    log.error(ErrorConstants.AUTHORISATION_NOT_PSU_AUTHENTICATED_STATE);
-                    CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                            ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
-                            ErrorConstants.CONSENT_INVALID_STATE);
-                    return;
-                }
+
+        // No need to check for the emptiness of authorizationResources since it is handled from accelerator level
+        for (AuthorizationResource authResource : authorizationResources) {
+            if (!StringUtils.equals(authResource.getAuthorizationStatus(),
+                    ScaStatusEnum.PSU_AUTHENTICATED.toString())) {
+                log.error(ErrorConstants.AUTHORISATION_NOT_PSU_AUTHENTICATED_STATE);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                        ErrorConstants.CONSENT_INVALID_STATE);
+                return;
             }
         }
+
 
         // Check whether the mapping status is active
         ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
