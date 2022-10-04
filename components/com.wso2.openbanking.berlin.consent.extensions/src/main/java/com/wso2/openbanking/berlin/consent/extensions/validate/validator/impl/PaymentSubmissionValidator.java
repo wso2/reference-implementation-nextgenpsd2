@@ -16,11 +16,13 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,21 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
         ConsentCoreServiceImpl coreService = getConsentService();
         ArrayList<AuthorizationResource> authorizationResources;
 
+        /* Check whether payment consent is in ACCP (consent is authorized) or ACTC status.
+           The consent can be in ACTC status if the payment is to be cancelled with an authorization */
+        if (log.isDebugEnabled()) {
+            log.debug("Checking if the consent is in ACCP or ACTC status");
+        }
+        String currentStatus = detailedConsentResource.getCurrentStatus();
+        if (!(StringUtils.equals(TransactionStatusEnum.ACCP.name(), currentStatus)
+                || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus))) {
+            log.error(ErrorConstants.CONSENT_INVALID_STATE);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                    ErrorConstants.CONSENT_INVALID_STATE);
+            return;
+        }
+
         // Get the relevant authorisation resource for the consent
         try {
             authorizationResources = coreService.searchAuthorizations(detailedConsentResource.getConsentID());
@@ -53,7 +70,9 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
         }
 
         /* If any of the authorisation resources are not in psuAuthenticated status, throw an error.
-           This logic addresses both multi level and single authorisation scenarios. */
+           This logic addresses both multi level and single authorisation scenarios.
+           This check needs to be changed after fixing
+           issue:https://github.com/wso2-enterprise/financial-open-banking/issues/7796 */
         if (log.isDebugEnabled()) {
             log.debug("Checking if the authorisation resource of consent: " + consentValidateData.getConsentId()
                     + " is in psuAuthenticated state");
@@ -69,6 +88,18 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
                     return;
                 }
             }
+        }
+
+        // Check whether the mapping status is active
+        ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
+                .getConsentMappingResources();
+
+        if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
+            log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_INVALID.toString(),
+                    ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
+            return;
         }
 
         /* If the authorisation status is in the expected status, mark validation as valid.
