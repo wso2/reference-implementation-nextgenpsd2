@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -56,7 +57,12 @@ public class DataRetrievalUtil {
      * @param parameters  URL params
      * @param headers     request headers
      * @return retrieved accounts string from endpoint
+     *
+     * FindSecBugs warning suppression
+     *
+     * Number of false positives suppressed - 1
      */
+    @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
     public static String getAccountsFromEndpoint(String accountsURL, Map<String, String> parameters,
                                                  Map<String, String> headers) {
 
@@ -76,6 +82,9 @@ public class DataRetrievalUtil {
 
         BufferedReader reader = null;
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
+
+            /* No user input is used for constructing this "retrieverUrl". A configuration is used to get the base URL
+            for this. Therefore, the threat of HTTP_PARAMETER_POLLUTION is not present. */
             HttpGet request = new HttpGet(retrieveUrl);
             request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
             if (!headers.isEmpty()) {
