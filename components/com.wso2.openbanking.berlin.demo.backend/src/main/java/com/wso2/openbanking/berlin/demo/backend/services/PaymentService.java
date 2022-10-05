@@ -56,7 +56,7 @@ public class PaymentService {
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
-        //Response body for a multi-currency account :pg 103
+
         String response = "{\n" +
                 "    \"debtorAccount\": {\n" +
                 "        \"iban\": \"DE12345678901234567890\",\n" +
@@ -101,7 +101,7 @@ public class PaymentService {
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
-        //Response body for a multi-currency account :pg 103
+
         String response = "{\n" +
                 "    \"debtorAccount\": {\n" +
                 "        \"iban\": \"DE40100100103307118608\"\n" +
@@ -162,7 +162,7 @@ public class PaymentService {
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
-        //Response body for a multi-currency account :pg 103
+
         String response = "{\n" +
                 "    \"executionRule\": \"following\",\n" +
                 "    \"debtorAccount\": {\n" +
@@ -212,7 +212,7 @@ public class PaymentService {
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
-        //Response body for a multi-currency account :pg 103
+
         String response = "{\n" +
                 "  \"transactionStatus\": \"ACCP\"\n" +
                 "}";
