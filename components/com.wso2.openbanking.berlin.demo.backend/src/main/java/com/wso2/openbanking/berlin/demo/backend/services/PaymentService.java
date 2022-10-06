@@ -51,8 +51,8 @@ public class PaymentService {
     public Response getPayment(@PathParam("PaymentId") String paymentId,
                                @HeaderParam("X-Request-ID") String requestID) {
 
-        log.info("GET /payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        log.info("GET /payments/{payment-product}/{PaymentId} endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -96,8 +96,8 @@ public class PaymentService {
     public Response getBulkPayment(@PathParam("PaymentId") String paymentId,
                                    @HeaderParam("X-Request-ID") String requestID) {
 
-        log.info("GET /bulk-payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        log.info("GET /bulk-payments/{payment-product}/{PaymentId} endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -157,8 +157,8 @@ public class PaymentService {
     public Response getPeriodicPayment(@PathParam("PaymentId") String paymentId,
                                        @HeaderParam("X-Request-ID") String requestID) {
 
-        log.info("GET /periodic-payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        log.info("GET /periodic-payments/{payment-product}/{PaymentId} endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -194,11 +194,11 @@ public class PaymentService {
     }
 
     /**
-     * Get details of a periodic-payment.
+     * Get status of a payment, bulk-payment or periodic-payment.
      *
      * @param paymentId ID of the bank account.
      * @param requestID ID of the request.
-     * @return Periodic payment details.
+     * @return payment, bulk-payment or periodic-payment status.
      */
     @GET
     @Path("/{payment-service}/{payment-product}/{PaymentId}/status")
@@ -207,8 +207,8 @@ public class PaymentService {
                                      @PathParam("PaymentId") String paymentId,
                                      @HeaderParam("X-Request-ID") String requestID) {
 
-        log.info("GET /periodic-payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        log.info("GET /{payment-service}/{payment-product}/{PaymentId}/status endpoint called.");
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -249,7 +249,7 @@ public class PaymentService {
                                    @HeaderParam("X-Request-ID") String requestID) {
 
         log.info("DELETE /bulk-payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -265,16 +265,15 @@ public class PaymentService {
                 "    },\n" +
                 "    \"_links\": {\n" +
                 "        \"self\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId + "\n" +
                 "        },\n" +
                 "        \"startAuthorisationWithPsuIdentification\": {\n" +
                 "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
+                "/cancellation-authorisations\"\n" +
                 "        },\n" +
                 "        \"status\": {\n" +
                 "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
+                "/status\"\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";
@@ -302,7 +301,7 @@ public class PaymentService {
                                       @HeaderParam("X-Request-ID") String requestID) {
 
         log.info("DELETE /bulk-payments/{PaymentId} endpoint called.");
-        JSONObject responseJSON = validatePaymentRequestHeader(requestID);
+        JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
         if (!(VALID.equals(responseJSON.get(MESSAGE)))) {
             return Response.status(FORBIDDEN).entity(responseJSON.toJSONString()).build();
         }
@@ -318,16 +317,15 @@ public class PaymentService {
                 "    },\n" +
                 "    \"_links\": {\n" +
                 "        \"self\": {\n" +
-                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e\"\n" +
+                "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId + "\n" +
                 "        },\n" +
                 "        \"startAuthorisationWithPsuIdentification\": {\n" +
                 "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/cancellation-authorisations\"\n" +
+                "cancellation-authorisations\"\n" +
                 "        },\n" +
                 "        \"status\": {\n" +
                 "            \"href\": \"/v1/bulk-payments/sepa-credit-transfers/" + paymentId +
-                "/0055f9d7-0d83-4e05-86b1-3e6ec793750e/status\"\n" +
+                "/status\"\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";

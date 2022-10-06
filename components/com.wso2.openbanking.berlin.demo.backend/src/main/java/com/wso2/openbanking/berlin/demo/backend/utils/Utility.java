@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.demo.backend.utils;
@@ -59,12 +56,16 @@ public class Utility {
      * @param requestID ID of the request.
      * @return JSON response with either an error message or "valid".
      */
-    public static JSONObject validatePaymentRequestHeader(String requestID) {
+    public static JSONObject validatePaymentRequestHeader(String requestID, String consentID) {
 
         JSONObject responseJSON = new JSONObject();
         if (StringUtils.isBlank(requestID)) {
             responseJSON.put(CODE, FORBIDDEN.getStatusCode());
             responseJSON.put(MESSAGE, "X-Request_ID not found");
+        } else if (StringUtils.isBlank(consentID)) {
+            responseJSON.put(CODE, FORBIDDEN.getStatusCode());
+            responseJSON.put(MESSAGE, "Consent-ID not found");
+            return responseJSON;
         } else {
             responseJSON.put(MESSAGE, VALID);
         }
