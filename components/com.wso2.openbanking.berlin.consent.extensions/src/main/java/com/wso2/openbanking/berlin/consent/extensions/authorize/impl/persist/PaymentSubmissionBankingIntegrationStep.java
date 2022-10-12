@@ -21,6 +21,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.authorize.utils.ConsentAuthUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,21 +43,28 @@ public class PaymentSubmissionBankingIntegrationStep implements ConsentPersistSt
             ConsentData consentData = consentPersistData.getConsentData();
             String consentId = consentData.getConsentId();
             AuthorizationResource currentAuthResource = consentData.getAuthResource();
+            String consentType = consentData.getType();
 
             try {
-                if (ConsentAuthUtil.isPaymentAuthorization(consentData.getType())
-                        && StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(),
-                        currentAuthResource.getAuthorizationType())
-                        && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, consentId,
-                        currentAuthResource)) {
+                // Execute only for instant, bulk and periodic payments
+                if (StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
+                        || StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, consentType)
+                        || StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType)) {
 
-                    String paymentId = consentData.getConsentId();
-                    String paymentReceipt = consentData.getConsentResource().getReceipt();
-                    if (!ConsentAuthUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
-                            "submit")) {
-                        log.error("Error occurred while submitting the payment, please retry");
-                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                                ErrorConstants.PAYMENT_SUBMISSION_FAILED);
+                    // Execute only if the current authorisation resource is a submission auth resource
+                    if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(),
+                            currentAuthResource.getAuthorizationType())
+                            && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, consentId,
+                            currentAuthResource)) {
+
+                        String paymentId = consentData.getConsentId();
+                        String paymentReceipt = consentData.getConsentResource().getReceipt();
+                        if (!ConsentAuthUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
+                                "submit")) {
+                            log.error("Error occurred while submitting the payment, please retry");
+                            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                    ErrorConstants.PAYMENT_SUBMISSION_FAILED);
+                        }
                     }
                 }
             } catch (OpenBankingException | IOException e) {

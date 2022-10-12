@@ -11,6 +11,7 @@ package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -21,7 +22,6 @@ import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
@@ -164,20 +164,6 @@ public class ConsentAuthUtil {
     }
 
     /**
-     * Util method to determine whether the authorization is a payment authorization or not.
-     *
-     * @param consentType consent type
-     * @return true if payments, else false
-     */
-    public static boolean isPaymentAuthorization(String consentType) {
-
-        return StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
-                || StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, consentType)
-                || StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType);
-    }
-
-
-    /**
      * This method checks whether all the authorization resources are authorized. There are two scenarios.
      *
      * 1. There can be only one authorization resource for a consent.
@@ -219,8 +205,8 @@ public class ConsentAuthUtil {
         if (authorizationResourcesOfCurrentConsent.isEmpty()) {
             return true;
         } else {
-            return authorizationResourcesOfCurrentConsent.stream().anyMatch(authorisation
-                    -> !StringUtils.equals(authorisation.getAuthorizationStatus(),
+            return authorizationResourcesOfCurrentConsent.stream().allMatch(authorisation
+                    -> StringUtils.equals(authorisation.getAuthorizationStatus(),
                     ScaStatusEnum.PSU_AUTHENTICATED.toString()));
         }
     }
@@ -237,6 +223,7 @@ public class ConsentAuthUtil {
      * @throws OpenBankingException thrown if an error occurs when retrieving the http client
      * @throws IOException thrown if an error occurs executing the request
      */
+    @Generated(message = "Excluding from coverage since this involves an external http call")
     public static boolean isPaymentResourceSubmitted(String paymentId, String paymentData, String submissionType)
             throws OpenBankingException, IOException {
 
