@@ -136,6 +136,6 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
         paymentRetrievalValidator.validate(consentValidateData, consentValidationResult);
-        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertTrue(consentValidationResult.isValid());
     }
 }
