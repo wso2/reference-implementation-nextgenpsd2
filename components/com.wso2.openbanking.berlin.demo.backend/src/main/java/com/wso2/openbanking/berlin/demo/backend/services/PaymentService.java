@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
@@ -10,13 +10,19 @@
 package com.wso2.openbanking.berlin.demo.backend.services;
 
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.regex.Pattern;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -37,7 +43,63 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 public class PaymentService {
 
     private static final Log log = LogFactory.getLog(PaymentService.class);
-    
+
+    @POST
+    @Consumes({"application/json; charset=utf-8"})
+    @Path("/submit/{PaymentId}")
+    @Produces("application/json")
+    public Response submitPayment(String requestBody, @PathParam("PaymentId") String paymentId) {
+
+        Pattern uuidPattern = Pattern.compile
+                ("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                        Pattern.CASE_INSENSITIVE);
+        if (!uuidPattern.matcher(paymentId.trim()).matches()) {
+            log.error("Payment ID is invalid");
+            JSONObject error = new JSONObject();
+            error.appendField("error_reason", "Payment ID invalid");
+            error.appendField("bank_error_code", "123");
+            return Response.status(400).entity(error.toJSONString()).build();
+        }
+
+        try {
+            JSONParser requestParser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+            requestParser.parse(requestBody);
+        } catch (ParseException e) {
+            log.error("Error in reading JSON body ", e);
+            return Response.status(400).build();
+        }
+        String response = "{}";
+        return Response.status(202).entity(response).build();
+    }
+
+    @POST
+    @Consumes({"application/json; charset=utf-8"})
+    @Path("/cancel/{PaymentId}")
+    @Produces("application/json")
+    public Response cancelPayment(String requestBody, @PathParam("PaymentId") String paymentId) {
+
+        Pattern uuidPattern = Pattern.compile
+                ("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                        Pattern.CASE_INSENSITIVE);
+        if (!uuidPattern.matcher(paymentId.trim()).matches()) {
+            log.error("Payment ID is invalid");
+            JSONObject error = new JSONObject();
+            error.appendField("error_reason", "Payment ID invalid");
+            error.appendField("bank_error_code", "123");
+            return Response.status(400).entity(error.toJSONString()).build();
+        }
+
+        try {
+            JSONParser requestParser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+            requestParser.parse(requestBody);
+        } catch (ParseException e) {
+            log.error("Error in reading JSON body ", e);
+            return Response.status(400).build();
+        }
+        String response = "{}";
+        return Response.status(202).entity(response).build();
+    }
+
     /**
      * Get details of a payment.
      *
@@ -49,7 +111,8 @@ public class PaymentService {
     @Path("/payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getPayment(@PathParam("PaymentId") String paymentId,
-                               @HeaderParam("X-Request-ID") String requestID) {
+                               @HeaderParam("X-Request-ID") String requestID,
+                               @HeaderParam("Account-Request-Information") String consentInfo) {
 
         log.info("GET /payments/{payment-product}/{PaymentId} endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
@@ -94,7 +157,8 @@ public class PaymentService {
     @Path("/bulk-payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getBulkPayment(@PathParam("PaymentId") String paymentId,
-                                   @HeaderParam("X-Request-ID") String requestID) {
+                                   @HeaderParam("X-Request-ID") String requestID,
+                                   @HeaderParam("Account-Request-Information") String consentInfo) {
 
         log.info("GET /bulk-payments/{payment-product}/{PaymentId} endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
@@ -155,7 +219,8 @@ public class PaymentService {
     @Path("/periodic-payments/{payment-product}/{PaymentId}")
     @Produces("application/json")
     public Response getPeriodicPayment(@PathParam("PaymentId") String paymentId,
-                                       @HeaderParam("X-Request-ID") String requestID) {
+                                       @HeaderParam("X-Request-ID") String requestID,
+                                       @HeaderParam("Account-Request-Information") String consentInfo) {
 
         log.info("GET /periodic-payments/{payment-product}/{PaymentId} endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
@@ -205,7 +270,12 @@ public class PaymentService {
     @Produces("application/json")
     public Response getPaymentStatus(@PathParam("payment-service") String paymentService,
                                      @PathParam("PaymentId") String paymentId,
-                                     @HeaderParam("X-Request-ID") String requestID) {
+                                     @HeaderParam("X-Request-ID") String requestID,
+                                     @HeaderParam("Account-Request-Information") String consentInfo) {
+
+        // todo: add validation to validate the "Account-Request-Information" header for the value
+        //  "AuthStatus":"partial" to construct the response when all authorizations are not valid.
+        //  Need to add this for all GET endpoints of the backend.
 
         log.info("GET /{payment-service}/{payment-product}/{PaymentId}/status endpoint called.");
         JSONObject responseJSON = validatePaymentRequestHeader(requestID, paymentId);
