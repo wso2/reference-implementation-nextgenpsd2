@@ -47,6 +47,8 @@ public class ErrorConstants {
     public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The %s is implicit therefore cannot " +
             "create authorisation resource";
     public static final String CONSENT_DATA_RETRIEVE_ERROR = "Exception occurred while getting consent data";
+    public static final String PAYMENT_SUBMISSION_FAILED = "Payment submission failed, please retry";
+    public static final String PAYMENT_CANCELLATION_FAILED = "Payment cancellation failed, please retry";
     public static final String LOGGED_IN_USER_MISMATCH = "The logged in user does not match with the " +
             "user who initiated the consent";
     public static final String INVALID_PAYMENT_CONSENT_STATUS_UPDATE = "Invalid payment consent update request for " +

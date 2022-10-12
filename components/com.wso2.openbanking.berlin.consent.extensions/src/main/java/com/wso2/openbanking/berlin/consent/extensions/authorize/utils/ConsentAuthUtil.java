@@ -1,31 +1,46 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.utils;
 
+import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.consent.extensions.common.AuthErrorCode;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
+import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
+import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Contains util methods need for authorization process.
@@ -146,5 +161,95 @@ public class ConsentAuthUtil {
         }
 
         return filteredAccountRefObjects;
+    }
+
+    /**
+     * Util method to determine whether the authorization is a payment authorization or not.
+     *
+     * @param consentType consent type
+     * @return true if payments, else false
+     */
+    public static boolean isPaymentAuthorization(String consentType) {
+
+        return StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
+                || StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, consentType)
+                || StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType);
+    }
+
+
+    /**
+     * This method checks whether all the authorization resources are authorized. There are two scenarios.
+     *
+     * 1. There can be only one authorization resource for a consent.
+     *
+     * In this scenario, this method will return true if the current authorization resource get the approval to update
+     * to psuAuthenticated status. After the payment submission is successfully done, the BerlinConsentPersistStep will
+     * do the real update of the authorization resource status. Otherwise, false will be returned to indicate that the
+     * authorization resource of this consent is not in psuAuthenticated state. Therefore, the payment
+     * submission/cancellation will not happen.
+     *
+     * 2. In multi level scenario, there can be multiple authorization resources per consent.
+     *
+     * In this scenario, this method will return true if all other authorization resources except current one are in
+     * psuAuthenticates status. After the payment submission is successfully done, the BerlinConsentPersistStep will
+     * do the real updating of the authorization resource status. Otherwise, false will be returned to indicate that
+     * all the authorization resources related to the current consent are not in psuAuthenticated status. Therefore,
+     * the payment submission/cancellation will not happen.
+     *
+     * @param consentCoreService consent core service
+     * @param currentAuthResource the current authorization resource
+     * @return true or false according to the aforementioned scenarios
+     */
+    public static boolean areAllOtherAuthResourcesValid(ConsentCoreService consentCoreService,
+                                                        String consentId, AuthorizationResource currentAuthResource)
+            throws ConsentManagementException {
+
+        List<AuthorizationResource> authorizationResourcesOfCurrentConsent
+                = consentCoreService.searchAuthorizations(consentId)
+                .stream()
+                .filter(authorisation -> StringUtils.equals(currentAuthResource.getAuthorizationType()
+                        , authorisation.getAuthorizationType()))
+                .collect(Collectors.toList());
+
+        //Remove current authorization resource from the list
+        authorizationResourcesOfCurrentConsent.removeIf(resource
+                -> (StringUtils.equals(resource.getAuthorizationID(),
+                currentAuthResource.getAuthorizationID())));
+
+        if (authorizationResourcesOfCurrentConsent.isEmpty()) {
+            return true;
+        } else {
+            return authorizationResourcesOfCurrentConsent.stream().anyMatch(authorisation
+                    -> !StringUtils.equals(authorisation.getAuthorizationStatus(),
+                    ScaStatusEnum.PSU_AUTHENTICATED.toString()));
+        }
+    }
+
+    /**
+     * This method contains the http client implementation to send the POST request to submit the payment to the bank.
+     * The parameter "submissionType" determines whether the payment resource is submitted for the real payment to
+     * happen or for the payment cancellation.
+     *
+     * @param paymentId ID of the payment to submit/cancel
+     * @param paymentData payment data to be submitted to the backend
+     * @param submissionType the submission type (payment submission or cancellation)
+     * @return true if submission is a success, false otherwise
+     * @throws OpenBankingException thrown if an error occurs when retrieving the http client
+     * @throws IOException thrown if an error occurs executing the request
+     */
+    public static boolean isPaymentResourceSubmitted(String paymentId, String paymentData, String submissionType)
+            throws OpenBankingException, IOException {
+
+        String paymentBackendURL = CommonConfigParser.getInstance().getPaymentsBackendURL();
+
+        //todo: check what happens if the url is empty
+        CloseableHttpClient client = HTTPClientUtils.getHttpsClient();
+        HttpPost request = new HttpPost(paymentBackendURL + "/" + submissionType + "/" + paymentId);
+        request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+        request.addHeader(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8");
+        StringEntity stringEntity = new StringEntity(paymentData);
+        request.setEntity(stringEntity);
+        HttpResponse response = client.execute(request);
+        return (response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_ACCEPTED);
     }
 }

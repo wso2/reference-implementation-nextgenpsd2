@@ -16,7 +16,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
@@ -25,6 +24,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,9 +34,9 @@ import java.util.ArrayList;
 /**
  * Validate payments submission requests.
  */
-public class PaymentSubmissionValidator implements SubmissionValidator {
+public class PaymentRetrievalValidator implements SubmissionValidator {
 
-    private static final Log log = LogFactory.getLog(PaymentSubmissionValidator.class);
+    private static final Log log = LogFactory.getLog(PaymentRetrievalValidator.class);
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -48,9 +48,7 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
 
         /* Check whether payment consent is in ACCP (consent is authorized) or ACTC status.
            The consent can be in ACTC status if the payment is to be cancelled with an authorization */
-        if (log.isDebugEnabled()) {
-            log.debug("Checking if the consent is in ACCP or ACTC status");
-        }
+        log.debug("Checking if the consent is in ACCP or ACTC status");
         String currentStatus = detailedConsentResource.getCurrentStatus();
         if (!(StringUtils.equals(TransactionStatusEnum.ACCP.name(), currentStatus)
                 || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus))) {
@@ -70,37 +68,24 @@ public class PaymentSubmissionValidator implements SubmissionValidator {
         }
 
         /* If any of the authorisation resources are not in psuAuthenticated status, throw an error.
-           This logic addresses both multi level and single authorisation scenarios.
+           No need to check for the emptiness of authorizationResources since it is handled from accelerator level.
            This check needs to be changed after fixing
            issue:https://github.com/wso2-enterprise/financial-open-banking/issues/7796 */
-        if (log.isDebugEnabled()) {
-            log.debug("Checking if the authorisation resource of consent: " + consentValidateData.getConsentId()
-                    + " is in psuAuthenticated state");
-        }
-
-        // No need to check for the emptiness of authorizationResources since it is handled from accelerator level
-        for (AuthorizationResource authResource : authorizationResources) {
-            if (!StringUtils.equals(authResource.getAuthorizationStatus(),
-                    ScaStatusEnum.PSU_AUTHENTICATED.toString())) {
-                log.error(ErrorConstants.AUTHORISATION_NOT_PSU_AUTHENTICATED_STATE);
-                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                        ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
-                        ErrorConstants.CONSENT_INVALID_STATE);
-                return;
+        if (authorizationResources.size() > 1) {
+            for (AuthorizationResource authResource : authorizationResources) {
+                if (!StringUtils.equals(authResource.getAuthorizationStatus(),
+                        ScaStatusEnum.PSU_AUTHENTICATED.toString())) {
+                    /* Appending an additional field to consent info header for the bank to identify this payment is
+                       not fully authorized. This case is specific to multi level scenarios where only one of many
+                       users can authorize a multi level payment and can try to get the payment status. In this case
+                       bank will identify it using this field and respond accordingly.*/
+                    consentValidationResult.setValid(true);
+                    JSONObject consentInfoJson = consentValidationResult.getConsentInformation();
+                    consentInfoJson.appendField("AuthStatus", "partial");
+                    consentValidationResult.setConsentInformation(consentInfoJson);
+                    return;
+                }
             }
-        }
-
-
-        // Check whether the mapping status is active
-        ArrayList<ConsentMappingResource> mappingResources = consentValidateData.getComprehensiveConsent()
-                .getConsentMappingResources();
-
-        if (!CommonValidationUtil.hasAnyActiveMappingResource(mappingResources)) {
-            log.error(ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
-            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_INVALID.toString(),
-                    ErrorConstants.NO_VALID_ACCOUNTS_FOR_CONSENT);
-            return;
         }
 
         /* If the authorisation status is in the expected status, mark validation as valid.

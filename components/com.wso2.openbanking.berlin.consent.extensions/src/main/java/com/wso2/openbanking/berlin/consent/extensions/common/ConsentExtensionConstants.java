@@ -107,9 +107,9 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNT_DETAILS_LIST = "accountDetailsList";
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
     public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
-    public static final String PAYMENTS_SUBMISSION_PATH_IDENTIFIER = "payments";
-    public static final String BULK_PAYMENTS_SUBMISSION_PATH_IDENTIFIER = "bulk-payments";
-    public static final String PERIODIC_PAYMENTS_SUBMISSION_PATH_IDENTIFIER = "periodic-payments";
+    public static final String PAYMENTS_RETRIEVAL_PATH_IDENTIFIER = "payments";
+    public static final String BULK_PAYMENTS_RETRIEVAL_PATH_IDENTIFIER = "bulk-payments";
+    public static final String PERIODIC_PAYMENTS_RETRIEVAL_PATH_IDENTIFIER = "periodic-payments";
     public static final String CARD_ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "card-accounts";
     public static final String MAXIMUM_VALID_DATE = "9999-12-31";
     public static final String ACCESS = "access";

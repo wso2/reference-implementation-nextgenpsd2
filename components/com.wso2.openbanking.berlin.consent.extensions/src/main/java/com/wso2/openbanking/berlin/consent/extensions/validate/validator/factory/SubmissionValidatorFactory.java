@@ -13,7 +13,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionCon
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.AccountSubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.FundsConfirmationSubmissionValidator;
-import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.PaymentSubmissionValidator;
+import com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl.PaymentRetrievalValidator;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -47,10 +47,10 @@ public class SubmissionValidatorFactory {
             return new FundsConfirmationSubmissionValidator();
         }
 
-        if (ConsentExtensionConstants.PAYMENTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])
-                || ConsentExtensionConstants.BULK_PAYMENTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])
-                || ConsentExtensionConstants.PERIODIC_PAYMENTS_SUBMISSION_PATH_IDENTIFIER.equals(requestPathArray[0])) {
-            return new PaymentSubmissionValidator();
+        if (ConsentExtensionConstants.PAYMENTS_RETRIEVAL_PATH_IDENTIFIER.equals(requestPathArray[0])
+                || ConsentExtensionConstants.BULK_PAYMENTS_RETRIEVAL_PATH_IDENTIFIER.equals(requestPathArray[0])
+                || ConsentExtensionConstants.PERIODIC_PAYMENTS_RETRIEVAL_PATH_IDENTIFIER.equals(requestPathArray[0])) {
+            return new PaymentRetrievalValidator();
         }
 
         return null;

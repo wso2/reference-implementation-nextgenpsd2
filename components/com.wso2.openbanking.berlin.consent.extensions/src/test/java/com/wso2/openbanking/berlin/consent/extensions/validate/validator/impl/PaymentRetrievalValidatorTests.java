@@ -13,7 +13,6 @@ import com.wso2.openbanking.accelerator.common.exception.ConsentManagementExcept
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
-public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
+public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
 
     @Mock
     CommonConfigParser commonConfigParserMock;
@@ -52,7 +51,7 @@ public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
     @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
 
-    PaymentSubmissionValidator paymentSubmissionValidator = new PaymentSubmissionValidator();
+    PaymentRetrievalValidator paymentRetrievalValidator = new PaymentRetrievalValidator();
     String clientId;
     String consentId;
     String authId;
@@ -66,9 +65,9 @@ public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
 
-        paymentSubmissionValidator = Mockito.spy(PaymentSubmissionValidator.class);
+        paymentRetrievalValidator = Mockito.spy(PaymentRetrievalValidator.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentSubmissionValidator).getConsentService();
+        doReturn(consentCoreServiceMock).when(paymentRetrievalValidator).getConsentService();
     }
 
     @Test
@@ -89,7 +88,7 @@ public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
-        paymentSubmissionValidator.validate(consentValidateData, consentValidationResult);
+        paymentRetrievalValidator.validate(consentValidateData, consentValidationResult);
         Assert.assertTrue(consentValidationResult.isValid());
     }
 
@@ -106,7 +105,7 @@ public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-        paymentSubmissionValidator.validate(consentValidateData, consentValidationResult);
+        paymentRetrievalValidator.validate(consentValidateData, consentValidationResult);
         Assert.assertFalse(consentValidationResult.isValid());
     }
 
@@ -136,37 +135,7 @@ public class PaymentSubmissionValidatorTests extends PowerMockTestCase {
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
-        paymentSubmissionValidator.validate(consentValidateData, consentValidationResult);
-        Assert.assertFalse(consentValidationResult.isValid());
-    }
-
-    @Test
-    public void testPaymentsRetrievalValidatorWithInvalidMappingStatus() throws ConsentManagementException {
-
-        String mappingId = UUID.randomUUID().toString();
-        DetailedConsentResource detailedConsentResource =
-                TestUtil.getSampleDetailedStoredTestConsentResource(consentId, clientId,
-                        ConsentTypeEnum.PAYMENTS.toString(), TransactionStatusEnum.ACCP.name(), authId,
-                        AuthTypeEnum.AUTHORISATION.toString(), TestConstants.USER_ID);
-
-        ConsentMappingResource consentMappingResource = TestUtil.getSampleTestConsentMappingResource(mappingId, authId,
-                "accountId", "permission", "inactive");
-
-        ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
-        mappingResources.add(consentMappingResource);
-
-        detailedConsentResource.setConsentMappingResources(mappingResources);
-
-        ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
-                null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
-        consentValidateData.setComprehensiveConsent(detailedConsentResource);
-
-        doReturn(detailedConsentResource.getAuthorizationResources()).when(consentCoreServiceMock)
-                .searchAuthorizations(Mockito.anyString());
-
-        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-
-        paymentSubmissionValidator.validate(consentValidateData, consentValidationResult);
+        paymentRetrievalValidator.validate(consentValidateData, consentValidationResult);
         Assert.assertFalse(consentValidationResult.isValid());
     }
 }
