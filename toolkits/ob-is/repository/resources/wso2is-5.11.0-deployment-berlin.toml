@@ -467,6 +467,7 @@ multiple_recurring_consent.enable = false
 auth_cancellation.enable = false
 bulk_payments.max_future_payment_days = ""
 debtor_acc_currency_validation.enable = true
+backend_url = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/payments"
 
 [open_banking_berlin.consent.cof]
 single_acc_no_retrieval_validation.enable = false
