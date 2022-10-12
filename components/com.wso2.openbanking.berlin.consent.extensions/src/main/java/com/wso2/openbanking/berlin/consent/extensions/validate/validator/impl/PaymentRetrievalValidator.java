@@ -48,10 +48,11 @@ public class PaymentRetrievalValidator implements SubmissionValidator {
 
         /* Check whether payment consent is in ACCP (consent is authorized) or ACTC status.
            The consent can be in ACTC status if the payment is to be cancelled with an authorization */
-        log.debug("Checking if the consent is in ACCP or ACTC status");
+        log.debug("Checking if the consent is in ACCP, ACTC or PATC status");
         String currentStatus = detailedConsentResource.getCurrentStatus();
         if (!(StringUtils.equals(TransactionStatusEnum.ACCP.name(), currentStatus)
-                || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus))) {
+                || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus)
+                || StringUtils.equals(TransactionStatusEnum.PATC.name(), currentStatus))) {
             log.error(ErrorConstants.CONSENT_INVALID_STATE);
             CommonValidationUtil.handleConsentValidationError(consentValidationResult,
                     ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
