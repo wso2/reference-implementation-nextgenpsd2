@@ -41,7 +41,7 @@ public class PaymentCancellationBankingIntegrationStep implements ConsentPersist
         if (consentPersistData.getApproval()) {
             ConsentCoreServiceImpl consentCoreService = getConsentService();
             ConsentData consentData = consentPersistData.getConsentData();
-            String consentId = consentData.getConsentId();
+            String paymentId = consentData.getConsentId();
             AuthorizationResource currentAuthResource = consentData.getAuthResource();
             String consentType = consentData.getType();
 
@@ -53,10 +53,9 @@ public class PaymentCancellationBankingIntegrationStep implements ConsentPersist
                     // Execute only if the current authorisation resource is a cancellation resource
                     if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(),
                             currentAuthResource.getAuthorizationType())
-                            && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, consentId,
+                            && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, paymentId,
                             currentAuthResource)) {
 
-                        String paymentId = consentData.getConsentId();
                         String paymentReceipt = consentData.getConsentResource().getReceipt();
                         if (!ConsentAuthUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
                                 "cancel")) {

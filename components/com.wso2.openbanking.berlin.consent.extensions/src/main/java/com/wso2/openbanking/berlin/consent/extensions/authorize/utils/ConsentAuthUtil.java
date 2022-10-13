@@ -190,8 +190,8 @@ public class ConsentAuthUtil {
                                                         String consentId, AuthorizationResource currentAuthResource)
             throws ConsentManagementException {
 
-        List<AuthorizationResource> authorizationResourcesOfCurrentConsent
-                = consentCoreService.searchAuthorizations(consentId)
+        List<AuthorizationResource> authorizationResourcesOfCurrentConsent = consentCoreService
+                .searchAuthorizations(consentId)
                 .stream()
                 .filter(authorisation -> StringUtils.equals(currentAuthResource.getAuthorizationType()
                         , authorisation.getAuthorizationType()))

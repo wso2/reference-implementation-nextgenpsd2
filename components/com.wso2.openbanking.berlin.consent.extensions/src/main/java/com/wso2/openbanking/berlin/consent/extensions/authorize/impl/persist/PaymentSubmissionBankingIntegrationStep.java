@@ -41,7 +41,7 @@ public class PaymentSubmissionBankingIntegrationStep implements ConsentPersistSt
         if (consentPersistData.getApproval()) {
             ConsentCoreServiceImpl consentCoreService = getConsentService();
             ConsentData consentData = consentPersistData.getConsentData();
-            String consentId = consentData.getConsentId();
+            String paymentId = consentData.getConsentId();
             AuthorizationResource currentAuthResource = consentData.getAuthResource();
             String consentType = consentData.getType();
 
@@ -54,10 +54,9 @@ public class PaymentSubmissionBankingIntegrationStep implements ConsentPersistSt
                     // Execute only if the current authorisation resource is a submission auth resource
                     if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(),
                             currentAuthResource.getAuthorizationType())
-                            && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, consentId,
+                            && ConsentAuthUtil.areAllOtherAuthResourcesValid(consentCoreService, paymentId,
                             currentAuthResource)) {
 
-                        String paymentId = consentData.getConsentId();
                         String paymentReceipt = consentData.getConsentResource().getReceipt();
                         if (!ConsentAuthUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
                                 "submit")) {
