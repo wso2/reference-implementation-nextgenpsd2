@@ -418,8 +418,16 @@ class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval
 priority = 3
 
 [[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentSubmissionBankingIntegrationStep"
+priority = 1
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentCancellationBankingIntegrationStep"
+priority = 2
+
+[[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
-priority = 4
+priority = 3
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
