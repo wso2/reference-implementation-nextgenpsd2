@@ -9,18 +9,15 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl;
 
-import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
-import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.SubmissionValidator;
 import com.wso2.openbanking.berlin.consent.extensions.validate.validator.util.CommonValidationUtil;
@@ -29,74 +26,88 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-
 /**
  * Validate payments submission requests.
  */
 public class PaymentRetrievalValidator implements SubmissionValidator {
 
     private static final Log log = LogFactory.getLog(PaymentRetrievalValidator.class);
+    private static final String HTTP_METHOD = "httpMethod";
+    public static final String DELETE = "DELETE";
+    public static final String AUTH_STATUS = "authStatus";
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
             throws ConsentException {
 
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
-        ConsentCoreServiceImpl coreService = getConsentService();
-        ArrayList<AuthorizationResource> authorizationResources;
-
-        /* Check whether payment consent is in ACCP (consent is authorized) or ACTC status.
-           The consent can be in ACTC status if the payment is to be cancelled with an authorization */
-        log.debug("Checking if the consent is in ACCP, ACTC or PATC status");
         String currentStatus = detailedConsentResource.getCurrentStatus();
-        if (!(StringUtils.equals(TransactionStatusEnum.ACCP.name(), currentStatus)
-                || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus)
-                || StringUtils.equals(TransactionStatusEnum.PATC.name(), currentStatus))) {
-            log.error(ErrorConstants.CONSENT_INVALID_STATE);
-            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
-                    ErrorConstants.CONSENT_INVALID_STATE);
-            return;
-        }
 
-        // Get the relevant authorisation resource for the consent
-        try {
-            authorizationResources = coreService.searchAuthorizations(detailedConsentResource.getConsentID());
-        } catch (ConsentManagementException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    ErrorConstants.AUTHORISATIONS_NOT_FOUND);
-        }
+        // Only DELETE and GET payment requests will go through consent validation
+        if (StringUtils.equals(DELETE, consentValidateData.getResourceParams().get(HTTP_METHOD))) {
 
-        /* If any of the authorisation resources are not in psuAuthenticated status, throw an error.
-           No need to check for the emptiness of authorizationResources since it is handled from accelerator level.
-           This check needs to be changed after fixing
-           issue:https://github.com/wso2-enterprise/financial-open-banking/issues/7796 */
-        if (authorizationResources.size() > 1) {
-            for (AuthorizationResource authResource : authorizationResources) {
-                if (!StringUtils.equals(authResource.getAuthorizationStatus(),
-                        ScaStatusEnum.PSU_AUTHENTICATED.toString())) {
-                    /* Appending an additional field to consent info header for the bank to identify this payment is
-                       not fully authorized. This case is specific to multi level scenarios where only one of many
-                       users can authorize a multi level payment and can try to get the payment status. In this case
-                       bank will identify it using this field and respond accordingly.*/
-                    consentValidationResult.setValid(true);
-                    JSONObject consentInfoJson = consentValidationResult.getConsentInformation();
-                    consentInfoJson.appendField("authStatus", "partial");
-                    consentValidationResult.setConsentInformation(consentInfoJson);
-                    return;
+            /* Check whether payment consent is in CANC (payment is already cancelled), REVOKED or PATC status.
+               The consent can be in REVOKED status if the payment is already revoked by the consent portal.
+               The consent can be in RJCT status if the payment is not consented. */
+            if (StringUtils.equals(TransactionStatusEnum.CANC.name(), currentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), currentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.RJCT.name(), currentStatus)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("The payment consent " + consentValidateData.getConsentId() + " is already deleted " +
+                            "or revoked or cancelled");
                 }
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_INVALID.toString(),
+                        ErrorConstants.CONSENT_ALREADY_DELETED);
+            } else if (StringUtils.equals(TransactionStatusEnum.PATC.name(), currentStatus)) {
+                // The payment is not yet submitted since it is not fully authorized yet
+                setCustomFieldToConsentInfoHeader(consentValidationResult, AUTH_STATUS, "partial");
+            } else {
+                consentValidationResult.setValid(true);
             }
-        }
+        } else {
+            /* Check whether payment consent is in ACCP (consent is authorized), ACTC or PATC status.
+               The consent can be in ACTC status if the payment is to be cancelled with an authorization.
+               The consent can be in PATC status if the payment is partially authorized. */
+            log.debug("Checking if the consent is in ACCP, ACTC or PATC status");
+            if (!(StringUtils.equals(TransactionStatusEnum.ACCP.name(), currentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.ACTC.name(), currentStatus)
+                    || StringUtils.equals(TransactionStatusEnum.PATC.name(), currentStatus))) {
+                log.error(ErrorConstants.CONSENT_INVALID_STATE);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                        ErrorConstants.CONSENT_INVALID_STATE);
+                return;
+            }
 
-        /* If the authorisation status is in the expected status, mark validation as valid.
-           No need to check for expiration of the consent since payment consent doesn't define an expiry time. */
-        consentValidationResult.setValid(true);
+            if (StringUtils.equals(TransactionStatusEnum.PATC.name(), currentStatus)) {
+                // The payment is not yet submitted since it is not fully authorized yet
+                setCustomFieldToConsentInfoHeader(consentValidationResult, AUTH_STATUS, "partial");
+                return;
+            }
+
+            /* If the authorisation status is in the expected status, mark validation as valid.
+               No need to check for expiration of the consent since payment consent doesn't define an expiry time. */
+            consentValidationResult.setValid(true);
+        }
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")
     ConsentCoreServiceImpl getConsentService() {
 
         return new ConsentCoreServiceImpl();
+    }
+
+    private void setCustomFieldToConsentInfoHeader(ConsentValidationResult consentValidationResult, String fieldKey,
+                                                   String fieldValue) {
+
+        /* Appending an additional field to consent info header for the bank to identify this payment is
+           not fully authorized. This case is specific to multi level scenarios where only one of many
+           users can authorize a multi level payment and can try to get the payment status. In this case
+           bank will identify it using this field and respond accordingly. */
+        consentValidationResult.setValid(true);
+        JSONObject consentInfoJson = consentValidationResult.getConsentInformation();
+        consentInfoJson.appendField(fieldKey, fieldValue);
+        consentValidationResult.setConsentInformation(consentInfoJson);
     }
 }
