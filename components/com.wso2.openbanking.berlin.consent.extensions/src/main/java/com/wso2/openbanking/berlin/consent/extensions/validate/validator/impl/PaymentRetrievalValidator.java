@@ -82,7 +82,7 @@ public class PaymentRetrievalValidator implements SubmissionValidator {
                        bank will identify it using this field and respond accordingly.*/
                     consentValidationResult.setValid(true);
                     JSONObject consentInfoJson = consentValidationResult.getConsentInformation();
-                    consentInfoJson.appendField("AuthStatus", "partial");
+                    consentInfoJson.appendField("authStatus", "partial");
                     consentValidationResult.setConsentInformation(consentInfoJson);
                     return;
                 }
