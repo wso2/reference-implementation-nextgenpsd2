@@ -229,7 +229,11 @@ public class ConsentAuthUtil {
 
         String paymentBackendURL = CommonConfigParser.getInstance().getPaymentsBackendURL();
 
-        //todo: check what happens if the url is empty
+        if (StringUtils.isBlank(paymentBackendURL)) {
+            log.error("Payment backend URL is not configured");
+            return false;
+        }
+
         CloseableHttpClient client = HTTPClientUtils.getHttpsClient();
         HttpPost request = new HttpPost(paymentBackendURL + "/" + submissionType + "/" + paymentId);
         request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
