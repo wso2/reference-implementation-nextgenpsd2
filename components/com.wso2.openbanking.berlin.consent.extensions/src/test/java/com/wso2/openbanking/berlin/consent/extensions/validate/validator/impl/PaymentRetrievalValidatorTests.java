@@ -48,9 +48,6 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
     @Mock
     CommonConfigParser commonConfigParserMock;
 
-    @Mock
-    ConsentCoreServiceImpl consentCoreServiceMock;
-
     PaymentRetrievalValidator paymentRetrievalValidator = new PaymentRetrievalValidator();
     String clientId;
     String consentId;
@@ -66,8 +63,6 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
 
         paymentRetrievalValidator = Mockito.spy(PaymentRetrievalValidator.class);
-        consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-        doReturn(consentCoreServiceMock).when(paymentRetrievalValidator).getConsentService();
     }
 
     @Test
@@ -82,9 +77,6 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
-
-        doReturn(detailedConsentResource.getAuthorizationResources()).when(consentCoreServiceMock)
-                .searchAuthorizations(Mockito.anyString());
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
@@ -129,9 +121,6 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
-
-        doReturn(detailedConsentResource.getAuthorizationResources()).when(consentCoreServiceMock)
-                .searchAuthorizations(Mockito.anyString());
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 

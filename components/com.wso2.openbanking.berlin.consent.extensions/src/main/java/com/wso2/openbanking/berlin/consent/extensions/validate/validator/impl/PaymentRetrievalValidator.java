@@ -92,11 +92,11 @@ public class PaymentRetrievalValidator implements SubmissionValidator {
         }
     }
 
-    @Generated(message = "Excluded from coverage since this is used for testing purposes")
-    ConsentCoreServiceImpl getConsentService() {
-
-        return new ConsentCoreServiceImpl();
-    }
+//    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+//    ConsentCoreServiceImpl getConsentService() {
+//
+//        return new ConsentCoreServiceImpl();
+//    }
 
     private void setCustomFieldToConsentInfoHeader(ConsentValidationResult consentValidationResult, String fieldKey,
                                                    String fieldValue) {
