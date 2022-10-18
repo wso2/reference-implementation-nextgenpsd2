@@ -418,8 +418,16 @@ class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval
 priority = 3
 
 [[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentSubmissionBankingIntegrationStep"
+priority = 1
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentCancellationBankingIntegrationStep"
+priority = 2
+
+[[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
-priority = 4
+priority = 3
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
@@ -467,6 +475,7 @@ multiple_recurring_consent.enable = false
 auth_cancellation.enable = false
 bulk_payments.max_future_payment_days = ""
 debtor_acc_currency_validation.enable = true
+backend_url = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/payments"
 
 [open_banking_berlin.consent.cof]
 single_acc_no_retrieval_validation.enable = false
