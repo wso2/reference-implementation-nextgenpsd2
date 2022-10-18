@@ -443,7 +443,7 @@ priority = 5
 name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
 priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
@@ -470,6 +470,9 @@ priority = 5
 name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+priority = 7
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
@@ -494,7 +497,7 @@ priority = 5
 name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
 priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
@@ -584,6 +587,7 @@ maxHttpHeaderSize = 16384
 [open_banking_berlin.consent]
 host = "APIM_HOSTNAME"
 port = "8243"
+payment_consent_status_update_url = "https://IS_HOSTNAME:9446/api/openbanking/consent/manage/payment-delete-status-update-process"
 
 [open_banking_berlin.consent.freq_per_day]
 enable = true

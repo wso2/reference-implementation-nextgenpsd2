@@ -54,6 +54,11 @@
             <Frequency>4</Frequency>
             {% endif %}
         </FrequencyPerDay>
+        {% if open_banking_berlin.consent.payment_consent_status_update_url is defined %}
+        <PaymentConsentStatusUpdateURL>{{open_banking_berlin.consent.payment_consent_status_update_url}}</PaymentConsentStatusUpdateURL>
+        {% else %}
+        <PaymentConsentStatusUpdateURL>https://IS_HOSTNAME:9446/api/openbanking/consent/manage/payment-consent-status-update-process</PaymentConsentStatusUpdateURL>
+        {% endif %}
     </ConsentManagement>
 
     <KeyManager>
