@@ -473,8 +473,8 @@ public class CommonConfigParser {
      */
     public String getPaymentsBackendURL() {
         if (getConfiguration().get(CommonConstants.PAYMENTS_BACKEND_URL) == null) {
-            log.error("Payments backend URL is not set");
-            return "";
+            log.info("Default payment backend URL is configured");
+            return "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/payments";
         } else {
             return ((String) getConfiguration().get(CommonConstants.PAYMENTS_BACKEND_URL)).trim();
         }
