@@ -180,6 +180,7 @@ public class ConsentExtensionConstants {
     public static final String PAYMENTS_SERVICE_PATH = "payments";
     public static final String BULK_PAYMENTS_SERVICE_PATH = "bulk-payments";
     public static final String PERIODIC_PAYMENTS_SERVICE_PATH = "periodic-payments";
+    public static final String PAYMENT_CONSENT_UPDATE_PATH = "payment-consent-status-update-process";
     public static final String PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END = "cancellation-authorisations";
     public static final String FOLLOWING_EXECUTION_RULE = "following";
     public static final String PRECEDING_EXECUTION_RULE = "preceding";

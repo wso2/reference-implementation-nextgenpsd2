@@ -253,7 +253,8 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
-        if (StringUtils.equals("payment-delete-status-update-process", consentManageData.getRequestPath())) {
+        if (StringUtils.equals(ConsentExtensionConstants.PAYMENT_CONSENT_UPDATE_PATH,
+                consentManageData.getRequestPath())) {
             ConsentCoreServiceImpl coreService = getConsentService();
             String consentId = ((JSONObject) consentManageData.getPayload())
                     .getAsString(CommonConstants.CONSENT_ID);

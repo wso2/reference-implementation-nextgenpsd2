@@ -39,7 +39,7 @@ public class ServiceHandlerFactory {
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
             case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
             case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-            case "payment-delete-status-update-process":
+            case ConsentExtensionConstants.PAYMENT_CONSENT_UPDATE_PATH:
                 return new PaymentServiceHandler();
             case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
                 return new FundsConfirmationServiceHandler();
