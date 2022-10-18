@@ -81,5 +81,5 @@ public class CommonConstants {
     public static final String DELIMITER = ":";
 
     public static final String ORG_ID_VALIDATION_REGEX = "KeyManager.OrgIdValidationRegex";
-    public static final String PAYMENT_DELETE_STATUS_UPDATE_URL = "PaymentConsentStatusUpdateURL";
+    public static final String PAYMENT_CONSENT_STATUS_UPDATE_URL = "PaymentConsentStatusUpdateURL";
 }
