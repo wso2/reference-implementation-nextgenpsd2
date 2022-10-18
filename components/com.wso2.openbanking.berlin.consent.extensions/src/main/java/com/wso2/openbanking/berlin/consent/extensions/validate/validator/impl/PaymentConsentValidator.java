@@ -9,13 +9,11 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.validate.validator.impl;
 
-import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEnum;
@@ -26,13 +24,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Validate payments submission requests.
  */
-public class PaymentRetrievalValidator implements SubmissionValidator {
+public class PaymentConsentValidator implements SubmissionValidator {
 
-    private static final Log log = LogFactory.getLog(PaymentRetrievalValidator.class);
+    private static final Log log = LogFactory.getLog(PaymentConsentValidator.class);
     private static final String HTTP_METHOD = "httpMethod";
+    private static final String RESOURCE_PATH = "ResourcePath";
     public static final String DELETE = "DELETE";
     public static final String AUTH_STATUS = "authStatus";
 
@@ -42,6 +44,25 @@ public class PaymentRetrievalValidator implements SubmissionValidator {
 
         DetailedConsentResource detailedConsentResource = consentValidateData.getComprehensiveConsent();
         String currentStatus = detailedConsentResource.getCurrentStatus();
+
+        // Validate path payment ID with consent ID
+        String resourcePath = consentValidateData.getResourceParams().get(RESOURCE_PATH);
+        List<String> pathElements = Arrays.asList(resourcePath.split("/"));
+
+        String pathPaymentId;
+        if (resourcePath.endsWith("status")) {
+            pathPaymentId = pathElements.get(pathElements.size() - 2);
+        } else {
+            pathPaymentId = pathElements.get(pathElements.size() - 1);
+        }
+
+        if (!StringUtils.equals(consentValidateData.getConsentId(), pathPaymentId)) {
+            log.error("Payment ID in the path mismatches with the payment consent ID");
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.FORBIDDEN.getStatusCode(), TPPMessage.CodeEnum.CONSENT_UNKNOWN.toString(),
+                    "Payment ID in the path mismatches with the payment consent ID");
+            return;
+        }
 
         // Only DELETE and GET payment requests will go through consent validation
         if (StringUtils.equals(DELETE, consentValidateData.getResourceParams().get(HTTP_METHOD))) {
@@ -91,12 +112,6 @@ public class PaymentRetrievalValidator implements SubmissionValidator {
             consentValidationResult.setValid(true);
         }
     }
-
-//    @Generated(message = "Excluded from coverage since this is used for testing purposes")
-//    ConsentCoreServiceImpl getConsentService() {
-//
-//        return new ConsentCoreServiceImpl();
-//    }
 
     private void setCustomFieldToConsentInfoHeader(ConsentValidationResult consentValidationResult, String fieldKey,
                                                    String fieldValue) {

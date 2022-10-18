@@ -22,6 +22,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -251,6 +253,29 @@ public class PaymentServiceHandler implements ServiceHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
+        if (StringUtils.equals("payment-delete-status-update-process", consentManageData.getRequestPath())) {
+            ConsentCoreServiceImpl coreService = getConsentService();
+            String consentId = ((JSONObject) consentManageData.getPayload())
+                    .getAsString(CommonConstants.CONSENT_ID);
+            int deleteResponseStatusCode = Integer.parseInt(((JSONObject) consentManageData.getPayload())
+                    .getAsString(CommonConstants.STATUS_CODE));
+
+            try {
+                if (deleteResponseStatusCode == HttpStatus.SC_ACCEPTED) {
+                    coreService.updateConsentStatus(consentId, TransactionStatusEnum.ACTC.name());
+                    consentManageData.setResponseStatus(ResponseStatus.OK);
+                    consentManageData.setResponsePayload("{}");
+                } else if (deleteResponseStatusCode == HttpStatus.SC_NO_CONTENT) {
+                    coreService.updateConsentStatus(consentId, TransactionStatusEnum.CANC.name());
+                    consentManageData.setResponseStatus(ResponseStatus.OK);
+                    consentManageData.setResponsePayload("{}");
+                } else {
+                    log.debug("Consent status not updated during payment delete request");
+                }
+            } catch (ConsentManagementException e) {
+                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
+            }
+        }
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")

@@ -72,10 +72,14 @@ public class CommonConstants {
     public static final String AIS_SCOPE = "ais";
     public static final String PIS_SCOPE = "pis";
     public static final String PIIS_SCOPE = "piis";
+    public static final String AUTH_STATUS = "authStatus";
+    public static final String CONSENT_ID = "consentId";
+    public static final String STATUS_CODE = "statusCode";
 
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
             ".AllowedDuration";
     public static final String DELIMITER = ":";
 
     public static final String ORG_ID_VALIDATION_REGEX = "KeyManager.OrgIdValidationRegex";
+    public static final String PAYMENT_DELETE_STATUS_UPDATE_URL = "PaymentConsentStatusUpdateURL";
 }

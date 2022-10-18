@@ -15,7 +15,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
-import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
@@ -36,19 +35,16 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
-public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
+public class PaymentConsentValidatorTests extends PowerMockTestCase {
 
     @Mock
     CommonConfigParser commonConfigParserMock;
-
-    PaymentRetrievalValidator paymentRetrievalValidator = new PaymentRetrievalValidator();
+    PaymentConsentValidator paymentRetrievalValidator = new PaymentConsentValidator();
     String clientId;
     String consentId;
     String authId;
@@ -62,7 +58,7 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         PowerMockito.mockStatic(CommonConfigParser.class);
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
 
-        paymentRetrievalValidator = Mockito.spy(PaymentRetrievalValidator.class);
+        paymentRetrievalValidator = Mockito.spy(PaymentConsentValidator.class);
     }
 
     @Test
@@ -77,6 +73,9 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
+        Map<String, String> resourceParams = new HashMap<>();
+        resourceParams.put("ResourcePath", "/payments/sepa-credit-transfers/" + consentId);
+        consentValidateData.setResourceParams(resourceParams);
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 
@@ -95,6 +94,9 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
 
         ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
+        Map<String, String> resourceParams = new HashMap<>();
+        resourceParams.put("ResourcePath", "/payments/sepa-credit-transfers/" + consentId);
+        consentValidateData.setResourceParams(resourceParams);
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
         paymentRetrievalValidator.validate(consentValidateData, consentValidationResult);
@@ -121,6 +123,9 @@ public class PaymentRetrievalValidatorTests extends PowerMockTestCase {
         ConsentValidateData consentValidateData = new ConsentValidateData(new JSONObject(), new JSONObject(),
                 null, detailedConsentResource.getConsentID(), null, null, new HashMap<>());
         consentValidateData.setComprehensiveConsent(detailedConsentResource);
+        Map<String, String> resourceParams = new HashMap<>();
+        resourceParams.put("ResourcePath", "/payments/sepa-credit-transfers/" + consentId);
+        consentValidateData.setResourceParams(resourceParams);
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
 

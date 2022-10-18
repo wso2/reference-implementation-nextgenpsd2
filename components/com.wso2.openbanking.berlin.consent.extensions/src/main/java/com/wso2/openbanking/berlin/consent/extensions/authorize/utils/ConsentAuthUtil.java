@@ -190,6 +190,8 @@ public class ConsentAuthUtil {
                                                         String consentId, AuthorizationResource currentAuthResource)
             throws ConsentManagementException {
 
+        /* todo: fix issue https://github.com/wso2-enterprise/financial-open-banking/issues/7841 to overcome explicit
+            authorization issue here */
         List<AuthorizationResource> authorizationResourcesOfCurrentConsent = consentCoreService
                 .searchAuthorizations(consentId)
                 .stream()

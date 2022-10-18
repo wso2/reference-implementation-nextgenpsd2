@@ -94,8 +94,16 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
 
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
-        log.error(ErrorConstants.PUT_NOT_SUPPORTED);
-        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, ErrorConstants.PUT_NOT_SUPPORTED);
+
+        serviceHandler = ServiceHandlerFactory.getServiceHandler(consentManageData.getRequestPath());
+
+        if (serviceHandler != null) {
+            serviceHandler.handlePut(consentManageData);
+        } else {
+            log.error(ErrorConstants.PATH_INVALID);
+            throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
+        }
     }
 
     @Override
