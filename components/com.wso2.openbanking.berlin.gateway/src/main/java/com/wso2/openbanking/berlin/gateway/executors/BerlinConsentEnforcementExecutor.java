@@ -156,7 +156,7 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
         json.appendField(CommonConstants.STATUS_CODE, String.valueOf(statusCode));
 
         String url = CommonConfigParser.getInstance().getConsentMgtConfigs()
-                .get(CommonConstants.PAYMENT_DELETE_STATUS_UPDATE_URL);
+                .get(CommonConstants.PAYMENT_CONSENT_STATUS_UPDATE_URL);
         CloseableHttpClient client = HTTPClientUtils.getHttpsClient();
         HttpPut request = new HttpPut(url);
         request.setHeader(HttpHeaders.CONTENT_TYPE, GatewayConstants.JSON_CONTENT_TYPE);
