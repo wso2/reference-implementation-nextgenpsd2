@@ -74,6 +74,7 @@ public class CommonConstants {
     public static final String PIIS_SCOPE = "piis";
     public static final String AUTH_STATUS = "authStatus";
     public static final String CONSENT_ID = "consentId";
+    public static final String PAYMENT_ID = "paymentId";
     public static final String STATUS_CODE = "statusCode";
 
     public static final String IDEMPOTENCY_ALLOWED_TIME = "ConsentManagement.Idempotency" +
