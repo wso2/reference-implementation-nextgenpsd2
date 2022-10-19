@@ -135,7 +135,6 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
      * @throws OpenBankingException thrown if an error occurs while initializing the HTTP client
      * @throws IOException thrown if any error occurs during sending the request
      */
-//    @Generated(message = "Excluding since this method involves an external HTTP call")
     private void updateConsentStatus(OBAPIResponseContext obapiResponseContext, int statusCode)
             throws OpenBankingException, IOException  {
 
