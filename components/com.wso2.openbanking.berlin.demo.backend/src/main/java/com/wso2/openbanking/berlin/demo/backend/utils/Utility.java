@@ -51,21 +51,17 @@ public class Utility {
     }
 
     /**
-     * Check if request ID and consent ID are set.
+     * Check if request ID is set.
      *
      * @param requestID ID of the request.
      * @return JSON response with either an error message or "valid".
      */
-    public static JSONObject validatePaymentRequestHeader(String requestID, String consentID) {
+    public static JSONObject validatePaymentRequestHeader(String requestID) {
 
         JSONObject responseJSON = new JSONObject();
         if (StringUtils.isBlank(requestID)) {
             responseJSON.put(CODE, FORBIDDEN.getStatusCode());
             responseJSON.put(MESSAGE, "X-Request_ID not found");
-        } else if (StringUtils.isBlank(consentID)) {
-            responseJSON.put(CODE, FORBIDDEN.getStatusCode());
-            responseJSON.put(MESSAGE, "Consent-ID not found");
-            return responseJSON;
         } else {
             responseJSON.put(MESSAGE, VALID);
         }
