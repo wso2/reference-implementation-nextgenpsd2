@@ -10,7 +10,6 @@
 package com.wso2.openbanking.berlin.gateway.executors;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
@@ -37,10 +36,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.HttpMethod;
 
 /**
  * Executor to capture Payment DELETE response.
@@ -48,9 +47,21 @@ import java.util.Map;
 public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor {
 
     private static final Log log = LogFactory.getLog(BerlinConsentEnforcementExecutor.class);
-    public static final String PAYMENT_ID = "paymentId";
-    public static final String CONSENT_ID = "consentId";
     public static final String MESSAGE = "message";
+
+    private final List<String> allApplicablePaymentRequestTypes = Arrays.asList (
+        "/bulk-payments/{payment-product}/{paymentId}",
+        "/payments/{payment-product}/{paymentId}",
+        "/periodic-payments/{payment-product}/{paymentId}",
+        "/bulk-payments/{payment-product}/{paymentId}/status",
+        "/payments/{payment-product}/{paymentId}/status",
+        "/periodic-payments/{payment-product}/{paymentId}/status"
+    );
+
+    private final List<String> instantPaymentRequestTypes = Arrays.asList (
+        "/payments/{payment-product}/{paymentId}",
+        "/payments/{payment-product}/{paymentId}/status"
+    );
 
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
@@ -64,18 +75,10 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
 
         MsgInfoDTO msgInfo = obapiRequestContext.getMsgInfo();
         // Return if the payment request is not a GET/DELETE request
-        if (!(StringUtils.equals("GET", msgInfo.getHttpMethod())
-                || StringUtils.equals("DELETE", msgInfo.getHttpMethod()))) {
+        if (!(StringUtils.equals(HttpMethod.GET, msgInfo.getHttpMethod())
+                || StringUtils.equals(HttpMethod.DELETE, msgInfo.getHttpMethod()))) {
             return;
         }
-
-        ArrayList<String> allApplicablePaymentRequestTypes = new ArrayList<> ();
-        allApplicablePaymentRequestTypes.add("/bulk-payments/{payment-product}/{paymentId}");
-        allApplicablePaymentRequestTypes.add("/payments/{payment-product}/{paymentId}");
-        allApplicablePaymentRequestTypes.add("/periodic-payments/{payment-product}/{paymentId}");
-        allApplicablePaymentRequestTypes.add("/bulk-payments/{payment-product}/{paymentId}/status");
-        allApplicablePaymentRequestTypes.add("/payments/{payment-product}/{paymentId}/status");
-        allApplicablePaymentRequestTypes.add("/periodic-payments/{payment-product}/{paymentId}/status");
 
         // Return if the request is not a payment request
         if (!allApplicablePaymentRequestTypes.contains(msgInfo.getElectedResource())) {
@@ -97,40 +100,30 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
     }
 
     @Override
-    @Generated(message = "Excluding since this method involves an external HTTP call")
     public void postProcessResponse(OBAPIResponseContext obapiResponseContext) {
 
         MsgInfoDTO msgInfo = obapiResponseContext.getMsgInfo();
 
         // Return if the bulk/periodic payment request is not a DELETE request
-        if (!StringUtils.equals("DELETE", msgInfo.getHttpMethod())) {
+        if (!StringUtils.equals(HttpMethod.DELETE, msgInfo.getHttpMethod())) {
             return;
         }
-
-        ArrayList<String> instantPaymentRequestTypes = new ArrayList<>();
-        instantPaymentRequestTypes.add("/payments/{payment-product}/{paymentId}");
-        instantPaymentRequestTypes.add("/payments/{payment-product}/{paymentId}/status");
 
         // Return if the request is not either bulk or periodic payments
         if (instantPaymentRequestTypes.contains(msgInfo.getElectedResource())) {
             return;
         }
 
-
-
-        Thread paymentCancellationStatusUpdateThread = new Thread(() -> {
-           try {
-               // Get the response code
-               int responseStatusCode = obapiResponseContext.getStatusCode();
-               if (HttpStatus.SC_NO_CONTENT == responseStatusCode || HttpStatus.SC_ACCEPTED == responseStatusCode) {
-                   // send the request to update the consent status
-                   updateConsentStatus(obapiResponseContext, responseStatusCode);
-               }
-           } catch (OpenBankingException | IOException e) {
-               log.error("Error occurred while updating VRP response data", e);
+        try {
+           // Get the response code
+           int responseStatusCode = obapiResponseContext.getStatusCode();
+           if (HttpStatus.SC_NO_CONTENT == responseStatusCode || HttpStatus.SC_ACCEPTED == responseStatusCode) {
+               // send the request to update the consent status
+               updateConsentStatus(obapiResponseContext, responseStatusCode);
            }
-        });
-        paymentCancellationStatusUpdateThread.start();
+        } catch (OpenBankingException | IOException e) {
+           log.error("Error occurred while updating consent status response data", e);
+        }
     }
 
     /**
@@ -142,7 +135,7 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
      * @throws OpenBankingException thrown if an error occurs while initializing the HTTP client
      * @throws IOException thrown if any error occurs during sending the request
      */
-    @Generated(message = "Excluding since this method involves an external HTTP call")
+//    @Generated(message = "Excluding since this method involves an external HTTP call")
     private void updateConsentStatus(OBAPIResponseContext obapiResponseContext, int statusCode)
             throws OpenBankingException, IOException  {
 
@@ -175,6 +168,13 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
     }
 
 
+    /**
+     * This method sends a return response to the client if the "Account-Request-Information" header contains the
+     * field "authStatus" to indicate the client that the payment addressed is not yet completely authorized.
+     *
+     * @param obapiRequestContext request context
+     * @throws UnsupportedEncodingException thrown if an error occurs while decoding the JWT
+     */
      void sendReturnPaymentResponseToClient(OBAPIRequestContext obapiRequestContext)
             throws UnsupportedEncodingException {
 
@@ -190,7 +190,7 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
                 && StringUtils.isNotBlank((CharSequence) consentInformation.get("authStatus"))) {
 
             JSONObject response = new JSONObject();
-            response.put(PAYMENT_ID, jwtClaims.get(CONSENT_ID));
+            response.put(CommonConstants.PAYMENT_ID, jwtClaims.get(CommonConstants.CONSENT_ID));
             response.put(MESSAGE, "This payment is not submitted yet due to partial authorization, " +
                     "please try again after authorizing the payment");
             obapiRequestContext.setModifiedPayload(response.toString());

@@ -12,15 +12,20 @@ package com.wso2.openbanking.berlin.gateway.executors;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.CertificateValidationException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.CertificateContentExtractor;
-import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
+import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
-import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
+import com.wso2.openbanking.accelerator.gateway.util.GatewayUtils;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
+import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.gateway.test.TestData;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayTestUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -32,18 +37,21 @@ import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.security.cert.CertificateException;
 
-@PrepareForTest({CertificateValidationUtils.class, CertificateContentExtractor.class, CommonConfigParser.class,
-        CertificateRevocationCache.class, OpenBankingConfigParser.class, CertificateValidationUtils.class})
-@PowerMockIgnore({"net.minidev.*", "jdk.internal.reflect.*", "javax.security.auth.x500.*"})
+/**
+ * BerlinConsentEnforcementExecutor tests.
+ */
+@PrepareForTest({CommonConfigParser.class, OpenBankingConfigParser.class, HTTPClientUtils.class, GatewayUtils.class})
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class BerlinConsentEnforcementExecutorTests extends PowerMockTestCase {
-
-    private OBAPIRequestContext obapiRequestContextMock;
 
     @Mock
     CommonConfigParser commonConfigParserMock;
@@ -52,13 +60,21 @@ public class BerlinConsentEnforcementExecutorTests extends PowerMockTestCase {
     OpenBankingConfigParser openBankingConfigParserMock;
 
     @Mock
+    OBAPIRequestContext obapiRequestContextMock;
+
+    @Mock
+    OBAPIResponseContext obapiResponseContextMock;
+
+    @Mock
     MsgInfoDTO msgInfoDTOMock;
 
     @BeforeClass
     public void initClass() throws CertificateException, CertificateValidationException,
             java.security.cert.CertificateException, OpenBankingException {
 
+        MockitoAnnotations.initMocks(this);
         obapiRequestContextMock = Mockito.mock(OBAPIRequestContext.class);
+        obapiResponseContextMock = Mockito.mock(OBAPIResponseContext.class);
         this.msgInfoDTOMock = Mockito.mock(MsgInfoDTO.class);
     }
 
@@ -100,7 +116,7 @@ public class BerlinConsentEnforcementExecutorTests extends PowerMockTestCase {
     }
 
     @Test
-    public void testMethod() {
+    public void testPostProcessRequest() {
 
         String paymentId = UUID.randomUUID().toString();
         MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
@@ -108,5 +124,37 @@ public class BerlinConsentEnforcementExecutorTests extends PowerMockTestCase {
         msgInfoDTO.setResource("payments/bulk-payments/" + paymentId);
         PowerMockito.when(obapiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
         new BerlinConsentEnforcementExecutor().postProcessRequest(obapiRequestContextMock);
+    }
+
+    @Test
+    public void testPreProcessRequestSuccessScenario() throws OpenBankingException, IOException {
+
+        MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
+        msgInfoDTO.setHttpMethod("DELETE");
+        msgInfoDTO.setElectedResource("/bulk-payments/{payment-product}/{paymentId}/status");
+        msgInfoDTO.setResource("/bulk-payments/{payment-product}/" + UUID.randomUUID() + "/status");
+        PowerMockito.when(obapiResponseContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
+        PowerMockito.when(obapiResponseContextMock.getStatusCode()).thenReturn(204);
+
+        PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
+        Map<String, String> consentMgtConfigsMap = new HashMap<>();
+        consentMgtConfigsMap.put(CommonConstants.PAYMENT_CONSENT_STATUS_UPDATE_URL, "url");
+        PowerMockito.when(commonConfigParserMock.getConsentMgtConfigs()).thenReturn(consentMgtConfigsMap);
+
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+        PowerMockito.mockStatic(HTTPClientUtils.class);
+        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+
+        PowerMockito.mockStatic(GatewayUtils.class);
+        PowerMockito.when(GatewayUtils.getAPIMgtConfig(Mockito.anyString())).thenReturn("username");
+
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        Mockito.when(closeableHttpClientMock.execute(Mockito.any())).thenReturn(httpResponseMock);
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        Mockito.when(httpResponseMock.getEntity()).thenReturn(httpEntityMock);
+        InputStream inputStreamMock = new ByteArrayInputStream("response".getBytes());
+        Mockito.when(httpEntityMock.getContent()).thenReturn(inputStreamMock);
+
+        new BerlinConsentEnforcementExecutor().postProcessResponse(obapiResponseContextMock);
     }
 }
