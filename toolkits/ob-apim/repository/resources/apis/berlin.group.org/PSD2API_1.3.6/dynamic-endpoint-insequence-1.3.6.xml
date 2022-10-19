@@ -30,8 +30,15 @@
                     </filter>
                 </then>
                 <else>
-                    <header name="To" value="https://localhost:9446/api/openbanking/consent/manage" />
-                    <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
+                    <filter regex="DELETE" source="get-property('api.ut.HTTP_METHOD')">
+                        <then>
+                            <header name="To" value="https://localhost:9443/api/openbanking/berlin/backend/services/payments"/>
+                        </then>
+                        <else>
+                            <header name="To" value="https://localhost:9446/api/openbanking/consent/manage" />
+                            <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
+                        </else>
+                    </filter>
                 </else>
             </filter>
         </then>
