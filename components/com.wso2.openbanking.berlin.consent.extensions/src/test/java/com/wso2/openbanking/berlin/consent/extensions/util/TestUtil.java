@@ -85,7 +85,7 @@ public class TestUtil {
         } else if (ConsentTypeEnum.PAYMENTS.equals(consentType)) {
             Assert.assertEquals(TransactionStatusEnum.RCVD.name(),
                     response.get(ConsentExtensionConstants.TRANSACTION_STATUS));
-            Assert.assertNotNull(response.get(ConsentExtensionConstants.PAYMENT_ID));
+            Assert.assertNotNull(response.get(CommonConstants.PAYMENT_ID));
         }
 
         Assert.assertEquals(mockHttpServletResponse.getHeader(ConsentExtensionConstants.ASPSP_SCA_APPROACH).toString(),
