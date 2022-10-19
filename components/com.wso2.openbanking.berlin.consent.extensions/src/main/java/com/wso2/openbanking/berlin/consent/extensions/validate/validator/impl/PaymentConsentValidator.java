@@ -67,7 +67,7 @@ public class PaymentConsentValidator implements SubmissionValidator {
         // Only DELETE and GET payment requests will go through consent validation
         if (StringUtils.equals(DELETE, consentValidateData.getResourceParams().get(HTTP_METHOD))) {
 
-            /* Check whether payment consent is in CANC (payment is already cancelled), REVOKED or PATC status.
+            /* Check whether payment consent is in CANC (payment is already cancelled), REVOKED or RJCT status.
                The consent can be in REVOKED status if the payment is already revoked by the consent portal.
                The consent can be in RJCT status if the payment is not consented. */
             if (StringUtils.equals(TransactionStatusEnum.CANC.name(), currentStatus)
@@ -113,6 +113,14 @@ public class PaymentConsentValidator implements SubmissionValidator {
         }
     }
 
+    /**
+     * This method is used to add an extra field to the consent-info header to be sent to the executor.
+     * The field we send can be used to do specific validations in the executor level.
+     *
+     * @param consentValidationResult consent validation result
+     * @param fieldKey field key
+     * @param fieldValue field value
+     */
     private void setCustomFieldToConsentInfoHeader(ConsentValidationResult consentValidationResult, String fieldKey,
                                                    String fieldValue) {
 

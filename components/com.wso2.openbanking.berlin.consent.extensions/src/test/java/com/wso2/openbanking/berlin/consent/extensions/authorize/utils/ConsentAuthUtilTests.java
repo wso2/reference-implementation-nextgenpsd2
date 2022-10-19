@@ -32,6 +32,9 @@ import java.util.UUID;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Contains tests related to ConsentAuthUtils class.
+ */
 @PowerMockIgnore({"jdk.internal.reflect.*"})
 public class ConsentAuthUtilTests {
 

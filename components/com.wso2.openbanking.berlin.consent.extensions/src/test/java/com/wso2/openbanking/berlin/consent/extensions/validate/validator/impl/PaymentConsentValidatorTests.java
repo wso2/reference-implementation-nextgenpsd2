@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Contains tests related to PaymentConsentValidator.
+ */
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
 public class PaymentConsentValidatorTests extends PowerMockTestCase {
