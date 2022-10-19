@@ -73,6 +73,10 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
 
         super.postProcessRequest(obapiRequestContext);
 
+        if (obapiRequestContext.isError() || obapiRequestContext.getConsentId() == null) {
+            return;
+        }
+
         MsgInfoDTO msgInfo = obapiRequestContext.getMsgInfo();
         // Return if the payment request is not a GET/DELETE request
         if (!(StringUtils.equals(HttpMethod.GET, msgInfo.getHttpMethod())
