@@ -74,8 +74,8 @@ public class PaymentConsentValidator implements SubmissionValidator {
                     || StringUtils.equals(TransactionStatusEnum.REVOKED.name(), currentStatus)
                     || StringUtils.equals(TransactionStatusEnum.RJCT.name(), currentStatus)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("The payment consent " + consentValidateData.getConsentId() + " is already deleted " +
-                            "or revoked or cancelled");
+                    log.debug("The payment consent " + consentValidateData.getConsentId() + " is is not eligible " +
+                            "for deletion");
                 }
                 CommonValidationUtil.handleConsentValidationError(consentValidationResult,
                         ResponseStatus.UNAUTHORIZED.getStatusCode(), TPPMessage.CodeEnum.CONSENT_INVALID.toString(),
