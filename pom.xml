@@ -345,7 +345,7 @@
                 <artifactId>org.wso2.carbon.core</artifactId>
                 <version>${carbon.kernel.version}</version>
                 <exclusions>
-                   <exclusion>
+                    <exclusion>
                         <groupId>wsdl4j.wso2</groupId>
                         <artifactId>wsdl4j</artifactId>
                     </exclusion>
