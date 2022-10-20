@@ -56,6 +56,7 @@ import javax.ws.rs.HttpMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
         "jdk.internal.reflect.*"})
@@ -590,5 +591,55 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
 
         doReturn(detailedConsentResource).when(consentCoreServiceMock).getDetailedConsent(Mockito.anyString());
         paymentServiceHandler.handleDelete(paymentConsentManageData);
+    }
+
+    @Test
+    public void testHandlePutWith202ResponseCode() throws ParseException, ConsentManagementException {
+
+        Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "false");
+        ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
+                ConsentExtensionConstants.PAYMENT_CONSENT_UPDATE_PATH, mockHttpServletRequest, mockHttpServletResponse,
+                clientId, HttpMethod.PUT,
+                TestPayloads.getTestConsentUpdatePayload("202"));
+        when(consentCoreServiceMock.updateConsentStatus(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(new ConsentResource());
+        paymentServiceHandler.handlePut(paymentConsentManageData);
+        Assert.assertEquals(paymentConsentManageData.getResponseStatus(), ResponseStatus.OK);
+    }
+
+    @Test
+    public void testHandlePutWith204ResponseCode() throws ParseException, ConsentManagementException {
+
+        Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "false");
+        ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
+                ConsentExtensionConstants.PAYMENT_CONSENT_UPDATE_PATH, mockHttpServletRequest, mockHttpServletResponse,
+                clientId, HttpMethod.PUT,
+                TestPayloads.getTestConsentUpdatePayload("204"));
+        when(consentCoreServiceMock.updateConsentStatus(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(new ConsentResource());
+        paymentServiceHandler.handlePut(paymentConsentManageData);
+        Assert.assertEquals(paymentConsentManageData.getResponseStatus(), ResponseStatus.OK);
+    }
+
+    @Test
+    public void testHandlePutWithConsentUpdateError() throws ParseException, ConsentManagementException {
+
+        Map<String, String> implicitInitiationHeadersMap = new HashMap<>();
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+                UUID.randomUUID().toString());
+        implicitInitiationHeadersMap.put(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER, "false");
+        ConsentManageData paymentConsentManageData = TestUtil.getSampleConsentManageData(implicitInitiationHeadersMap,
+                ConsentExtensionConstants.PAYMENT_CONSENT_UPDATE_PATH, mockHttpServletRequest, mockHttpServletResponse,
+                clientId, HttpMethod.PUT,
+                TestPayloads.getTestConsentUpdatePayload("204"));
+        when(consentCoreServiceMock.updateConsentStatus(Mockito.anyString(), Mockito.anyString()))
+                .thenThrow(new ConsentManagementException(Mockito.anyString()));
+        paymentServiceHandler.handlePut(paymentConsentManageData);
     }
 }

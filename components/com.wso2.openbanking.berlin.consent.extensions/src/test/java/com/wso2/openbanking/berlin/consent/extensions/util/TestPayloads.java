@@ -1142,4 +1142,11 @@ public class TestPayloads {
             "       \"maskedPan\":\"DE12345678901234567890\"\n" +
             "   }\n" +
             "]\n";
+
+    public static String getTestConsentUpdatePayload(String statusCode) {
+        return "{\n" +
+                "    \"consentId\" : \"1234\",\n" +
+                "    \"statusCode\" : \"" + statusCode + "\"\n" +
+                "}";
+    }
 }
