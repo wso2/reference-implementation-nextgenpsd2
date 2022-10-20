@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.gateway.utils;
@@ -43,6 +40,33 @@ public class GatewayTestUtils {
     private static java.security.cert.X509Certificate expiredSelfCertificate = null;
     private static java.security.cert.X509Certificate testClientCertificateIssuer = null;
 
+    public static final String SAMPLE_JWT_2 = "eyJhbGciOiJSUzI1NiJ9.eyJjbGllbnRJZCI6IlBTREdCLU9CLVVua25vd24wMDE1ODAw" +
+            "MDAxSFFRclpBQVgiLCJjdXJyZW50U3RhdHVzIjoiQUNDUCIsImNyZWF0ZWRUaW1lc3RhbXAiOjE2NjU5OTgwMzMsInJlY3VycmluZ" +
+            "0luZGljYXRvciI6ZmFsc2UsImF1dGhvcml6YXRpb25SZXNvdXJjZXMiOlt7InVwZGF0ZWRUaW1lIjoxNjY1OTk4MTI1LCJjb25zZW" +
+            "50SWQiOiJmYzI4YWQ0NS0wZjQ0LTQwMWYtOTJiZS0yYjk1ZTQzYTA2NmQiLCJhdXRob3JpemF0aW9uSWQiOiIzMzQ5MmU1NC1mOTF" +
+            "mLTRiM2QtOGVmZS02ZWU5ZWQ2Y2IyZDUiLCJhdXRob3JpemF0aW9uVHlwZSI6ImF1dGhvcmlzYXRpb24iLCJ1c2VySWQiOiJhZG1p" +
+            "bkB3c28yLmNvbSIsImF1dGhvcml6YXRpb25TdGF0dXMiOiJwc3VBdXRoZW50aWNhdGVkIn1dLCJ1cGRhdGVkVGltZXN0YW1wIjox" +
+            "NjY1OTk4MTI1LCJ2YWxpZGl0eVBlcmlvZCI6MCwiY29uc2VudEF0dHJpYnV0ZXMiOnsicGF5bWVudC1zZXJ2aWNlIjoiYnVsay1wY" +
+            "XltZW50cyIsIlNDQS1BcHByb2FjaDozMzQ5MmU1NC1mOTFmLTRiM2QtOGVmZS02ZWU5ZWQ2Y2IyZDUiOiJSRURJUkVDVCIsIlgtUm" +
+            "VxdWVzdC1JRCI6IjhmNzk0Mjk2LWMyMTctNGEwYS1iYzFkLTMwYzJhZjM4MWQzZCIsIlNDQS1NZXRob2Q6MzM0OTJlNTQtZjkxZi0" +
+            "0YjNkLThlZmUtNmVlOWVkNmNiMmQ1Ijoic21zLW90cCIsInBheW1lbnQtcHJvZHVjdCI6InNlcGEtY3JlZGl0LXRyYW5zZmVycyJ9" +
+            "LCJjb25zZW50SWQiOiJmYzI4YWQ0NS0wZjQ0LTQwMWYtOTJiZS0yYjk1ZTQzYTA2NmQiLCJjb25zZW50TWFwcGluZ1Jlc291cmNlc" +
+            "yI6W3sibWFwcGluZ0lkIjoiMmQ4NTY1MDctYzRmMy00ZjE2LWE0NmUtODUyNTQ4NTNkNzdiIiwibWFwcGluZ1N0YXR1cyI6ImFjdG" +
+            "l2ZSIsImFjY291bnRJZCI6ImliYW46REU0MDEwMDEwMDEwMzMwNzExODYwOCIsImF1dGhvcml6YXRpb25JZCI6IjMzNDkyZTU0LWY" +
+            "5MWYtNGIzZC04ZWZlLTZlZTllZDZjYjJkNSIsInBlcm1pc3Npb24iOiJuXC9hIn1dLCJhZGRpdGlvbmFsQ29uc2VudEluZm8iOnsiW" +
+            "C1SZXF1ZXN0LUlEIjoiY2YxM2QwMDctMTgyYS00YzBjLWJiZTUtOTQ5ZjVlNjU5YTRlIiwiYXV0aFN0YXR1cyI6InBhcnRpYWwifS" +
+            "wiY29uc2VudFR5cGUiOiJidWxrLXBheW1lbnRzIiwicmVjZWlwdCI6eyJkZWJ0b3JBY2NvdW50Ijp7ImliYW4iOiJERTQwMTAwMTAw" +
+            "MTAzMzA3MTE4NjA4In0sInJlcXVlc3RlZEV4ZWN1dGlvbkRhdGUiOiIyMDI1LTA4LTAxIiwicGF5bWVudEluZm9ybWF0aW9uSWQiOi" +
+            "JteS1idWxrLWlkZW50aWZpY2F0aW9uLTEyMzQiLCJwYXltZW50cyI6W3siY3JlZGl0b3JOYW1lIjoiTWVyY2hhbnQxMjMiLCJjcmVk" +
+            "aXRvckFjY291bnQiOnsiaWJhbiI6IkRFMDIxMDAxMDAxMDkzMDcxMTg2MDMifSwiaW5zdHJ1Y3RlZEFtb3VudCI6eyJhbW91bnQiO" +
+            "iIxMjMuNTAiLCJjdXJyZW5jeSI6IkVVUiJ9LCJyZW1pdHRhbmNlSW5mb3JtYXRpb25VbnN0cnVjdHVyZWQiOiJSZWYgTnVtYmVyIE1" +
+            "lcmNoYW50IDEifSx7ImNyZWRpdG9yTmFtZSI6Ik1lcmNoYW50NDU2IiwiY3JlZGl0b3JBY2NvdW50Ijp7ImliYW4iOiJGUjc2MTIzN" +
+            "DU5ODc2NTAxMjM0NTY3ODkwMTQifSwiaW5zdHJ1Y3RlZEFtb3VudCI6eyJhbW91bnQiOiIzNC4xMCIsImN1cnJlbmN5IjoiRVVSIn0s" +
+            "InJlbWl0dGFuY2VJbmZvcm1hdGlvblVuc3RydWN0dXJlZCI6IlJlZiBOdW1iZXIgTWVyY2hhbnQgMiJ9XSwiYmF0Y2hCb29raW5nUHJ" +
+            "lZmVycmVkIjp0cnVlfSwiY29uc2VudEZyZXF1ZW5jeSI6MH0.piGFAXuiuL6sCJoUCGyph_EyO9wqtrfZ6HGkTvdPwZHY7VvfVhHRwEC" +
+            "nsklZBwjflp-CXacLZPkBYz27-hMc2lz6dFXWgN49mNVPXI8g-wsu3PhfzJKC9OuVvDcw6cCtslf10ePnC7a4QyvCPsM5_lrC2mIifkS" +
+            "OcQbELwSp5sHHsqcibzyuFOBg-wb6ZCrKMt1c6gBSSucAwBDGvBDayEK3njcZ7FNYGBYtrmCJC-s5FXHwVRtM-R49M1fepK3BVx_yyoL" +
+            "DEjuIgevJlQhCmYXM2-eaCPs1U9Ubt7YOK8JkfPY4R2eneaTbTlxtBhP7XGOPazft687aZkQItWSJdQ";
     public static final String TEST_TRANSPORT_CERT = "-----BEGIN CERTIFICATE-----" +
             "MIIFljCCA36gAwIBAgIJAN5zDsVzPq0aMA0GCSqGSIb3DQEBBQUAMIGsMQswCQYD" +
             "VQQGEwJMSzELMAkGA1UECAwCV1AxDDAKBgNVBAcMA0NPTDEaMBgGA1UECgwRV1NP" +
