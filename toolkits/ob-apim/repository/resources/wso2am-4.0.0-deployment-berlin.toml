@@ -587,7 +587,7 @@ maxHttpHeaderSize = 16384
 [open_banking_berlin.consent]
 host = "APIM_HOSTNAME"
 port = "8243"
-payment_consent_status_update_url = "https://IS_HOSTNAME:9446/api/openbanking/consent/manage/payment-delete-status-update-process"
+payment_consent_status_update_url = "https://IS_HOSTNAME:9446/api/openbanking/consent/manage/payment-consent-status-update-process"
 
 [open_banking_berlin.consent.freq_per_day]
 enable = true
