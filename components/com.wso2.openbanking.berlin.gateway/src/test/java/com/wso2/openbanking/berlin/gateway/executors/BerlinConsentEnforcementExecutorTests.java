@@ -131,8 +131,8 @@ public class BerlinConsentEnforcementExecutorTests extends PowerMockTestCase {
 
         MsgInfoDTO msgInfoDTO = new MsgInfoDTO();
         msgInfoDTO.setHttpMethod("DELETE");
-        msgInfoDTO.setElectedResource("/bulk-payments/{payment-product}/{paymentId}/status");
-        msgInfoDTO.setResource("/bulk-payments/{payment-product}/" + UUID.randomUUID() + "/status");
+        msgInfoDTO.setElectedResource("/bulk-payments/{payment-product}/{paymentId}");
+        msgInfoDTO.setResource("/bulk-payments/{payment-product}/" + UUID.randomUUID());
         PowerMockito.when(obapiResponseContextMock.getMsgInfo()).thenReturn(msgInfoDTO);
         PowerMockito.when(obapiResponseContextMock.getStatusCode()).thenReturn(204);
 

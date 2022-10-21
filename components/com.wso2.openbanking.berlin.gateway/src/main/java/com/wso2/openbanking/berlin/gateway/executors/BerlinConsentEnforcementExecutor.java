@@ -58,9 +58,9 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
         "/periodic-payments/{payment-product}/{paymentId}/status"
     );
 
-    private final List<String> instantPaymentRequestTypes = Arrays.asList (
-        "/payments/{payment-product}/{paymentId}",
-        "/payments/{payment-product}/{paymentId}/status"
+    private final List<String> allApplicablePaymentRequestTypesForDelete = Arrays.asList (
+        "/bulk-payments/{payment-product}/{paymentId}",
+        "/periodic-payments/{payment-product}/{paymentId}"
     );
 
     @Override
@@ -114,7 +114,7 @@ public class BerlinConsentEnforcementExecutor extends ConsentEnforcementExecutor
         }
 
         // Return if the request is not either bulk or periodic payments
-        if (instantPaymentRequestTypes.contains(msgInfo.getElectedResource())) {
+        if (!allApplicablePaymentRequestTypesForDelete.contains(msgInfo.getElectedResource())) {
             return;
         }
 
