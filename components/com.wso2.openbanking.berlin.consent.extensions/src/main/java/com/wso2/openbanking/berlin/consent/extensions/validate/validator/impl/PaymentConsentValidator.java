@@ -64,6 +64,16 @@ public class PaymentConsentValidator implements SubmissionValidator {
             return;
         }
 
+        log.debug("Validating if the Consent Id belongs to the client");
+        if (!StringUtils.equals(detailedConsentResource.getClientID(), consentValidateData.getClientId())
+                || !StringUtils.equals(consentValidateData.getConsentId(), detailedConsentResource.getConsentID())) {
+            log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                    ResponseStatus.NOT_FOUND.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
+                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+            return;
+        }
+
         // Only DELETE and GET payment requests will go through consent validation
         if (StringUtils.equals(DELETE, consentValidateData.getResourceParams().get(HTTP_METHOD))) {
 
