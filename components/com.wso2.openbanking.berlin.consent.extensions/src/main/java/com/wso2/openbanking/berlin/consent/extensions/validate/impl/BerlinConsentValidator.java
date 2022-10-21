@@ -15,6 +15,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
@@ -67,26 +68,34 @@ public class BerlinConsentValidator implements ConsentValidator {
             HeaderValidator.validatePsuIpAddress(consentValidateData.getHeadersMap());
         }
 
-        if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeadersMap(),
-                ConsentExtensionConstants.CONSENT_ID_HEADER)) {
-            log.error(ErrorConstants.CONSENT_ID_MISSING);
-            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
-                    ErrorConstants.CONSENT_ID_MISSING);
-            return;
+        DetailedConsentResource consentResource = consentValidateData.getComprehensiveConsent();
+        String consentType = consentResource.getConsentType();
+        boolean shouldValidateConsentIdHeader = !StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS,
+                consentType)
+                && !StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
+                && !StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType);
+
+        // Payment info/status GET and payment DELETE requests do not contain a Consent-ID header to validate
+        if (shouldValidateConsentIdHeader) {
+            if (!HeaderValidator.isHeaderStringPresent(consentValidateData.getHeadersMap(),
+                    ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+                log.error(ErrorConstants.CONSENT_ID_MISSING);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                        ErrorConstants.CONSENT_ID_MISSING);
+                return;
+            }
+
+            if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeadersMap(),
+                    ConsentExtensionConstants.CONSENT_ID_HEADER)) {
+                log.error(ErrorConstants.CONSENT_ID_INVALID);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
+                        ErrorConstants.CONSENT_ID_INVALID);
+                return;
+            }
         }
 
-        if (!HeaderValidator.isHeaderValidUUID(consentValidateData.getHeadersMap(),
-                ConsentExtensionConstants.CONSENT_ID_HEADER)) {
-            log.error(ErrorConstants.CONSENT_ID_INVALID);
-            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.BAD_REQUEST.getStatusCode(), TPPMessage.CodeEnum.FORMAT_ERROR.toString(),
-                    ErrorConstants.CONSENT_ID_INVALID);
-            return;
-        }
-
-        String consentIdHeader = consentValidateData.getHeadersMap()
-                .get(ConsentExtensionConstants.CONSENT_ID_HEADER);
         String clientIdFromToken = consentValidateData.getClientId();
         String psuIdFromToken = consentValidateData.getUserId();
         int tenantIdOccurrences = StringUtils.countMatches(psuIdFromToken,
@@ -99,19 +108,22 @@ public class BerlinConsentValidator implements ConsentValidator {
         }
 
         log.debug("Validating if the Consent Id belongs to the client");
-        if (!StringUtils.equals(consentValidateData.getComprehensiveConsent().getClientID(), clientIdFromToken)
-                || !StringUtils.equals(consentIdHeader, consentValidateData.getComprehensiveConsent().getConsentID())) {
-            log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            CommonValidationUtil.handleConsentValidationError(consentValidationResult,
-                    ResponseStatus.NOT_FOUND.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-            return;
+        if (shouldValidateConsentIdHeader) {
+            String consentIdHeader = consentValidateData.getHeadersMap()
+                    .get(ConsentExtensionConstants.CONSENT_ID_HEADER);
+            if (!StringUtils.equals(consentResource.getClientID(), clientIdFromToken)
+                    || !StringUtils.equals(consentIdHeader, consentResource.getConsentID())) {
+                log.error(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                CommonValidationUtil.handleConsentValidationError(consentValidationResult,
+                        ResponseStatus.NOT_FOUND.getStatusCode(), TPPMessage.CodeEnum.RESOURCE_UNKNOWN.toString(),
+                        ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                return;
+            }
         }
 
         log.debug("Validating if Consent Id belongs to the user");
         boolean isPsuIdMatching = false;
-        ArrayList<AuthorizationResource> authResources = consentValidateData.getComprehensiveConsent()
-                .getAuthorizationResources();
+        ArrayList<AuthorizationResource> authResources = consentResource.getAuthorizationResources();
         for (AuthorizationResource resource : authResources) {
             if (psuIdFromToken.equals(resource.getUserID())) {
                 isPsuIdMatching = true;
