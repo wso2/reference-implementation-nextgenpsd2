@@ -304,7 +304,6 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         doReturn(true).when(consentCoreServiceMock).revokeConsent(Mockito.anyString(), Mockito.anyString());
         doReturn(detailedConsentResource).when(consentCoreServiceMock).getDetailedConsent(Mockito.anyString());
         doReturn(true).when(consentCoreServiceMock).deactivateAccountMappings(Mockito.any());
-        doReturn(false).when(commonConfigParserMock).isAuthorizationRequiredForCancellation();
         accountServiceHandler.handleDelete(accountConsentManageData);
 
         Assert.assertEquals(ResponseStatus.NO_CONTENT.toString(),
@@ -383,7 +382,6 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
         doReturn(detailedConsentResource).when(consentCoreServiceMock).getDetailedConsent(Mockito.anyString());
         doThrow(new ConsentManagementException("error")).when(consentCoreServiceMock)
                 .deactivateAccountMappings(Mockito.any());
-        doReturn(false).when(commonConfigParserMock).isAuthorizationRequiredForCancellation();
         accountServiceHandler.handleDelete(accountConsentManageData);
     }
 

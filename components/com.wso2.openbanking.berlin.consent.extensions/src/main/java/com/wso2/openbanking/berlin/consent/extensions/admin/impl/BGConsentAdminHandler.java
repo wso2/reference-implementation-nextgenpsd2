@@ -22,7 +22,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -180,48 +179,30 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
                     ErrorConstants.CONSENT_ALREADY_DELETED));
         }
 
-        if (CommonConfigParser.getInstance().isAuthorizationRequiredForCancellation()) {
-
-            if (log.isDebugEnabled()) {
-                log.debug("TPP Prefers explicit authorisation for payment cancellation : "
-                        + consentResource.getConsentID() + " , Update consent with ACTC status");
-            }
-
-            try {
-                coreService.updateConsentStatus(consentResource.getConsentID(), TransactionStatusEnum.ACTC.name());
-            } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.CONSENT_UPDATE_ERROR);
-            }
-
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
-                        "an explicit authorisation for consent : " + consentResource.getConsentID());
-            }
-
-            try {
-                coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Deactivating account mappings of revoked payment: " + consentResource.getConsentID());
-                }
-                ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
-                ArrayList<String> mappingIds = new ArrayList<>();
-                for (ConsentMappingResource mappingResource : mappingResources) {
-                    mappingIds.add(mappingResource.getMappingID());
-                }
-                if (CollectionUtils.isNotEmpty(mappingIds)) {
-                    coreService.deactivateAccountMappings(mappingIds);
-                }
-            } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.CONSENT_UPDATE_ERROR);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
+                    "an explicit authorisation for consent : " + consentResource.getConsentID());
         }
 
+        try {
+            coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Deactivating account mappings of revoked payment: " + consentResource.getConsentID());
+            }
+            ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
+            ArrayList<String> mappingIds = new ArrayList<>();
+            for (ConsentMappingResource mappingResource : mappingResources) {
+                mappingIds.add(mappingResource.getMappingID());
+            }
+            if (CollectionUtils.isNotEmpty(mappingIds)) {
+                coreService.deactivateAccountMappings(mappingIds);
+            }
+        } catch (ConsentManagementException e) {
+            log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    ErrorConstants.CONSENT_UPDATE_ERROR);
+        }
     }
 
     /**

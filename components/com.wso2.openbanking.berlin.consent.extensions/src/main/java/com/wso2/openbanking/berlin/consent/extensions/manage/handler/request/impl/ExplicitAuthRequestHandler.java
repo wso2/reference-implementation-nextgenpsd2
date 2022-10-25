@@ -108,9 +108,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         } else {
             authType = AuthTypeEnum.AUTHORISATION.toString();
         }
-        boolean isAuthRequiredForCancellation = CommonConfigParser.getInstance()
-                .isAuthorizationRequiredForCancellation();
-        boolean isExplicit = isExplicit(isRetrievedConsentExplicit, isAuthRequiredForCancellation, authType);
+
+        boolean isExplicit = isExplicit(isRetrievedConsentExplicit, authType);
 
         boolean shouldCreateAuthorisationResource = false;
         AuthorizationResource authorizationResource = null;
@@ -234,11 +233,11 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
      * @param authType                   authorisation type
      * @return true if explicit authorisation resource needs to be created
      */
-    private boolean isExplicit(boolean isRetrievedConsentExplicit, boolean isAuthRequiredForCancellation,
-                               String authType) {
+    private boolean isExplicit(boolean isRetrievedConsentExplicit, String authType) {
 
         if (StringUtils.equals(authType, AuthTypeEnum.CANCELLATION.toString())) {
-            return isAuthRequiredForCancellation;
+            // TPP-Explicit-Auth-Preferred header is not considered in cancellation authorisation
+            return true;
         }
 
         return isRetrievedConsentExplicit;

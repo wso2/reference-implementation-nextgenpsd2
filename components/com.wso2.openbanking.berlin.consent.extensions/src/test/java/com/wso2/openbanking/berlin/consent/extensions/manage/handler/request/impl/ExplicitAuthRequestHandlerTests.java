@@ -80,7 +80,6 @@ public class ExplicitAuthRequestHandlerTests extends PowerMockTestCase {
         PowerMockito.when(CommonConfigParser.getInstance()).thenReturn(commonConfigParserMock);
         doReturn("v1").when(commonConfigParserMock).getApiVersion(Mockito.anyString());
         doReturn(true).when(commonConfigParserMock).isScaRequired();
-        doReturn(true).when(commonConfigParserMock).isAuthorizationRequiredForCancellation();
         doReturn(TestUtil.getSampleSupportedScaMethods()).when(commonConfigParserMock).getSupportedScaMethods();
         doReturn(TestUtil.getSampleSupportedScaApproaches()).when(commonConfigParserMock).getSupportedScaApproaches();
         doReturn(TestConstants.WELL_KNOWN_ENDPOINT).when(commonConfigParserMock).getOauthMetadataEndpoint();
@@ -192,5 +191,4 @@ public class ExplicitAuthRequestHandlerTests extends PowerMockTestCase {
 
         explicitAuthRequestHandler.handle(consentManageData);
     }
-
 }

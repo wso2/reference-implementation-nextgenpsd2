@@ -416,10 +416,6 @@ public class CommonConfigParser {
         return accountReferenceTypes;
     }
 
-    public boolean isAuthorizationRequiredForCancellation() {
-        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.AUTHORIZE_CANCELLATION));
-    }
-
     /**
      * Get supported code challenge methods for Berlin authorization request.
      *
