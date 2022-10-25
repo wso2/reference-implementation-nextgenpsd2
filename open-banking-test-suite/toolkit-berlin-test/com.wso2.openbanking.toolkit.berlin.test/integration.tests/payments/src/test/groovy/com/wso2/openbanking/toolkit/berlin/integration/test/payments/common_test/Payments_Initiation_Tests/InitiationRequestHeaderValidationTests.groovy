@@ -43,7 +43,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
                 .body(payload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_404)
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_403)
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsPayloads", dataProviderClass = PaymentsDataProviders.class)

@@ -688,11 +688,11 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
 
         doDefaultInitiation(consentPath, initiationPayload)
 
-        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Request payload is not present")
+                "Message digest validation failed")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

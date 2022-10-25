@@ -67,7 +67,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
+        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

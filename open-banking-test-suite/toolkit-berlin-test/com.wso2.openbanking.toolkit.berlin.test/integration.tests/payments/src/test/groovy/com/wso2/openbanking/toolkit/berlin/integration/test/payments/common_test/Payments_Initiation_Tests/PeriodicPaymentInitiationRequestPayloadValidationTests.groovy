@@ -256,7 +256,6 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
                 "End date must be greater than start date")
     }
 
-//    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501039_Initiation Request by passing 00 for dayOfExecution value"() {
 
@@ -273,7 +272,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "")
+                "Invalid dayOfExecution value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -299,7 +298,6 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
     }
 
-//    TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4719
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0501041_Initiation Request by passing 32 for dayOfExecution value"() {
 
@@ -316,7 +314,7 @@ class PeriodicPaymentInitiationRequestPayloadValidationTests extends AbstractPay
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "")
+                "Invalid dayOfExecution value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
