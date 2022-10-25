@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.impl;
@@ -108,9 +105,8 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         } else {
             authType = AuthTypeEnum.AUTHORISATION.toString();
         }
-        boolean isAuthRequiredForCancellation = CommonConfigParser.getInstance()
-                .isAuthorizationRequiredForCancellation();
-        boolean isExplicit = isExplicit(isRetrievedConsentExplicit, isAuthRequiredForCancellation, authType);
+
+        boolean isExplicit = isExplicit(isRetrievedConsentExplicit, authType);
 
         boolean shouldCreateAuthorisationResource = false;
         AuthorizationResource authorizationResource = null;
@@ -234,11 +230,11 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
      * @param authType                   authorisation type
      * @return true if explicit authorisation resource needs to be created
      */
-    private boolean isExplicit(boolean isRetrievedConsentExplicit, boolean isAuthRequiredForCancellation,
-                               String authType) {
+    private boolean isExplicit(boolean isRetrievedConsentExplicit, String authType) {
 
         if (StringUtils.equals(authType, AuthTypeEnum.CANCELLATION.toString())) {
-            return isAuthRequiredForCancellation;
+            // TPP-Explicit-Auth-Preferred header is not considered in cancellation authorisation
+            return true;
         }
 
         return isRetrievedConsentExplicit;

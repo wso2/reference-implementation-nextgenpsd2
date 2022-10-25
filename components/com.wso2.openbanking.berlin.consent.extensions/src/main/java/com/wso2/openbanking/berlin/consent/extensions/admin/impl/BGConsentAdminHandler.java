@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Commercial License available at http://wso2.com/licenses. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.consent.extensions.admin.impl;
@@ -22,7 +19,6 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -180,48 +176,25 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
                     ErrorConstants.CONSENT_ALREADY_DELETED));
         }
 
-        if (CommonConfigParser.getInstance().isAuthorizationRequiredForCancellation()) {
+        try {
+            coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
 
             if (log.isDebugEnabled()) {
-                log.debug("TPP Prefers explicit authorisation for payment cancellation : "
-                        + consentResource.getConsentID() + " , Update consent with ACTC status");
+                log.debug("Deactivating account mappings of revoked payment: " + consentResource.getConsentID());
             }
-
-            try {
-                coreService.updateConsentStatus(consentResource.getConsentID(), TransactionStatusEnum.ACTC.name());
-            } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.CONSENT_UPDATE_ERROR);
+            ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
+            ArrayList<String> mappingIds = new ArrayList<>();
+            for (ConsentMappingResource mappingResource : mappingResources) {
+                mappingIds.add(mappingResource.getMappingID());
             }
-
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
-                        "an explicit authorisation for consent : " + consentResource.getConsentID());
+            if (CollectionUtils.isNotEmpty(mappingIds)) {
+                coreService.deactivateAccountMappings(mappingIds);
             }
-
-            try {
-                coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Deactivating account mappings of revoked payment: " + consentResource.getConsentID());
-                }
-                ArrayList<ConsentMappingResource> mappingResources = consentResource.getConsentMappingResources();
-                ArrayList<String> mappingIds = new ArrayList<>();
-                for (ConsentMappingResource mappingResource : mappingResources) {
-                    mappingIds.add(mappingResource.getMappingID());
-                }
-                if (CollectionUtils.isNotEmpty(mappingIds)) {
-                    coreService.deactivateAccountMappings(mappingIds);
-                }
-            } catch (ConsentManagementException e) {
-                log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        ErrorConstants.CONSENT_UPDATE_ERROR);
-            }
+        } catch (ConsentManagementException e) {
+            log.error(ErrorConstants.CONSENT_UPDATE_ERROR, e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    ErrorConstants.CONSENT_UPDATE_ERROR);
         }
-
     }
 
     /**

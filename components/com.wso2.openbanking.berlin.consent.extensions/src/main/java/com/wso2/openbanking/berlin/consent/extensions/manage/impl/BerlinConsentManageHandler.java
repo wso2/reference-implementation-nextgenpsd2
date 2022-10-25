@@ -48,7 +48,6 @@ public class BerlinConsentManageHandler implements ConsentManageHandler {
             throw new ConsentException(ResponseStatus.NOT_FOUND, ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
         }
-
     }
 
     @Override
