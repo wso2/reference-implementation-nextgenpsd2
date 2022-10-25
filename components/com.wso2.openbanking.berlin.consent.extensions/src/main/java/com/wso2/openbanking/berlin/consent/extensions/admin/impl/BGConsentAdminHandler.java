@@ -176,11 +176,6 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
                     ErrorConstants.CONSENT_ALREADY_DELETED));
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("TPP prefers implicit payment cancellation, the payment resource will be deleted without " +
-                    "an explicit authorisation for consent : " + consentResource.getConsentID());
-        }
-
         try {
             coreService.revokeConsent(consentResource.getConsentID(), TransactionStatusEnum.CANC.name());
 
