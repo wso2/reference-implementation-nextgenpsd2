@@ -35,13 +35,6 @@ class PaymentsSCAFlowTest extends AbstractPaymentsFlow {
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertNotNull(paymentId)
 
-            // Check consent received status
-            doStatusRetrieval(paymentConsentPath)
-
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-
             // Initiate SCA flow.
             doAuthorizationFlow()
 
@@ -67,21 +60,10 @@ class PaymentsSCAFlowTest extends AbstractPaymentsFlow {
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertNotNull(paymentId)
 
-            // Check consent received status
-            doStatusRetrieval(paymentConsentPath)
-
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-
             // Deny the Consent
             doConsentDenyFlow()
 
             Assert.assertEquals(code, "User denied the consent")
-
-            doStatusRetrieval(paymentConsentPath)
-
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
         }
     }
 }

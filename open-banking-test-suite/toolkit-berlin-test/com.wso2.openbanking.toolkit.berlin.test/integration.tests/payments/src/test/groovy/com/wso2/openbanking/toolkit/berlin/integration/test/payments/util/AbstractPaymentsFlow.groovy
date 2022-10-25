@@ -75,7 +75,7 @@ class AbstractPaymentsFlow {
     void doStatusRetrieval(String consentPath) {
 
         //Status Retrieval
-        retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        retrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .get(consentPath + "/" + paymentId + "/status")
 
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "transactionStatus")
@@ -178,7 +178,7 @@ class AbstractPaymentsFlow {
 
     void doConsentDelete(String consentPath) {
 
-        deleteResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        deleteResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .delete(consentPath + "/" + paymentId)
     }
 
@@ -202,7 +202,7 @@ class AbstractPaymentsFlow {
     void doConsentRetrieval(String consentPath) {
 
         //Status Retrieval
-        consentRetrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        consentRetrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .get(consentPath + "/" + paymentId)
 
         consentStatus = TestUtil.parseResponseBody(consentRetrievalResponse, "transactionStatus")
@@ -246,6 +246,7 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/${paymentId}/authorisations")
+        authorisationId = TestUtil.parseResponseBody(authorisationResponse, "authorisationIds[0]")
     }
 
     /**

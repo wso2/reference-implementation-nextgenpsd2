@@ -261,7 +261,8 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
         }
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
+//    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
     void "TC0301014_Initiation Request without Authorization Header"(String consentPath, List<String> paymentProducts,
                                                                      String payload) {
 
@@ -287,7 +288,8 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
         }
     }
 
-    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
+//    @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
     void "TC0301015_Initiation Request with invalid Authorization Header"(String consentPath, List<String> paymentProducts,
                                                                           String payload) {
 

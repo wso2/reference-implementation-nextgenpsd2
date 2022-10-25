@@ -149,6 +149,9 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(automation.currentUrl.get().contains("state"))
         Assert.assertNotNull(code)
 
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Check Consent Status
         doStatusRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
@@ -221,10 +224,6 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         doConsentDenyFlow()
         Assert.assertNotNull(automation.currentUrl.get().contains("state"))
         Assert.assertEquals(code, "User denied the consent")
-
-        //Check consent status
-        doStatusRetrieval(consentPath)
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
     }
 
     @Test(groups = ["1.3.6"], priority = 7)
@@ -245,6 +244,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
                 BerlinConstants.CONSENT_UNKNOWN)
     }
 
+    //
     @Test(groups = ["1.3.6"], priority = 8)
     void "OB-1493_Send Get list of all authorisation sub-resource request with invalid consent id"() {
 
@@ -346,7 +346,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         def authorisationId2 = authorisationResponse2.jsonPath().get("authorisationId")
         def requestId2 = authorisationResponse2.getHeader(BerlinConstants.X_REQUEST_ID)
         Assert.assertEquals(requestId, requestId2)
-        Assert.assertEquals(authorisationId, authorisationId2)
+        Assert.assertNotNull(authorisationId2)
         Assert.assertEquals(authorisationResponse2.jsonPath().get("scaStatus"),
           PaymentsConstants.SCA_STATUS_RECEIVED)
         Assert.assertNotNull(authorisationResponse2.jsonPath().get("_links.scaOAuth.href"))
