@@ -170,15 +170,10 @@
         </Accounts>
 
         <Payments>
-            {% if open_banking_berlin.consent.payments.auth_cancellation.enable is defined %}
+            {% if open_banking_berlin.consent.payments.backend_url is defined %}
             <PaymentsBackendURL>{{open_banking_berlin.consent.payments.backend_url}}</PaymentsBackendURL>
             {% else %}
             <PaymentsBackendURL>https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/payments</PaymentsBackendURL>
-            {% endif %}
-            {% if open_banking_berlin.consent.payments.auth_cancellation.enable is defined %}
-            <AuthorizeCancellation>{{open_banking_berlin.consent.payments.auth_cancellation.enable}}</AuthorizeCancellation>
-            {% else %}
-            <AuthorizeCancellation>false</AuthorizeCancellation>
             {% endif %}
             <SinglePayments></SinglePayments>
             <BulkPayments>
