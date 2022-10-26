@@ -27,37 +27,6 @@ import org.testng.annotations.Test
  */
 class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
-    //todo: this cannot be tested because of the default mock backend implementation
-    //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
-//    @Test(groups = ["SmokeTest", "1.3.3", "1.3.6"],
-//            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303001_Direct Payment Cancellation"(String consentPath, List<String> paymentProducts, String payload) {
-
-        paymentProducts.each { value ->
-            String paymentConsentPath = consentPath + "/" + value
-
-            //Make Payment Initiation Request
-            doDefaultInitiation(paymentConsentPath, payload)
-            Assert.assertNotNull(paymentId)
-
-            //Authorize the Consent
-            doAuthorizationFlow()
-            Assert.assertNotNull(code)
-
-            //Get User Access Token
-            generateUserAccessToken()
-            Assert.assertNotNull(userAccessToken)
-
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaOAuth.href"))
-            Assert.assertNotNull(consentResponse.jsonPath().get("_links.scaStatus.href"))
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-
-            // Delete Flow
-            doConsentDelete(paymentConsentPath)
-            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
-        }
-    }
-
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303002_Delete Payment With Empty Payment Id"(String consentPath, List<String> paymentProducts,
