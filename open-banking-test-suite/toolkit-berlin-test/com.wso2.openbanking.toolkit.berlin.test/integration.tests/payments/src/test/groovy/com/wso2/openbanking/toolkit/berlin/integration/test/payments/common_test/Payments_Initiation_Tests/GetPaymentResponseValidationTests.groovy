@@ -24,7 +24,7 @@ import org.testng.annotations.Test
 /**
  * Get Payment Consent Response Validation Tests
  */
-class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
+class GetPaymentResponseValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentProduct", dataProviderClass = PaymentsDataProviders.class)
     void "TC0304001_Retrieve the Single Payment with Valid Consent Id"(String paymentProduct) {
@@ -44,7 +44,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         Assert.assertNotNull(userAccessToken)
 
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("debtorAccount"))
@@ -73,7 +73,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         Assert.assertNotNull(userAccessToken)
 
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("batchBookingPreferred"))
@@ -107,7 +107,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         Assert.assertNotNull(userAccessToken)
 
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("debtorAccount"))
@@ -193,7 +193,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
             createExplicitCancellation(paymentConsentPath)
             Assert.assertEquals(authorisationResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
 
-            //Cancel the payment
+            //Authorise Payment cancellation
             doAuthorizationFlow()
             Assert.assertNotNull(code)
 
@@ -202,7 +202,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
             Assert.assertNotNull(userAccessToken)
 
             //Get payment status
-            doConsentRetrieval(paymentConsentPath)
+            doPaymentRetrieval(paymentConsentPath)
             // Not asserting the transaction status since it is for the bank to decide
             Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         }

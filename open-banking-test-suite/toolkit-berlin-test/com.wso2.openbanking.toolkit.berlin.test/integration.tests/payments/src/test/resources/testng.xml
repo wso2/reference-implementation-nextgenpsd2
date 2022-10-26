@@ -42,8 +42,8 @@
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.BulkPaymentInitiationRequestPayloadValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.PeriodicPaymentInitiationRequestPayloadValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.FutureDatedPaymentInitiationRequestValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentConsentRequestHeaderValidationTests"/>
-            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentConsentResponseValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentRequestHeaderValidationTests"/>
+            <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.GetPaymentResponseValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentResponseValidationTest"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.DeletePaymentRequestHeaderValidationTests"/>
             <class name="com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests.MultiCurrencyValidationTests"/>

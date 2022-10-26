@@ -199,7 +199,7 @@ class AbstractPaymentsFlow {
                 "UTF8")
     }
 
-    void doConsentRetrieval(String consentPath) {
+    void doPaymentRetrieval(String consentPath) {
 
         //Status Retrieval
         consentRetrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)

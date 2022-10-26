@@ -141,7 +141,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303010_Delete Consent With Empty X-Request-ID Header"(String consentPath, List<String>
+    void "TC0303010_Delete Payment With Empty X-Request-ID Header"(String consentPath, List<String>
             paymentProducts, String payload) {
 
         paymentProducts.each { value ->
@@ -291,7 +291,7 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
         }
     }
 
-    //todo: idempotency issue in accelerator, need to set the http status from the previous request to cache and get it
+    //todo: fix issue https://github.com/wso2-enterprise/financial-open-banking/issues/7865
 //    @Test(groups = ["1.3.3", "1.3.6"],
 //      dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "OB-1681_Payment delete request with same X-Request-Id and same consent"(String consentPath, List<String>

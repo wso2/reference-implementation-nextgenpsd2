@@ -113,7 +113,6 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         }
     }
 
-    //Note: Since the mock backend has 202 DELETE response, the cancellation with authorization is done in this test
     @Test (groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303004_Delete Already Deleted Payment"(String consentPath, List<String> paymentProducts,
@@ -161,7 +160,6 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
         }
     }
 
-    //Note: Since the mock backend has 202 DELETE response, the cancellation with authorization is done in this test
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
     void "TC0303014_Delete an Authorised Payment Consent"(String consentPath, List<String> paymentProducts,

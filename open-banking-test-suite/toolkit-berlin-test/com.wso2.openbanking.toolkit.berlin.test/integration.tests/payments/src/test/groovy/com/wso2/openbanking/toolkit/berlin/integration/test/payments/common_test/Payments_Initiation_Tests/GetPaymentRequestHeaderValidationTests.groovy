@@ -31,7 +31,7 @@ import org.testng.annotations.Test
 /**
  * Get Payment Consent Request Header Validation Tests
  */
-class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow {
+class GetPaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
     void "TC0304007_Retrieve Payment With Application Access Token"(String consentPath,
