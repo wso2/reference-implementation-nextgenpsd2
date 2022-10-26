@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests
@@ -31,10 +28,10 @@ import org.testng.annotations.Test
 /**
  * Get Payment Consent Request Header Validation Tests
  */
-class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow {
+class GetPaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304007_Get Payment Consent With Authorization Code Type Access Token"(String consentPath,
+    void "TC0304007_Retrieve Payment With Application Access Token"(String consentPath,
                                                                                    List<String> paymentProducts,
                                                                                    String payload) {
 
@@ -45,26 +42,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
-
-            //Authorize the Consent
-            doAuthorizationFlow()
-            Assert.assertNotNull(code)
-
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
-
-            //Get User Access Token
-            generateUserAccessToken()
-            Assert.assertNotNull(userAccessToken)
-
-            //Get Consent By Passing User Access Token
+            //Get Consent By Passing application Access Token
             def retrievalResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                     .header(BerlinConstants.Date, getCurrentDate())
-                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
@@ -78,7 +61,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304009_Get Payment Consent  Without X-Request-ID Header"(String consentPath, List<String> paymentProducts,
+    void "TC0304009_Retrieve Payment Without X-Request-ID Header"(String consentPath, List<String> paymentProducts,
                                                                       String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -87,14 +70,19 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
 
-            //Get Consent without X-Request-ID header
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
+
+            //Get Consent By Passing application Access Token
             def retrievalResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.Date, getCurrentDate())
-                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
@@ -108,7 +96,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304010_Get Consent With Invalid X-Request-ID Header"(String consentPath, List<String> paymentProducts,
+    void "TC0304010_Retrieve Payment With Invalid X-Request-ID Header"(String consentPath, List<String> paymentProducts,
                                                                   String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -117,15 +105,20 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
 
-            //Get Consent with invalid X-Request-ID header
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
+
+            //Get Consent By Passing application Access Token
             def retrievalResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, "1234")
                     .header(BerlinConstants.Date, getCurrentDate())
-                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
@@ -135,12 +128,12 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                     BerlinConstants.FORMAT_ERROR)
 
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Input string \"1234\" is not a valid UUID")
+                    "Invalid X-Request-ID header. Needs to be in UUID format")
         }
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304011_Get Consent With Empty X-Request-ID Header"(String consentPath, List<String> paymentProducts,
+    void "TC0304011_Retrieve Payment With Empty X-Request-ID Header"(String consentPath, List<String> paymentProducts,
                                                                 String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -149,15 +142,20 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Get Consent with empty X-Request-ID header
             def retrievalResponse = TestSuite.buildRequest()
                     .contentType(ContentType.JSON)
                     .header(BerlinConstants.X_REQUEST_ID, "")
                     .header(BerlinConstants.Date, getCurrentDate())
-                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                    .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                     .filter(new BerlinSignatureFilter())
                     .baseUri(ConfigParser.getInstance().getBaseURL())
                     .get("${paymentConsentPath}/${paymentId}")
@@ -170,8 +168,9 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         }
     }
 
-    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304012_Get Consent Without Specifying Authorization Header"(String consentPath, List<String> paymentProducts,
+    //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
+//    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "TC0304012_Retrieve Payment Without Specifying Authorization Header"(String consentPath, List<String> paymentProducts,
                                                                          String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -180,8 +179,13 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Get Consent without Authorization Header
             def retrievalResponse = TestSuite.buildRequest()
@@ -199,8 +203,9 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         }
     }
 
-    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304013_Get Consent With Invalid Authorization Header value"(String consentPath, List<String> paymentProducts,
+    //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
+//    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "TC0304013_Retrieve Payment With Invalid Authorization Header value"(String consentPath, List<String> paymentProducts,
                                                                          String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -209,8 +214,13 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Get Consent with invalid Authorization Header
             def retrievalResponse = TestSuite.buildRequest()
@@ -230,8 +240,9 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         }
     }
 
-    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304014_Get Consent With Empty Authorization Header value"(String consentPath, List<String> paymentProducts,
+    //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
+//    @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
+    void "TC0304014_Retrieve Payment With Empty Authorization Header value"(String consentPath, List<String> paymentProducts,
                                                                        String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -240,8 +251,13 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
             doDefaultInitiation(paymentConsentPath, payload)
             Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Get Consent with Empty Authorization Header
             def retrievalResponse = TestSuite.buildRequest()
@@ -260,7 +276,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1681_Payment consent retrieval request with same X-Request-Id and same consent"() {
+    void "OB-1681_Payment retrieval request with same X-Request-Id and same consent"() {
 
         String payload = PaymentsInitiationPayloads.singlePaymentPayload
         String singlePaymentConsentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" +
@@ -271,12 +287,20 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         doDefaultInitiation(singlePaymentConsentPath, payload)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Get Consent
         def retrievalResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
@@ -288,7 +312,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
@@ -297,7 +321,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1682_Payment consent retrieval request with the same X-Request-Id used for Consent Initiation"() {
+    void "OB-1682_Payment retrieval request with the same X-Request-Id used for Consent Initiation"() {
 
         String payload = PaymentsInitiationPayloads.singlePaymentPayload
         String singlePaymentConsentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" +
@@ -320,14 +344,22 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
                 .post(singlePaymentConsentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-        def paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+        paymentId = TestUtil.parseResponseBody(consentResponse, "paymentId")
+
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
 
         //Get Consent with same X-Request-ID header used for Payment Initiation
         def retrievalResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
@@ -336,7 +368,7 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1683_Payment consent retrieval request with the same X-Request-Id with different Consent"() {
+    void "OB-1683_Payment retrieval request with the same X-Request-Id with different Consent"() {
 
         String payload = PaymentsInitiationPayloads.singlePaymentPayload
         String singlePaymentConsentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" +
@@ -348,12 +380,20 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         doDefaultInitiation(singlePaymentConsentPath, payload)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-        //Get Consent
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
+        //Get payment
         def retrievalResponse = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
@@ -364,20 +404,24 @@ class GetPaymentConsentRequestHeaderValidationTests extends AbstractPaymentsFlow
         doDefaultInitiation(singlePaymentConsentPath, payload)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 
-        //Get Consent
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
+        //Get payment
         def retrievalResponse2 = TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get("${singlePaymentConsentPath}/${paymentId}")
 
-        Assert.assertEquals(retrievalResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse2, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+        Assert.assertEquals(retrievalResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
     }
 }

@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Initiation_Tests
@@ -24,10 +21,10 @@ import org.testng.annotations.Test
 /**
  * Get Payment Consent Response Validation Tests
  */
-class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
+class GetPaymentResponseValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentProduct", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304001_Get the Single Payment Consent with Valid Consent Id"(String paymentProduct) {
+    void "TC0304001_Retrieve the Single Payment with Valid Consent Id"(String paymentProduct) {
 
         String consentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" + paymentProduct
         String payload = PaymentsInitiationPayloads.singlePaymentPayload
@@ -35,8 +32,16 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         //Payment Initiation
         doDefaultInitiation(consentPath, payload)
 
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("debtorAccount"))
@@ -48,7 +53,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentProduct", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0404001_Get the Bulk Payment Consent with Valid Consent Id"(String paymentProduct) {
+    void "TC0404001_Retrieve the Bulk Payment with Valid Consent Id"(String paymentProduct) {
 
         String consentPath = PaymentsConstants.BULK_PAYMENTS_PATH + "/" + paymentProduct
         String payload = PaymentsInitiationPayloads.bulkPaymentPayload
@@ -56,8 +61,16 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         //Payment Initiation
         doDefaultInitiation(consentPath, payload)
 
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("batchBookingPreferred"))
@@ -74,7 +87,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentProduct", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0504001_Get the Periodic Payment Consent with Valid Consent Id"(String paymentProduct) {
+    void "TC0504001_Retrieve the Periodic Payment Consent with Valid Consent Id"(String paymentProduct) {
 
         String consentPath = PaymentsConstants.PERIODIC_PAYMENTS_PATH + "/" + paymentProduct
         String payload = PaymentsInitiationPayloads.periodicPaymentPayload
@@ -82,8 +95,16 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         //Payment Initiation
         doDefaultInitiation(consentPath, payload)
 
+        //Authorize the Consent
+        doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        //Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Get Consent
-        doConsentRetrieval(consentPath)
+        doPaymentRetrieval(consentPath)
         Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
         Assert.assertNotNull(consentRetrievalResponse.jsonPath().getJsonObject("debtorAccount"))
@@ -97,7 +118,7 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
 
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304002_Get Payment Consent With Empty Consent Id"(String consentPath, List<String> paymentProducts,
+    void "TC0304002_Retrieve Payment Consent With Empty Consent Id"(String consentPath, List<String> paymentProducts,
                                                                String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -105,21 +126,37 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
             //Payment Initiation
             doDefaultInitiation(paymentConsentPath, payload)
 
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
+
             //Get Consent
-            def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+            def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                     .get("${paymentConsentPath}/")
             Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_405)
         }
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304003_Get Payment Consent Without Consent Id Parameter"(String consentPath, List<String> paymentProducts,
+    void "TC0304003_Get Payment Without Consent Id Parameter"(String consentPath, List<String> paymentProducts,
                                                                       String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
 
             //Payment Initiation
             doDefaultInitiation(paymentConsentPath, payload)
+
+            //Authorize the Consent
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Get Consent
             def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -128,50 +165,61 @@ class GetPaymentConsentResponseValidationTests extends AbstractPaymentsFlow {
         }
     }
 
-    //Note: The auth_cancellation.enable attribute should set to false in deployment.toml file
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304004_Get Already Terminated Payment Consent"(String consentPath, List<String> paymentProducts,
+    void "TC0304004_Retrieve Already Terminated Payment Consent"(String consentPath, List<String> paymentProducts,
                                                             String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
 
             //Payment Initiation
             doDefaultInitiation(paymentConsentPath, payload)
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
+
+            //Submit the payment
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
 
             //Delete Consent
             doConsentDelete(paymentConsentPath)
-            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_204)
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
+            Assert.assertEquals(deleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_202)
 
-            //Get Consent
-            doConsentRetrieval(paymentConsentPath)
+            // Create cancellation auth resource
+            createExplicitCancellation(paymentConsentPath)
+            Assert.assertEquals(authorisationResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+
+            //Authorise Payment cancellation
+            doAuthorizationFlow()
+            Assert.assertNotNull(code)
+
+            //Get User Access Token
+            generateUserAccessToken()
+            Assert.assertNotNull(userAccessToken)
+
+            //Get payment status
+            doPaymentRetrieval(paymentConsentPath)
+            // Not asserting the transaction status since it is for the bank to decide
             Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_CANC)
         }
     }
 
     @Test(groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0304005_Get an Authorized Payment Consent"(String consentPath, List<String> paymentProducts,
+    void "TC0304005_Retrieve an Authorized Payment"(String consentPath, List<String> paymentProducts,
                                                        String payload) {
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
 
             //Payment Initiation
             doDefaultInitiation(paymentConsentPath, payload)
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_RECEIVED)
 
-            //Delete Consent
+            //Authorize Consent
             doAuthorizationFlow()
-            doStatusRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
+            generateUserAccessToken()
 
-            //Get Consent
-            doConsentRetrieval(paymentConsentPath)
-            Assert.assertEquals(consentRetrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+            // Retrieve payment status
+            doStatusRetrieval(paymentConsentPath)
             Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
         }
     }

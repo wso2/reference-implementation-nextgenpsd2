@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.common_test.Payments_Authorization_Tests
@@ -55,8 +52,21 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
 
+        // Initiate SCA flow.
+        doAuthorizationFlow()
+
+        // Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Delete the created Consent
         doConsentDelete(consentPath)
+
+        // Create cancellation auth resource
+        createExplicitCancellation(consentPath)
+
+        // Submit the cancellation
+        doAuthorizationFlow()
 
         //Consent Authorization
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
@@ -67,7 +77,7 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def oauthErrorCode = URLDecoder.decode(automation.currentUrl.get().split("&")[1].split("=")[1].toString(),
                 "UTF8")
 
-        Assert.assertEquals(oauthErrorCode,"The consent is not in an applicable status for authorization")
+        Assert.assertEquals(oauthErrorCode,"An unauthenticated authorization is not found for this consent")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -139,8 +149,6 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         //Delete the created Consent
         doConsentDenyFlow()
         Assert.assertEquals(code, "User denied the consent")
-        doStatusRetrieval(consentPath)
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
 
         //Consent Authorization
         auth = new BerlinOAuthAuthorization(scopes, paymentId)
@@ -162,6 +170,11 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
 
         //Delete the created Consent
         doAuthorizationFlow()
+        Assert.assertNotNull(code)
+
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         doStatusRetrieval(consentPath)
         Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_ACCP)
 
@@ -357,6 +370,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         Assert.assertNotNull(automation.currentUrl.get().contains("state"))
         Assert.assertNotNull(code)
 
+        // Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
+
         //Consent Status Retrieval
         doStatusRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
@@ -382,6 +399,10 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doAuthorizationFlow()
         Assert.assertNotNull(automation.currentUrl.get().contains("state"))
         Assert.assertNotNull(code)
+
+        // Get User Access Token
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
 
         //Consent Status Retrieval
         doStatusRetrieval(consentPath)
@@ -494,10 +515,6 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         doConsentDenyFlow()
         Assert.assertNotNull(automation.currentUrl.get().contains("state"))
         Assert.assertEquals(code, "User denied the consent")
-
-        //Check consent status
-        doStatusRetrieval(consentPath)
-        Assert.assertEquals(consentStatus, PaymentsConstants.TRANSACTION_STATUS_REJECTED)
     }
 
     @Test(groups = ["1.3.6"])
