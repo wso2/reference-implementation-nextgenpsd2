@@ -26,7 +26,6 @@ import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
-import com.wso2.openbanking.berlin.consent.extensions.common.ScaStatusEnum;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.AccountConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
