@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021 - 2022, WSO2 LLC. (https://www.wso2.com/). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist;
@@ -112,7 +109,7 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
                         ConsentTypeEnum.PAYMENTS.toString(), TestPayloads.VALID_PAYMENTS_PAYLOAD, consentId, clientId);
 
         AuthorizationResource authorizationResource = TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.PSU_AUTHENTICATED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
                 TestConstants.USER_ID);
 
         ConsentData consentData = TestUtil.getSampleConsentDataObject(TestConstants.USER_ID,
@@ -279,7 +276,7 @@ public class BerlinConsentPersistStepTests extends PowerMockTestCase {
         authorizationResource1.setAuthorizationID(authId);
         authorizationResource1.setAuthorizationType(AuthTypeEnum.AUTHORISATION.toString());
         authorizationResource1.setConsentID(consentId);
-        authorizationResource1.setAuthorizationStatus(ScaStatusEnum.PSU_AUTHENTICATED.toString());
+        authorizationResource1.setAuthorizationStatus(ScaStatusEnum.FINALISED.toString());
 
         AuthorizationResource authorizationResource2 = new AuthorizationResource();
         authorizationResource2.setAuthorizationID(authId);
