@@ -500,3 +500,26 @@ default.enable = true
 ais = "v1"
 pis = "v1"
 piis = "v2"
+
+[open_banking.dcr]
+applicationupdater = "com.wso2.openbanking.berlin.identity.application.updater.BerlinApplicationUpdater"
+
+[[open_banking.identity.authentication.worker]]
+name = "exempted"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.ExemptedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "failed"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FailedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "finalised"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FinalizedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "psuAuthenticated"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.PSUAuthenticatedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "started"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.StartedStatusUpdateWorker"
