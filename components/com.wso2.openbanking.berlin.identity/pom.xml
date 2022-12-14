@@ -122,6 +122,7 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/BerlinApplicationUpdater.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
