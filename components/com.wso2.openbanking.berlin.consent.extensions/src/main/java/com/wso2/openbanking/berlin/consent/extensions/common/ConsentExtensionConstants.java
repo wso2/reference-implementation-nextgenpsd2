@@ -208,6 +208,12 @@ public class ConsentExtensionConstants {
     public static final String CREDITOR_ACCOUNT = "creditorAccount";
     public static final String CREDITOR_NAME = "creditorName";
     public static final String CREDITOR_AGENT = "creditorAgent";
+    public static final List<String> SUPPORTED_MONTHS_OF_EXECUTION = Collections
+            .unmodifiableList(Arrays.asList(
+                    "1", "2", "3", "4", "5", "6",
+                    "7", "8", "9", "10", "11", "12"
+            ));
+    public static final String MONTHS_OF_EXECUTION = "monthsOfExecution";
     public static final String DAY_OF_EXECUTION = "dayOfExecution";
     public static final String END_TO_END_IDENTIFICATION = "endToEndIdentification";
     public static final String CREDITOR_ADDRESS = "creditorAddress";

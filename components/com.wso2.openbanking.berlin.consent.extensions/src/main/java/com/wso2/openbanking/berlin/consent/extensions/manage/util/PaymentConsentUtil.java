@@ -32,6 +32,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUti
 import com.wso2.openbanking.berlin.consent.extensions.common.LinksConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.collections.CollectionUtils;
@@ -556,4 +557,36 @@ public class PaymentConsentUtil {
             }
         }
     }
+
+    public static void validateMonthsOfExecution(JSONObject payload) {
+        if (payload.get(ConsentExtensionConstants.FREQUENCY) != null) {
+            log.debug("Validating payload for monthsOfExecution");
+
+            try {
+                String monthsOfExecutionRequest = payload.get(ConsentExtensionConstants.MONTHS_OF_EXECUTION).toString();
+
+                // Convert JSON payload string to JSONArray
+                JSONArray monthsOfExecutionjsonArray = (JSONArray) JSONValue.parse(monthsOfExecutionRequest);
+
+                if (!ConsentExtensionConstants.SUPPORTED_MONTHS_OF_EXECUTION.contains(monthsOfExecutionRequest)) {
+                    log.error(ErrorConstants.MONTHS_OF_EXECUTION_UNSUPPORTED);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            ErrorConstants.MONTHS_OF_EXECUTION_UNSUPPORTED));
+                }
+                if (monthsOfExecutionjsonArray.size() > 11 || monthsOfExecutionjsonArray.size() < 1) {
+                    log.error("Invalid number of entries for months of Execution");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            ErrorConstants.INVALID_ENTRIES_MONTHS_OF_EXECUTION));
+                }
+            } catch (NumberFormatException e) {
+                log.error("Error occurred while validating payload for dayOfExecution", e);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                        ErrorConstants.INVALID_MONTHS_OF_EXECUTION));
+            }
+        }
+    }
 }
+
