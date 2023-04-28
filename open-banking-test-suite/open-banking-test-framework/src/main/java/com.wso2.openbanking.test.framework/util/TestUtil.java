@@ -40,8 +40,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import sun.misc.BASE64Encoder;
-import sun.security.provider.X509Factory;
+import java.util.Base64;
+
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -653,11 +653,11 @@ public class TestUtil {
   public static String getPemEncodedString() throws CertificateEncodingException {
 
     StringBuilder certificateBuilder = new StringBuilder();
-    BASE64Encoder encoder = new BASE64Encoder();
-    certificateBuilder.append(X509Factory.BEGIN_CERT);
-    certificateBuilder.append(encoder.encodeBuffer(Objects
-            .requireNonNull(getCertificateFromKeyStore()).getEncoded()));
-    certificateBuilder.append(X509Factory.END_CERT);
+    Base64.Encoder encoder = Base64.getEncoder();
+    certificateBuilder.append("-----BEGIN CERTIFICATE-----");
+    certificateBuilder.append(encoder.encodeToString(Objects.requireNonNull(getCertificateFromKeyStore())
+            .getEncoded()));
+    certificateBuilder.append("-----END CERTIFICATE-----");
 
     return certificateBuilder.toString().replaceAll("\n", "");
   }
