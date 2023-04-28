@@ -182,4 +182,8 @@ public class ErrorConstants {
             " header is expired";
     public static final String SIGNATURE_VERIFICATION_FAIL = "Signature verification failed";
     public static final String CERT_PARSE_EROR = "Error while parsing signature certificate";
+    public static final String MONTHS_OF_EXECUTION_UNSUPPORTED = "Invalid month of execution for periodic payments";
+    public static final String INVALID_ENTRIES_MONTHS_OF_EXECUTION = "Invalid no of entries for months" +
+            "of execution for periodic payments";
+    public static final String INVALID_MONTHS_OF_EXECUTION = "monthsOfExecution validation failed";
 }
