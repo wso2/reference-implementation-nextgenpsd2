@@ -465,7 +465,7 @@ public class AccountConsentUtil {
 
         if (scaMethods.size() > 1) {
             responseObject.appendField(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
-        } else {
+        } else if (scaMethods.size() == 1) {
             responseObject.appendField(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
 
