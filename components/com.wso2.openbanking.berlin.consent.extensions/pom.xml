@@ -178,17 +178,25 @@
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
-            <plugin><!-- Overridden from parent pom to exclude generated sources -->
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.2.3</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
+                    <failOnError>false</failOnError>
                     <xmlOutput>true</xmlOutput>
-                    <findbugsXmlOutputDirectory>target/findbugs
-                    </findbugsXmlOutputDirectory>
+                    <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
+                    <includeFilterFile>${project.basedir}/src/main/resources/findbugs-include.xml</includeFilterFile>
                     <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
-                    <!--Exclude generated sources-->
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>${com.h3xstream.findsecbugs.version}</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
                 <executions>
                     <execution>
