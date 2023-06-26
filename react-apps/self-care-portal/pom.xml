@@ -216,7 +216,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.2.3</version>
+                <version>${maven-spotbugs.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>

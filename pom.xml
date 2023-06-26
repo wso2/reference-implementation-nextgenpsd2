@@ -661,6 +661,7 @@
         <fasterxml.jackson.version>2.10.3</fasterxml.jackson.version>
         <com.hazelcast.hazelcast.version>5.0.2</com.hazelcast.hazelcast.version>
         <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
+        <maven-spotbugs.version>4.2.3</maven-spotbugs.version>
 
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
