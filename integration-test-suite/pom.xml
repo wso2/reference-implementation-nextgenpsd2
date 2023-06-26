@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 LLC. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ ~ You may not alter or remove any copyright or other notice from copies of this content.
+-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -12,7 +22,7 @@
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>4.0.2</version>
+            <version>${org.apache.groovy.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
@@ -33,7 +43,7 @@
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.13.1</version>
+                <version>${org.codehaus.gmavenplus.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -45,7 +55,7 @@
                     <dependency>
                         <groupId>org.apache.groovy</groupId>
                         <artifactId>groovy</artifactId>
-                        <version>4.0.0</version>
+                        <version>${org.apache.groovy.version}</version>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
@@ -59,6 +69,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.wso2.openbanking.test>1.0.0</com.wso2.openbanking.test>
         <testng.version>6.14.2</testng.version>
+        <org.apache.groovy.version>4.0.0</org.apache.groovy.version>
+        <org.codehaus.gmavenplus.version>1.13.1</org.codehaus.gmavenplus.version>
+        <berlin-toolkit-test-framework-version>1.0.0</berlin-toolkit-test-framework-version>
+        <com.nimbusds.version>9.35</com.nimbusds.version>
+
 
     </properties>
 
