@@ -1,18 +1,15 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
- *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
- */
+
+Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+This software is the property of WSO2 LLC. and its suppliers, if any.
+Dissemination of any information or reproduction of any material contained
+herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+You may not alter or remove any copyright or other notice from copies of this content.
+*/
 
 package com.wso2.berlin.test.framework.filters;
 
-import com.wso2.berlin.test.framework.configuration.AppConfigReader;
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService;
 import com.wso2.berlin.test.framework.constant.BerlinConstants;
 import com.wso2.berlin.test.framework.utility.BerlinTestUtil;
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException;
@@ -61,7 +58,8 @@ public class BerlinSignatureFilter implements OrderedFilter {
 
                 KeyStore keyStore = BerlinTestUtil.getApplicationKeyStore();
                 X509Certificate signatureCertificate =
-                        (X509Certificate) keyStore.getCertificate(AppConfigReader.getApplicationKeystoreAlias());
+                        (X509Certificate) keyStore.getCertificate(BGConfigurationService
+                                .getApplicationKeystoreAlias().toString());
                 if (signatureCertificate == null) {
                     throw new TestFrameworkException("Unable to read the signing certificate from the " +
                             "application keystore");

@@ -1,29 +1,30 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
- *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
- */
+
+Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+This software is the property of WSO2 LLC. and its suppliers, if any.
+Dissemination of any information or reproduction of any material contained
+herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+You may not alter or remove any copyright or other notice from copies of this content.
+*/
 
 package com.wso2.berlin.integration.test.accounts
 
 import com.wso2.berlin.test.framework.BGTest
-import com.wso2.berlin.test.framework.constant.AccountsConstants
 import com.wso2.berlin.test.framework.constant.BerlinConstants
+
 import com.wso2.berlin.test.framework.request_builder.BerlinRequestBuilder
 import com.wso2.berlin.test.framework.utility.AccountsInitiationPayloads
-import com.wso2.openbanking.test.framework.util.TestUtil
+import com.wso2.berlin.test.framework.utility.BerlinTestUtil
 import org.testng.Assert
 import org.testng.annotations.Test
 
+/**
+ * Accounts OAuth Redirection Flow Test for API v1.3.3 and v1.1.0.
+ * Method Covers both Consent Approve and Deny Flow.
+ */
 class AccountsSCAFlowTest extends BGTest{
 
-    String consentPath = AccountsConstants.CONSENT_PATH
+    String consentPath = BerlinConstants.CONSENT_PATH
     String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
 
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
@@ -34,12 +35,12 @@ class AccountsSCAFlowTest extends BGTest{
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
         Assert.assertNotNull(accountId)
 
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
-        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
+        Assert.assertNotNull(BerlinTestUtil.parseResponseBody(consentResponse, "_links.scaOAuth.href"))
+        Assert.assertNotNull(BerlinTestUtil.parseResponseBody(consentResponse, "_links.scaStatus.href"))
 
         doStatusRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_RECEIVED)
+        Assert.assertEquals(consentStatus, BerlinConstants.CONSENT_STATUS_RECEIVED)
     }
 
 
@@ -54,7 +55,7 @@ class AccountsSCAFlowTest extends BGTest{
 
         doStatusRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_VALID)
+        Assert.assertEquals(consentStatus, BerlinConstants.CONSENT_STATUS_VALID)
 
         generateUserAccessToken()
         Assert.assertNotNull(userAccessToken)
@@ -67,7 +68,7 @@ class AccountsSCAFlowTest extends BGTest{
         def response = BerlinRequestBuilder
                 .buildBasicRequest(userAccessToken)
                 .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-                .get(AccountsConstants.SPECIFIC_ACCOUNT_PATH)
+                .get(BerlinConstants.SPECIFIC_ACCOUNT_PATH)
 
         Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertNotNull(response.jsonPath().getJsonObject("account"))
@@ -82,7 +83,7 @@ class AccountsSCAFlowTest extends BGTest{
 
         doStatusRetrieval(consentPath)
         Assert.assertEquals(retrievalResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_RECEIVED)
+        Assert.assertEquals(consentStatus, BerlinConstants.CONSENT_STATUS_RECEIVED)
 
         doConsentDenyFlow()
 
@@ -90,7 +91,7 @@ class AccountsSCAFlowTest extends BGTest{
 
         doStatusRetrieval(consentPath)
 
-        Assert.assertEquals(consentStatus, AccountsConstants.CONSENT_STATUS_REJECTED)
+        Assert.assertEquals(consentStatus, BerlinConstants.CONSENT_STATUS_REJECTED)
     }
 
 }

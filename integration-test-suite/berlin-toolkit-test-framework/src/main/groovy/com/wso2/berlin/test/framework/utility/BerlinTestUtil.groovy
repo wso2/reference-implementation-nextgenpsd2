@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
- *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
- */
+
+Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+This software is the property of WSO2 LLC. and its suppliers, if any.
+Dissemination of any information or reproduction of any material contained
+herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+You may not alter or remove any copyright or other notice from copies of this content.
+*/
 
 package com.wso2.berlin.test.framework.utility
 
@@ -18,23 +15,16 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL
 import com.wso2.berlin.test.framework.configuration.AppConfigReader
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
-import io.restassured.http.Header;
+import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -45,28 +35,11 @@ import java.time.format.DateTimeFormatter;
 /**
  * Class to contain utility classes used for Test Framework.
  */
- class BerlinTestUtil {
+ class BerlinTestUtil extends OBTestUtil {
 
 
     private static final Log log = LogFactory.getLog(BerlinTestUtil.class);
     private static SSLSocketFactory sslSocketFactory;
-
-    // Static initialize the SSL socket factory if MTLS is enabled.
-    public static SSLSocketFactory getSslSocketFactory() {
-        if (AppConfigReader.isMTLSEnabled()) {
-            try {
-                SslSocketFactoryCreator sslSocketFactoryCreator = new SslSocketFactoryCreator();
-                sslSocketFactory = sslSocketFactoryCreator.create();
-
-                // Skip hostname verification.
-                sslSocketFactory.setHostnameVerifier(SSLSocketFactory
-                        .ALLOW_ALL_HOSTNAME_VERIFIER);
-            } catch (TestFrameworkException e) {
-                log.error("Unable to create the SSL socket factory", e);
-            }
-        }
-        return sslSocketFactory;
-    }
 
     /**
      * Utility method to Stringify a list of String.
@@ -103,66 +76,6 @@ import java.time.format.DateTimeFormatter;
             throw new TestFrameworkException("Error occurred while generating SHA-1 JWK thumbprint", e);
         }
 
-    }
-
-    /**
-     * Generate digest for a given payload.
-     *
-     * @param payload   digest payload
-     * @param algorithm digest alogrithm (i.e. SHA-256)
-     * @return base64 encoded digest value
-     * @throws TestFrameworkException exception
-     */
-     static String generateDigest(String payload, String algorithm)
-            throws TestFrameworkException {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
-            byte[] digestHash = messageDigest.digest(payload.getBytes(StandardCharsets.UTF_8));
-
-            if (log.isDebugEnabled()) {
-                log.debug("Digest payload: " + payload);
-            }
-            return Base64.getEncoder()
-                    .encodeToString(new BigInteger(digestHash).toByteArray());
-        } catch (NoSuchAlgorithmException e) {
-            throw new TestFrameworkException("Error occurred while generating the digest", e);
-        }
-    }
-
-    /**
-     * Generate a signature for a given headers.
-     *
-     * @param headers            headers that are required to sign
-     * @param signatureAlgorithm signature algorithm
-     * @return signature string
-     * @throws TestFrameworkException exception
-     */
-     static String generateSignature(List<Header> headers,
-                                           String signatureAlgorithm) throws TestFrameworkException {
-        try {
-            Signature rsa = Signature.getInstance(signatureAlgorithm);
-            KeyStore keyStore = getApplicationKeyStore();
-            PrivateKey privateKey = (PrivateKey) keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
-                    AppConfigReader.getApplicationKeystorePassword().toCharArray());
-            rsa.initSign(privateKey);
-
-            StringBuilder signatureHeader = new StringBuilder();
-            for (Header header : headers) {
-                signatureHeader.append(header.getName().toLowerCase())
-                        .append(": ")
-                        .append(header.getValue())
-                        .append("\n");
-            }
-            String signingPayload = signatureHeader.substring(0, signatureHeader.length() - 1);
-
-            if (log.isDebugEnabled()) {
-                log.debug("Signing payload: " + signingPayload);
-            }
-            rsa.update(signingPayload.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(rsa.sign());
-        } catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | InvalidKeyException | SignatureException e) {
-            throw new TestFrameworkException("Unable to generate the signature", e);
-        }
     }
 
     /**

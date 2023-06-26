@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
- *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
- * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
- */
+
+Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+This software is the property of WSO2 LLC. and its suppliers, if any.
+Dissemination of any information or reproduction of any material contained
+herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+You may not alter or remove any copyright or other notice from copies of this content.
+*/
 
 package com.wso2.berlin.test.framework.request_builder
 
@@ -24,9 +21,8 @@ import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
-import com.wso2.berlin.test.framework.TestSuite
 import com.wso2.berlin.test.framework.configuration.AppConfigReader
-
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService
 import com.wso2.berlin.test.framework.configuration.ConfigParser
 import com.wso2.berlin.test.framework.constant.BerlinConstants
 import com.wso2.berlin.test.framework.filters.BerlinSignatureFilter
@@ -34,8 +30,9 @@ import com.wso2.berlin.test.framework.model.AccessToken
 import com.wso2.berlin.test.framework.model.AccessTokenJwtDto
 import com.wso2.berlin.test.framework.model.ApplicationAccessTokenDto
 import com.wso2.berlin.test.framework.utility.BerlinTestUtil
-import com.wso2.berlin.test.framework.utility.PsuConfigReader
+import io.restassured.RestAssured
 import io.restassured.http.ContentType
+import io.restassured.response.Response
 import io.restassured.specification.RequestSpecification
 
 import java.text.SimpleDateFormat
@@ -50,22 +47,47 @@ class BerlinRequestBuilder  {
     static String accessTokenScope
     static String refreshToken
     static int expiryTime
+    private static BGConfigurationService bgConfiguration = new BGConfigurationService()
+
+
+//    /**
+//     * Get Application Access Token
+//     *
+//     * @param authMethod authentication method
+//     * @param scopes scopes for token
+//     * @return access token
+//     */
+//    static String getApplicationToken(BerlinConstants.AUTH_METHOD authMethod, BerlinConstants.SCOPES scopes) {
+//
+//        def tokenDTO = new ApplicationAccessTokenDto()
+//        tokenDTO.setScopes(scopes.getScopes())
+//
+//        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO, AppConfigReader.getClientId())
+//        def accessToken = BerlinTestUtil.parseResponseBody(tokenResponse, "access_token")
+//
+//        log.info("Got access token $accessToken")
+//
+//        return accessToken
+//
+//    }
 
     /**
-     * Get Application Access Token
-     *
-     * @param authMethod authentication method
-     * @param scopes scopes for token
-     * @return access token
+     * Method for get application access token
+     * @param scopes
+     * @param clientId
+     * @return
      */
-    static String getApplicationToken(BerlinConstants.AUTH_METHOD authMethod, BerlinConstants.SCOPES scopes) {
+    static String getApplicationAccessToken(List<String> scopes, String clientId) {
+        BGJWTGenerator auJwtGenerator = new BGJWTGenerator()
+        auJwtGenerator.setScopes(scopes)
+        String jwt = auJwtGenerator.getAppAccessTokenJwt(clientId)
 
-        def tokenDTO = new ApplicationAccessTokenDto()
-        tokenDTO.setScopes(scopes.getScopes())
+        RestAssured.baseURI = bgConfiguration.getServerAuthorisationServerURL()
+        Response response = BGRestAsRequestBuilder.buildRequest().contentType(BerlinConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(jwt)
+                .post(BerlinConstants.TOKEN_ENDPOINT)
 
-        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO, AppConfigReader.getClientId())
-        def accessToken = BerlinTestUtil.parseResponseBody(tokenResponse, "access_token")
-
+        def accessToken = BerlinTestUtil.parseResponseBody(response, "access_token")
         log.info("Got access token $accessToken")
 
         return accessToken
@@ -99,7 +121,7 @@ class BerlinRequestBuilder  {
 
         HTTPRequest httpRequest = request.toHTTPRequest()
 
-        def response = TestSuite.buildRequest()
+        def response = BGRestAsRequestBuilder.buildRequest()
                 .contentType(BerlinConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(httpRequest.query)
                 .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
@@ -132,13 +154,13 @@ class BerlinRequestBuilder  {
             xRequestId = UUID.randomUUID().toString()
         }
 
-        return TestSuite.buildRequest()
+        return BGRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(BerlinConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
-                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_ID, "${ConfigParser.getUserPSUName()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(config.getBaseURL())
