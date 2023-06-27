@@ -45,7 +45,7 @@ class BGJWTGenerator {
     private List<String> scopesList = null // Scopes can be set before generate payload
     private String signingAlgorithm
 
-    AUJWTGenerator() {
+    BGJWTGenerator() {
         bgConfiguration = new BGConfigurationService()
     }
 
