@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  ~
- ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Copyright (c) 2022-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 LLC. and its suppliers, if any.
  ~ Dissemination of any information or reproduction of any material contained
- ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
- ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- ~ For specific language governing the permissions and limitations under this
- ~ license, please see the license as well as any agreement you’ve entered into
- ~ with WSO2 governing the purchase of this software and any associated services.
+ ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ ~ You may not alter or remove any copyright or other notice from copies of this content.
+ ~
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -160,17 +159,15 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven.assembly.version}</version>
                 </plugin>
-                <plugin><!-- Overridden from parent pom to exclude generated sources -->
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>${maven.findbugsplugin.version}</version>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${maven.spotbugsplugin.version}</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>Low</threshold>
                         <xmlOutput>true</xmlOutput>
-                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-                        <!--<excludeFilterFile>findbugs_exclude.xml</excludeFilterFile>-->
-                        <!--Exclude generated sources-->
+                        <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
                     </configuration>
                     <executions>
                         <execution>
@@ -663,6 +660,9 @@
         <hibernate-validator>6.0.17.Final</hibernate-validator>
         <fasterxml.jackson.version>2.10.3</fasterxml.jackson.version>
         <com.hazelcast.hazelcast.version>5.0.2</com.hazelcast.hazelcast.version>
+        <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
+        <maven-spotbugs.version>4.2.3</maven-spotbugs.version>
+
         <!-- OSGi Version ranges -->
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
