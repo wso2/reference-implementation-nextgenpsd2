@@ -13,7 +13,7 @@ import com.nimbusds.jose.JOSEException;
 
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL
-import com.wso2.berlin.test.framework.configuration.AppConfigReader
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import io.restassured.response.Response;
@@ -37,8 +37,8 @@ import java.time.format.DateTimeFormatter;
  */
  class BerlinTestUtil extends OBTestUtil {
 
-
-    private static final Log log = LogFactory.getLog(BerlinTestUtil.class);
+     private static BGConfigurationService bgConfiguration = new BGConfigurationService()
+     private static final Log log = LogFactory.getLog(BerlinTestUtil.class);
     private static SSLSocketFactory sslSocketFactory;
 
     /**
@@ -110,10 +110,11 @@ import java.time.format.DateTimeFormatter;
      */
      static KeyStore getApplicationKeyStore() throws TestFrameworkException {
 
-        try (InputStream inputStream = new FileInputStream(AppConfigReader.getApplicationKeystoreLocation())) {
+        try (InputStream inputStream = new FileInputStream(bgConfiguration.
+                getApplicationKeystoreLocation().toString())) {
 
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(inputStream, AppConfigReader.getApplicationKeystorePassword().toCharArray());
+            keyStore.load(inputStream, bgConfiguration.getApplicationKeystorePassword().toString().toCharArray());
             return keyStore;
         } catch (IOException e) {
             throw new TestFrameworkException("Failed to load Keystore file from the location", e);

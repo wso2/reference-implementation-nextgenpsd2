@@ -10,6 +10,7 @@ You may not alter or remove any copyright or other notice from copies of this co
 package com.wso2.berlin.test.framework
 
 import com.wso2.berlin.test.framework.automation.BGBasicAuthAutomationStep
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService
 import com.wso2.berlin.test.framework.constant.BerlinConstants
 import com.wso2.berlin.test.framework.request_builder.BGRestAsRequestBuilder
 import com.wso2.berlin.test.framework.request_builder.BerlinRequestBuilder
@@ -18,7 +19,10 @@ import com.wso2.berlin.test.framework.utility.BerlinTestUtil
 import com.wso2.openbanking.test.framework.OBTest
 import com.wso2.openbanking.test.framework.automation.OBBrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import io.restassured.response.Response
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.openqa.selenium.By
 import org.testng.annotations.BeforeClass
 
@@ -29,6 +33,8 @@ import org.testng.annotations.BeforeClass
  */
 class BGTest extends OBTest{
 
+    protected static Logger log = LogManager.getLogger(BGTest.class.getName());
+    BGConfigurationService bgConfiguration
     String applicationAccessToken
     String accountId
     String code
@@ -39,14 +45,30 @@ class BGTest extends OBTest{
     BerlinOAuthAuthorization auth
     OBBrowserAutomation.AutomationContext automation
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.ACCOUNTS
-    @BeforeClass (groups = ["SmokeTest", "1.3.3", "1.3.6"])
-    void setup(){
+    public String accessToken
+    private List<String> AccountScopes
 
+
+    @BeforeClass(alwaysRun = true)
+    void "Initialize Test Suite"() {
+        OBConfigParser.getInstance(BerlinConstants.CONFIG_FILE_LOCATION)
         BGRestAsRequestBuilder.init()
-        applicationAccessToken = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT,
-                scopes)
+        bgConfiguration = new BGConfigurationService()
     }
 
+    /**
+     * Get Application access token
+     * @param clientId
+     */
+    String getApplicationAccessToken(String clientId = bgConfiguration.getAppInfoClientID()) {
+        String token = BerlinRequestBuilder.getApplicationAccessToken(getApplicationScope(), clientId)
+        if (token != null) {
+            addToContext(BerlinConstants.APP_ACCESS_TKN, token)
+        } else {
+            log.error("Application access Token Cannot be generated")
+        }
+        return token
+    }
 
     /**
      * Default Initiation
@@ -120,5 +142,18 @@ class BGTest extends OBTest{
         //Get Code from URL
         code = BerlinTestUtil.getCodeFromURL(automation.currentUrl.get()).split("=")[0]
                 .replace("+", " ")
+    }
+
+    /**
+     * Get Scopes
+     * @return
+     */
+    List<String> getApplicationScope() {
+        if (this.AccountScopes == null) {
+            this.AccountScopes = [
+                    BerlinConstants.SCOPES.ACCOUNTS.getScopes(),
+            ] as List<String>
+        }
+        return this.AccountScopes
     }
 }

@@ -16,6 +16,7 @@ import com.wso2.berlin.test.framework.request_builder.BerlinRequestBuilder
 import com.wso2.berlin.test.framework.utility.AccountsInitiationPayloads
 import com.wso2.berlin.test.framework.utility.BerlinTestUtil
 import org.testng.Assert
+import org.testng.ITestContext
 import org.testng.annotations.Test
 
 /**
@@ -26,6 +27,14 @@ class AccountsSCAFlowTest extends BGTest{
 
     String consentPath = BerlinConstants.CONSENT_PATH
     String initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
+
+    @Test(priority = 2,dependsOnMethods = "TC0201001_Accounts initiation for SCA implicit accept scenario")
+    void "TC0101009_Verify Get Application Access Token"(ITestContext context){
+
+        // retrieve from context using key
+        accessToken = getApplicationAccessToken(context.getAttribute(BerlinConstants.CLIENT_ID).toString())
+        Assert.assertNotNull(accessToken)
+    }
 
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
     void "TC0201001_Accounts initiation for SCA implicit accept scenario"() {

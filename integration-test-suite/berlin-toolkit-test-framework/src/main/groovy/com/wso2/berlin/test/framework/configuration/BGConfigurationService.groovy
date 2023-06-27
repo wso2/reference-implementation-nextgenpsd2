@@ -1,5 +1,6 @@
 package com.wso2.berlin.test.framework.configuration
 
+import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import com.wso2.openbanking.test.framework.configuration.OBConfigurationService
 
 /**
@@ -12,32 +13,32 @@ class BGConfigurationService extends OBConfigurationService {
      */
      Object getClientId() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Application.ClientID");
     }
 
     /**
      * Get Base URL
      */
-     String getBaseURL() {
+    static String getBaseURL() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.BaseURL"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.BaseURL"));
     }
 
     /**
      * Get authorization server URL
      */
-     String getAuthorisationServerURL() {
+    static String getAuthorisationServerURL() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.AuthorisationServerURL"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.AuthorisationServerURL"));
     }
 
     /**
      * Get redirect URL
      */
-     Object getRedirectURL() {
+    static Object getRedirectURL() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Application.RedirectURL");
     }
 
@@ -46,7 +47,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
     static Object getApplicationKeystoreLocation() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Application.KeyStore.Location");
     }
 
@@ -55,7 +56,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
     static Object getApplicationKeystoreAlias() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Application.KeyStore.Alias");
     }
 
@@ -64,13 +65,13 @@ class BGConfigurationService extends OBConfigurationService {
      */
     static Object getApplicationKeystorePassword() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Application.KeyStore.Password");
     }
 
 
     static Object isMTLSEnabled() {
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Transport.MTLSEnabled");
     }
 
@@ -79,7 +80,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      Object getTransportKeystoreLocation() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Location");
     }
 
@@ -88,7 +89,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      Object getTransportKeystorePassword() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Password");
     }
 
@@ -97,7 +98,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      Object getTransportKeystoreType() {
 
-        return ConfigParser.getInstance().getConfiguration()
+        return OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Type");
     }
 
@@ -106,7 +107,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      String getTransportTruststoreLocation() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Transport.Truststore.Location"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Transport.Truststore.Location"));
     }
 
     /**
@@ -114,7 +115,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      String getTransportTruststorePassword() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Transport.Truststore.Password"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Transport.Truststore.Password"));
     }
 
     /**
@@ -122,7 +123,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      String getTransportTruststoreType() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Transport.Truststore.Type"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Transport.Truststore.Type"));
     }
 
     /**
@@ -130,15 +131,15 @@ class BGConfigurationService extends OBConfigurationService {
      */
      int getAccessTokenExpireTime() {
 
-        return Integer.parseInt(String.valueOf(ConfigParser.getInstance()
-                .getConfiguration().get("Common.AccessTokenExpireTime")));
+        return Integer.parseInt(String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
+                .get("Common.AccessTokenExpireTime")));
     }
 
     /**
      * Get signing algorithm
      */
      String getSigningAlgorithm() {
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Common.SigningAlgorithm"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Common.SigningAlgorithm"));
     }
 
     /**
@@ -146,7 +147,8 @@ class BGConfigurationService extends OBConfigurationService {
      */
      String getNonRegulatoryClientId() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("NonRegulatoryApplication.ClientID"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
+                .get("NonRegulatoryApplication.ClientID"));
     }
 
     /**
@@ -154,14 +156,14 @@ class BGConfigurationService extends OBConfigurationService {
      */
      String getAudienceValue() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("ConsentApi.AudienceValue"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("ConsentApi.AudienceValue"));
     }
 
     /**
      * Get Api Version
      */
      String getApiVersion() {
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("ApiVersion"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("ApiVersion"));
     }
 
 
@@ -171,7 +173,7 @@ class BGConfigurationService extends OBConfigurationService {
      */
      Object getTransportKeystoreAlias() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
                 .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Alias"));
     }
 
@@ -179,14 +181,15 @@ class BGConfigurationService extends OBConfigurationService {
      * Get browser Preference
      */
      String browserPreference() {
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("BrowserAutomation.BrowserPreference"));
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
+                .get("BrowserAutomation.BrowserPreference"));
     }
 
     /**
      * Get Driver Location
      */
      String getDriverLocation() {
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
+        return String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
                 .get("BrowserAutomation.WebDriverLocation"));
     }
 
@@ -195,7 +198,8 @@ class BGConfigurationService extends OBConfigurationService {
      */
      boolean isHeadless() {
 
-        return Boolean.parseBoolean(String.valueOf(ConfigParser.getInstance().
-                getConfiguration().get("BrowserAutomation.HeadlessEnabled")));
+        return Boolean.parseBoolean(String.valueOf(OBConfigParser.getInstance().getConfigurationMap()
+                .get("BrowserAutomation.HeadlessEnabled")));
     }
+    
 }

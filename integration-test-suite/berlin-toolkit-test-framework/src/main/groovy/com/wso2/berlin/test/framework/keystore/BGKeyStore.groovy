@@ -18,9 +18,9 @@ class BGKeyStore extends OBKeyStore{
     /**
      * Get Mock-CDR register application Keystore
      * @return
-     * @throws com.wso2.bfsi.test.framework.exception.TestFrameworkException
+     * @throws TestFrameworkException
      */
-    static KeyStore getMockCDRApplicationKeyStore() throws TestFrameworkException {
+    static KeyStore getApplicationKeyStore() throws TestFrameworkException {
         return getKeyStore(bgConfiguration.getAppKeyStoreLocation(),bgConfiguration.getAppKeyStorePWD());
     }
 
@@ -29,7 +29,7 @@ class BGKeyStore extends OBKeyStore{
      * @return
      * @throws TestFrameworkException
      */
-    static Certificate getCertificateFromMockCDRKeyStore() throws TestFrameworkException {
+    static Certificate getCertificateFromKeyStore() throws TestFrameworkException {
         KeyStore keyStore = getKeyStore(bgConfiguration.getAppKeyStoreLocation(),bgConfiguration.getAppKeyStorePWD())
         return getCertificate(keyStore
                 ,bgConfiguration.getAppKeyStoreAlias(),bgConfiguration.getAppKeyStorePWD())
@@ -40,7 +40,7 @@ class BGKeyStore extends OBKeyStore{
      * @return
      * @throws TestFrameworkException
      */
-    static Key getMockCDRSigningKey() throws TestFrameworkException {
+    static Key getSigningKey() throws TestFrameworkException {
         return getSigningKey(bgConfiguration.getAppKeyStoreLocation(),bgConfiguration.getAppKeyStorePWD()
                 ,bgConfiguration.getAppKeyStoreAlias())
     }
