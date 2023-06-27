@@ -9,12 +9,14 @@ You may not alter or remove any copyright or other notice from copies of this co
 
 package com.wso2.berlin.test.framework.constant
 
-import com.wso2.berlin.test.framework.configuration.ConfigParser
+
+import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import com.wso2.openbanking.test.framework.constant.OBConstants
 
 class BerlinConstants extends OBConstants {
 
-    static config = ConfigParser.getInstance()
+    public static final String CONFIG_FILE_LOCATION = "../berlin-toolkit-test-framework/src/main/resources/TestConfiguration.xml";
+    static config = OBConfigParser.getInstance()
     static API_VERSION = config.getApiVersion()
     static final String regularAcc = "DE98765432109876543210"
     public static String AISP_PATH = getConsentPath()

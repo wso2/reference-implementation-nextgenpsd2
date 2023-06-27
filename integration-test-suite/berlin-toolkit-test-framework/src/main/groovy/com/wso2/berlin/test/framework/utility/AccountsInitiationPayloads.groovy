@@ -9,6 +9,8 @@ You may not alter or remove any copyright or other notice from copies of this co
 
 package com.wso2.berlin.test.framework.utility
 
+import com.wso2.berlin.test.framework.constant.BerlinConstants
+
 
 class AccountsInitiationPayloads {
 

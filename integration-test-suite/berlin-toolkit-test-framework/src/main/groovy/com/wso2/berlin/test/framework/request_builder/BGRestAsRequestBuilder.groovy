@@ -9,7 +9,7 @@ You may not alter or remove any copyright or other notice from copies of this co
 
 package com.wso2.berlin.test.framework.request_builder
 
-import com.wso2.berlin.test.framework.configuration.AppConfigReader
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService
 import com.wso2.berlin.test.framework.constant.BerlinConstants
 import com.wso2.berlin.test.framework.utility.BerlinTestUtil
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
@@ -25,6 +25,9 @@ import org.apache.http.conn.ssl.SSLSocketFactory
  * BG Class for provide Basic Rest-assured Request Objects
  */
 class BGRestAsRequestBuilder extends RestAsRequestBuilder {
+
+    private static BGConfigurationService bgConfiguration = new BGConfigurationService()
+
     /**
      * Get Base Request Specification.
      *
@@ -32,7 +35,7 @@ class BGRestAsRequestBuilder extends RestAsRequestBuilder {
      */
     static RequestSpecification buildRequest() throws TestFrameworkException {
 
-        if (AppConfigReader.isMTLSEnabled()) {
+        if (bgConfiguration.isMTLSEnabled()) {
             RestAssuredConfig config = null;
             SSLSocketFactory sslSocketFactory = BerlinTestUtil.getSslSocketFactory();
             if (sslSocketFactory != null) {

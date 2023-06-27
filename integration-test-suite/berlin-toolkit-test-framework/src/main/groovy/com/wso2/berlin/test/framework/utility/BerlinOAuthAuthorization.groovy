@@ -16,8 +16,8 @@ import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.State
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
-import com.wso2.berlin.test.framework.configuration.AppConfigReader
-import com.wso2.berlin.test.framework.configuration.ConfigParser
+import com.wso2.berlin.test.framework.configuration.BGConfigurationService
+
 import com.wso2.berlin.test.framework.constant.BerlinConstants
 import org.testng.Reporter
 
@@ -26,15 +26,17 @@ import org.testng.Reporter
  */
 class BerlinOAuthAuthorization {
 
+    private static BGConfigurationService bgConfiguration = new BGConfigurationService()
+
     private CodeVerifier verifier
 
     private AuthorizationRequest request
 
     private params = [
-            endpoint     : new URI("${ConfigParser.instance.gauthorisationServerURL}/oauth2/authorize/"),
+            endpoint     : new URI("${bgConfiguration.getAuthorisationServerURL}/oauth2/authorize/"),
             response_type: new ResponseType("code"),
-            client_id    : new ClientID(AppConfigReader.getClientId()),
-            redirect_uri : new URI(AppConfigReader.getRedirectURL()),
+            client_id    : new ClientID(bgConfiguration.getAppInfoClientID()),
+            redirect_uri : new URI(bgConfiguration.getAppDCRRedirectUri()),
             state        : new State(UUID.randomUUID().toString())
     ]
 
