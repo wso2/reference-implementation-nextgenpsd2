@@ -71,7 +71,9 @@ class BGTest extends OBTest{
     }
 
     /**
-     * Default Initiation
+     * Default Initiation to build the request and retrieve account id.
+     *  @param consentPath
+     *  @param initiationPayload
      */
     void doDefaultInitiation(String consentPath, String initiationPayload) {
 
@@ -85,6 +87,7 @@ class BGTest extends OBTest{
 
     /**
      * Status Retrieval
+     * @param consentPath
      */
     void doStatusRetrieval(String consentPath) {
 
@@ -96,7 +99,7 @@ class BGTest extends OBTest{
     }
 
     /**
-     * Authorization Flow
+     * Consent Authorization Flow
      */
     void doAuthorizationFlow() {
 
