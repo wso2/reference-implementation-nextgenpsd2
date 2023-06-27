@@ -99,7 +99,7 @@ class BGJWTGenerator {
      * Return JWT for application access token generation
      * @param clientId
      * @return
-     * @throws com.wso2.bfsi.test.framework.exception.TestFrameworkException
+     * @throws TestFrameworkException
      */
     String getAppAccessTokenJwt(String clientId = null) throws TestFrameworkException {
 
@@ -134,55 +134,5 @@ class BGJWTGenerator {
                 .addClientAssertion(payload).addRedirectUri().addClientID().getPayload()
         return accessTokenJWT
     }
-
-    /**
-     * Return signed JWT for Authorization request
-     * @param scopeString
-     * @param sharingDuration
-     * @param sendSharingDuration
-     * @param cdrArrangementId
-     * @param redirect_uri
-     * @param clientId
-     * @return
-     */
-    JWT getSignedAuthRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
-                                   String cdrArrangementId, String redirect_uri, String clientId) {
-
-        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
-
-        JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
-            {
-                add("urn:cds.au:cdr:3")
-            }
-        })
-        JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
-        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr)).put("userinfo", userInfoString)
-        if (sharingDuration.intValue() != 0 || sendSharingDuration) {
-            claimsString.put("sharing_duration", sharingDuration)
-        }
-        if (!StringUtils.isEmpty(cdrArrangementId)) {
-            claimsString.put("cdr_arrangement_id", cdrArrangementId)
-        }
-        String claims = new JSONRequestGenerator()
-                .addAudience()
-                .addResponseType()
-                .addExpireDate(expiryDate.getEpochSecond().toLong())
-                .addClientID(clientId)
-                .addIssuer(clientId)
-                .addRedirectURI(redirect_uri)
-                .addScope(scopeString)
-                .addState("suite")
-                .addNonce()
-                .addCustomJson("claims", claimsString)
-                .getJsonObject().toString()
-
-        String payload = getSignedRequestObject(claims)
-
-        Reporter.log("Authorisation Request Object")
-        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
-
-        return SignedJWT.parse(payload)
-    }
-
 }
 
