@@ -127,7 +127,7 @@ class BerlinRequestBuilder  {
                 .header(BerlinConstants.PSU_ID, "${bgConfiguration.getUserPSUName()}")
                 .header(BerlinConstants.PSU_TYPE, "email")
                 .filter(new BerlinSignatureFilter())
-                .baseUri(bgConfiguration.getBaseURL())
+                .baseUri(bgConfiguration.getServerBaseURL())
     }
 
     static String getCurrentDate() {

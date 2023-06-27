@@ -35,7 +35,7 @@ class BGRestAsRequestBuilder extends RestAsRequestBuilder {
      */
     static RequestSpecification buildRequest() throws TestFrameworkException {
 
-        if (bgConfiguration.isMTLSEnabled()) {
+        if (bgConfiguration.getAppTransportMLTSEnable()) {
             RestAssuredConfig config = null;
             SSLSocketFactory sslSocketFactory = BerlinTestUtil.getSslSocketFactory();
             if (sslSocketFactory != null) {

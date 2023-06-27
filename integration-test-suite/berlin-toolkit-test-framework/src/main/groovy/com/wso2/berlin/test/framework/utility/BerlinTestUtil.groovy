@@ -111,10 +111,10 @@ import java.time.format.DateTimeFormatter;
      static KeyStore getApplicationKeyStore() throws TestFrameworkException {
 
         try (InputStream inputStream = new FileInputStream(bgConfiguration.
-                getApplicationKeystoreLocation().toString())) {
+                getAppKeyStoreLocation().toString())) {
 
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(inputStream, bgConfiguration.getApplicationKeystorePassword().toString().toCharArray());
+            keyStore.load(inputStream, bgConfiguration.getAppKeyStorePWD().toCharArray());
             return keyStore;
         } catch (IOException e) {
             throw new TestFrameworkException("Failed to load Keystore file from the location", e);
