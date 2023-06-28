@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -54,10 +55,13 @@ public class DataRetrievalUtil {
      * @param headers     request headers
      * @return retrieved accounts string from endpoint
      *
-     * FindSecBugs warning suppression
-     *
-     * Number of false positives suppressed - 1
      */
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     public static String getAccountsFromEndpoint(String accountsURL, Map<String, String> parameters,
                                                  Map<String, String> headers) {
 

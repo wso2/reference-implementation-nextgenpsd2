@@ -1,14 +1,10 @@
-/*
- *  Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022 - 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Commercial License available at http://wso2.com/licenses. For specific
- *  language governing the permissions and limitations under this license,
- *  please see the license as well as any agreement you’ve entered into with
- *  WSO2 governing the purchase of this software and any associated services.
- *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.scp.webapp.util;
@@ -18,6 +14,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.scp.webapp.exception.TokenGenerationException;
 import com.wso2.openbanking.scp.webapp.model.SCPError;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -60,6 +57,12 @@ public class Utils {
         // hiding constructor
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     public static JSONObject sendRequest(HttpUriRequest request)
             throws TokenGenerationException {
 
@@ -97,6 +100,12 @@ public class Utils {
                 request.getURI() + " response:" + responseStr);
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     public static JSONObject sendTokenRequest(HttpPost tokenReq) throws TokenGenerationException {
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
             HttpResponse response = client.execute(tokenReq);
