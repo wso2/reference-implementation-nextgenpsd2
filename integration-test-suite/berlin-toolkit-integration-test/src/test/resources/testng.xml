@@ -1,0 +1,27 @@
+<!--
+ ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~ This software is the property of WSO2 LLC. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ ~ You may not alter or remove any copyright or other notice from copies of this content.
+-->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Berlin Group Integration">
+    <test name="Accounts Flow Tests" parallel="false" enabled="true" group-by-instances="true">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell">
+                    <![CDATA[whatGroup = System.getProperty("groupToRun");
+                            groups.containsKey(whatGroup);
+                    ]]>
+                </script>
+            </method-selector>
+        </method-selectors>
+        <classes>
+
+            <class name="com.wso2.berlin.integration.test.accounts.AccountsSCAFlowTest"/>
+
+        </classes>
+    </test>
+</suite>
