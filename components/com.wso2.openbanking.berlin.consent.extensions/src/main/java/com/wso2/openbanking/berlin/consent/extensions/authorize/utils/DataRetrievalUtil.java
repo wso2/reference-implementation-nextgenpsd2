@@ -14,7 +14,6 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -59,7 +58,6 @@ public class DataRetrievalUtil {
      *
      * Number of false positives suppressed - 1
      */
-    @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
     public static String getAccountsFromEndpoint(String accountsURL, Map<String, String> parameters,
                                                  Map<String, String> headers) {
 
