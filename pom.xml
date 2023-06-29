@@ -679,6 +679,7 @@
         <swagger.parser.version>2.0.24</swagger.parser.version>
         <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
 
+
         <!-- Open Banking Accelerator Version-->
         <openbanking.accelerator.version.range>[3.0.0.70, 4.0.0)</openbanking.accelerator.version.range>
     </properties>
