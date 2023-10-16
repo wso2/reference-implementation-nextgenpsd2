@@ -60,7 +60,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Missing response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Missing response_type parameter value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -96,7 +96,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
+        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -154,7 +154,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
+        Assert.assertEquals(oauthErrorCode, "'state' parameter is required")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -482,7 +482,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Invalid response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Invalid response_type parameter value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

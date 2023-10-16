@@ -98,7 +98,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         //Check the Authorisation status
         getAuthorizationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+                PaymentsConstants.SCA_STATUS_FINALISED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Validate the Authorisation IDs List"])
@@ -107,7 +107,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         createExplicitAuthorization(consentPath)
 
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+                PaymentsConstants.SCA_STATUS_FINALISED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])

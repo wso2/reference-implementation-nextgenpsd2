@@ -690,7 +690,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.SIGNATURE_INVALID)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
                 "Message digest validation failed")
     }

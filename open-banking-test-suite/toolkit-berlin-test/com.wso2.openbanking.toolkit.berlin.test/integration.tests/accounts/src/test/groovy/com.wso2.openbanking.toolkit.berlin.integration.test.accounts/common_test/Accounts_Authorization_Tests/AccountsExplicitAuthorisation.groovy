@@ -83,7 +83,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         //Check the Authorisation status
         getAuthorizationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                AccountsConstants.CONSENT_STATUS_PSUAUTHENTICATED)
+                AccountsConstants.CONSENT_STATUS_FINALISED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
@@ -242,6 +242,6 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         getAuthorizationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(authorisationResponse.jsonPath().get(BerlinConstants.SCA_STATUS_PARAM),
-                AccountsConstants.CONSENT_STATUS_PSUAUTHENTICATED)
+                AccountsConstants.CONSENT_STATUS_FINALISED)
     }
 }

@@ -397,6 +397,10 @@ public class ConfigParser {
     return String.valueOf(ConfigParser.getInstance().getConfiguration().get("SolutionVersion"));
   }
 
+  public String getAPIMVersion() {
+    return String.valueOf(ConfigParser.getInstance().getConfiguration().get("APIMVersion"));
+  }
+
   public String getOBSpec() {
     return String.valueOf(ConfigParser.getInstance().getConfiguration().get("OBSpec"));
   }

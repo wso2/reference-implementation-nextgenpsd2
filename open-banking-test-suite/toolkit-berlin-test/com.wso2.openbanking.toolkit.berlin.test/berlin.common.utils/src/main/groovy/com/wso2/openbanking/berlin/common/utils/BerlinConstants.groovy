@@ -43,6 +43,7 @@ class BerlinConstants {
     static final String TPPMESSAGE_TEXT = "tppMessages[0].text"
     static final String TPPMESSAGE_PATH = "tppMessages[0].path"
     static final String FORMAT_ERROR = "FORMAT_ERROR"
+    static final String SIGNATURE_INVALID = "SIGNATURE_INVALID"
     static final String PARAMETER_NOT_CONSISTENT = "PARAMETER_NOT_CONSISTENT"
     static final String CONSENT_INVALID = "CONSENT_INVALID"
     static final String CONSENT_UNKNOWN = "CONSENT_UNKNOWN"

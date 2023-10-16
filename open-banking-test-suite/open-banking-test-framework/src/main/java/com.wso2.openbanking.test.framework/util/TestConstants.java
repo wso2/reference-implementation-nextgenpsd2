@@ -24,6 +24,7 @@ public class TestConstants {
 	public static final String SOLUTION_VERSION_130 = "1.3.0";
 	public static final String SOLUTION_VERSION_140 = "1.4.0";
 	public static final String SOLUTION_VERSION_150 = "1.5.0";
+	public static final String APIM_VERSION_420 = "4.2.0";
 
 	public static final String CLIENT_CREDENTIALS = "client_credentials";
 	public static final String AUTH_CODE = "authorization_code";
@@ -117,6 +118,7 @@ public class TestConstants {
 
 	//Selenium constants
 	public static final String USERNAME_FIELD_ID = "usernameUserInput";
+	public static final String USERNAME_FIELD_ID_420 = "username";
 	public static final String PASSWORD_FIELD_ID = "password";
 	public static final String HEADLESS_TAG = "--headless";
 	public static final String ACCOUNT_SELECT_DROPDOWN_XPATH = "//*[@id=\"accselect\"]";

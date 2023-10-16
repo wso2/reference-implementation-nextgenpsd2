@@ -37,6 +37,7 @@ class PaymentsConstants {
 
     static final String SCA_STATUS_RECEIVED = "received"
     static final String SCA_STATUS_PSU_AUTHENTICATED= "psuAuthenticated"
+    static final String SCA_STATUS_FINALISED= "finalised"
 
     static final String PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS = "sepa-credit-transfers"
     static final String PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS = "instant-sepa-credit-transfers"

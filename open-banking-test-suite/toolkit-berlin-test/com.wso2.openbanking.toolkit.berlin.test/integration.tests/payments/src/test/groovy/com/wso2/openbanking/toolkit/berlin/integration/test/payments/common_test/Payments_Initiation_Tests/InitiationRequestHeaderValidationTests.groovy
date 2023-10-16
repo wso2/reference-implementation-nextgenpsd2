@@ -195,7 +195,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Header parameter 'PSU-IP-Address' is required on " +
+                    "Header parameter 'psu-ip-address' is required on " +
                             "path '/{payment-service}/{payment-product}' but not found in request.")
         }
     }

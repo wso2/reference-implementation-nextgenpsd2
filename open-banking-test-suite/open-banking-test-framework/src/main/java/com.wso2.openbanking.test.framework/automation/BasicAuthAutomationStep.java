@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.test.framework.automation;
 
+import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.PsuConfigReader;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import org.apache.commons.logging.Log;
@@ -54,7 +55,11 @@ public class BasicAuthAutomationStep implements BrowserAutomationStep {
     WebElement username;
 
     //Enter User Name
-    username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
+    if (TestConstants.APIM_VERSION_420.equals(ConfigParser.getInstance().getAPIMVersion())) {
+      username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID_420));
+    } else {
+      username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
+    }
 
     username.clear();
     username.sendKeys(PsuConfigReader.getPSU());

@@ -78,7 +78,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
 
         getAuthorizationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+                PaymentsConstants.SCA_STATUS_FINALISED)
 
     }
 
@@ -127,7 +127,7 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
         //Check the Cancellation Status
         getCancellationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+                PaymentsConstants.SCA_STATUS_FINALISED)
 
         //Check whether the payment is cancelled
         def retrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
@@ -154,6 +154,6 @@ class CancellationAuthorisationTest extends AbstractPaymentsFlow {
 
         getCancellationStatus(consentPath)
         Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+                PaymentsConstants.SCA_STATUS_FINALISED)
     }
 }

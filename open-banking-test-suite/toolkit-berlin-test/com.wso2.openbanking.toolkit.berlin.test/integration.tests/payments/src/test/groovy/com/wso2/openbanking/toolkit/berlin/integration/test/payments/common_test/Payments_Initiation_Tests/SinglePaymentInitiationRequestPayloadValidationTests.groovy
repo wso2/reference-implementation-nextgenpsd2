@@ -43,7 +43,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
 
         //Make Payment Initiation Request
         def consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
-                .body(payload)
+                .body("")
                 .post(singlePaymentConsentPath)
 
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
@@ -622,6 +622,6 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
                 .body(payload)
                 .post(singlePaymentConsentPath)
 
-        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_201)
     }
 }
