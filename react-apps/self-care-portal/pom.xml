@@ -41,12 +41,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
             <scope>provided</scope>
         </dependency>

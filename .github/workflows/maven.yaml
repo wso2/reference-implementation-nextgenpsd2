@@ -33,57 +33,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Install DNS-Utils
-        run: sudo apt-get install dnsutils
-      - name: Add hosts to /etc/hosts
-        run: |
-          IP_Address=$(dig +short internal-Private-mvn-ent-wso2-com-LB-1306279662.us-east-1.elb.amazonaws.com | tail -n1)
-          sudo echo $IP_Address "maven.enterprise.wso2.com" | sudo tee -a /etc/hosts
-      - name: Install Open VPN
-        run: sudo apt-get install openvpn
-      - name: Setup VPN config
-        run: |
-          echo "${{ secrets.VPN_FILE }}" > .github/workflows/config.ovpn
-      - name: Connect VPN
-        run: sudo openvpn --config ".github/workflows/config.ovpn" --daemon
       - name: Setup Maven settings.xml
         uses: whelk-io/maven-settings-xml-action@v11
         with:
-          repositories: >
-            [
-              {
-                "id": "enterprise-maven",
-                "name": "enterprise-maven-repository",
-                "url": "https://maven.enterprise.wso2.com/repository/wso2-releases/",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "daily",
-                  "checksumPolicy": "ignore"
-                }
-              }
-            ]
-          plugin_repositories: >
-            [
-              {
-                "id": "enterprise-maven",
-                "name": "enterprise-maven-repository",
-                "url": "https://maven.enterprise.wso2.com/repository/wso2-releases/",
-                "releases": {
-                  "enabled": "true"
-                },
-                "snapshots": {
-                  "enabled": "false"
-                }
-              }
-            ]
-          servers: >
-            [
-              {
-                "id": "enterprise-maven",
-                "username": "${{secrets.MAVEN_ENTERPRISE_REPO_USERNAME}}",
-                "password": "${{secrets.MAVEN_ENTERPRISE_REPO_PASSWORD}}"
-              }
-            ]
           mirrors: >
             [
               {
@@ -111,9 +63,6 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
           mvn -B install --file pom.xml
-      - name: kill vpn
-        if: always()
-        run: sudo killall openvpn
 
 # Repositories mirrored due to the use of HTTP repositories. Mirrors can be removed after the respective repositories
 # are updated.
