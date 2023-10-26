@@ -37,11 +37,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.keymanager</artifactId>
         </dependency>
         <dependency>

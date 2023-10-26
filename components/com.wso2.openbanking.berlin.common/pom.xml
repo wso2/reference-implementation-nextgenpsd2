@@ -42,7 +42,7 @@
             <artifactId>axiom</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
         </dependency>
         <dependency>

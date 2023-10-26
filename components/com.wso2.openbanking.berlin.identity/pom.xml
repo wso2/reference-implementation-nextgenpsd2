@@ -39,19 +39,19 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
         </dependency>
         <dependency>

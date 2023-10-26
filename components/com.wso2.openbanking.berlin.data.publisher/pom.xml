@@ -25,7 +25,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
         </dependency>
         <dependency>

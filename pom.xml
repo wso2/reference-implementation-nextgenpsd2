@@ -235,42 +235,42 @@
             </dependency>
             <!--Open Banking Accelerator components-->
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2</groupId>
+                <groupId>com.wso2.openbanking.accelerator</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.keymanager</artifactId>
                 <version>${openbanking.accelerator.version.range}</version>
             </dependency>
@@ -626,7 +626,7 @@
         <carbon.identity.version>5.19.32</carbon.identity.version>
         <identity.inbound.auth.oauth.version>6.4.111</identity.inbound.auth.oauth.version>
         <carbon.identity.clientauth.mutualtls.version>2.3.5</carbon.identity.clientauth.mutualtls.version>
-        <org.wso2.carbon.apimgt.version>[9.0.174, 10.0.0)</org.wso2.carbon.apimgt.version>
+        <org.wso2.carbon.apimgt.version>[9.0.174, 9.28.117]</org.wso2.carbon.apimgt.version>
         <org.apache.logging.log4j>2.12.0</org.apache.logging.log4j>
         <jackson.databinding.version>2.12.0</jackson.databinding.version>
         <cxf-bundle-package.version>2.7.18</cxf-bundle-package.version>
@@ -674,13 +674,13 @@
         <selenium.version>3.141.59</selenium.version>
         <selenium.java.version>3.8.1</selenium.java.version>
         <com.nimbusds.oidc.version>6.13</com.nimbusds.oidc.version>
-        <org.codehaus.groovy.version>2.3.3</org.codehaus.groovy.version>
+        <org.codehaus.groovy.version>2.4.11</org.codehaus.groovy.version>
         <swagger.model.version>2.1.7</swagger.model.version>
         <swagger.parser.version>2.0.24</swagger.parser.version>
         <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
 
 
         <!-- Open Banking Accelerator Version-->
-        <openbanking.accelerator.version.range>[3.0.0.70, 4.0.0)</openbanking.accelerator.version.range>
+        <openbanking.accelerator.version.range>[3.0.0, 4.0.0)</openbanking.accelerator.version.range>
     </properties>
 </project>
