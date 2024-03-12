@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021 - 2022, WSO2 LLC. (https://www.wso2.com/). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval;
@@ -35,6 +32,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -101,7 +99,8 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Finding the auth resource relevant to the user if the user Id already exists
             Optional<AuthorizationResource> unauthorizedAuthResource = authorizationsList.stream()
-                            .filter(authorization -> StringUtils.equals(loggedInUserId,
+                            .filter(authorization -> StringUtils.equals(
+                                    MultitenantUtils.getTenantAwareUsername(loggedInUserId),
                                     authorization.getUserID())
                                     && StringUtils.equals(authType, authorization.getAuthorizationType()))
                             .findFirst();
@@ -122,10 +121,12 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
             // Finding first unauthorized auth resource if no user specific auth resource is found
             if (!unauthorizedAuthResource.isPresent()) {
                 unauthorizedAuthResource = authorizationsList.stream()
-                                .filter(authorization -> StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
-                                        authorization.getAuthorizationStatus()) &&
-                                        StringUtils.equals(authType, authorization.getAuthorizationType()))
-                                .findFirst();
+                        .filter(authorization -> (StringUtils.equals(ScaStatusEnum.EXEMPTED.toString(),
+                                authorization.getAuthorizationStatus()) ||
+                                StringUtils.equals(ScaStatusEnum.FINALISED.toString(),
+                                        authorization.getAuthorizationStatus())) &&
+                                StringUtils.equals(authType, authorization.getAuthorizationType()))
+                        .findFirst();
             }
 
             if (unauthorizedAuthResource.isPresent()) {

@@ -49,8 +49,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference object is missing in payload")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"debtorAccount\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -68,8 +68,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference is empty")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "ECMA 262 regex \"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -87,9 +87,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+         "ECMA 262 regex \"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string \"12345\""))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -105,8 +104,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Instructed amount is missing in payments payload")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"instructedAmount\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -122,8 +121,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Currency code is missing in instructed amount")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"currency\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -139,8 +138,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Amount is missing in instructed amount")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"amount\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -158,9 +157,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-
-        //TODO: Uncomment the line after fixing the issue: https://github.com/wso2/financial-open-banking/issues/4437
-        //Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT), "")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+          "ECMA 262 regex \"[A-Z]{3}\" does not match input string \"Euro\""))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -312,8 +310,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Creditor account is missing in payments payload")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"creditorAccount\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -369,8 +367,8 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Creditor name is missing in payments payload")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"creditorName\"])"))
     }
 
     //TODO: Uncomment the method after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/4813
@@ -624,6 +622,6 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
                 .body(payload)
                 .post(singlePaymentConsentPath)
 
-        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
     }
 }

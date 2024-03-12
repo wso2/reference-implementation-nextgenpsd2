@@ -109,13 +109,13 @@ class BankOfferedRecurringConsentValidationTests extends AbstractAccountsFlow {
                 .get(AccountsConstants.ACCOUNTS_PATH)
 
         if (isMultipleConsentServiceSupported) {
-            Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_200)
-            Assert.assertNotNull(response.jsonPath().getJsonObject("accounts"))
+            Assert.assertEquals(response2.statusCode(), BerlinConstants.STATUS_CODE_200)
+            Assert.assertNotNull(response2.jsonPath().getJsonObject("accounts"))
         } else {
-            Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
+            Assert.assertEquals(response2.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+            Assert.assertEquals(TestUtil.parseResponseBody(response2, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.CONSENT_EXPIRED)
-            Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+            Assert.assertTrue(TestUtil.parseResponseBody(response2, BerlinConstants.TPPMESSAGE_TEXT).toString().
                     contains("The consent is expired"))
         }
     }

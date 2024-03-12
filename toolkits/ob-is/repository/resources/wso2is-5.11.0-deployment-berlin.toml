@@ -418,8 +418,16 @@ class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval
 priority = 3
 
 [[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentSubmissionBankingIntegrationStep"
+priority = 1
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentCancellationBankingIntegrationStep"
+priority = 2
+
+[[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
-priority = 4
+priority = 3
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
@@ -464,9 +472,9 @@ valid_until_date_cap.value = 0
 multiple_recurring_consent.enable = false
 
 [open_banking_berlin.consent.payments]
-auth_cancellation.enable = false
 bulk_payments.max_future_payment_days = ""
 debtor_acc_currency_validation.enable = true
+backend_url = "https://APIM_HOSTNAME:9443/api/openbanking/berlin/backend/services/payments"
 
 [open_banking_berlin.consent.cof]
 single_acc_no_retrieval_validation.enable = false
@@ -492,3 +500,26 @@ default.enable = true
 ais = "v1"
 pis = "v1"
 piis = "v2"
+
+[open_banking.dcr]
+applicationupdater = "com.wso2.openbanking.berlin.identity.application.updater.BerlinApplicationUpdater"
+
+[[open_banking.identity.authentication.worker]]
+name = "exempted"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.ExemptedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "failed"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FailedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "finalised"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FinalizedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "psuAuthenticated"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.PSUAuthenticatedStatusUpdateWorker"
+
+[[open_banking.identity.authentication.worker]]
+name = "started"
+class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.StartedStatusUpdateWorker"

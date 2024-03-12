@@ -90,6 +90,13 @@ public class PIISAccountListRetrievalHandler implements AccountListRetrievalHand
         metaDataMap.put(ConsentExtensionConstants.ACCOUNT_REF_OBJECT, accountRefObjects.get(0));
     }
 
+    /**
+     * This method appends the validated account reference object to the consent
+     * data to be displayed in the consent page.
+     *
+     * @param validatedAccountRefObject validated account reference object
+     * @param consentDataJSON consent data json to be displayed in the consent page
+     */
     private void appendAccountDataToConsentData(JSONObject validatedAccountRefObject, JSONObject consentDataJSON) {
 
         String accountRefType = ConsentExtensionUtil.getAccountReferenceType(validatedAccountRefObject);

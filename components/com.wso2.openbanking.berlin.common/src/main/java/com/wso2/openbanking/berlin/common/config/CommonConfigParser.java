@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.common.config;
@@ -419,10 +416,6 @@ public class CommonConfigParser {
         return accountReferenceTypes;
     }
 
-    public boolean isAuthorizationRequiredForCancellation() {
-        return Boolean.parseBoolean((String) getConfiguration().get(CommonConstants.AUTHORIZE_CANCELLATION));
-    }
-
     /**
      * Get supported code challenge methods for Berlin authorization request.
      *
@@ -467,6 +460,16 @@ public class CommonConfigParser {
         } else {
             return ((String) getConfiguration().get(CommonConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT)).trim();
         }
+    }
+
+    /**
+     * Returns the configured payments backend URL.
+     *
+     * @return the payment backend URL.
+     */
+    public String getPaymentsBackendURL() {
+
+        return ((String) getConfiguration().get(CommonConstants.PAYMENTS_BACKEND_URL)).trim();
     }
 
     public boolean isMultipleRecurringConsentEnabled() {

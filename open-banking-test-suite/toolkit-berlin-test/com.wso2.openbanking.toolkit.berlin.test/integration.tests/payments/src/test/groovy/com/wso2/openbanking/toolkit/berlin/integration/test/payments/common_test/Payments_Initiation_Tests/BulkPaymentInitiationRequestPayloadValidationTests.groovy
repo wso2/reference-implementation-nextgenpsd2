@@ -19,7 +19,11 @@ import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.Paymen
 import com.wso2.openbanking.toolkit.berlin.integration.test.payments.util.PaymentsInitiationPayloads
 import org.testng.Assert
 import org.testng.annotations.Test
+
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Bulk Payment Initiation Request Payload Validation Tests
@@ -59,8 +63,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference object is missing in payload")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"debtorAccount\"])"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -74,8 +78,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "No payments found in payments request body")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "Object has missing required properties ([\"payments\"])"))
     }
 
     /**
@@ -118,8 +122,8 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Account reference is empty")
+        Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).contains(
+                "ECMA 262 regex \"[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}\" does not match input string"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -183,7 +187,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "iban for Debtor Account should be equal for all payments")
+                "Invalid data present in payment objects (debtorAccount)")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -211,7 +215,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Unrecognized property 'requestedExecutionDate'")
+                "Invalid data present in payment objects (requestedExecutionDate)")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -239,11 +243,14 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Unrecognized property 'requestedExecutionTime'")
+                "Invalid data present in payment objects (requestedExecutionTime)")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
     void "TC0401033_Initiation Request with both requestedExecutionDate and requestedExecutionTime"() {
+
+        DateTimeFormatter formatterOffsetTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        LocalDateTime offsetTime = OffsetDateTime.now().toLocalDateTime().plusDays(1)
 
         String bulkPaymentPayload = """{
             "batchBookingPreferred": true,
@@ -251,7 +258,7 @@ class BulkPaymentInitiationRequestPayloadValidationTests extends AbstractPayment
                 "iban": "${PaymentsConstants.debtorAccount1}"
                 },
             "requestedExecutionDate": "${PaymentsInitiationPayloads.paymentDate}",
-            "requestedExecutionTime": "${OffsetTime.now().plusHours(1)}",
+            "requestedExecutionTime": "2022-08-30T04:00:00.000Z",
             "payments":[
                 {
                     "instructedAmount": {

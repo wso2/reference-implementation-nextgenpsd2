@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.util
@@ -75,7 +72,7 @@ class AbstractPaymentsFlow {
     void doStatusRetrieval(String consentPath) {
 
         //Status Retrieval
-        retrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        retrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .get(consentPath + "/" + paymentId + "/status")
 
         consentStatus = TestUtil.parseResponseBody(retrievalResponse, "transactionStatus")
@@ -178,7 +175,7 @@ class AbstractPaymentsFlow {
 
     void doConsentDelete(String consentPath) {
 
-        deleteResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        deleteResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .delete(consentPath + "/" + paymentId)
     }
 
@@ -199,10 +196,10 @@ class AbstractPaymentsFlow {
                 "UTF8")
     }
 
-    void doConsentRetrieval(String consentPath) {
+    void doPaymentRetrieval(String consentPath) {
 
         //Status Retrieval
-        consentRetrievalResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        consentRetrievalResponse = BerlinRequestBuilder.buildBasicRequest(userAccessToken)
                 .get(consentPath + "/" + paymentId)
 
         consentStatus = TestUtil.parseResponseBody(consentRetrievalResponse, "transactionStatus")
@@ -246,6 +243,7 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/${paymentId}/authorisations")
+        authorisationId = TestUtil.parseResponseBody(authorisationResponse, "authorisationIds[0]")
     }
 
     /**

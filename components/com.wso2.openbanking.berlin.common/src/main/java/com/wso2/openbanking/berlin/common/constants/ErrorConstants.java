@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.common.constants;
@@ -50,6 +47,8 @@ public class ErrorConstants {
     public static final String IMPLICIT_CONSENT_START_AUTHORISATION = "The %s is implicit therefore cannot " +
             "create authorisation resource";
     public static final String CONSENT_DATA_RETRIEVE_ERROR = "Exception occurred while getting consent data";
+    public static final String PAYMENT_SUBMISSION_FAILED = "Payment submission failed, please retry";
+    public static final String PAYMENT_CANCELLATION_FAILED = "Payment cancellation failed, please retry";
     public static final String LOGGED_IN_USER_MISMATCH = "The logged in user does not match with the " +
             "user who initiated the consent";
     public static final String INVALID_PAYMENT_CONSENT_STATUS_UPDATE = "Invalid payment consent update request for " +
@@ -68,6 +67,8 @@ public class ErrorConstants {
     public static final String NO_VALID_ACCOUNTS_FOR_CONSENT = "No valid accounts for this consent";
     public static final String CONSENT_EXPIRED = "The consent is expired";
     public static final String CONSENT_INVALID_STATE = "Consent is not in a valid state";
+    public static final String AUTHORISATION_NOT_PSU_AUTHENTICATED_STATE = "Authorisation resource is not in " +
+            "a PSU Authenticated state";
     public static final String INCORRECT_CONSENT_DATA = "Received invalid consent data";
     public static final String ACCOUNTS_NOT_FOUND_FOR_USER = "Provided account references do not exist or not valid";
 

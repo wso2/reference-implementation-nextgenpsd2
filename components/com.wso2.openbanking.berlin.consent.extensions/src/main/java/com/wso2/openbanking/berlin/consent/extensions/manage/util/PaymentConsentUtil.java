@@ -258,7 +258,7 @@ public class PaymentConsentUtil {
 
         JSONObject responseObject = new JSONObject();
         responseObject.appendField(ConsentExtensionConstants.TRANSACTION_STATUS, createdConsent.getCurrentStatus());
-        responseObject.appendField(ConsentExtensionConstants.PAYMENT_ID, createdConsent.getConsentID());
+        responseObject.appendField(CommonConstants.PAYMENT_ID, createdConsent.getConsentID());
 
         JSONArray chosenSCAMethods = new JSONArray();
         for (ScaMethod scaMethod : scaMethods) {
