@@ -177,7 +177,7 @@ public class PaymentInitiationRequestHandler implements RequestHandler {
 
         consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_SERVICE, paymentService);
         consentAttributesMap.put(ConsentExtensionConstants.PAYMENT_PRODUCT, paymentProduct);
-        consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER,
+        consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID,
                 headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
 
         if (!isExplicitAuth) {

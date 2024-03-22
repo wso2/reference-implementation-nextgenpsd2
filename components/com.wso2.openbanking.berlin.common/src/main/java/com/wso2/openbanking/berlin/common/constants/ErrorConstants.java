@@ -34,6 +34,7 @@ public class ErrorConstants {
     public static final String PSU_ID_MISSING = "PSU-ID mandatory header is missing in the request";
     public static final String X_REQUEST_ID_INVALID = "Invalid X-Request-ID header. Needs to be in UUID " +
             "format";
+    public static final String X_REQUEST_ID_FRAUDULENT = "X Request ID check failed.";
     public static final String CONSENT_ID_INVALID = "Invalid Consent-ID header. Needs to be in UUID " +
             "format";
     public static final String DECOUPLED_FLOW_NOT_SUPPORTED = "Decoupled SCA Approach is not supported";
