@@ -280,7 +280,6 @@ public class CommonConsentUtil {
     public static boolean isIdempotent(ConsentManageData consentManageData) {
 
         try {
-
             IdempotencyValidationResult result = idempotencyValidator.validateIdempotency(consentManageData);
             if (result.isIdempotent()) {
                 if (result.isValid()) {
@@ -294,7 +293,7 @@ public class CommonConsentUtil {
                 }
             }
         } catch (IdempotencyValidationException e) {
-            log.error(ErrorConstants.X_REQUEST_ID_FRAUDULENT);
+            log.error(ErrorConstants.X_REQUEST_ID_FRAUDULENT, e);
             throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR, e.getMessage()));
         }
