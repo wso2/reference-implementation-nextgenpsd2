@@ -528,4 +528,3 @@ class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.Started
 [open_banking.consent.idempotency]
 enabled=true
 allowed_time_duration=1440
-validator = "com.wso2.openbanking.uk.consent.extensions.manage.util.UKIdempotencyValidator"
