@@ -120,7 +120,8 @@ public class BerlinIdempotencyValidator extends IdempotencyValidator {
      * @return true if key is present as a consent attribute.
      */
     private boolean isPresentAsConsentAttribute(DetailedConsentResource consentRequest, String key) {
-        return consentRequest.getConsentAttributes().containsKey(key);
+        return consentRequest.getConsentAttributes() != null &&
+                consentRequest.getConsentAttributes().containsKey(key);
     }
 
     /**
@@ -131,6 +132,9 @@ public class BerlinIdempotencyValidator extends IdempotencyValidator {
      * @return created time.
      */
     private long getCreatedTimeFromConsentAttributes(DetailedConsentResource consentRequest, String key) {
+        if (consentRequest.getConsentAttributes() == null || !consentRequest.getConsentAttributes().containsKey(key)) {
+            return 0L;
+        }
         return Long.parseLong(consentRequest.getConsentAttributes().get(key));
     }
 
