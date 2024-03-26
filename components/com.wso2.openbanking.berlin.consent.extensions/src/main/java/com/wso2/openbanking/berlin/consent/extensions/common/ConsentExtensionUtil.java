@@ -395,12 +395,8 @@ public class ConsentExtensionUtil {
 
         for (Map.Entry<String, String> newEntry : newAttributesEntrySet) {
             if (newEntry.getKey().contains(ConsentExtensionConstants.EXPLICIT_AUTH) || newEntry.getKey()
-                    .contains(ConsentExtensionConstants.AUTH_CANCEL)) {
+                    .contains(ConsentExtensionConstants.AUTH_CANCEL) || !oldAttributesEntrySet.contains(newEntry)) {
                 finalAttributesToStore.put(newEntry.getKey(), newEntry.getValue());
-            } else {
-                if (!oldAttributesEntrySet.contains(newEntry)) {
-                    finalAttributesToStore.put(newEntry.getKey(), newEntry.getValue());
-                }
             }
         }
 
