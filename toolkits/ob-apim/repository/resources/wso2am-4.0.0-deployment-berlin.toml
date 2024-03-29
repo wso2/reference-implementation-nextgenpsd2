@@ -440,11 +440,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -467,11 +464,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -494,11 +488,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -648,11 +639,3 @@ max_master_confirmation=900
 merge_first_run_delay=60
 merge_next_run_delay=30
 logging_type="none"
-
-#========================OB Idempotency Configurations======================
-[open_banking.gateway.cache.idempotency_validation_cache]
-cache_time_to_live=1440
-[open_banking.gateway.idempotency]
-enabled=true
-allowed_time_duration=1440
-idempotency_key_header="X-Request-ID"

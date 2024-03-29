@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.CommonConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestUtil;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.when;
 
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
         "jdk.internal.reflect.*"})
-@PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
+@PrepareForTest({CommonConfigParser.class, ConsentCoreService.class, CommonConsentUtil.class})
 public class PaymentServiceHandlerTests extends PowerMockTestCase {
 
     private static final String WELL_KNOWN_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
@@ -101,6 +102,8 @@ public class PaymentServiceHandlerTests extends PowerMockTestCase {
 
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         doReturn(consentCoreServiceMock).when(paymentServiceHandler).getConsentService();
+        PowerMockito.mockStatic(CommonConsentUtil.class);
+        PowerMockito.when(CommonConsentUtil.isIdempotent(Mockito.any())).thenReturn(false);
 
         scaMethods = new ArrayList<>();
         Map<String, String> scaMethod = new HashMap<>();

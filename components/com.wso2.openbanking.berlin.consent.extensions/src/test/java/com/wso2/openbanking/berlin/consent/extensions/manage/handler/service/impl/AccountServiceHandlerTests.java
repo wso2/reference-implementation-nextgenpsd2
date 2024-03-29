@@ -22,6 +22,7 @@ import com.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentStatusEnum;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestConstants;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestPayloads;
 import com.wso2.openbanking.berlin.consent.extensions.util.TestUtil;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.mock;
 
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*",
         "jdk.internal.reflect.*"})
-@PrepareForTest({CommonConfigParser.class, ConsentCoreService.class})
+@PrepareForTest({CommonConfigParser.class, ConsentCoreService.class, CommonConsentUtil.class})
 public class AccountServiceHandlerTests extends PowerMockTestCase {
 
     private static final String ACCOUNTS_PATH = "consents";
@@ -97,6 +98,8 @@ public class AccountServiceHandlerTests extends PowerMockTestCase {
 
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         doReturn(consentCoreServiceMock).when(accountServiceHandler).getConsentService();
+        PowerMockito.mockStatic(CommonConsentUtil.class);
+        PowerMockito.when(CommonConsentUtil.isIdempotent(Mockito.any())).thenReturn(false);
 
         doReturn(TestUtil.getSampleSupportedScaMethods()).when(commonConfigParserMock).getSupportedScaMethods();
         doReturn(TestUtil.getSampleSupportedScaApproaches()).when(commonConfigParserMock).getSupportedScaApproaches();

@@ -86,6 +86,13 @@ public class ConsentExtensionConstants {
     public static final String LOCATION_HEADER = "Location";
     public static final String X_REQUEST_ID_PROPER_CASE_HEADER = "X-Request-ID";
     public static final String X_REQUEST_ID_HEADER = "x-request-id";
+    public static final String X_REQUEST_ID = "XRequestID";
+    public static final String EXPLICIT_AUTH = "ExplicitAuth";
+    public static final String EXPLICIT_AUTH_X_REQUEST_ID = "ExplicitAuthXRequestID";
+    public static final String EXPLICIT_AUTH_CREATED_TIME = "ExplicitAuthCreatedTime";
+    public static final String AUTH_CANCEL = "AuthCancellation";
+    public static final String AUTH_CANCEL_X_REQUEST_ID = "AuthCancellationXRequestID";
+    public static final String AUTH_CANCEL_CREATED_TIME = "AuthCancellationCreatedTime";
     public static final String ASPSP_SCA_APPROACH_PROPER_CASE_HEADER = "ASPSP-SCA-Approach";
     public static final String ASPSP_MULTIPLE_CONSENT_SUPPORTED = "ASPSP-Multiple-Consent-Support";
     public static final String SUPER_TENANT_DOMAIN = "@carbon.super";

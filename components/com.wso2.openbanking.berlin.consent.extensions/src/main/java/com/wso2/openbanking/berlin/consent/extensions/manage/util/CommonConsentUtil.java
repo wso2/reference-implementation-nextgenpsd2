@@ -9,8 +9,12 @@
 
 package com.wso2.openbanking.berlin.consent.extensions.manage.util;
 
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.extensions.common.idempotency.IdempotencyValidationException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.idempotency.IdempotencyValidationResult;
+import com.wso2.openbanking.accelerator.consent.extensions.common.idempotency.IdempotencyValidator;
 import com.wso2.openbanking.accelerator.consent.extensions.manage.model.ConsentManageData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -44,6 +48,7 @@ import java.util.Set;
 public class CommonConsentUtil {
 
     private static final Log log = LogFactory.getLog(CommonConsentUtil.class);
+    private static final IdempotencyValidator idempotencyValidator = getIdempotencyValidator();
 
     /**
      * Validating the account reference object.
@@ -233,6 +238,11 @@ public class CommonConsentUtil {
         }
     }
 
+    /**
+     * X-Request-ID validation util method. Throws appropriate error when detected.
+     *
+     * @param headers headers map
+     */
     public static void validateXRequestId(Map<String, String> headers) {
 
         if (!HeaderValidator.isHeaderStringPresent(headers, ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
@@ -259,5 +269,91 @@ public class CommonConsentUtil {
                         headers.containsKey(ConsentExtensionConstants.PSU_ID_HEADER) ?
                                 ScaStatusEnum.PSU_IDENTIFIED.toString() : ScaStatusEnum.RECEIVED.toString();
         return authStatus;
+    }
+
+    /**
+     * Method to check whether the request is a valid idempotent request.
+     *
+     * @param consentManageData  Consent Manage Data object
+     * @return whether the request is idempotent
+     */
+    public static boolean isIdempotent(ConsentManageData consentManageData) {
+
+        try {
+            IdempotencyValidationResult result = idempotencyValidator.validateIdempotency(consentManageData);
+            if (result.isIdempotent()) {
+                if (result.isValid()) {
+                    appendResponsePayload(consentManageData, result.getConsent());
+                    return true;
+                } else {
+                    log.error(ErrorConstants.X_REQUEST_ID_FRAUDULENT);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                            TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            ErrorConstants.X_REQUEST_ID_FRAUDULENT));
+                }
+            }
+        } catch (IdempotencyValidationException e) {
+            log.error(ErrorConstants.X_REQUEST_ID_FRAUDULENT, e);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
+                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR, e.getMessage()));
+        }
+        return false;
+    }
+
+    /**
+     * Method to append the idempotent response payload to the consent manage data.
+     *
+     * @param consentManageData   Consent Manage Data object
+     * @param consent             Detailed Consent Resource object retrieved from DB
+     */
+    private static void appendResponsePayload(ConsentManageData consentManageData, DetailedConsentResource consent) {
+
+        CommonConfigParser configParser = CommonConfigParser.getInstance();
+        String apiVersion = configParser.getApiVersion(consent.getConsentType());
+        boolean isSCARequired = configParser.isScaRequired();
+        boolean isExplicitAuth = HeaderValidator.isTppExplicitAuthorisationPreferred(consentManageData.getHeaders());
+
+        switch (ConsentExtensionUtil.getServiceDifferentiatingRequestPath(consentManageData.getRequestPath())) {
+
+            case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
+                consentManageData.setResponsePayload(AccountConsentUtil
+                        .constructAccountInitiationResponse(consentManageData, consent, isExplicitAuth,
+                                true, apiVersion, isSCARequired));
+                consentManageData.setResponseHeader(ConsentExtensionConstants.ASPSP_MULTIPLE_CONSENT_SUPPORTED,
+                        String.valueOf(configParser.isMultipleRecurringConsentEnabled()));
+                consentManageData.setResponseStatus(ResponseStatus.CREATED);
+                break;
+            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
+            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+                consentManageData.setResponsePayload(PaymentConsentUtil
+                        .constructPaymentInitiationResponse(consentManageData, consent, isExplicitAuth,
+                                true, apiVersion, isSCARequired));
+                consentManageData.setResponseStatus(ResponseStatus.CREATED);
+                break;
+            case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
+                consentManageData.setResponsePayload(FundsConfirmationConsentUtil
+                        .constructFundsConfirmationInitiationResponse(consentManageData, consent, isExplicitAuth,
+                                true, apiVersion, isSCARequired));
+                consentManageData.setResponseStatus(ResponseStatus.CREATED);
+                break;
+            case ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END:
+            case ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
+                consentManageData.setResponsePayload(CommonConsentUtil
+                        .constructStartAuthorisationResponse(consentManageData,
+                                consent.getAuthorizationResources().get(0), true, apiVersion,
+                                isSCARequired));
+                consentManageData.setResponseStatus(ResponseStatus.CREATED);
+                break;
+            default:
+                return;
+        }
+
+    }
+
+    @Generated(message = "Excluded from coverage since this is used for testing purposes")
+    public static IdempotencyValidator getIdempotencyValidator() {
+
+        return new BerlinIdempotencyValidator();
     }
 }

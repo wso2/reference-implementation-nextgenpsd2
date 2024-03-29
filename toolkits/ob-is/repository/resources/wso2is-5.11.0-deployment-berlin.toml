@@ -523,3 +523,8 @@ class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.PSUAuth
 [[open_banking.identity.authentication.worker]]
 name = "started"
 class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.StartedStatusUpdateWorker"
+
+#========================OB Idempotency Configurations======================
+[open_banking.consent.idempotency]
+enabled=true
+allowed_time_duration=1440

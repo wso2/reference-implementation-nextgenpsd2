@@ -24,6 +24,7 @@ import com.wso2.openbanking.berlin.consent.extensions.common.TransactionStatusEn
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.RequestHandler;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.request.factory.RequestHandlerFactory;
 import com.wso2.openbanking.berlin.consent.extensions.manage.handler.service.ServiceHandler;
+import com.wso2.openbanking.berlin.consent.extensions.manage.util.CommonConsentUtil;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -56,6 +57,11 @@ public class PaymentServiceHandler implements ServiceHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+        }
+
+        // Check Idempotency
+        if (CommonConsentUtil.isIdempotent(consentManageData)) {
+            return;
         }
 
         requestHandler = RequestHandlerFactory.getRequestHandler(consentManageData.getRequestPath());
