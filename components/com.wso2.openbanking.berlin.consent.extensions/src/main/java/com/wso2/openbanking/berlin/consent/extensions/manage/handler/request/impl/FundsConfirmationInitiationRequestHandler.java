@@ -172,8 +172,8 @@ public class FundsConfirmationInitiationRequestHandler implements RequestHandler
             consentAttributesMap.put(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER,
                     headersMap.get(ConsentExtensionConstants.TPP_EXPLICIT_AUTH_PREFERRED_HEADER));
         }
-        consentAttributesMap.put(ConsentExtensionConstants.X_REQUEST_ID,
-                headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+        consentAttributesMap.put(CommonConsentUtil.constructAttributeKey(consentManageData.getRequestPath(),
+                ConsentExtensionConstants.X_REQUEST_ID), headersMap.get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
         return consentAttributesMap;
     }
 

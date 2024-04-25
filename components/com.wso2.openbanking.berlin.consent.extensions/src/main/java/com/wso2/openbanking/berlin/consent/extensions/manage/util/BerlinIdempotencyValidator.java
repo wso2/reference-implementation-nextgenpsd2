@@ -39,11 +39,13 @@ public class BerlinIdempotencyValidator extends IdempotencyValidator {
         String path = ConsentExtensionUtil.getServiceDifferentiatingRequestPath(resourcePath);
         switch (path) {
             case ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END:
-                return ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID;
+                return CommonConsentUtil.constructAttributeKey(resourcePath,
+                        ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID);
             case ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
-                return ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID;
+                return CommonConsentUtil.constructAttributeKey(resourcePath,
+                        ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID);
             default:
-                return ConsentExtensionConstants.X_REQUEST_ID;
+                return CommonConsentUtil.constructAttributeKey(resourcePath, ConsentExtensionConstants.X_REQUEST_ID);
         }
     }
 
@@ -74,14 +76,14 @@ public class BerlinIdempotencyValidator extends IdempotencyValidator {
         }
 
         String path = ConsentExtensionUtil.getServiceDifferentiatingRequestPath(resourcePath);
-        if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END.equals(path) &&
-                isPresentAsConsentAttribute(consentRequest, ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME)) {
-            return getCreatedTimeFromConsentAttributes(consentRequest,
+        if (ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END.equals(path)) {
+            String attributeKey = CommonConsentUtil.constructAttributeKey(resourcePath,
                     ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME);
-        } else if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END.equals(path) &&
-                isPresentAsConsentAttribute(consentRequest, ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME)) {
-            return getCreatedTimeFromConsentAttributes(consentRequest,
+            return getCreatedTimeFromConsentAttributes(consentRequest, attributeKey);
+        } else if (ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END.equals(path)) {
+            String attributeKey = CommonConsentUtil.constructAttributeKey(resourcePath,
                     ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME);
+            return getCreatedTimeFromConsentAttributes(consentRequest, attributeKey);
         } else {
             return consentRequest.getCreatedTime();
         }
@@ -132,10 +134,10 @@ public class BerlinIdempotencyValidator extends IdempotencyValidator {
      * @return created time.
      */
     private long getCreatedTimeFromConsentAttributes(DetailedConsentResource consentRequest, String key) {
-        if (consentRequest.getConsentAttributes() == null || !consentRequest.getConsentAttributes().containsKey(key)) {
-            return 0L;
+        if (isPresentAsConsentAttribute(consentRequest, key)) {
+            return Long.parseLong(consentRequest.getConsentAttributes().get(key));
         }
-        return Long.parseLong(consentRequest.getConsentAttributes().get(key));
+        return 0L;
     }
 
     /**
