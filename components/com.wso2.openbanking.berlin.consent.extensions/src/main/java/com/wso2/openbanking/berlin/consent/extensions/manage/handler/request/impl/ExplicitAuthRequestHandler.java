@@ -306,11 +306,11 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         } else {
             String xRequestIdKey = CommonConsentUtil.constructAttributeKey(
                     consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID);
-            attributesToStore.put(xRequestIdKey, consentManageData.getHeaders()
+            consentAttributesMap.put(xRequestIdKey, consentManageData.getHeaders()
                     .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
             String createdTimeKey = CommonConsentUtil.constructAttributeKey(
                     consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME);
-            attributesToStore.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
+            consentAttributesMap.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
         }
 
         return consentAttributesMap;
