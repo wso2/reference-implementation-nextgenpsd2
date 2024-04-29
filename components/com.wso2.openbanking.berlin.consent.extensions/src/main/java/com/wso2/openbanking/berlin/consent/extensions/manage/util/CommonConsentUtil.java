@@ -26,6 +26,7 @@ import com.wso2.openbanking.berlin.common.models.ScaMethod;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
 import com.wso2.openbanking.berlin.common.utils.CommonUtil;
 import com.wso2.openbanking.berlin.common.utils.ErrorUtil;
+import com.wso2.openbanking.berlin.consent.extensions.common.AuthTypeEnum;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.berlin.consent.extensions.common.ConsentExtensionUtil;
 import com.wso2.openbanking.berlin.consent.extensions.common.HeaderValidator;
@@ -283,6 +284,7 @@ public class CommonConsentUtil {
             IdempotencyValidationResult result = idempotencyValidator.validateIdempotency(consentManageData);
             if (result.isIdempotent()) {
                 if (result.isValid()) {
+                    log.debug("Idempotent request. Returning the previous response.");
                     appendResponsePayload(consentManageData, result.getConsent());
                     return true;
                 } else {
@@ -341,14 +343,39 @@ public class CommonConsentUtil {
             case ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
                 consentManageData.setResponsePayload(CommonConsentUtil
                         .constructStartAuthorisationResponse(consentManageData,
-                                consent.getAuthorizationResources().get(0), true, apiVersion,
-                                isSCARequired));
+                                getCancelAuthResource(consent.getAuthorizationResources()), true,
+                                apiVersion, isSCARequired));
                 consentManageData.setResponseStatus(ResponseStatus.CREATED);
                 break;
             default:
                 return;
         }
 
+    }
+
+    /**
+     * Method to construct the attribute key to store parameters as a consent attribute. It will be constructed as
+     * requestPath_param.
+     * @param requestPath     Request path
+     * @param param           Parameter name
+     * @return  constructed attribute key
+     */
+    public static String constructAttributeKey(String requestPath, String param) {
+        return StringUtils.join(requestPath, "_", param);
+    }
+
+    /**
+     * Method to filter the authorizations based on the cancellation authorization type.
+     * @param authResources   List of authorization resources
+     * @return  List of authorization resources filtered based on the cancellation authorization type
+     */
+    private static AuthorizationResource getCancelAuthResource(ArrayList<AuthorizationResource> authResources) {
+        for (AuthorizationResource authResource : authResources) {
+            if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authResource.getAuthorizationType())) {
+                return authResource;
+            }
+        }
+        return authResources.get(0);
     }
 
     @Generated(message = "Excluded from coverage since this is used for testing purposes")

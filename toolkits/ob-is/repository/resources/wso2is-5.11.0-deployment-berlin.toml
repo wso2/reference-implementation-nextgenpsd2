@@ -63,7 +63,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for api manager data
 [database.identity_db]
@@ -81,7 +81,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for km-config registry
 [database.config]
@@ -99,7 +99,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for user-mgt data
 [database.user]
@@ -117,7 +117,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for Open Banking  data
 [[datasource]]
@@ -135,7 +135,7 @@ pool_options.validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 pool_options.validationInterval="30000"
-pool_options.defaultAutoCommit=false
+pool_options.defaultAutoCommit=true
 
 #================configs related to application-authentication.xml=============
 
