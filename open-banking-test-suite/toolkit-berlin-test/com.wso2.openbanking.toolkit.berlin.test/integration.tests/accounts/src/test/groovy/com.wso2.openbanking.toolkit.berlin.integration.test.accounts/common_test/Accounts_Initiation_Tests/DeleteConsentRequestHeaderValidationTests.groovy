@@ -264,7 +264,11 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
           .baseUri(ConfigParser.getInstance().getBaseURL())
           .delete("${consentPath}/${accountId}")
 
-        Assert.assertEquals(consentDeleteResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_204)
+        Assert.assertEquals(consentDeleteResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse2, BerlinConstants.TPPMESSAGE_CODE)
+                .toString(), BerlinConstants.CONSENT_INVALID)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse2, BerlinConstants.TPPMESSAGE_TEXT).toString(),
+                "The requested consent is already deleted")
     }
 
     @Test (groups = ["1.3.6"])

@@ -31,6 +31,7 @@ class CofConstants {
     static final String CONSENT_STATUS_TERMINATED_BY_TPP = "terminatedByTpp"
     static final String CONSENT_STATUS_VALID = "valid"
     static final String CONSENT_STATUS_PSUAUTHENTICATED = "psuAuthenticated"
+    static final String SCA_STATUS_FINALISED = "finalised"
 
     static final String COF_RETRIEVAL_PATH = StringUtils.replace(CONSENT_PATH, "v2", "v1") +
             "funds-confirmations"

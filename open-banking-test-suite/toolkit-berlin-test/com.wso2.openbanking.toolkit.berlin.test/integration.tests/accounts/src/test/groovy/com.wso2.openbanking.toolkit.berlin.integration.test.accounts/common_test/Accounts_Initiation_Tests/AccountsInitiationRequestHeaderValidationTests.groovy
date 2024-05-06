@@ -45,7 +45,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
 
         //Authorize the Consent
         doAuthorizationFlow()
-        Assert.assertNotNull(code)
+        Assert.assertNotNull(code)x
 
         //Generate User Access Token
         generateUserAccessToken()
@@ -312,7 +312,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+                contains ("Payloads are not similar. Hence this is not a valid idempotent request"))
     }
 
     @Test (groups = ["1.3.6"])

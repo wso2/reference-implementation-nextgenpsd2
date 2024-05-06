@@ -428,4 +428,18 @@ class AccountsInitiationPayloads {
             "combinedServiceIndicator": false
         }"""
             .stripIndent()
+
+
+    static final String initiationPayloadForAllAccountsWithoutRecurringIndicator = """
+          {  
+               "access":{
+                    "availableAccounts": "allAccounts"
+               },
+               "recurringIndicator":false,
+               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+               "frequencyPerDay":4,
+               "combinedServiceIndicator":false
+               
+        }
+    """.stripIndent()
 }

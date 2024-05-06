@@ -116,7 +116,7 @@ public class TestConstants {
 	public static final String PASSWORD = "password";
 
 	//Selenium constants
-	public static final String USERNAME_FIELD_ID = "usernameUserInput";
+	public static final String USERNAME_FIELD_ID = "username";
 	public static final String PASSWORD_FIELD_ID = "password";
 	public static final String HEADLESS_TAG = "--headless";
 	public static final String ACCOUNT_SELECT_DROPDOWN_XPATH = "//*[@id=\"accselect\"]";

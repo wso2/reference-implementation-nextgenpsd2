@@ -80,6 +80,9 @@ class AccountsSCAFlowTest extends AbstractAccountsFlow {
     @Test (groups = ["SmokeTest", "1.3.3", "1.3.6"], priority = 1)
     void "TC0202014_Accounts Authorization for SCA implicit deny scenario"() {
 
+        applicationAccessToken = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT,
+                scopes)
+
         doDefaultInitiation(consentPath, initiationPayload)
         Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
 

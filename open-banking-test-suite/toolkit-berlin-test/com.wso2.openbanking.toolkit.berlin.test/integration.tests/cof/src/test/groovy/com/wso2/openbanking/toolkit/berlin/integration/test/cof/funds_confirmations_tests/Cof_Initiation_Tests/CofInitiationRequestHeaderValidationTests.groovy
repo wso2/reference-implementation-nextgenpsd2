@@ -293,7 +293,7 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed."))
+                contains ("Payloads are not similar. Hence this is not a valid idempotent request"))
     }
 
     @Test (groups = ["1.3.6"])

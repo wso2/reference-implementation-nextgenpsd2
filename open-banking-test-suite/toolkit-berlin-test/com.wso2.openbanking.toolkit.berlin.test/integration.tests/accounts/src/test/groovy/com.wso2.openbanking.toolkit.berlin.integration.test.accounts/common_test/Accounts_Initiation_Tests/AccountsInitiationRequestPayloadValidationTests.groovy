@@ -738,7 +738,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1669_Account initiation for onetime consent with frequency per day more than one"() {
+    void "BG-380_Account initiation for onetime consent with frequency per day more than one"() {
 
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
@@ -778,7 +778,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1673_Account Initiation for recurring consent with frequency per day exceeding default value"() {
+    void "BG-381_Account Initiation for recurring consent with frequency per day exceeding default value"() {
 
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
@@ -814,7 +814,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1674_Account Initiation for recurring consent with frequency per day lower than default value"() {
+    void "BG-382_Account Initiation for recurring consent with frequency per day lower than default value"() {
 
         def consentPath = AccountsConstants.CONSENT_PATH
         def initiationPayload = """{
@@ -853,4 +853,82 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
                 .contains("Frequency per day for recurring consent is lesser than the supported minimum value 4"))
     }
 
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "TC0201017_Initiation Request with recurringIndicator true and frequencyPerDay 4"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+        def initiationPayload = """{
+            "access":{
+                "accounts":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": true,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(4)}",
+           "frequencyPerDay": 4,
+           "combinedServiceIndicator": false
+        }"""
+                .stripIndent()
+
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(accountId)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.CONSENT_STATUS),
+                AccountsConstants.CONSENT_STATUS_RECEIVED)
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "BG-614_Initiation Request with combinedServiceIndicator parameter set to true"() {
+
+        def consentPath = AccountsConstants.CONSENT_PATH
+        def initiationPayload = """{
+            "access":{
+                "accounts":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "balances":[  
+                    {  
+                        "iban":"DE12345678901234567890",
+                        "currency":"USD"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"DE12345678901234567890"
+                    }
+                ]
+            },
+           "recurringIndicator": true,
+           "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+           "frequencyPerDay": 4,
+           "combinedServiceIndicator": true
+        }"""
+                .stripIndent()
+
+        doDefaultInitiation(consentPath, initiationPayload)
+
+        Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.SESSIONS_NOT_SUPPORTED)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
+                "Sessions: Combination of AIS and PIS Services are not supported")
+    }
 }

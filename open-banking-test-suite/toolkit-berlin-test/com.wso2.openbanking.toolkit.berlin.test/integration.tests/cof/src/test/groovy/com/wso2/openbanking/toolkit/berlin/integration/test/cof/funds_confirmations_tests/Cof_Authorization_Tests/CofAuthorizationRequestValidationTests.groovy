@@ -58,7 +58,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Missing response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Missing response_type parameter value")
     }
 
     @Test (groups = ["1.3.6"])
@@ -73,8 +73,8 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AuthAutomationSteps(request.toURI().toString()))
-                .addStep {driver, context -> WebElement lblErrorResponse = driver.findElement(By.xpath
-                        (BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
+                .addStep {driver, context -> WebElement lblErrorResponse = driver.findElement(
+                        By.xpath (BerlinConstants.LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
                     Assert.assertTrue(lblErrorResponse.getText().trim().contains("Cannot find an application " +
                             "associated with the given consumer key"))
                 }
@@ -94,7 +94,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
+        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.6"])
@@ -153,12 +153,12 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
 
         //Do Authorization
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutState(scopes, consentId)
-        consentAuthorizeErrorFlowValidation(request)
+        consentAuthorizeErrorFlow(request)
 
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
+        Assert.assertEquals(oauthErrorCode, "'state' parameter is required")
     }
 
     @Test (groups = ["1.3.6"])
@@ -522,7 +522,7 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Invalid response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Invalid response_type parameter value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

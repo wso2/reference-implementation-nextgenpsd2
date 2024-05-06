@@ -164,7 +164,6 @@ abstract class AbstractAccountsFlow {
                 .addStep { driver, context ->
                     driver.findElement(By.xpath(BerlinConstants.ACCOUNTS_SUBMIT_XPATH)).click()
                 }
-                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         //Get Code from URL

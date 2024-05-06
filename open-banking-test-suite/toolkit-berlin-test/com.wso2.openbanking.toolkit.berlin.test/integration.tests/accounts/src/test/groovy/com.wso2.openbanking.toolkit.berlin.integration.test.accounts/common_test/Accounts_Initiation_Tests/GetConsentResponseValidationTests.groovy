@@ -155,8 +155,8 @@ class GetConsentResponseValidationTests extends AbstractAccountsFlow {
 
     @Test(groups = ["1.3.6"],
             dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
-    void "OB-1533_Bank Offered consent retrieval after authorisation"(String title, List<String> fields, String
-            payload) {
+    void "OB-1533_Bank Offered consent retrieval after authorisation"(String title, List<String> fields,
+                                                                      String payload) {
 
         Reporter.log(title)
 

@@ -53,7 +53,7 @@ public class BasicAuthAutomationStep implements BrowserAutomationStep {
     webDriver.navigate().to(authorizeUrl);
     WebElement username;
 
-    //Enter User Name
+    //Enter Username
     username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
 
     username.clear();

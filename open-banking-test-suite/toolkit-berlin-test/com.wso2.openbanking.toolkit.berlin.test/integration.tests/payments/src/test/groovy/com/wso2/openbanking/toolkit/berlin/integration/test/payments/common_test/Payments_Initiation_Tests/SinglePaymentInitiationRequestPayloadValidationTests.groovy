@@ -577,7 +577,7 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Idempotency check failed.:Header.X-Request-ID"))
+                contains ("Payloads are not similar. Hence this is not a valid idempotent request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], priority = 1)
@@ -622,6 +622,6 @@ class SinglePaymentInitiationRequestPayloadValidationTests extends AbstractPayme
                 .body(payload)
                 .post(singlePaymentConsentPath)
 
-        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_201)
     }
 }

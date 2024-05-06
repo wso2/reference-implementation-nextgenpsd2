@@ -77,6 +77,29 @@ class BerlinRequestBuilder {
     }
 
     /**
+     * Get Application Access Token
+     *
+     * @param authMethod authentication method
+     * @param scopes scopes for token
+     * @param clientId
+     * @return access token
+     */
+    static String getApplicationToken(BerlinConstants.AUTH_METHOD authMethod, BerlinConstants.SCOPES scopes,
+                                      String clientId) {
+
+        def tokenDTO = new ApplicationAccessTokenDto()
+        tokenDTO.setScopes(scopes.getScopes())
+
+        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO, clientId)
+        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+
+        log.info("Got access token $accessToken")
+
+        return accessToken
+
+    }
+
+    /**
      * Get User Access Token
      *
      * @param authMethod authentication method
@@ -138,7 +161,7 @@ class BerlinRequestBuilder {
 
         return TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.X_REQUEST_ID, "650930b0-8101-4e15-b35a-f682002a9e61")
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")

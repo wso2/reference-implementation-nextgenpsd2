@@ -14,6 +14,7 @@ import com.wso2.openbanking.berlin.common.utils.BerlinRequestBuilder
 import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.filters.BerlinSignatureFilter
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -31,6 +32,7 @@ import org.testng.annotations.Test
 class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
 
     def config = ConfigParser.getInstance()
+    AppConfigReader appConfigReader = new AppConfigReader()
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsPayloads", dataProviderClass = PaymentsDataProviders.class)
     void "TC0301004_Initiation Request without payment product attribute"(String consentPath, String payload) {
@@ -195,7 +197,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.FORMAT_ERROR)
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                    "Header parameter 'PSU-IP-Address' is required on " +
+                    "Header parameter 'psu-ip-address' is required on " +
                             "path '/{payment-service}/{payment-product}' but not found in request.")
         }
     }
@@ -422,7 +424,7 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             def xRequestId = consentResponse.getHeader(BerlinConstants.X_REQUEST_ID).toString()
 
             //Make Payment Initiation Request
-            def consentResponse = TestSuite.buildRequest()
+            def secondConsentResponse = TestSuite.buildRequest()
               .contentType(ContentType.JSON)
               .header(BerlinConstants.X_REQUEST_ID, xRequestId)
               .header(BerlinConstants.Date, getCurrentDate())
@@ -435,15 +437,15 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
               .baseUri(ConfigParser.getInstance().getBaseURL())
               .post(paymentConsentPath)
 
-            Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
-            Assert.assertEquals(paymentId, TestUtil.parseResponseBody(consentResponse, "paymentId").toString())
+            Assert.assertEquals(secondConsentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
+            Assert.assertEquals(paymentId, TestUtil.parseResponseBody(secondConsentResponse, "paymentId").toString())
+            Assert.assertEquals(xRequestId, secondConsentResponse.getHeader(BerlinConstants.X_REQUEST_ID).toString())
         }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "OB-218_Initiation Request with same X-Request-ID and different payload"(String consentPath, List<String>
-      paymentProducts,
-                                                                           String payload) {
+    void "OB-218_Initiation Request with same X-Request-ID and different payload"(String consentPath,
+                                                                          List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -470,14 +472,13 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
               BerlinConstants.FORMAT_ERROR)
             Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-              contains ("Idempotency check failed."))
+              contains ("Payloads are not similar. Hence this is not a valid idempotent request"))
         }
     }
 
     @Test (groups = ["1.3.3", "1.3.6"], dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "OB-217_Initiation Request with different X-Request-ID and same payload"(String consentPath, List<String>
-      paymentProducts,
-                                                                           String payload) {
+    void "OB-217_Initiation Request with different X-Request-ID and same payload"(String consentPath,
+                                                        List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -501,5 +502,56 @@ class InitiationRequestHeaderValidationTests extends AbstractPaymentsFlow{
             Assert.assertEquals(consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_201)
             Assert.assertNotEquals(paymentId, TestUtil.parseResponseBody(consentResponse, "paymentId").toString())
         }
+    }
+
+    @Test (groups = ["1.3.3", "1.3.6"])
+    void "BG-547_Payment Initiation Request with same x-request-id given in accounts request"() {
+
+        String paymentConsentPath = PaymentsConstants.SINGLE_PAYMENTS_PATH + "/" +
+                PaymentsConstants.PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS
+        def xRequestId = UUID.randomUUID().toString()
+
+        //Account Consent Initiation Request
+        def applicationAccessToken = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT,
+                    BerlinConstants.SCOPES.ACCOUNTS)
+
+        def consentResponse = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(TestConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "psu@wso2.com")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .filter(new BerlinSignatureFilter())
+                .body(PaymentsInitiationPayloads.accountsInitiationPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .post(PaymentsConstants.ACCOUNTS_PATH)
+
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+
+        //Make Accounts Initiation Request
+        def applicationAccessToken2 = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT,
+                BerlinConstants.SCOPES.PAYMENTS)
+
+        def consentResponse2 = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken2}")
+                .header(BerlinConstants.PSU_ID, "${config.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .body(PaymentsInitiationPayloads.singlePaymentPayload)
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .post(paymentConsentPath)
+
+        Assert.assertEquals(consentResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse2, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue (TestUtil.parseResponseBody (consentResponse2, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Payloads are not similar. Hence this is not a valid idempotent request"))
     }
 }

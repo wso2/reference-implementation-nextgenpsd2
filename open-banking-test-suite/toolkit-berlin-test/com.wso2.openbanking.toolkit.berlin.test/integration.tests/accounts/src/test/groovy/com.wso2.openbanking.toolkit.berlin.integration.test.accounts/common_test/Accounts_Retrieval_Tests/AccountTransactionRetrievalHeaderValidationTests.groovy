@@ -157,7 +157,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Input string \"1234\" is not a valid UUID")
+                "Invalid X-Request-ID header. Needs to be in UUID format")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -177,7 +177,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                contains("Header parameter 'Consent-ID' is required on path"))
+                contains("Consent-ID header is missing in the request"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -188,15 +188,17 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
                 .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(BerlinConstants.CONSENT_ID_HEADER, "1234")
+                .header(BerlinConstants.CONSENT_ID_HEADER, UUID.randomUUID().toString())
                 .queryParam("bookingStatus", "booked")
                 .filter(new BerlinSignatureFilter())
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .get(resourcePath)
 
-        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_404)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
-                BerlinConstants.CONSENT_UNKNOWN)
+                BerlinConstants.RESOURCE_UNKNOWN)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString().
+                contains("No valid consent found for given client id"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -218,7 +220,7 @@ class AccountTransactionRetrievalHeaderValidationTests extends AbstractAccountsF
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(response, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "Parameter 'Consent-ID' is required but is missing.")
+                "Consent-ID header is missing in the request")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

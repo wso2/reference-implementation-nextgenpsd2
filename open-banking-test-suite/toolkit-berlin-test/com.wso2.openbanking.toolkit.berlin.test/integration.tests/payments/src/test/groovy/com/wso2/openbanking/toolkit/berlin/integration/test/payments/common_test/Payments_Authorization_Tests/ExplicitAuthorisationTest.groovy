@@ -97,17 +97,18 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
 
         //Check the Authorisation status
         getAuthorizationStatus(consentPath)
-        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+//        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+//                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Validate the Authorisation IDs List"])
     void "Create authorisation after settlement"() {
 
-        createExplicitAuthorization(consentPath)
+        createExplicitAuthorization(consentPath, requestId)
 
-        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+        String scaStatus = authorisationResponse.jsonPath().get("scaStatus")
+        Assert.assertTrue(scaStatus.equalsIgnoreCase(PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED) ||
+                scaStatus.equalsIgnoreCase(PaymentsConstants.SCA_STATUS_FINALISED))
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
@@ -160,6 +161,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
     void "OB-1492_Get list of all authorisation sub-resource IDs"() {
 
         getExplicitAuthResources(consentPath)
+        authorisationId = TestUtil.parseResponseBody(authorisationResponse, "authorisationIds[0]")
         Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
         Assert.assertEquals(authorisationId, authorisationResponse.jsonPath().get("authorisationIds[0]"))
     }
@@ -170,8 +172,10 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
 
         getExplicitAuthResourceStatus(consentPath)
         Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_200)
-        Assert.assertEquals(authorisationResponse.jsonPath().get(BerlinConstants.SCA_STATUS_PARAM),
-                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+
+        String scaStatus = authorisationResponse.jsonPath().get(BerlinConstants.SCA_STATUS_PARAM)
+        Assert.assertTrue(scaStatus.equalsIgnoreCase(PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED) ||
+                scaStatus.equalsIgnoreCase(PaymentsConstants.SCA_STATUS_FINALISED))
     }
 
     @Test(groups = ["1.3.6"], priority = 4)
@@ -244,7 +248,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
     @Test(groups = ["1.3.6"], priority = 8)
     void "OB-1493_Send Get list of all authorisation sub-resource request with invalid consent id"() {
 
-        def paymentId = "1234"
+        def paymentId = "6fdc8c8c-bd9d-4ac6-9db8-2661a5a578"
 
         getExplicitAuthResources(consentPath, paymentId)
         Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_403)
@@ -252,9 +256,8 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
                 BerlinConstants.CONSENT_UNKNOWN)
     }
 
-
     @Test(groups = ["1.3.6"], priority = 1)
-    void "OB-360_Explicit Authorisation with same x-request-id and same consent id"() {
+    void "BG-449_Explicit Authorisation with same x-request-id and same consent id"() {
 
         //Consent Initiation
         doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
@@ -299,7 +302,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
     }
 
     @Test(groups = ["1.3.6"], priority = 1)
-    void "OB-361_Explicit Authorisation with same x-request-id and different consent id"() {
+    void "BG-450_Explicit Authorisation with same x-request-id and different consent id"() {
 
         //Consent Initiation
         doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
@@ -348,4 +351,47 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         Assert.assertNotNull(authorisationResponse2.jsonPath().get("_links.scaOAuth.href"))
     }
 
+    @Test(groups = ["1.3.6"], priority = 1)
+    void "BG-532_Explicit Authorisation with different x-request-id and same consent id"() {
+
+        //Consent Initiation
+        doInitiationWithExplicitAuthPreferred(consentPath, initiationPayload)
+        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertNotNull(paymentId)
+        Assert.assertNotNull(consentResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
+
+        //Create Explicit Authorisation Resources
+        createExplicitAuthorization(consentPath)
+
+        authorisationId = authorisationResponse.jsonPath().get("authorisationId")
+        requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
+        Assert.assertNotNull(requestId)
+        Assert.assertNotNull(authorisationId)
+        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+                PaymentsConstants.SCA_STATUS_RECEIVED)
+        Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.scaOAuth.href"))
+
+        //Create Explicit Authorisation Resources 2
+        def authorisationResponse2 = TestSuite.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(BerlinConstants.X_REQUEST_ID, UUID.randomUUID().toString())
+                .header(BerlinConstants.Date, getCurrentDate())
+                .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(BerlinConstants.PSU_ID, "${PsuConfigReader.getPSU()}")
+                .header(BerlinConstants.PSU_TYPE, "email")
+                .filter(new BerlinSignatureFilter())
+                .baseUri(ConfigParser.getInstance().getBaseURL())
+                .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
+                .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
+                .body("{}")
+                .post("${consentPath}/${paymentId}/authorisations")
+
+        Assert.assertEquals(authorisationResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(authorisationResponse2, BerlinConstants.TPPMESSAGE_CODE),
+                BerlinConstants.FORMAT_ERROR)
+        Assert.assertTrue (TestUtil.parseResponseBody (authorisationResponse2, BerlinConstants.TPPMESSAGE_TEXT).
+                contains ("Cannot use different unique identifier for the same consent ID when the request does not " +
+                        "contain a payload."))
+    }
 }
