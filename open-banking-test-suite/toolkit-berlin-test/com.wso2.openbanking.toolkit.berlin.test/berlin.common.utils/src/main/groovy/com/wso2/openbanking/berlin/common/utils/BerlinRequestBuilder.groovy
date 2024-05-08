@@ -161,7 +161,7 @@ class BerlinRequestBuilder {
 
         return TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
-                .header(BerlinConstants.X_REQUEST_ID, "650930b0-8101-4e15-b35a-f682002a9e61")
+                .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
