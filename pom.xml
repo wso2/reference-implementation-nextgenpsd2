@@ -112,19 +112,19 @@
             </releases>
         </repository>
         <!--During local build,uncomment the following repository and connect to VPN-->
-<!--                <repository>-->
-<!--                    <id>wso2-nexus-2</id>-->
-<!--                    <name>WSO2 internal Repository</name>-->
-<!--                    <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>-->
-<!--                    <releases>-->
-<!--                        <enabled>true</enabled>-->
-<!--                        <updatePolicy>daily</updatePolicy>-->
-<!--                        <checksumPolicy>ignore</checksumPolicy>-->
-<!--                    </releases>-->
-<!--                    <snapshots>-->
-<!--                        <enabled>false</enabled>-->
-<!--                    </snapshots>-->
-<!--                </repository>-->
+                <repository>
+                    <id>wso2-nexus-2</id>
+                    <name>WSO2 internal Repository</name>
+                    <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>daily</updatePolicy>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
     </repositories>
 
     <pluginRepositories>

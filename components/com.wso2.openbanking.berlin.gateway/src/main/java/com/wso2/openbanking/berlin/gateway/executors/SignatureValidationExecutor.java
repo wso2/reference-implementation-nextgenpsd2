@@ -1,13 +1,10 @@
-/*
- *  Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- *  This software is the property of WSO2 Inc. and its suppliers, if any.
- *  Dissemination of any information or reproduction of any material contained
- *  herein is strictly forbidden, unless permitted by WSO2 in accordance with
- *  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- *  For specific language governing the permissions and limitations under this
- *  license, please see the license as well as any agreement you’ve entered into
- *  with WSO2 governing the purchase of this software and any associated services.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.berlin.gateway.executors;
@@ -41,11 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -81,10 +75,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String X_REQUEST_ID_HEADER = "X-Request-ID";
     private static final String DATE_HEADER = "Date";
     private static final String TPP_SIGNATURE_CERTIFICATE_HEADER = "TPP-Signature-Certificate";
-    private static final String AUTH_HEADER = "Authorization";
-    private static final String BEARER_TAG = "Bearer ";
-    private static final String AUD = "aud";
-
     private static final String SIGNATURE_HEADER = "Signature";
     private static final String SIGNATURE_ELEMENT = "signature";
     private static final String HEADERS_ELEMENT = "headers";
@@ -101,6 +91,59 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             String clientId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             String signatureCertificateHeader = headersMap.get(TPP_SIGNATURE_CERTIFICATE_HEADER);
             String requestPayload = obapiRequestContext.getRequestPayload();
+
+            // Retrieve transport certificate from the request
+            javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
+            javax.security.cert.X509Certificate transportCert;
+            Optional<java.security.cert.X509Certificate> convertedTransportCert;
+
+            if (x509Certificates.length != 0) {
+                transportCert = x509Certificates[0];
+                convertedTransportCert = CertificateValidationUtils.convert(transportCert);
+            } else {
+                log.error("Transport certificate not found in request context");
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
+                        "Transport certificate is missing. Cannot proceed with organization ID validation.");
+                return;
+            }
+
+            CertificateContent content;
+
+            try {
+                // Extract certificate content
+                if (convertedTransportCert.isPresent()) {
+                    content = CertificateContentExtractor.extract(convertedTransportCert.get());
+                } else {
+                    log.error("Error while processing transport certificate");
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            "Invalid transport certificate. Cannot proceed with organization ID validation.");
+                    return;
+                }
+            } catch (CertificateValidationException e) {
+                log.error("Error while extracting transport certificate content", e);
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                        "Transport certificate is invalid. Cannot proceed with organization ID validation.");
+                return;
+            }
+
+            String certificateOrgId = content.getPspAuthorisationNumber();
+
+            if (StringUtils.isBlank(certificateOrgId)) {
+                log.error("Unable to retrieve organization ID from transport certificate");
+                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                        "An organization ID is not found in the provided certificate");
+                return;
+            } else {
+                if (!StringUtils.equals(clientId, certificateOrgId)) {
+                    log.error(String.format("Client ID: %s is not matching with the organization ID: %s " +
+                            "of transport certificate", clientId, certificateOrgId));
+                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
+                            "Organization ID mismatch with Client ID");
+                    return;
+                }
+            }
+            log.debug("Organization ID validation is completed");
+
 
             // Validate whether the required headers are present.
             try {
@@ -152,7 +195,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
                 } else {
                     if (StringUtils.isNotBlank(clientId) && !StringUtils.equals(clientId, signingCertOrgId)) {
                         log.error(String.format("Client ID: %s is not matching with the organization ID: %s " +
-                                "of certificate provided with %s header", clientId, signingCertOrgId,
+                                        "of certificate provided with %s header", clientId, signingCertOrgId,
                                 TPP_SIGNATURE_CERTIFICATE_HEADER));
                         GatewayUtils.handleFailure(obapiRequestContext,
                                 TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
@@ -224,62 +267,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
 
-        if (!obapiRequestContext.isError()) {
-
-            // Retrieve transport certificate from the request
-            javax.security.cert.X509Certificate[] x509Certificates = obapiRequestContext.getClientCerts();
-            javax.security.cert.X509Certificate transportCert;
-            Optional<java.security.cert.X509Certificate> convertedTransportCert;
-            String authHeader = obapiRequestContext.getMsgInfo().getHeaders().get(AUTH_HEADER);
-            String clientId = extractClientIdFromJWT(authHeader);
-
-            if (x509Certificates.length != 0) {
-                transportCert = x509Certificates[0];
-                convertedTransportCert = CertificateValidationUtils.convert(transportCert);
-            } else {
-                log.error("Transport certificate not found in request context");
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
-                        "Transport certificate is missing. Cannot do organization ID validation.");
-                return;
-            }
-
-            CertificateContent content;
-
-            try {
-                // Extract certificate content
-                if (convertedTransportCert.isPresent()) {
-                    content = CertificateContentExtractor.extract(convertedTransportCert.get());
-                } else {
-                    log.error("Error while processing transport certificate");
-                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                            "Invalid transport certificate. Cannot do organization ID validation.");
-                    return;
-                }
-            } catch (CertificateValidationException e) {
-                log.error("Error while extracting transport certificate content", e);
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                        "Transport certificate is invalid. Cannot do organization ID validation.");
-                return;
-            }
-
-            String certificateOrgId = content.getPspAuthorisationNumber();
-
-            if (StringUtils.isBlank(certificateOrgId)) {
-                log.error("Unable to retrieve organization ID from transport certificate");
-                GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                        "An organization ID is not found in the provided certificate");
-                return;
-            } else {
-                if (!StringUtils.equals(clientId, certificateOrgId)) {
-                    log.error("Client ID: " + clientId + " is not matching with the organization ID: "
-                            + certificateOrgId + " of transport certificate");
-                    GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_INVALID.toString(),
-                            "Organization ID mismatch with Client ID");
-                    return;
-                }
-            }
-            log.debug("Organization ID validation is completed");
-        }
     }
 
     @Override
@@ -384,7 +371,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
      * @throws SignatureValidationException when an error occurs during signature validation
      */
     protected boolean validateSignature(Map<String, String> requestHeaders,
-                                      java.security.cert.X509Certificate x509Certificate)
+                                        java.security.cert.X509Certificate x509Certificate)
             throws SignatureValidationException {
 
         try {
@@ -689,31 +676,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         }
         log.debug("Stored certificate validation status in cache");
         return isValid;
-    }
-
-    /**
-     * Extracts the client ID (AUD claim) from the JWT token.
-     *
-     * @param authHeaderJWT authorization header
-     * @return client ID
-     */
-    private String extractClientIdFromJWT(String authHeaderJWT) {
-
-        String clientID = null;
-
-        StringUtils.replace(authHeaderJWT, BEARER_TAG, StringUtils.EMPTY);
-
-        try {
-            JSONObject jwtClaims = com.wso2.openbanking.accelerator.gateway.util.GatewayUtils
-                    .decodeBase64(com.wso2.openbanking.accelerator.gateway.util.GatewayUtils
-                            .getPayloadFromJWT(authHeaderJWT));
-            if (!jwtClaims.isNull(AUD) && StringUtils.isNotBlank(jwtClaims.getString(AUD))) {
-                clientID = String.valueOf(jwtClaims.get(AUD));
-            }
-        } catch (UnsupportedEncodingException | JSONException | IllegalArgumentException e) {
-            log.error("Failed to retrieve client ID from JWT claims");
-        }
-        return clientID;
     }
 
     /**
