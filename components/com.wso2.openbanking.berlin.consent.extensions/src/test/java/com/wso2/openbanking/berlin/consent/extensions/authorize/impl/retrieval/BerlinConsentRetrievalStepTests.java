@@ -109,7 +109,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -127,7 +127,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -148,7 +148,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(supportedAccRefTypes).when(commonConfigParserMock).getSupportedAccountReferenceTypes();
 
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -166,7 +166,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -187,7 +187,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(supportedAccRefTypes).when(commonConfigParserMock).getSupportedAccountReferenceTypes();
 
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -211,7 +211,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -235,7 +235,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -259,7 +259,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -285,7 +285,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -309,7 +309,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -328,7 +328,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -347,7 +347,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -366,7 +366,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataWithoutScopesString, jsonObject);
@@ -462,7 +462,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.DIFFERENT_USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataObject, jsonObject);
@@ -482,7 +482,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataObject, jsonObject);
@@ -499,7 +499,7 @@ public class BerlinConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(TestConstants.SUPPORTED_ACC_REF_TYPES).when(commonConfigParserMock)
                 .getSupportedAccountReferenceTypes();
         authResourcesList.add(TestUtil.getSampleStoredTestAuthorizationResource(consentId,
-                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.FINALISED.toString(), authId,
+                AuthTypeEnum.AUTHORISATION.toString(), ScaStatusEnum.RECEIVED.toString(), authId,
                 TestConstants.USER_ID));
         doReturn(authResourcesList).when(consentCoreServiceMock).searchAuthorizations(Mockito.anyString());
         berlinConsentRetrievalStep.execute(consentDataObject, jsonObject);

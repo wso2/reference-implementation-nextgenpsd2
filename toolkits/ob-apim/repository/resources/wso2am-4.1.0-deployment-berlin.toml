@@ -53,7 +53,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=true
+defaultAutoCommit=false
 
 # for api manager data
 [database.apim_db]
@@ -71,7 +71,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=true
+defaultAutoCommit=false
 
 # for am-config registry
 [database.config]
@@ -89,7 +89,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=true
+defaultAutoCommit=false
 
 # for user management data
 [[datasource]]
@@ -107,7 +107,7 @@ pool_options.validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 pool_options.validationInterval="30000"
-pool_options.defaultAutoCommit=true
+pool_options.defaultAutoCommit=false
 
 # for Open Banking  data
 [[datasource]]
@@ -125,7 +125,7 @@ pool_options.validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 pool_options.validationInterval="30000"
-pool_options.defaultAutoCommit=true
+pool_options.defaultAutoCommit=false
 
 [tenant_mgt]
 enable_email_domain = true
@@ -440,8 +440,11 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -464,8 +467,11 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -488,8 +494,11 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
 priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -639,3 +648,11 @@ max_master_confirmation=900
 merge_first_run_delay=60
 merge_next_run_delay=30
 logging_type="none"
+
+#========================OB Idempotency Configurations======================
+[open_banking.gateway.cache.idempotency_validation_cache]
+cache_time_to_live=1440
+[open_banking.gateway.idempotency]
+enabled=true
+allowed_time_duration=1440
+idempotency_key_header="X-Request-ID"
