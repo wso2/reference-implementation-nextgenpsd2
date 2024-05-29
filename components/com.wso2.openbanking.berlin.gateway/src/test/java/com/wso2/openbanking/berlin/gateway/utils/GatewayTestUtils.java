@@ -23,11 +23,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import javax.security.cert.CertificateEncodingException;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
@@ -285,5 +288,27 @@ public class GatewayTestUtils {
 
     public static JSONObject decodeBase64(String payload) throws UnsupportedEncodingException {
         return new JSONObject(new String(Base64.getDecoder().decode(payload), String.valueOf(StandardCharsets.UTF_8)));
+    }
+
+    public static Optional<java.security.cert.X509Certificate> convertCert(javax.security.cert.X509Certificate cert)
+            throws java.security.cert.CertificateException {
+        if (cert != null) {
+            String errorMsg;
+            try {
+                byte[] encoded = cert.getEncoded();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encoded);
+                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                return Optional.of((java.security.cert.X509Certificate) certificateFactory
+                        .generateCertificate(byteArrayInputStream));
+            } catch (CertificateEncodingException e) {
+                errorMsg = "Error while decoding the certificate ";
+                throw new java.security.cert.CertificateException(errorMsg, e);
+            } catch (java.security.cert.CertificateException e) {
+                errorMsg = "Error while generating the certificate ";
+                throw new java.security.cert.CertificateException(errorMsg, e);
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 }
