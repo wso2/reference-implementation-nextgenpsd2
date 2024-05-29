@@ -123,7 +123,7 @@ public class BerlinConsentRetrievalStep implements ConsentRetrievalStep {
                 unauthorizedAuthResource = authorizationsList.stream()
                         .filter(authorization -> (StringUtils.equals(ScaStatusEnum.EXEMPTED.toString(),
                                 authorization.getAuthorizationStatus()) ||
-                                StringUtils.equals(ScaStatusEnum.RECEIVED.toString(),
+                                StringUtils.equals(ScaStatusEnum.FINALISED.toString(),
                                         authorization.getAuthorizationStatus())) &&
                                 StringUtils.equals(authType, authorization.getAuthorizationType()))
                         .findFirst();
