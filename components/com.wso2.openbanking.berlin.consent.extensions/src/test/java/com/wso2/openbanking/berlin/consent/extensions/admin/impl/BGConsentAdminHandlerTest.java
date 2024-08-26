@@ -92,7 +92,7 @@ public class BGConsentAdminHandlerTest extends PowerMockTestCase {
         List<String> consentIDList = new ArrayList<>();
         consentIDList.add(consentId);
         queryParams.put("consentID", consentIDList);
-        queryParams.put("userId", "ann@wso2.com");
+        queryParams.put("userID", "ann@wso2.com");
 
         doReturn(queryParams).when(consentAdminDataMock).getQueryParams();
         doReturn(getAccountConsentResource("valid")).when(consentCoreServiceMock)
@@ -193,7 +193,7 @@ public class BGConsentAdminHandlerTest extends PowerMockTestCase {
         List<String> consentIDList = new ArrayList<>();
         consentIDList.add(consentId);
         queryParams.put("consentID", consentIDList);
-        queryParams.put("userId", "admin@wso2.com");
+        queryParams.put("userID", "admin@wso2.com");
 
         DetailedConsentResource accountConsentResource = getAccountConsentResource("valid");
 
