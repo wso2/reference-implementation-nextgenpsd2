@@ -575,13 +575,13 @@
                 <version>${jstl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk15on</artifactId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${org.bouncycastle.version}</version>
             </dependency>
             <dependency>
@@ -655,7 +655,7 @@
         <org.json.version>3.0.0.wso2v1</org.json.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jstl.version>1.2</jstl.version>
-        <org.bouncycastle.version>1.59</org.bouncycastle.version>
+        <org.bouncycastle.version>1.78.1.wso2v1</org.bouncycastle.version>
         <axis2.imp.pkg.version.range>[1.6,2)</axis2.imp.pkg.version.range>
         <hibernate-validator>6.0.17.Final</hibernate-validator>
         <fasterxml.jackson.version>2.10.3</fasterxml.jackson.version>
