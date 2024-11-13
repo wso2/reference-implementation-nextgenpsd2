@@ -458,8 +458,14 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         for (String signatureElement : signatureElements) {
             String[] signatureAttributes = signatureElement.replaceAll("\"", "").split("=",
                     2);
-            if (!signatureMap.containsKey(signatureAttributes[0].trim())) {
-                signatureMap.put(signatureAttributes[0].trim(), signatureAttributes[1].trim());
+
+            if (signatureAttributes.length == 2) {
+                String key = signatureAttributes[0].trim();
+                String value = signatureAttributes[1].trim();
+
+                if (!signatureMap.containsKey(key)) {
+                    signatureMap.put(key, value);
+                }
             }
         }
         return signatureMap;
