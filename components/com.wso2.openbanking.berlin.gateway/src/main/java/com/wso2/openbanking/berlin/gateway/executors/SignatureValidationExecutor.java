@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 import com.wso2.openbanking.accelerator.gateway.executor.service.CertValidationService;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.common.constants.ErrorConstants;
 import com.wso2.openbanking.berlin.common.models.TPPMessage;
@@ -32,6 +33,7 @@ import com.wso2.openbanking.berlin.gateway.exceptions.DigestValidationException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureCertMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureValidationException;
+import com.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouterConstants;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -148,6 +150,16 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
             // Validate whether the required headers are present.
             try {
                 validateHeaders(headersMap);
+
+                // Only mandating the Date header for Payment requests
+                if (APIRequestRouterConstants.PAYMENTS_TYPE.equalsIgnoreCase(obapiRequestContext
+                        .getContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP))) {
+                    if (StringUtils.isBlank(headersMap.get(DATE_HEADER))) {
+                        log.error(ErrorConstants.DATE_HEADER_MISSING);
+                        throw new SignatureValidationException(ErrorConstants.DATE_HEADER_MISSING);
+                    }
+                }
+
             } catch (SignatureCertMissingException e) {
                 log.error(ErrorConstants.SIGNING_CERT_MISSING, e);
                 GatewayUtils.handleFailure(obapiRequestContext, TPPMessage.CodeEnum.CERTIFICATE_MISSING.toString(),
@@ -307,10 +319,6 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         if (StringUtils.isBlank(headersMap.get(X_REQUEST_ID_HEADER))) {
             log.error(ErrorConstants.X_REQUEST_ID_MISSING);
             throw new SignatureValidationException(ErrorConstants.X_REQUEST_ID_MISSING);
-        }
-        if (StringUtils.isBlank(headersMap.get(DATE_HEADER))) {
-            log.error(ErrorConstants.DATE_HEADER_MISSING);
-            throw new SignatureValidationException(ErrorConstants.DATE_HEADER_MISSING);
         }
     }
 
@@ -522,7 +530,7 @@ public class SignatureValidationExecutor implements OpenBankingGatewayExecutor {
         }
 
         // Check whether the mandated headers present in the headers element in the Signature header
-        if (!containsDigestHeader || !containsRequestIDHeader || !containsDateHeader) {
+        if (!containsDigestHeader || !containsRequestIDHeader) {
             return false;
         }
 

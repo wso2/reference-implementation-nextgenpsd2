@@ -18,12 +18,14 @@ import com.wso2.openbanking.accelerator.common.util.eidas.certificate.extractor.
 import com.wso2.openbanking.accelerator.gateway.cache.CertificateRevocationCache;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.util.CertificateValidationUtils;
+import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import com.wso2.openbanking.berlin.gateway.exceptions.DigestMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.DigestValidationException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureCertMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureMissingException;
 import com.wso2.openbanking.berlin.gateway.exceptions.SignatureValidationException;
+import com.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouterConstants;
 import com.wso2.openbanking.berlin.gateway.test.TestData;
 import com.wso2.openbanking.berlin.gateway.utils.GatewayTestUtils;
 import org.mockito.Mock;
@@ -236,7 +238,7 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
         new SignatureValidationExecutor().validateHeaders(TestData.HEADERS_MAP_WITHOUT_CERT_HEADER);
     }
 
-    @Test (expectedExceptions = SignatureValidationException.class)
+    @Test
     public void testValidateHeadersWithoutDateHeader()
             throws SignatureCertMissingException, SignatureMissingException,
             DigestMissingException, SignatureValidationException {
@@ -475,6 +477,39 @@ public class SignatureValidationExecutorTests extends PowerMockTestCase {
                 Mockito.any(java.security.cert.X509Certificate.class))).thenReturn(testPeerCertificateIssuer);
         PowerMockito.when(CertificateValidationUtils.convert(Mockito.any())).thenReturn(GatewayTestUtils
                 .convertCert(transportCertificate));
+
+        new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
+    }
+
+    @Test
+    public void testPostProcessRequestMethodWithoutDateHeaderForPaymentRequest() throws CertificateValidationException,
+            java.security.cert.CertificateException {
+
+        X509Certificate[] x509Certificates = {transportCertificate};
+        Mockito.when(obapiRequestContextMock.getClientCerts()).thenReturn(x509Certificates);
+
+        APIRequestInfoDTO apiRequestInfoDTOMock = Mockito.mock(APIRequestInfoDTO.class);
+        Mockito.when(obapiRequestContextMock.getApiRequestInfo()).thenReturn(apiRequestInfoDTOMock);
+        Mockito.when(obapiRequestContextMock.getContextProperty(GatewayConstants.API_TYPE_CUSTOM_PROP))
+                .thenReturn(APIRequestRouterConstants.PAYMENTS_TYPE);
+        Mockito.when(apiRequestInfoDTOMock.getConsumerKey()).thenReturn("PSDGB-OB-Unknown0015800001HQQrZAAX");
+
+        CertificateRevocationCache mock = Mockito.mock(CertificateRevocationCache.class);
+        PowerMockito.mockStatic(CertificateRevocationCache.class);
+        PowerMockito.when(CertificateRevocationCache.getInstance()).thenReturn(mock);
+
+        doReturn("3").when(openBankingConfigParserMock)
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_RETRY_COUNT);
+        doReturn("true").when(openBankingConfigParserMock)
+                .getConfigElementFromKey(OpenBankingConstants.CERTIFICATE_REVOCATION_VALIDATION_ENABLED);
+
+        certificateValidationUtilsMock = PowerMockito.mock(CertificateValidationUtils.class);
+        PowerMockito.mockStatic(CertificateValidationUtils.class);
+        PowerMockito.when(CertificateValidationUtils.getIssuerCertificateFromTruststore(
+                Mockito.any(java.security.cert.X509Certificate.class))).thenReturn(testPeerCertificateIssuer);
+        PowerMockito.when(CertificateValidationUtils.convert(Mockito.any())).thenReturn(GatewayTestUtils
+                .convertCert(transportCertificate));
+        PowerMockito.when(msgInfoDTOMock.getHeaders()).thenReturn(TestData.INVALID_PAYMENTS_REQUEST_HEADERS_MAP);
 
         new SignatureValidationExecutor().postProcessRequest(obapiRequestContextMock);
     }
