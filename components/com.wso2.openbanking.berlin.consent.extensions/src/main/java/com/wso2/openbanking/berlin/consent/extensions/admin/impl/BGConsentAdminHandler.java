@@ -67,9 +67,9 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
             DetailedConsentResource consentResource = coreService.getDetailedConsent(consentId);
 
             // Validate non customer-care user is revoking only their own consents
-            if (consentAdminData.getQueryParams().containsKey("userId")) {
+            if (consentAdminData.getQueryParams().containsKey("userID")) {
                 List<AuthorizationResource> filteredIds = consentResource.getAuthorizationResources().stream()
-                        .filter(authorizationResource -> consentAdminData.getQueryParams().get("userId").toString()
+                        .filter(authorizationResource -> consentAdminData.getQueryParams().get("userID").toString()
                                 .contains(authorizationResource.getUserID()))
                         .collect(Collectors.toList());
                 if (filteredIds.isEmpty()) {
@@ -126,7 +126,7 @@ public class BGConsentAdminHandler extends DefaultConsentAdminHandler {
 
         try {
 
-            if (!consentAdminData.getQueryParams().containsKey("userId")) {
+            if (!consentAdminData.getQueryParams().containsKey("userID")) {
                 coreService.revokeConsent(consentResource.getConsentID(),
                         ConsentStatusEnum.TERMINATED_BY_TPP.toString());
             } else {
