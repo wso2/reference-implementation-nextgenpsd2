@@ -440,11 +440,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -467,11 +464,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
@@ -494,11 +488,8 @@ priority = 4
 name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.idempotency.OpenBankingIdempotencyHandlingExecutorBGImpl"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
