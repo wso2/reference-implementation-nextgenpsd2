@@ -72,8 +72,8 @@ public class AccessToken {
           payload = applicationAccessTokenDto.getPayload(clientId);
         }
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-            .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .body(payload)
+            .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .post(TestConstants.TOKEN_ENDPOINT);
     }
 

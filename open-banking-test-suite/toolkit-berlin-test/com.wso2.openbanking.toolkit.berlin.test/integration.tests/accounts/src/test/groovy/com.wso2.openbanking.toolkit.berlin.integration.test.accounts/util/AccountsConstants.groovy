@@ -50,6 +50,7 @@ class AccountsConstants {
     static final String CONSENT_STATUS_REJECTED = "rejected"
     static final String CONSENT_STATUS_TERMINATEDBYTPP = "terminatedByTpp"
     static final String CONSENT_STATUS_PSUAUTHENTICATED = "psuAuthenticated"
+    static final String SCA_STATUS_FINALISED = "finalised"
 
     //Bank Offered Consent - Account Selection
     static final String ACCOUNTS_LIST_NORMAL_ACC = "//label[4]/input[@name='checkedAccountsAccountRefs']"

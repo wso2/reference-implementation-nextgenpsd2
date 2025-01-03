@@ -32,8 +32,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303006_Delete Payment With Client Credentials Type Access Token"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303006_Delete Payment With Client Credentials Type Access Token"(String consentPath,
+                                                                              List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -62,8 +62,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303008_Delete Payment Without X-Request-ID Header"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303008_Delete Payment Without X-Request-ID Header"(String consentPath,
+                                                                 List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -99,8 +99,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303009_Delete Payment With Invalid X-Request-ID Header"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303009_Delete Payment With Invalid X-Request-ID Header"(String consentPath, List<String>paymentProducts,
+                                                                     String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -138,8 +138,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.3", "1.3.6"],
             dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303010_Delete Payment With Empty X-Request-ID Header"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303010_Delete Payment With Empty X-Request-ID Header"(String consentPath, List<String>paymentProducts,
+                                                                   String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -177,8 +177,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
     //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
 //    @Test(groups = ["1.3.3", "1.3.6"],
 //            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303011_Delete Payment Without Specifying Authorization Header"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303011_Delete Payment Without Specifying Authorization Header"(String consentPath,
+                                                                            List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -214,8 +214,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
     //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
 //    @Test(groups = ["1.3.3", "1.3.6"],
 //            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303012_Delete Payment With Invalid Authorization Header value"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303012_Delete Payment With Invalid Authorization Header value"(String consentPath,
+                                                                            List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -253,8 +253,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
     //todo: fix https://github.com/wso2-enterprise/financial-open-banking/issues/7561
 //    @Test(groups = ["1.3.3", "1.3.6"],
 //            dataProvider = "PaymentsTypes", dataProviderClass = PaymentsDataProviders.class)
-    void "TC0303013_Delete Payment Consent With Empty Authorization Header value"(String consentPath, List<String>
-            paymentProducts, String payload) {
+    void "TC0303013_Delete Payment Consent With Empty Authorization Header value"(String consentPath,
+                                                                                  List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value
@@ -291,8 +291,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
     //todo: fix issue https://github.com/wso2-enterprise/financial-open-banking/issues/7865
 //    @Test(groups = ["1.3.3", "1.3.6"],
 //      dataProvider = "PaymentsTypesForCancellation", dataProviderClass = PaymentsDataProviders.class)
-    void "OB-1681_Payment delete request with same X-Request-Id and same consent"(String consentPath, List<String>
-      paymentProducts, String payload) {
+    void "OB-1681_Payment delete request with same X-Request-Id and same consent"(String consentPath,
+                                                              List<String>paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value

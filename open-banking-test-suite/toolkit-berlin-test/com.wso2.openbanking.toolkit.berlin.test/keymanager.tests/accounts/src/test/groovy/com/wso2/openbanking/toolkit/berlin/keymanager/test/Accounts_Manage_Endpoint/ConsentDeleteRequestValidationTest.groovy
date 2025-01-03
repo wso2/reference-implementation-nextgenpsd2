@@ -30,7 +30,7 @@ class ConsentDeleteRequestValidationTest extends AbstractAccountsFlow {
 	String consentPath = AccountsConstants.ACCOUNTS_CONSENT_PATH
 
 	@Test (groups = ["SmokeTest", "1.3.3", "1.3.6"])
-	void "OB-1446_Delete consent in received state"() {
+	void "BG-364_Delete consent in received state"() {
 
 		//Consent Initiation
 		doDefaultInitiation(consentPath, AccountsPayloads.initiationPayloadForAllAccounts)

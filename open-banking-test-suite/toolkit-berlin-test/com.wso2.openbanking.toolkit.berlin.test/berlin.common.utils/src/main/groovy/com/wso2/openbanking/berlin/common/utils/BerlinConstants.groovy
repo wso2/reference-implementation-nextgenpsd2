@@ -112,4 +112,5 @@ class BerlinConstants {
     static final String CURRENCY1 = "USD"
     static final String CURRENCY2 = "EUR"
     static final String CURRENCY3 = "GBP"
+    static final String SESSIONS_NOT_SUPPORTED = "SESSIONS_NOT_SUPPORTED"
 }

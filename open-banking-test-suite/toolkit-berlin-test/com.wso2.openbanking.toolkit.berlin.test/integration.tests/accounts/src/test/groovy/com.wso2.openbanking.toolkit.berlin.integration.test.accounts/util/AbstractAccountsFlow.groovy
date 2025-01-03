@@ -38,7 +38,6 @@ abstract class AbstractAccountsFlow {
     String code
     String consentStatus
     String userAccessToken
-    String refreshToken
     String oauthErrorCode
     Response consentResponse
     Response retrievalResponse
@@ -51,7 +50,7 @@ abstract class AbstractAccountsFlow {
     BrowserAutomation.AutomationContext automation
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.ACCOUNTS
 
-    @BeforeClass (groups = ["SmokeTest", "1.3.3", "1.3.6"])
+    @BeforeClass (alwaysRun = true)
     void setup(){
 
         TestSuite.init()
@@ -60,6 +59,10 @@ abstract class AbstractAccountsFlow {
     }
 
     void doDefaultInitiation(String consentPath, String initiationPayload) {
+
+        //Generate Access Token
+//        applicationAccessToken = BerlinRequestBuilder.getApplicationToken(BerlinConstants.AUTH_METHOD.PRIVATE_KEY_JWT,
+//                scopes)
 
         //initiation
         consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -174,15 +177,13 @@ abstract class AbstractAccountsFlow {
         accountId = TestUtil.parseResponseBody(authorisationResponse, "consentId")
     }
 
-    void createExplicitAuthorization(String consentPath) {
+    void createExplicitAuthorization(String consentPath, String xRequestId = null) {
 
-        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken, xRequestId)
                 .body("{}")
                 .post("${consentPath}/${accountId}/authorisations")
 
         authorisationId = authorisationResponse.jsonPath().get("authorisationId")
-
-        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7187
         requestId = authorisationResponse.getHeader(BerlinConstants.X_REQUEST_ID)
     }
 

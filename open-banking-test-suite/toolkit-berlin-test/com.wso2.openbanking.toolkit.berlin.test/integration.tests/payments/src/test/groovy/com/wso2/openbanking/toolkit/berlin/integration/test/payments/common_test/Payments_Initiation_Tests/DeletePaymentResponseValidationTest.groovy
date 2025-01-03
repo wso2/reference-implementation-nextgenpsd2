@@ -229,8 +229,7 @@ class DeletePaymentResponseValidationTest extends AbstractPaymentsFlow {
 
     @Test(groups = ["1.3.6"],
             dataProvider = "SinglePayments", dataProviderClass = PaymentsDataProviders.class)
-    void "OB-1592_Send Single payment delete request"(String consentPath, List<String> paymentProducts, String
-            payload) {
+    void "OB-1592_Send Single payment delete request"(String consentPath, List<String> paymentProducts, String payload) {
 
         paymentProducts.each { value ->
             String paymentConsentPath = consentPath + "/" + value

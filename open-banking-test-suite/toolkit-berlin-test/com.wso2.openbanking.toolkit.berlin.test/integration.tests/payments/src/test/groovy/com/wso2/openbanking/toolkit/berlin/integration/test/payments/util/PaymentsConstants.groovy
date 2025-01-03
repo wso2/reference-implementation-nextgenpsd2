@@ -23,6 +23,7 @@ class PaymentsConstants {
     static final String SINGLE_PAYMENTS_PATH = PISP_PATH + "payments"
     static final String BULK_PAYMENTS_PATH = PISP_PATH + "bulk-payments"
     static final String PERIODIC_PAYMENTS_PATH = PISP_PATH + "periodic-payments"
+    static final String ACCOUNTS_PATH = PISP_PATH + "consents"
 
     static final String V110_PISP_PATH = "PaymentsAPI/v1.1.0/"
     static final String V110_SINGLE_PAYMENTS_PATH = V110_PISP_PATH + "payments"
@@ -37,6 +38,7 @@ class PaymentsConstants {
 
     static final String SCA_STATUS_RECEIVED = "received"
     static final String SCA_STATUS_PSU_AUTHENTICATED= "psuAuthenticated"
+    static final String SCA_STATUS_FINALISED = "finalised"
 
     static final String PAYMENT_PRODUCT_SEPA_CREDIT_TRANSFERS = "sepa-credit-transfers"
     static final String PAYMENT_PRODUCT_INSTA_SEPA_CREDIT_TRANSFERS = "instant-sepa-credit-transfers"

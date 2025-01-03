@@ -57,7 +57,7 @@ class FrequencyPerDayResponseValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = "1.3.6", invocationCount = 4, enabled = true)
-    void "OB-1675_Send account retrieval request for the same consent for number of times specified in frequency"() {
+    void "BG-383_Send account retrieval request for the same consent for number of times specified in frequency"() {
 
         //Send Account Retrieval call 4 times.
         def response = BerlinRequestBuilder
@@ -70,7 +70,7 @@ class FrequencyPerDayResponseValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = "1.3.6", invocationCount = 10, enabled = true)
-    void "OB-1676_Send account retrieval request for the same consent exceeding number of times specified in frequency"() {
+    void "BG-384_Send account retrieval request for the same consent exceeding number of times specified in frequency"() {
 
         //Send Account Retrieval call 10 times.
         def response = TestSuite.buildRequest()

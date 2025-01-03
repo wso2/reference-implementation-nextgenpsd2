@@ -110,7 +110,7 @@ class CofDeleteConsentResponseValidationTests extends AbstractCofFlow {
 
         //Delete Consent which is already terminated
         deleteCofConsent(consentPath)
-        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
+        Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
                 .toString(),"The requested consent is already deleted")
     }

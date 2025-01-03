@@ -48,7 +48,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     def initiationPayload = AccountsInitiationPayloads.defaultInitiationPayload
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1421_Send the Authorisation Request without response_type attribute"() {
+    void "BG-294_Send Authorisation request without response_type param"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -60,11 +60,11 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Missing response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Missing response_type parameter value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1416_Send Authorisation request with client id not bound to the consent"() {
+    void "BG-289_Send Authorisation request with client id not bound to the consent"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -96,11 +96,11 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Scopes are not present or invalid")
+        Assert.assertEquals(oauthErrorCode, "Scopes are not present or invalid")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1418_Send Authorisation request with incorrect consent append to the scope"() {
+    void "BG-291_Send Authorisation request with incorrect consent append to the scope"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -154,7 +154,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, 'state' parameter is required")
+        Assert.assertEquals(oauthErrorCode, "'state' parameter is required")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -174,7 +174,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1419_Send the Authorisation Request without code_challenge attribute"() {
+    void "BG-292_Send the Authorisation Request without code_challenge attribute"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -191,7 +191,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1420_Send Authorisation request with incorrect code_challenge param"() {
+    void "BG-293_Send Authorisation request with incorrect code_challenge param"() {
 
         CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
 
@@ -294,7 +294,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1613_PSU authentication on cancelled account consent"() {
+    void "BG-301_PSU authentication on cancelled account consent"() {
 
         //Account Initiation Request
         doDefaultInitiation(consentPath, initiationPayload)
@@ -313,7 +313,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1409_Implicit Authorisation when ExplicitAuthorisationPreferred param is not set in initiation"() {
+    void "BG-282_Implicit Authorisation when ExplicitAuthorisationPreferred param is not set in initiation"() {
 
         //Consent Initiation
         Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -333,7 +333,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1410_Implicit Authorisation when ExplicitAuthorisationPreferred param set to false"() {
+    void "BG-283_Implicit Authorisation when ExplicitAuthorisationPreferred param set to false"() {
 
         //Consent Initiation
         Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -354,7 +354,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1411_Implicit Authorisation when TPP-Redirect Preferred not set in initiation request"() {
+    void "BG-284_Implicit Authorisation when TPP-Redirect Preferred not set in initiation request"() {
 
         //Consent Initiation
         Response consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -374,7 +374,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test(groups = ["1.3.6"])
-    void "OB-1415_Send Authorisation request without client id param"() {
+    void "BG-288_Send Authorisation request without client id param"() {
 
         //Consent Initiation
         consentResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
@@ -400,7 +400,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1529_Authorisation with undefined PSU_ID when TPP-ExplicitAuthorisationPreferred set to false"() {
+    void "BG-299_Authorisation with undefined PSU_ID when TPP-ExplicitAuthorisationPreferred set to false"() {
 
         String psuId = "psu1@wso2.com"
 
@@ -441,7 +441,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1530_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
+    void "BG-300_Authorisation when PSU_ID not define in initiation when TPP-ExplicitAuthorisationPreferred set false"() {
 
         //Consent Initiation
         Response consentResponse = TestSuite.buildRequest()
@@ -469,7 +469,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1422_Send Authorisation request with incorrect response_type param"() {
+    void "BG-295_Send Authorisation request with incorrect response_type param"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -482,11 +482,11 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
         String authUrl = automation.currentUrl.get()
         def oauthErrorCode = BerlinTestUtil.getAuthFlowError(authUrl)
 
-        Assert.assertEquals(oauthErrorCode, "invalid_request, Invalid response_type parameter value")
+        Assert.assertEquals(oauthErrorCode, "Invalid response_type parameter value")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
-    void "OB-1425_Send the Authorisation Request with unsupported code_challenge_method value"() {
+    void "BG-622_Send the Authorisation Request with unsupported code_challenge_method value"() {
 
         CodeChallengeMethod codeChallengeMethod = new CodeChallengeMethod("RS256")
 
@@ -504,7 +504,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "OB-1424_Send Authorisation request with plain value as the code_challenge_method"() {
+    void "BG-297_Send Authorisation request with plain value as the code_challenge_method"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -522,8 +522,8 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
 
     @Test(groups = ["1.3.6"],
             dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
-    void "OB-1659_Reject bank offered consent authorisation without selecting accounts"(String title, List<String>
-            fields, String payload) {
+    void "BG-302_Reject bank offered consent authorisation without selecting accounts"(String title, List<String>fields,
+                                                                                        String payload) {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, payload)
@@ -552,8 +552,8 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
 
     @Test(groups = ["1.3.6"],
             dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
-    void "OB-1660_Reject bank offered consent authorisation by selecting accounts"(String title, List<String>
-            fields, String payload) {
+    void "BG-303_Reject bank offered consent authorisation by selecting accounts"(String title, List<String>fields,
+                                                                                   String payload) {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, payload)
@@ -584,7 +584,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
     }
 
     @Test
-    void "OB-1665_Generate user access token without PKCE code verifier"() {
+    void "BG-306_Generate user access token without PKCE code verifier"() {
 
         //Consent Initiation
         doDefaultInitiation(consentPath, initiationPayload)
@@ -600,6 +600,7 @@ class AccountAuthorisationRequestValidationTests extends AbstractAccountsFlow {
 
         Assert.assertEquals(userAccessTokenResponse.getStatusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(userAccessTokenResponse, "error_description"),
-                "No PKCE code verifier found.PKCE is mandatory for this oAuth 2.0 application.")
+                "Empty PKCE code_verifier sent. This authorization code requires a PKCE verification " +
+                        "to obtain an access token.")
     }
 }

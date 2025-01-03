@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.toolkit.berlin.integration.test.payments.util
 
+import com.wso2.openbanking.berlin.common.utils.BerlinConstants
+import com.wso2.openbanking.berlin.common.utils.BerlinTestUtil
+
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
@@ -737,6 +740,31 @@ class PaymentsInitiationPayloads {
                     "remittanceInformationUnstructured": "Ref Number Merchant"                
                 }
             ]
+        }"""
+            .stripIndent()
+
+    static final String accountsInitiationPayload = """{
+            "access":{
+                "accounts":[
+                    {  
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                    }
+                ],
+                "balances":[
+                    {  
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                    }
+                ],
+                "transactions":[  
+                    {  
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                    }
+                ]
+            },
+            "recurringIndicator": true,
+            "validUntil":"${BerlinTestUtil.getDateAndTime(4)}",
+            "frequencyPerDay": 4,
+            "combinedServiceIndicator": false
         }"""
             .stripIndent()
 

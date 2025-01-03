@@ -77,6 +77,29 @@ class BerlinRequestBuilder {
     }
 
     /**
+     * Get Application Access Token
+     *
+     * @param authMethod authentication method
+     * @param scopes scopes for token
+     * @param clientId
+     * @return access token
+     */
+    static String getApplicationToken(BerlinConstants.AUTH_METHOD authMethod, BerlinConstants.SCOPES scopes,
+                                      String clientId) {
+
+        def tokenDTO = new ApplicationAccessTokenDto()
+        tokenDTO.setScopes(scopes.getScopes())
+
+        def tokenResponse = AccessToken.getApplicationAccessToken(tokenDTO, clientId)
+        def accessToken = TestUtil.parseResponseBody(tokenResponse, "access_token")
+
+        log.info("Got access token $accessToken")
+
+        return accessToken
+
+    }
+
+    /**
      * Get User Access Token
      *
      * @param authMethod authentication method

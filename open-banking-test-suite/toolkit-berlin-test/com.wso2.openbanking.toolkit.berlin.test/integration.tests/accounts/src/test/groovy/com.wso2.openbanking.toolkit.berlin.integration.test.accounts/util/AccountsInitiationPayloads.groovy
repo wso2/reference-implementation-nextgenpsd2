@@ -28,15 +28,10 @@ class AccountsInitiationPayloads {
                     {  
                         "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
-                ],
-                "transactions":[  
-                    {  
-                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
-                    }
                 ]
             },
             "recurringIndicator": true,
-            "validUntil":"${BerlinTestUtil.getDateAndTime(4)}",
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""
@@ -90,7 +85,7 @@ class AccountsInitiationPayloads {
                     "availableAccounts": "allAccounts"
                },
                "recurringIndicator":true,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(3)}",
                "frequencyPerDay":4,
                "combinedServiceIndicator":false
                
@@ -127,7 +122,7 @@ class AccountsInitiationPayloads {
                     "allPsd2": "allAccounts"
                },
                "recurringIndicator":true,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
                "frequencyPerDay":4,
                "combinedServiceIndicator":false
         }
@@ -141,7 +136,7 @@ class AccountsInitiationPayloads {
                   "transactions":[]
                },
                "recurringIndicator": true,
-               "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+               "validUntil":"${BerlinTestUtil.getDateAndTime(2)}",
                "frequencyPerDay": 4,
                "combinedServiceIndicator": false
         }
@@ -356,7 +351,7 @@ class AccountsInitiationPayloads {
                 ]
             },
             "recurringIndicator": true,
-            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""
@@ -381,7 +376,7 @@ class AccountsInitiationPayloads {
                 ]
             },
             "recurringIndicator": true,
-            "validUntil":"${BerlinTestUtil.getDateAndTime(0)}",
+            "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
             "frequencyPerDay": 4,
             "combinedServiceIndicator": false
         }"""
@@ -428,4 +423,18 @@ class AccountsInitiationPayloads {
             "combinedServiceIndicator": false
         }"""
             .stripIndent()
+
+
+    static final String initiationPayloadForAllAccountsWithoutRecurringIndicator = """
+          {  
+               "access":{
+                    "availableAccounts": "allAccounts"
+               },
+               "recurringIndicator":false,
+               "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
+               "frequencyPerDay":4,
+               "combinedServiceIndicator":false
+               
+        }
+    """.stripIndent()
 }

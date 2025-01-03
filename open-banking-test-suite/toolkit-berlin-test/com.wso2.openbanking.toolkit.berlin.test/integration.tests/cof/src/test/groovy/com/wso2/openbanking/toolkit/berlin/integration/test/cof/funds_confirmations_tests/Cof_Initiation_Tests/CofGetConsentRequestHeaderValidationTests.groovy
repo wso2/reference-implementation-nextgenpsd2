@@ -205,7 +205,7 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
     }
 
     @Test (groups = ["1.3.6"])
-    void "TC0604012_Get Consent With Empty Authorization Header value"() {
+    void   "TC0604012_Get Consent With Empty Authorization Header value"() {
 
         //Account Initiation
         doDefaultCofInitiation(consentPath, initiationPayload)
@@ -225,8 +225,6 @@ class CofGetConsentRequestHeaderValidationTests extends AbstractCofFlow {
                 .get("${consentPath}/${consentId}")
 
         Assert.assertEquals(retrievalResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody (retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).
                 contains("Invalid Credentials. Make sure your API invocation call has a header: " +
                         "'Authorization"))

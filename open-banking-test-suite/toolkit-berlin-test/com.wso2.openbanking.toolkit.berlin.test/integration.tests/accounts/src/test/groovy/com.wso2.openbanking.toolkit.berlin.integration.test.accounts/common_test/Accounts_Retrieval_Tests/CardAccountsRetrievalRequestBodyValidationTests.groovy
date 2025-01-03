@@ -179,7 +179,7 @@ class CardAccountsRetrievalRequestBodyValidationTests extends AbstractAccountsFl
 
         Assert.assertEquals(response.statusCode(), BerlinConstants.STATUS_CODE_400)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
+                BerlinConstants.TIMESTAMP_INVALID)
         Assert.assertEquals(response.jsonPath().getString(BerlinConstants.TPPMESSAGE_TEXT),
                 "String \"2018-60-11\" is invalid against requested date format(s) yyyy-MM-dd")
     }

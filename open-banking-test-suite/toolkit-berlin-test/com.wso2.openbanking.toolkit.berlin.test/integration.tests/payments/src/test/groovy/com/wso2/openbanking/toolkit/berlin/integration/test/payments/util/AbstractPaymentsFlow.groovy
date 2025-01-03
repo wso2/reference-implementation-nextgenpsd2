@@ -132,9 +132,9 @@ class AbstractPaymentsFlow {
 
     }
 
-    void createExplicitAuthorization(String consentPath) {
+    void createExplicitAuthorization(String consentPath, String xRequestId = null) {
 
-        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+        authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken, xRequestId)
                 .header(BerlinConstants.EXPLICIT_AUTH_PREFERRED, true)
                 .header(BerlinConstants.TPP_REDIRECT_PREFERRED, true)
                 .body("{}")
@@ -243,7 +243,6 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/${paymentId}/authorisations")
-        authorisationId = TestUtil.parseResponseBody(authorisationResponse, "authorisationIds[0]")
     }
 
     /**
