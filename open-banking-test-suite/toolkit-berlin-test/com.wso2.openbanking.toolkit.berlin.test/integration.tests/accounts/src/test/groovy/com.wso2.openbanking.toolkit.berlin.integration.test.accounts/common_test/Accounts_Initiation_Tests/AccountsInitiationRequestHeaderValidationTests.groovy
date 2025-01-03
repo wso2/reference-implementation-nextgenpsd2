@@ -45,7 +45,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
 
         //Authorize the Consent
         doAuthorizationFlow()
-        Assert.assertNotNull(code)x
+        Assert.assertNotNull(code)
 
         //Generate User Access Token
         generateUserAccessToken()

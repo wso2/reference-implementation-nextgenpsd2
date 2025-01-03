@@ -78,8 +78,7 @@ class BankOfferedConsentEndToEndFlow extends AbstractAccountsFlow {
 
 	@Test (groups = ["1.3.6"], dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
 	void "BG-539_Bank Offered Initiation request with same x-request-id and same payload"(String title,
-																						  List<String> fields,
-																						  String payload) {
+		List<String> fields,String payload) {
 
 		def xRequestId = UUID.randomUUID().toString()
 		def date = getCurrentDate()
@@ -125,8 +124,7 @@ class BankOfferedConsentEndToEndFlow extends AbstractAccountsFlow {
 
 	@Test (groups = ["1.3.6"], dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
 	void "BG-540_Bank Offered Initiation request with same x-request-id and different payload"(String title,
-																							   List<String> fields,
-																							   String payload) {
+		List<String> fields, String payload) {
 
 		def xRequestId = UUID.randomUUID().toString()
 
@@ -173,8 +171,7 @@ class BankOfferedConsentEndToEndFlow extends AbstractAccountsFlow {
 
 	@Test (groups = ["1.3.6"], dataProvider = "BankOfferedConsentData", dataProviderClass = AccountsDataProviders.class)
 	void "BG-541_Bank Offered Initiation request with different x-request-id and same payload"(String title,
-																							   List<String> fields,
-																							   String payload) {
+		List<String> fields, String payload) {
 
 		//Consent Initiation - First Time
 		def consentResponse = TestSuite.buildRequest()
