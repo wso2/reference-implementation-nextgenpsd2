@@ -186,7 +186,7 @@ device.enable = true
 [[oauth.custom_response_type]]
 name = "code"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
-validator = "com.wso2.openbanking.berlin.identity.response.type.validators.BerlinCodeResponseTypeValidator"
+validator = "org.wso2.openbanking.berlin.identity.response.type.validators.BerlinCodeResponseTypeValidator"
 
 [[oauth.custom_response_type]]
 name = "code id_token"
@@ -400,10 +400,10 @@ max_connections_per_route = 1500
 #================Berlin Toolkit==============
 #================Identity==============
 [open_banking.identity.authentication_webapp]
-servlet_extension = "com.wso2.openbanking.berlin.consent.extensions.authservlet.impl.OBBerlinAuthServletImpl"
+servlet_extension = "org.wso2.openbanking.berlin.consent.extensions.authservlet.impl.OBBerlinAuthServletImpl"
 
 [open_banking.identity.extensions]
-response_type_handler="com.wso2.openbanking.berlin.identity.response.type.handlers.BerlinResponseTypeHandlerImpl"
+response_type_handler="org.wso2.openbanking.berlin.identity.response.type.handlers.BerlinResponseTypeHandlerImpl"
 
 #================consent management==============
 [[open_banking.consent.authorize_steps.retrieve]]
@@ -411,36 +411,36 @@ class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.NonR
 priority = 1
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinConsentRetrievalStep"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinConsentRetrievalStep"
 priority = 2
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinAccountListRetrievalStep"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.impl.retrieval.BerlinAccountListRetrievalStep"
 priority = 3
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentSubmissionBankingIntegrationStep"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentSubmissionBankingIntegrationStep"
 priority = 1
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentCancellationBankingIntegrationStep"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.PaymentCancellationBankingIntegrationStep"
 priority = 2
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.impl.persist.BerlinConsentPersistStep"
 priority = 3
 
 [open_banking.consent.manage]
-handler="com.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
+handler="org.wso2.openbanking.berlin.consent.extensions.manage.impl.BerlinConsentManageHandler"
 
 [open_banking.consent.validation]
-validator="com.wso2.openbanking.berlin.consent.extensions.validate.impl.BerlinConsentValidator"
+validator="org.wso2.openbanking.berlin.consent.extensions.validate.impl.BerlinConsentValidator"
 
 [open_banking.consent.validation.signature]
 alias="wso2carbon"
 
 [open_banking.consent.admin]
-handler="com.wso2.openbanking.berlin.consent.extensions.admin.impl.BGConsentAdminHandler"
+handler="org.wso2.openbanking.berlin.consent.extensions.admin.impl.BGConsentAdminHandler"
 
 [open_banking.consent.periodical_expiration]
 # This property needs to be true in order to run the consent expiration periodical updater.
@@ -453,7 +453,7 @@ expired_consent_status_value="expired"
 eligible_statuses="valid"
 
 [open_banking.identity.application_information_webapp]
-sp_metadata_filter="com.wso2.openbanking.berlin.identity.sp.metadata.BGSPMetadataFilter"
+sp_metadata_filter="org.wso2.openbanking.berlin.identity.sp.metadata.BGSPMetadataFilter"
 
 [open_banking.identity.mutualtls]
 #This property needs to be true if the certificate should be decoded when it is passed from the load balancer to the Gateway.
@@ -503,27 +503,27 @@ pis = "v1"
 piis = "v2"
 
 [open_banking.dcr]
-applicationupdater = "com.wso2.openbanking.berlin.identity.application.updater.BerlinApplicationUpdater"
+applicationupdater = "org.wso2.openbanking.berlin.identity.application.updater.BerlinApplicationUpdater"
 
 [[open_banking.identity.authentication.worker]]
 name = "exempted"
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.ExemptedStatusUpdateWorker"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.worker.ExemptedStatusUpdateWorker"
 
 [[open_banking.identity.authentication.worker]]
 name = "failed"
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FailedStatusUpdateWorker"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.worker.FailedStatusUpdateWorker"
 
 [[open_banking.identity.authentication.worker]]
 name = "finalised"
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.FinalizedStatusUpdateWorker"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.worker.FinalizedStatusUpdateWorker"
 
 [[open_banking.identity.authentication.worker]]
 name = "psuAuthenticated"
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.PSUAuthenticatedStatusUpdateWorker"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.worker.PSUAuthenticatedStatusUpdateWorker"
 
 [[open_banking.identity.authentication.worker]]
 name = "started"
-class = "com.wso2.openbanking.berlin.consent.extensions.authorize.worker.StartedStatusUpdateWorker"
+class = "org.wso2.openbanking.berlin.consent.extensions.authorize.worker.StartedStatusUpdateWorker"
 
 #========================OB Idempotency Configurations======================
 [open_banking.consent.idempotency]
