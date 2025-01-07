@@ -152,9 +152,9 @@
     </pluginRepositories>
 
     <scm>
-        <url>https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin.git</developerConnection>
-        <connection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin.git</connection>
+        <url>https://github.com/wso2/reference-implementation-nextgenpsd2.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/reference-implementation-nextgenpsd2.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/reference-implementation-nextgenpsd2.git</connection>
         <tag>HEAD</tag>
     </scm>
 
