@@ -59,7 +59,11 @@ public class ConfigurableBasicAuthRejectStep implements BrowserAutomationStep {
         WebElement username;
         WebDriverWait wait = new WebDriverWait(webDriver, 30);
 
-        username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
+        if (TestConstants.APIM_VERSION_420.equals(com.wso2.openbanking.test.framework.util.ConfigParser.getInstance().getAPIMVersion())) {
+            username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID_420));
+        } else {
+            username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
+        }
 
         username.clear();
         username.sendKeys(userName);

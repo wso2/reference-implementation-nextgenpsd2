@@ -51,7 +51,11 @@ public class DevPortalLoginStep implements BrowserAutomationStep {
 		WebElement username;
 
 		//Enter User Name
-		username = webDriver.findElement(By.id(TestConstants.APIM_USERNAME));
+		if (TestConstants.APIM_VERSION_420.equals(ConfigParser.getInstance().getAPIMVersion())) {
+			username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID_420));
+		} else {
+			username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
+		}
 		username.clear();
 		username.sendKeys(ConfigParser.getInstance().getTppUserName());
 
@@ -63,7 +67,13 @@ public class DevPortalLoginStep implements BrowserAutomationStep {
 		webDriver.findElement(By.xpath(TestConstants.BTN_APIM_CONTINUE)).submit();
 
 		WebDriverWait wait = new WebDriverWait(webDriver, 30);
-		wait.until(ExpectedConditions.invisibilityOfElementLocated(
-						By.id(TestConstants.APIM_USERNAME)));
+
+		if (TestConstants.APIM_VERSION_420.equals(ConfigParser.getInstance().getAPIMVersion())) {
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(
+					By.id(TestConstants.USERNAME_FIELD_ID_420)));
+		} else {
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(
+					By.id(TestConstants.USERNAME_FIELD_ID)));
+		}
 	}
 }
