@@ -208,6 +208,7 @@ id = "private_key_jwt_authenticator"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJWTClientAuthenticator"
 order = "899"
+enable=false
 
 [oauth.grant_type]
 iwa_ntlm.enable = false
