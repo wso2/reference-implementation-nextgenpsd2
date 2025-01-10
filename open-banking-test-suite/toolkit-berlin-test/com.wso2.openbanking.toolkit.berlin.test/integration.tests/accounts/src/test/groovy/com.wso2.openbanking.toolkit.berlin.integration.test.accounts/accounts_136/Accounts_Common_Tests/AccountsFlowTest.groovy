@@ -47,8 +47,8 @@ class AccountsFlowTest extends AbstractAccountsFlow {
         Assert.assertNotNull(code)
 
         //Get User Access Token
-//        generateUserAccessToken()
-//        Assert.assertNotNull(userAccessToken)
+        generateUserAccessToken()
+        Assert.assertNotNull(userAccessToken)
 
     }
 
@@ -56,14 +56,14 @@ class AccountsFlowTest extends AbstractAccountsFlow {
     @Test (groups = ["SmokeTest", "1.3.6"])
     void "TC0211020_Retrieval Request to Get Transactions List with information booking status"() {
 
-//        def response = BerlinRequestBuilder
-//                .buildBasicRequest(userAccessToken)
-//                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
-//                .queryParam("bookingStatus", "information")
-//                .get(AccountsConstants.TRANSACTIONS_PATH)
-//
-//        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
-//        Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
+        def response = BerlinRequestBuilder
+                .buildBasicRequest(userAccessToken)
+                .header(BerlinConstants.CONSENT_ID_HEADER, accountId)
+                .queryParam("bookingStatus", "information")
+                .get(AccountsConstants.TRANSACTIONS_PATH)
+
+        Assert.assertEquals(response.getStatusCode(), BerlinConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.jsonPath().getJsonObject("transactions"))
 
     }
 }

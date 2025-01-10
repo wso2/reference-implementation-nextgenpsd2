@@ -34,7 +34,12 @@ class AccountsInitiationPayloads {
                     {  
                         "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
                     }
-                ]
+                ],
+                  "transactions":[
+                     {
+                        "iban":"${BerlinConstants.CURRENT_ACCOUNT}"
+                     }
+                  ]
             },
             "recurringIndicator": true,
             "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
