@@ -84,7 +84,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
         //Check the Authorisation status
         getAuthorizationStatus(consentPath)
         String scaStatus = authorisationResponse.jsonPath().get(BerlinConstants.SCA_STATUS_PARAM)
-        Assert.assertEquals(scaStatus, AccountsConstants.CONSENT_STATUS_PSUAUTHENTICATED)
+        Assert.assertEquals(scaStatus, AccountsConstants.SCA_STATUS_FINALISED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Authenticate PSU on SCA Flow"])
