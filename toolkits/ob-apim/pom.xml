@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
  ~
- ~ This software is the property of WSO2 Inc. and its suppliers, if any.
- ~ Dissemination of any information or reproduction of any material contained
- ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
- ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- ~ For specific language governing the permissions and limitations under this
- ~ license, please see the license as well as any agreement you’ve entered into
- ~ with WSO2 governing the purchase of this software and any associated services.
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -17,9 +23,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.wso2.openbanking</groupId>
+        <groupId>org.wso2.openbanking</groupId>
         <artifactId>open-banking-toolkit-berlin-modules</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -77,36 +83,29 @@
                                 <!-- Copying jars to lib -->
                                 <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
                                     <fileset
-                                            dir="../../components/com.wso2.openbanking.berlin.common/target">
+                                            dir="../../components/org.wso2.openbanking.berlin.common/target">
                                         <filename
-                                                regex="com.wso2.openbanking.berlin.common-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.openbanking.berlin.common-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
                                     <fileset
-                                            dir="../../components/com.wso2.openbanking.berlin.gateway/target">
+                                            dir="../../components/org.wso2.openbanking.berlin.gateway/target">
                                         <filename
-                                                regex="com.wso2.openbanking.berlin.gateway-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.openbanking.berlin.gateway-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/deployment/server/webapps" overwrite="true">
                                     <fileset
-                                            dir="../../components/com.wso2.openbanking.berlin.demo.backend/target">
+                                            dir="../../components/org.wso2.openbanking.berlin.demo.backend/target">
                                         <filename regex="api#openbanking#berlin#backend.war$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
                                     <fileset
-                                            dir="../../components/com.wso2.openbanking.berlin.data.publisher/target">
+                                            dir="../../components/org.wso2.openbanking.berlin.keymanager/target">
                                         <filename
-                                                regex="com.wso2.openbanking.berlin.data.publisher-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.berlin.keymanager/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.berlin.keymanager-(\d.*?)\.jar$"/>
+                                                regex="org.wso2.openbanking.berlin.keymanager-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
