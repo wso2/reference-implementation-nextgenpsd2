@@ -22,7 +22,7 @@ If you want to build WSO2 OB Compliance Toolkit Berlin from the source code:
 1. Install Java8 or above.
 1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
 1. Install [MySQL](https://dev.mysql.com/doc/refman/5.5/en/windows-installation.html).
-1. To get the WSO2 OB Compliance Toolkit Berlin from [this repository](https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin.git), click **Clone or download**.
+1. To get the WSO2 OB Compliance Toolkit Berlin from [this repository](https://github.com/wso2/reference-implementation-nextgenpsd2), click **Clone or download**.
     * To **clone the solution**, copy the URL and execute the following command in a command prompt.
       `git clone <the copiedURL>`
     * To **download the pack**, click **Download ZIP** and unzip the downloaded file.
@@ -38,8 +38,8 @@ If you want to build WSO2 OB Compliance Toolkit Berlin from the source code:
 
 |  Product | Toolkit Path |
       | :--- |:--- |
-| ```Identity Server``` | `/ob-compliance-toolkit-berlin/toolkits/ob-apim/target` |
-| ```API Manager``` | `/ob-compliance-toolkit-berlin/toolkits/ob-is/target` |
+| ```Identity Server``` | `/reference-implementation-nextgenpsd2/toolkits/ob-apim/target` |
+| ```API Manager``` | `/reference-implementation-nextgenpsd2/toolkits/ob-is/target` |
 
 
 ### Running the products
@@ -54,8 +54,8 @@ Please refer the following READ.ME files to run the products.
 
 ### Reporting Issues
 
-We encourage you to report issues, documentation faults, and feature requests regarding the WSO2 OB Compliance Toolkit Berlin through the [WSO2 OB Compliance Toolkit Berlin Issue Tracker](https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin/issues).
+We encourage you to report issues, documentation faults, and feature requests regarding the WSO2 OB Compliance Toolkit Berlin through the [WSO2 OB Compliance Toolkit Berlin Issue Tracker](https://github.com/wso2/reference-implementation-nextgenpsd2/issues).
 
 ### License
 
-WSO2 Inc. licenses this source under the WSO2 Software License ([LICENSE](https://github.com/wso2-enterprise/ob-compliance-toolkit-berlin/blob/main/LICENSE)).
+WSO2 Inc. licenses this source under the WSO2 Software License ([LICENSE](https://github.com/wso2/reference-implementation-nextgenpsd2/blob/main/LICENSE)).

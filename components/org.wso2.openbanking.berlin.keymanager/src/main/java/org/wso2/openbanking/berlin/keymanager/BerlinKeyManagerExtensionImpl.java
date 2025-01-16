@@ -145,6 +145,7 @@ public class BerlinKeyManagerExtensionImpl implements OBKeyManagerExtensionInter
 
     /**
      * Validate roles in the certificate.
+     *
      * @param certificate X509Certificate
      * @return isValid
      * @throws APIManagementException

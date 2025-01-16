@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.wso2.openbanking</groupId>
-    <artifactId>ob-compliance-toolkit-berlin</artifactId>
+    <artifactId>reference-implementation-nextgenpsd2</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -118,20 +118,6 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-        <!--During local build,uncomment the following repository and connect to VPN-->
-<!--                <repository>-->
-<!--                    <id>wso2-nexus-2</id>-->
-<!--                    <name>WSO2 internal Repository</name>-->
-<!--                    <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>-->
-<!--                    <releases>-->
-<!--                        <enabled>true</enabled>-->
-<!--                        <updatePolicy>daily</updatePolicy>-->
-<!--                        <checksumPolicy>ignore</checksumPolicy>-->
-<!--                    </releases>-->
-<!--                    <snapshots>-->
-<!--                        <enabled>false</enabled>-->
-<!--                    </snapshots>-->
-<!--                </repository>-->
     </repositories>
 
     <pluginRepositories>

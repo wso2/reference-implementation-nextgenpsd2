@@ -65,7 +65,7 @@ public enum TransactionStatusEnum {
                 return statusEnum;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown value: " + text);
     }
 
     public String toString() {

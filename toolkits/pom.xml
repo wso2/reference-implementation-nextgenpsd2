@@ -22,7 +22,7 @@
 
     <parent>
         <groupId>org.wso2.openbanking</groupId>
-        <artifactId>ob-compliance-toolkit-berlin</artifactId>
+        <artifactId>reference-implementation-nextgenpsd2</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>

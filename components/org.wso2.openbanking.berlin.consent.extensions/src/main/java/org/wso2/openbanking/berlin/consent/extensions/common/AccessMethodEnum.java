@@ -43,7 +43,7 @@ public enum AccessMethodEnum {
                 return b;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown value: " + text);
     }
 
 }

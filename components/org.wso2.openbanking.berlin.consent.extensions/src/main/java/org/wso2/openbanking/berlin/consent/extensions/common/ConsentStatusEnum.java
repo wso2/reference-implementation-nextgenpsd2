@@ -47,7 +47,7 @@ public enum ConsentStatusEnum {
                 return b;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown value: " + text);
     }
 
 }

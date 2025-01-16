@@ -42,7 +42,7 @@ public enum AuthTypeEnum {
                 return b;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown value: " + text);
     }
 
 }
