@@ -18,6 +18,8 @@
 
 package org.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Consent Status enum.
  */
@@ -42,6 +44,11 @@ public enum ConsentStatusEnum {
     }
 
     public static ConsentStatusEnum fromValue(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            throw new IllegalArgumentException("Value cannot be null or empty");
+        }
+
         for (ConsentStatusEnum b : ConsentStatusEnum.values()) {
             if (text.equals(String.valueOf(b.value))) {
                 return b;

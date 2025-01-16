@@ -18,6 +18,8 @@
 
 package org.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Sca Status enum.
  */
@@ -44,6 +46,11 @@ public enum ScaStatusEnum {
     }
 
     public static ScaStatusEnum fromValue(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            throw new IllegalArgumentException("Value cannot be null or empty");
+        }
+
         for (ScaStatusEnum b : ScaStatusEnum.values()) {
             if (text.equals(String.valueOf(b.value))) {
                 return b;

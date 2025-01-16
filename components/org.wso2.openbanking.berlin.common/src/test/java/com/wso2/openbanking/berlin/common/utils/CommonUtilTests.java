@@ -32,9 +32,11 @@ import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.openbanking.berlin.common.config.CommonConfigParser;
 import org.wso2.openbanking.berlin.common.constants.CommonConstants;
+import org.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 import org.wso2.openbanking.berlin.common.enums.ScaApproachEnum;
 import org.wso2.openbanking.berlin.common.models.ScaApproach;
 import org.wso2.openbanking.berlin.common.models.ScaMethod;
+import org.wso2.openbanking.berlin.common.models.TPPMessage;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -254,5 +256,17 @@ public class CommonUtilTests {
         doReturn(configMap).when(commonConfigParserMock).getConfiguration();
         Assert.assertFalse(CommonUtil.isRequestReceivedWithinAllowedTime(DateTimeFormatter.RFC_1123_DATE_TIME
                 .format(zonedDateTime)));
+    }
+
+    @Test (expectedExceptions = IllegalArgumentException.class)
+    public void testFromValueOfCommonEnums() {
+
+        ScaApproachEnum.fromValue("");
+        ConsentTypeEnum.fromValue("");
+        TPPMessage.CodeEnum.fromValue("");
+
+        ScaApproachEnum.fromValue("ABC");
+        ConsentTypeEnum.fromValue("ABC");
+        TPPMessage.CodeEnum.fromValue("ABC");
     }
 }

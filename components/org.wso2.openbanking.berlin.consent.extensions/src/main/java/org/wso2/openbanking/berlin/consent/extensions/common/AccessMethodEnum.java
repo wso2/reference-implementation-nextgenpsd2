@@ -18,6 +18,8 @@
 
 package org.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Access method enum.
  */
@@ -38,6 +40,11 @@ public enum AccessMethodEnum {
     }
 
     public static AccessMethodEnum fromValue(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            throw new IllegalArgumentException("Value cannot be null or empty");
+        }
+
         for (AccessMethodEnum b : AccessMethodEnum.values()) {
             if (text.equals(String.valueOf(b.value))) {
                 return b;

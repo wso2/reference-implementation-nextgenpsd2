@@ -21,6 +21,7 @@ package org.wso2.openbanking.berlin.consent.extensions.common;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.openbanking.berlin.common.enums.ConsentTypeEnum;
 
 /**
  * Test class for consent extension utils.
@@ -69,5 +70,21 @@ public class ConsentExtensionUtilTests {
         Assert.assertEquals(psuIdWithSuperTenantDomain,
                 ConsentExtensionUtil.appendSuperTenantDomain(psuIdWithSuperTenantDomain));
         Assert.assertNull(ConsentExtensionUtil.appendSuperTenantDomain(emptyPSUId));
+    }
+
+    @Test (expectedExceptions = IllegalArgumentException.class)
+    public void testFromValueOfEnums() {
+
+        ConsentStatusEnum.fromValue("");
+        ConsentTypeEnum.fromValue("");
+        AuthTypeEnum.fromValue("");
+        AccessMethodEnum.fromValue("");
+        TransactionStatusEnum.fromValue("");
+
+        ConsentStatusEnum.fromValue("ABC");
+        ConsentTypeEnum.fromValue("ABC");
+        AuthTypeEnum.fromValue("ABC");
+        AccessMethodEnum.fromValue("ABC");
+        TransactionStatusEnum.fromValue("ABC");
     }
 }

@@ -18,6 +18,8 @@
 
 package org.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Auth Type enum.
  */
@@ -37,6 +39,11 @@ public enum AuthTypeEnum {
     }
 
     public static AuthTypeEnum fromValue(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            throw new IllegalArgumentException("Value cannot be null or empty");
+        }
+
         for (AuthTypeEnum b : AuthTypeEnum.values()) {
             if (text.equals(String.valueOf(b.value))) {
                 return b;

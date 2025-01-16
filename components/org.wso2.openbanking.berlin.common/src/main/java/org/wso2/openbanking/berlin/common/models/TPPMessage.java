@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
 
@@ -112,6 +113,11 @@ public class TPPMessage {
 
         @JsonCreator
         public static CodeEnum fromValue(String text) {
+
+            if (StringUtils.isBlank(text)) {
+                throw new IllegalArgumentException("Value cannot be null or empty");
+            }
+
             for (CodeEnum b : CodeEnum.values()) {
                 if (text.equals(String.valueOf(b.value))) {
                     return b;

@@ -195,4 +195,33 @@ public class CommonConfigParserTests extends PowerMockTestCase {
 
         Assert.assertEquals(commonConfigParser.getOrgIdValidationRegex(), "^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$");
     }
+
+    @Test (priority = 15)
+    public void testIsMultipleRecurringConsentEnabled() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertFalse(commonConfigParser.isMultipleRecurringConsentEnabled());
+    }
+
+    @Test (priority = 16)
+    public void testGetPayableAccountsRetrieveEndpoint() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertNotNull(commonConfigParser.getPayableAccountsRetrieveEndpoint(),
+                "http://localhost:9763/api/openbanking/backend/payable-acounts");
+    }
+
+    @Test (priority = 17)
+    public void testGetSharableAccountsRetrieveEndpoint() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-berlin.xml";
+        CommonConfigParser commonConfigParser = CommonConfigParser.getInstance(dummyConfigFile);
+
+        Assert.assertNotNull(commonConfigParser.getPayableAccountsRetrieveEndpoint(),
+                "http://localhost:9763/api/openbanking/backend/sharable-accounts");
+    }
 }

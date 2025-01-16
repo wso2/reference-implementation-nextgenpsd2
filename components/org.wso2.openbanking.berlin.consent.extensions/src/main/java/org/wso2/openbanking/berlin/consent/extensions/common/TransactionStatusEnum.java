@@ -18,6 +18,8 @@
 
 package org.wso2.openbanking.berlin.consent.extensions.common;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Specifies the status of a particular transaction.
  */
@@ -59,6 +61,10 @@ public enum TransactionStatusEnum {
     }
 
     public static TransactionStatusEnum fromValue(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            throw new IllegalArgumentException("Value cannot be null or empty");
+        }
 
         for (TransactionStatusEnum statusEnum : TransactionStatusEnum.values()) {
             if (String.valueOf(statusEnum.value).equals(text)) {
