@@ -418,7 +418,7 @@ username="$ref{super_admin.username}"
 password="$ref{super_admin.password}"
 
 [open_banking.gateway]
-request_router="com.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouter"
+request_router="org.wso2.openbanking.berlin.gateway.executors.core.APIRequestRouter"
 consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
 
 #============executors=========================
@@ -437,13 +437,13 @@ priority = 3
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
 [[open_banking.gateway.openbanking_gateway_executors.type]]
@@ -461,13 +461,13 @@ priority = 3
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
 [[open_banking.gateway.openbanking_gateway_executors.type]]
@@ -485,13 +485,13 @@ priority = 3
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.SignatureValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.BerlinConsentEnforcementExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
+name = "org.wso2.openbanking.berlin.gateway.executors.ErrorHandlingExecutor"
 priority = 1000
 
 [open_banking.apim.analytics]
@@ -518,7 +518,7 @@ type = "THROTTLING"
 class = "com.wso2.openbanking.accelerator.gateway.throttling.OBThrottlingExtensionImpl"
 
 [open_banking.gateway.throttling]
-throttling_data_publisher = "com.wso2.openbanking.berlin.gateway.throttling.CustomThrottleDataPublisherImpl"
+throttling_data_publisher = "org.wso2.openbanking.berlin.gateway.throttling.CustomThrottleDataPublisherImpl"
 
 #keymanager name
 [open_banking.keyManager]
@@ -585,7 +585,7 @@ enable = true
 
 #============Application Creation Properties=========================
 [open_banking.keymanager.extension.impl]
-class = "com.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
+class = "org.wso2.openbanking.berlin.keymanager.BerlinKeyManagerExtensionImpl"
 
 [[open_banking.keymanager.application.type.attributes]]
 name="regulatory"
