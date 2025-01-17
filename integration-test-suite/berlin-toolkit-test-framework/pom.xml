@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.wso2.openbanking</groupId>
         <artifactId>integration-test-suite</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>berlin-toolkit-test-framework</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <dependencies>
         <dependency>

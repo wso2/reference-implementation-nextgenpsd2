@@ -556,13 +556,13 @@ cache_expiry = 3600
 enabled = true
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "accounts"
-roles = "AISP, ASPSP"
+roles = "PSP_AS, PSP_AI"
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "payments"
-roles = "PISP"
+roles = "PSP_PI"
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "fundsconfirmations"
-roles = "CBPII"
+roles = "PSP_IC"
 
 
 #===================for Connection pool====================
@@ -621,7 +621,7 @@ priority="3"
 
 [open_banking_berlin.gateway.signature_verification]
 supported_hash_algorithms = ["SHA-256", "SHA-512"]
-supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA"]
+supported_signature_algorithms = ["SHA256withRSA", "SHA512withRSA", "SHA1withRSA"]
 
 [open_banking.berlin.keymanager.org_id_validation]
 regex="^PSD[A-Z]{2}-[A-Z]{2,8}-[a-zA-Z0-9]*$"

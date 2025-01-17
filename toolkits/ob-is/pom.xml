@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>wso2-obiam-toolkit-berlin</artifactId>
+    <artifactId>wso2ob-is-toolkit-berlin</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Open Banking - Berlin Identity Server Toolkit Module</name>
     <url>http://wso2.org</url>
