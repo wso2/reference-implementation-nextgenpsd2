@@ -165,31 +165,11 @@ public class ApplicationAccessTokenDto {
       setScopes(TestConstants.ACCOUNTS_DEFAULT_SCOPES);
     }
 
-    if (clientAssertionType == null) {
-      setClientAssertionType(TestConstants.CLIENT_ASSERTION_TYPE);
-    }
-
-    if (clientAssertion == null) {
-      if (accessTokenJwtDto == null) {
-        setAccessTokenJwtDto(new AccessTokenJwtDto());
-      }
-      if (clientId == null) {
-        setClientAssertion(accessTokenJwtDto.getJwt());
-      } else {
-        //use jwk thumbprint
-        setClientAssertion(accessTokenJwtDto.getJwt(clientId));
-      }
-    }
-
     String payload = "";
     String delimiter = "&";
     return payload.concat(TestConstants.GRANT_TYPE_KEY + "=" + getGrantType() + delimiter)
             .concat(TestConstants.SCOPE_KEY + "="
                     + TestUtil.getParamListAsString(getScopes(), ' ') + delimiter)
-            .concat(TestConstants.CLIENT_ASSERTION_TYPE_KEY + "="
-                    + getClientAssertionType() + delimiter)
-            .concat(TestConstants.CLIENT_ASSERTION_KEY + "=" + getClientAssertion() + delimiter)
-            .concat(TestConstants.REDIRECT_URI_KEY + "=" + getRedirectUri() + delimiter)
             .concat(TestConstants.CLIENT_ID + "=" + clientId);
   }
 

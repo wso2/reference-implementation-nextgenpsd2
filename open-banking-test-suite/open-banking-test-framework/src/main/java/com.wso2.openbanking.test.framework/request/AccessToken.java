@@ -70,13 +70,7 @@ public class AccessToken {
           ApplicationAccessTokenDto applicationAccessTokenDto, String clientId)
         throws TestFrameworkException {
 
-        String payload;
-
-        if (clientId == null) {
-          payload = applicationAccessTokenDto.getPayload();
-        } else {
-          payload = applicationAccessTokenDto.getPayload(clientId);
-        }
+        String payload = applicationAccessTokenDto.getPayload(clientId);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
             .body(payload)
             .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())

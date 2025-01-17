@@ -112,13 +112,9 @@ class BerlinRequestBuilder {
 
         ClientID clientID = new ClientID(AppConfigReader.getClientId())
 
-        String assertionString = new AccessTokenJwtDto().getJwt()
-
-        ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
-
         URI tokenEndpoint = new URI("${config.getAuthorisationServerURL()}/oauth2/token")
 
-        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
+        TokenRequest request = new TokenRequest(tokenEndpoint, clientID, codeGrant);
 
         HTTPRequest httpRequest = request.toHTTPRequest()
 
