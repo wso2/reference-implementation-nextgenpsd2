@@ -22,7 +22,7 @@
     <parent>
         <artifactId>reference-implementation-nextgenpsd2</artifactId>
         <groupId>org.wso2.openbanking</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,7 +30,7 @@
 
     <artifactId>reference-implementation-nextgenpsd2-components</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>WSO2 Open Banking Berlin Toolkit</name>
     <description>WSO2 Open Banking Toolkit for Berlin Specification</description>
