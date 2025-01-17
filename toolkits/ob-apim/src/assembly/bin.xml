@@ -20,7 +20,7 @@
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>ob.am.toolkit.berlin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>wso2ob-apim-toolkit-berlin-${project.version}</baseDirectory>
+    <baseDirectory>wso2ob-apim-toolkit-nextgenpsd2-${project.version}</baseDirectory>
 
     <formats>
         <format>zip</format>
