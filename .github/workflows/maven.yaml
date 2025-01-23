@@ -5,14 +5,11 @@ on:
   pull_request:
     branches:
       - 'main'
-    types:
-      - labeled
 
 jobs:
 
   Build-repo-check:
 
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'Ready-to-Build') }}
     runs-on: ubuntu-latest
 
     steps:
