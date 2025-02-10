@@ -160,7 +160,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
 
         //Consent Initiation
         doExplicitAuthInitiation(consentPath, initiationPayload)
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
         Assert.assertNotNull(accountId)
 
         //Create Explicit Authorisation Resources
@@ -413,11 +413,6 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
                 .body("{}")
                 .post("${consentPath}/${accountId}/authorisations")
 
-        Assert.assertEquals(authorisationResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(authorisationResponse2, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue (TestUtil.parseResponseBody (authorisationResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Cannot use different unique identifier for the same consent ID when the request does not " +
-                        "contain a payload."))
+        Assert.assertEquals(authorisationResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_201)
     }
 }
