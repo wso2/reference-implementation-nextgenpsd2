@@ -396,11 +396,6 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
                 .body("{}")
                 .post("${consentPath}/${paymentId}/authorisations")
 
-        Assert.assertEquals(authorisationResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(authorisationResponse2, BerlinConstants.TPPMESSAGE_CODE),
-                BerlinConstants.FORMAT_ERROR)
-        Assert.assertTrue (TestUtil.parseResponseBody (authorisationResponse2, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("Cannot use different unique identifier for the same consent ID when the request does not " +
-                        "contain a payload."))
+        Assert.assertEquals(authorisationResponse2.getStatusCode(), BerlinConstants.STATUS_CODE_201)
     }
 }

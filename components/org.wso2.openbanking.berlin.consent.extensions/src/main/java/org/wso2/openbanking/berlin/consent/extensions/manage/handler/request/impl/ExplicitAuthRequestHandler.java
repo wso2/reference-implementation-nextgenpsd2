@@ -226,21 +226,24 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
 
         } else {
             Map<String, String> attributesToStore = new HashMap<>();
+            String requestId = consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
             if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authType)) {
-                String xRequestIdKey = CommonConsentUtil.constructAttributeKey(
-                        consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID);
-                attributesToStore.put(xRequestIdKey, consentManageData.getHeaders()
-                        .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                String xRequestIdKey =  CommonConsentUtil.constructAttributeKey(
+                        consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID,
+                        requestId);
+                attributesToStore.put(xRequestIdKey, requestId);
                 String createdTimeKey = CommonConsentUtil.constructAttributeKey(
-                        consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME);
+                        consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME,
+                        requestId);
                 attributesToStore.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
             } else {
                 String xRequestIdKey = CommonConsentUtil.constructAttributeKey(
-                        consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID);
-                attributesToStore.put(xRequestIdKey, consentManageData.getHeaders()
-                        .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                        consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID,
+                        requestId);
+                attributesToStore.put(xRequestIdKey, requestId);
                 String createdTimeKey = CommonConsentUtil.constructAttributeKey(
-                        consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME);
+                        consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME,
+                        requestId);
                 attributesToStore.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
             }
 
@@ -288,6 +291,7 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
                                                                 Map<String, Object> scaInfoMap) {
 
         Map<String, String> consentAttributesMap = new HashMap<>();
+        String requestId = consentManageData.getHeaders().get(ConsentExtensionConstants.X_REQUEST_ID_HEADER);
 
         String authId = createdAuthorizationResource.getAuthorizationID();
         ScaApproach scaApproach = (ScaApproach) scaInfoMap.get(CommonConstants.SCA_APPROACH_KEY);
@@ -306,19 +310,20 @@ public class ExplicitAuthRequestHandler implements RequestHandler {
         if (StringUtils.contains(consentManageData.getRequestPath(),
                 ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END)) {
             String xRequestIdKey = CommonConsentUtil.constructAttributeKey(
-                    consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID);
-            consentAttributesMap.put(xRequestIdKey, consentManageData.getHeaders()
-                    .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                    consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_X_REQUEST_ID,
+                    requestId);
+            consentAttributesMap.put(xRequestIdKey, requestId);
             String createdTimeKey = CommonConsentUtil.constructAttributeKey(
-                    consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME);
+                    consentManageData.getRequestPath(), ConsentExtensionConstants.AUTH_CANCEL_CREATED_TIME, requestId);
             consentAttributesMap.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
         } else {
             String xRequestIdKey = CommonConsentUtil.constructAttributeKey(
-                    consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID);
-            consentAttributesMap.put(xRequestIdKey, consentManageData.getHeaders()
-                    .get(ConsentExtensionConstants.X_REQUEST_ID_HEADER));
+                    consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_X_REQUEST_ID,
+                    requestId);
+            consentAttributesMap.put(xRequestIdKey, requestId);
             String createdTimeKey = CommonConsentUtil.constructAttributeKey(
-                    consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME);
+                    consentManageData.getRequestPath(), ConsentExtensionConstants.EXPLICIT_AUTH_CREATED_TIME,
+                    requestId);
             consentAttributesMap.put(createdTimeKey, String.valueOf(OffsetDateTime.now().toEpochSecond()));
         }
 

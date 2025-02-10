@@ -208,25 +208,15 @@ class BerlinRequestBuilder {
     static Response getRefreshTokenGrantAccessToken(refreshToken, BerlinConstants.SCOPES scopes) {
 
         def config = ConfigParser.getInstance()
-        Scope scopeList = null
-
-        if(scopes != null) {
-            String scopeArr = String.join(" ", scopes.getScopes())
-            scopeList = new Scope(scopeArr)
-        }
 
         RefreshToken refreshTokenValue = new RefreshToken(refreshToken)
         AuthorizationGrant refreshTokenGrant = new RefreshTokenGrant(refreshTokenValue)
 
         ClientID clientID = new ClientID(AppConfigReader.getClientId())
 
-        String assertionString = new AccessTokenJwtDto().getJwt(clientID.toString())
-
-        ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
-
         URI tokenEndpoint = new URI("${config.getAuthorisationServerURL()}/oauth2/token")
 
-        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, refreshTokenGrant, scopeList)
+        TokenRequest request = new TokenRequest(tokenEndpoint, clientID, refreshTokenGrant)
 
         HTTPRequest httpRequest = request.toHTTPRequest()
 

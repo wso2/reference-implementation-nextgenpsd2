@@ -363,14 +363,15 @@ public class CommonConsentUtil {
     }
 
     /**
-     * Method to construct the attribute key to store parameters as a consent attribute. It will be constructed as
-     * requestPath_param.
-     * @param requestPath     Request path
-     * @param param           Parameter name
-     * @return  constructed attribute key
+     * This method accepts a number of strings as arguments and outputs them according to the provided order
+     * joined with underscore characters.
+     *
+     * @param strings a number of strings
+     * @return joined strings using underscores
      */
-    public static String constructAttributeKey(String requestPath, String param) {
-        return StringUtils.join(requestPath, "_", param);
+    public static String constructAttributeKey(String... strings) {
+
+        return StringUtils.join(strings, "_");
     }
 
     /**
