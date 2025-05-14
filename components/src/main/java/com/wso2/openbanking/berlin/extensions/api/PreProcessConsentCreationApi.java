@@ -81,16 +81,16 @@ public class PreProcessConsentCreationApi {
             if (consentHandler != null) {
                 consentHandler.handleCreation(requestBody, validationResponse);
             } else {
-                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                                TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
+                throw new FailedValidationException(FailedValidationException.ErrorCode.NOT_FOUND,
+                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
+                                ErrorConstants.PATH_INVALID));
             }
 
         } catch (FailedValidationException e) {
             log.error("Validation failed for consent creation. Returning failed response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (JSONException | IndexOutOfBoundsException e) {
+        } catch (JSONException e) {
             log.error(e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new JSONObject(
                     ErrorUtil.getErrorResponse(ConsentExtensionConstants.INVALID_REQUEST, e.getMessage())
