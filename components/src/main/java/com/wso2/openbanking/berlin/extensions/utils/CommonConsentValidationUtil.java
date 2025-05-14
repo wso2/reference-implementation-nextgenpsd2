@@ -2,12 +2,12 @@ package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wso2.openbanking.berlin.extensions.dataobjects.ScaMethod;
+import com.wso2.openbanking.berlin.extensions.datamodels.ScaMethod;
 import com.wso2.openbanking.berlin.extensions.enums.ConsentTypeEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ScaApproachEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ScaStatusEnum;
-import com.wso2.openbanking.berlin.extensions.dataobjects.ScaApproach;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.ScaApproach;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
 import org.apache.commons.lang3.BooleanUtils;

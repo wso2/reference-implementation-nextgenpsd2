@@ -1,7 +1,7 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.enums.AuthTypeEnum;
 import com.wso2.openbanking.berlin.extensions.enums.TransactionStatusEnum;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
@@ -65,7 +65,6 @@ public class PaymentConsentHandler implements ConsentHandler {
                     .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
             // Response body
-            validationResponse = new SuccessResponsePreProcessConsentCreation();
             validationResponse.setResponseId(requestBody.getRequestId());
             validationResponse.setStatus(SuccessResponsePreProcessConsentCreation.StatusEnum.SUCCESS);
 
@@ -77,6 +76,11 @@ public class PaymentConsentHandler implements ConsentHandler {
             consentResource.setReceipt(requestPayload);
             consentResource.setType(paymentConsentType);
             consentResource.setStatus(TransactionStatusEnum.RCVD.name());
+
+            // Setting inapplicable consent parameters
+            consentResource.setFrequency(0);
+            consentResource.setValidityTime(0L);
+            consentResource.setRecurringIndicator(false);
 
             // Build auth resource for implicit authorisation
             // ToDo: Revisit once explicit authorisation is supported

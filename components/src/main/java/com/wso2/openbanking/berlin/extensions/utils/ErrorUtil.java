@@ -1,8 +1,8 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.wso2.openbanking.berlin.extensions.model.ErrorResponse;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessages;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessages;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 

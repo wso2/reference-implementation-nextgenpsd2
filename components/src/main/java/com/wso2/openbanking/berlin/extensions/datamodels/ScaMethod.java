@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.wso2.openbanking.berlin.extensions.dataobjects;
+package com.wso2.openbanking.berlin.extensions.datamodels;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

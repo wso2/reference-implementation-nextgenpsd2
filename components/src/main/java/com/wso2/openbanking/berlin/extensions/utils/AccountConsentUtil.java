@@ -1,7 +1,7 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.enums.AccessMethodEnum;
 import com.wso2.openbanking.berlin.extensions.enums.PermissionEnum;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
@@ -33,7 +33,7 @@ public class AccountConsentUtil {
         boolean isValidUntilDateCapEnabled = Boolean.parseBoolean(ConfigurableProperties.VALID_UNTIL_DATE_CAP_ENABLED);
         int validUntilDaysCap = Integer.parseInt(ConfigurableProperties.VALID_UNTIL_DAYS);
 
-        JSONObject accessObject = payload.getJSONObject(ConsentExtensionConstants.ACCESS);
+        JSONObject accessObject = payload.optJSONObject(ConsentExtensionConstants.ACCESS);
 
         log.debug("Validating mandatory request body elements");
         if (accessObject == null
@@ -78,9 +78,9 @@ public class AccountConsentUtil {
 
         if (StringUtils.equals(permission, PermissionEnum.DEDICATED_ACCOUNTS.toString())) {
             log.debug("Validating account reference objects");
-            JSONArray accounts = accessObject.getJSONArray(AccessMethodEnum.ACCOUNTS.toString());
-            JSONArray balances = accessObject.getJSONArray(AccessMethodEnum.BALANCES.toString());
-            JSONArray transactions = accessObject.getJSONArray(AccessMethodEnum.TRANSACTIONS.toString());
+            JSONArray accounts = accessObject.optJSONArray(AccessMethodEnum.ACCOUNTS.toString());
+            JSONArray balances = accessObject.optJSONArray(AccessMethodEnum.BALANCES.toString());
+            JSONArray transactions = accessObject.optJSONArray(AccessMethodEnum.TRANSACTIONS.toString());
 
             validateAccountRefObjects(accounts);
             validateAccountRefObjects(balances);
@@ -145,10 +145,10 @@ public class AccountConsentUtil {
      */
     public static String getPermissionByValidatingAccountAccessAttribute(JSONObject accessObject) throws
             FailedValidationException {
-        String availableAccounts = accessObject.getString(PermissionEnum.AVAILABLE_ACCOUNTS.toString());
+        String availableAccounts = accessObject.optString(PermissionEnum.AVAILABLE_ACCOUNTS.toString(), null);
         String availableAccountsWithBalances = accessObject
-                .getString(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString());
-        String allPsd2 = accessObject.getString(PermissionEnum.ALL_PSD2.toString());
+                .optString(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString(), null);
+        String allPsd2 = accessObject.optString(PermissionEnum.ALL_PSD2.toString(), null);
 
         if (!accessObject.has(AccessMethodEnum.ACCOUNTS.toString())
                 && !accessObject.has(AccessMethodEnum.BALANCES.toString())
@@ -211,21 +211,21 @@ public class AccountConsentUtil {
 
             if (accessObject.opt(AccessMethodEnum.ACCOUNTS.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray accounts = accessObject.getJSONArray(AccessMethodEnum.ACCOUNTS.toString());
+                JSONArray accounts = accessObject.optJSONArray(AccessMethodEnum.ACCOUNTS.toString());
                 if (accounts != null && accounts.isEmpty()) {
                     numberOfEmptyAccessMethodArrays++;
                 }
             }
             if (accessObject.opt(AccessMethodEnum.BALANCES.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray balances = accessObject.getJSONArray(AccessMethodEnum.BALANCES.toString());
+                JSONArray balances = accessObject.optJSONArray(AccessMethodEnum.BALANCES.toString());
                 if (balances != null && balances.isEmpty()) {
                     numberOfEmptyAccessMethodArrays++;
                 }
             }
             if (accessObject.opt(AccessMethodEnum.TRANSACTIONS.toString()) != null) {
                 numberOfProvidedAccessTypes++;
-                JSONArray transactions = accessObject.getJSONArray(AccessMethodEnum.TRANSACTIONS.toString());
+                JSONArray transactions = accessObject.optJSONArray(AccessMethodEnum.TRANSACTIONS.toString());
                 if (transactions != null && transactions.isEmpty()) {
                     numberOfEmptyAccessMethodArrays++;
                 }

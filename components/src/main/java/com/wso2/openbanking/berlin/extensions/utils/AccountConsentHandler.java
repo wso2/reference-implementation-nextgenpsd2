@@ -3,7 +3,7 @@ package com.wso2.openbanking.berlin.extensions.utils;
 import com.wso2.openbanking.berlin.extensions.enums.AuthTypeEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ConsentTypeEnum;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
 import com.wso2.openbanking.berlin.extensions.model.*;
@@ -62,7 +62,6 @@ public class AccountConsentHandler implements ConsentHandler {
             String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
 
             // Response body
-            validationResponse = new SuccessResponsePreProcessConsentCreation();
             validationResponse.setResponseId(requestBody.getRequestId());
             validationResponse.setStatus(SuccessResponsePreProcessConsentCreation.StatusEnum.SUCCESS);
 
@@ -76,8 +75,7 @@ public class AccountConsentHandler implements ConsentHandler {
             consentResource.setStatus(ConsentStatusEnum.RECEIVED.toString());
 
             // Setting additional properties to consent resource
-            boolean recurringIndicator = Boolean.parseBoolean(
-                    requestPayload.getString(ConsentExtensionConstants.RECURRING_INDICATOR));
+            boolean recurringIndicator = requestPayload.getBoolean(ConsentExtensionConstants.RECURRING_INDICATOR);
             consentResource.setRecurringIndicator(recurringIndicator);
             consentResource.setFrequency(requestPayload
                     .getInt(ConsentExtensionConstants.FREQUENCY_PER_DAY));

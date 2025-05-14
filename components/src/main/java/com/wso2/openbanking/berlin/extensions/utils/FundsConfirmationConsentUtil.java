@@ -1,6 +1,6 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ public class FundsConfirmationConsentUtil {
 
         log.debug("Validating mandatory request body elements");
         if (!payload.has(ConsentExtensionConstants.ACCOUNT)
-                || payload.get(ConsentExtensionConstants.ACCOUNT) == null) {
+                || payload.opt(ConsentExtensionConstants.ACCOUNT) == null) {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
@@ -58,7 +58,7 @@ public class FundsConfirmationConsentUtil {
             validateCardExpiryDate(payload.getString(ConsentExtensionConstants.CARD_EXPIRY_DATE));
         }
 
-        JSONObject accountObject = (JSONObject) payload.get(ConsentExtensionConstants.ACCOUNT);
+        JSONObject accountObject = payload.optJSONObject(ConsentExtensionConstants.ACCOUNT);
 
         log.debug("Validating account reference object");
         CommonConsentValidationUtil.validateAccountRefObject(accountObject);

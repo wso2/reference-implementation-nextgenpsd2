@@ -1,6 +1,6 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
 import com.wso2.openbanking.berlin.extensions.model.PreProcessConsentCreationRequestBody;
 import com.wso2.openbanking.berlin.extensions.model.SuccessResponsePreProcessConsentCreation;

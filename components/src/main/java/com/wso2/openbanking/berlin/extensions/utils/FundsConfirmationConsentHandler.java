@@ -1,7 +1,7 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.enums.AuthTypeEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ConsentStatusEnum;
 import com.wso2.openbanking.berlin.extensions.enums.ConsentTypeEnum;
@@ -60,7 +60,6 @@ public class FundsConfirmationConsentHandler implements ConsentHandler {
             log.debug("SCA approach is Redirect SCA (OAuth2)");
 
             // Response body
-            validationResponse = new SuccessResponsePreProcessConsentCreation();
             validationResponse.setResponseId(requestBody.getRequestId());
             validationResponse.setStatus(SuccessResponsePreProcessConsentCreation.StatusEnum.SUCCESS);
 
@@ -72,6 +71,11 @@ public class FundsConfirmationConsentHandler implements ConsentHandler {
             consentResource.setReceipt(requestPayload);
             consentResource.setType(ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
             consentResource.setStatus(ConsentStatusEnum.RECEIVED.toString());
+
+            // Setting inapplicable consent parameters
+            consentResource.setFrequency(0);
+            consentResource.setValidityTime(0L);
+            consentResource.setRecurringIndicator(false);
 
             // Build auth resource for implicit authorisation
             // ToDo: Revisit once explicit authorisation is supported

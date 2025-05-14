@@ -1,7 +1,7 @@
 package com.wso2.openbanking.berlin.extensions.utils;
 
 import com.wso2.openbanking.berlin.extensions.configurations.ConfigurableProperties;
-import com.wso2.openbanking.berlin.extensions.dataobjects.TPPMessage;
+import com.wso2.openbanking.berlin.extensions.datamodels.TPPMessage;
 import com.wso2.openbanking.berlin.extensions.exceptions.FailedValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -86,7 +86,8 @@ public class PaymentConsentUtil {
     public static void validateCommonPaymentElements(JSONObject payload) throws FailedValidationException {
         log.debug("Validating payload for instructed amount");
         if (payload.opt(ConsentExtensionConstants.INSTRUCTED_AMOUNT) == null
-                || StringUtils.isBlank(payload.getString(ConsentExtensionConstants.INSTRUCTED_AMOUNT))) {
+                || !payload.has(ConsentExtensionConstants.INSTRUCTED_AMOUNT) ||
+                !(payload.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT) instanceof JSONObject)) {
             log.error(ErrorConstants.INSTRUCTED_AMOUNT_MISSING);
             throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
@@ -183,8 +184,7 @@ public class PaymentConsentUtil {
      */
     public static void validateDebtorAccount(JSONObject payload) throws FailedValidationException {
 
-        JSONObject debtorAccountObject = CommonConsentValidationUtil
-                .convertObjectToJson(payload.get(ConsentExtensionConstants.DEBTOR_ACCOUNT));
+        JSONObject debtorAccountObject = payload.getJSONObject(ConsentExtensionConstants.DEBTOR_ACCOUNT);
 
         log.debug("Validating payload for debtor account");
         CommonConsentValidationUtil.validateAccountRefObject(debtorAccountObject);
@@ -282,7 +282,7 @@ public class PaymentConsentUtil {
                             ErrorConstants.FREQUENCY_UNSUPPORTED));
         }
 
-        if (requestPayload.get(ConsentExtensionConstants.END_DATE) != null &&
+        if (requestPayload.opt(ConsentExtensionConstants.END_DATE) != null &&
                 StringUtils.isNotBlank(requestPayload.getString(
                         ConsentExtensionConstants.END_DATE))) {
             log.debug("Validating whether periodic payments end date if a future date");
@@ -294,7 +294,7 @@ public class PaymentConsentUtil {
             areDatesValid(startDate, endDate);
         }
 
-        if (requestPayload.get(ConsentExtensionConstants.EXECUTION_RULE) != null &&
+        if (requestPayload.opt(ConsentExtensionConstants.EXECUTION_RULE) != null &&
                 StringUtils.isNotBlank(requestPayload.getString(
                         ConsentExtensionConstants.EXECUTION_RULE))) {
             log.debug("Validating execution rule");
@@ -325,8 +325,8 @@ public class PaymentConsentUtil {
 
         log.debug("Iterating and validating payment objects");
         JSONObject paymentJSON;
-        for (Object payment : payments) {
-            paymentJSON = CommonConsentValidationUtil.convertObjectToJson(payment);
+        for (int i = 0; i < payments.length(); i++) {
+            paymentJSON = payments.getJSONObject(i);
             PaymentConsentUtil.validateCommonPaymentElements(paymentJSON);
 
             if (paymentJSON.has(ConsentExtensionConstants.DEBTOR_ACCOUNT)) {
