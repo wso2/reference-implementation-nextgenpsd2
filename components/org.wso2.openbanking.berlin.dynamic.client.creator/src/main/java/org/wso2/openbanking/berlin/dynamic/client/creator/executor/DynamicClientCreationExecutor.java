@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.openbanking.berlin.executor.dynamic.client;
+package org.wso2.openbanking.berlin.dynamic.client.creator.executor;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -61,7 +61,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.berlin.common.models.TPPMessage;
-import org.wso2.openbanking.berlin.executor.internal.DynamicClientCreationDataHolder;
+import org.wso2.openbanking.berlin.dynamic.client.creator.internal.DynamicClientCreationDataHolder;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.openbanking.berlin.executor.internal;
+package org.wso2.openbanking.berlin.dynamic.client.creator.internal;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigurationService;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
