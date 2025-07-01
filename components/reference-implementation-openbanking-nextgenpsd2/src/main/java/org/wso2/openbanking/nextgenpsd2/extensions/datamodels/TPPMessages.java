@@ -21,9 +21,10 @@ package org.wso2.openbanking.nextgenpsd2.extensions.datamodels;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * TPPMessages class for maintaining multiple errors.

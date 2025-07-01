@@ -18,6 +18,7 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
@@ -25,7 +26,6 @@ import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredDetailedConsentResourceData;
@@ -107,7 +107,8 @@ public class ConsentInitiationUtil {
      * @param consentType                         type of consent
      * @return constructed links object for initiation response
      */
-    public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred, ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
+    public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
+                                                ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
                                                 String requestPath, String consentId, String authorisationId,
                                                 String consentType) throws ServerException {
         JSONObject links = new JSONObject();
@@ -188,8 +189,8 @@ public class ConsentInitiationUtil {
      * @param consentType
      */
     static void buildResponseAlterationResponseForConsentCreation(EnrichConsentCreationRequestBody requestBody,
-                                                                  SuccessResponseForResponseAlternation validationResponse,
-                                                                  String consentType) {
+                                                                  SuccessResponseForResponseAlternation
+                                                                          validationResponse, String consentType) {
         JSONObject payloadToSend = new JSONObject();
         JSONObject headersToSend = new JSONObject();
 
@@ -197,7 +198,7 @@ public class ConsentInitiationUtil {
         boolean isScaRequired = Boolean.parseBoolean(ConfigurableProperties.IS_SCA_REQUIRED);
 
         buildEnrichedConsentInitiationResponse(consentType, requestBody, payloadToSend, headersToSend,
-                false, apiVersion, isScaRequired);
+                true, apiVersion, isScaRequired);
 
         SuccessResponseForResponseAlternationData data = new SuccessResponseForResponseAlternationData();
         data.setResponseHeaders(headersToSend);

@@ -18,6 +18,11 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
@@ -27,11 +32,6 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.PermissionEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredBasicConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredDetailedConsentResourceData;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,7 +49,7 @@ import java.util.Date;
  * Utility class for Account consent management.
  */
 public class AccountConsentUtil {
-    public static final Log log = LogFactory.getLog(AccountConsentUtil.class);
+    private static final Log log = LogFactory.getLog(AccountConsentUtil.class);
     
     /**
      * Helper method to validate account initiation payload.
@@ -75,7 +75,7 @@ public class AccountConsentUtil {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR,ErrorConstants.MANDATORY_ELEMENTS_MISSING));
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.MANDATORY_ELEMENTS_MISSING));
         }
 
         log.debug("Validating mandatory access object attributes");
@@ -172,7 +172,6 @@ public class AccountConsentUtil {
      *
      * @param createdConsent the created consent
      * @param scaMethods     decided SCA methods
-     * @return the constructed initiation response without links
      */
     public static void appendAccountInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                                 ArrayList<ScaMethod> scaMethods, JSONObject payload) {
@@ -411,7 +410,6 @@ public class AccountConsentUtil {
      * Method to construct accounts consent get response.
      *
      * @param retrievedConsent consent object
-     * @return the constructed account consent get response
      */
     public static void extendAccountConsentGetResponse(StoredBasicConsentResourceData retrievedConsent,
                                                        JSONObject payloadToSend) {
@@ -443,7 +441,6 @@ public class AccountConsentUtil {
      * Method to get the account consent get response without links.
      *
      * @param retrievedConsent consent object
-     * @return the constructed account consent get response without links
      */
     public static void addAdditionalAccountConsentAttributes(StoredBasicConsentResourceData retrievedConsent,
                                                              JSONObject payloadToSend) {

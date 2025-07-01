@@ -18,14 +18,17 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.model.FailedResponse;
 import org.json.JSONObject;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.FailedResponse;
 
 /**
  * Exception class for success responses carrying FailedResponse objects.
  */
 public class FailedValidationException extends Exception {
 
+    /**
+     * Error response code enums.
+     */
     public enum ErrorCode {
         BAD_REQUEST(400),
         UNAUTHORIZED(401),

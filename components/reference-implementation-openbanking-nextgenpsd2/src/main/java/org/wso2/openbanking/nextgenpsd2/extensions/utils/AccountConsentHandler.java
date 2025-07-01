@@ -18,6 +18,12 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.AuthTypeEnum;
@@ -25,12 +31,6 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.Authorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.DetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;

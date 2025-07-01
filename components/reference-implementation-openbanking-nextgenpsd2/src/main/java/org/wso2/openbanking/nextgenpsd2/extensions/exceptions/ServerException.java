@@ -18,10 +18,10 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
-import org.json.JSONObject;
 
 import javax.ws.rs.core.Response;
 
@@ -31,6 +31,9 @@ import javax.ws.rs.core.Response;
  */
 public class ServerException extends RuntimeException {
 
+    /**
+     * Error code enum for server exceptions.
+     */
     public enum ErrorCode {
         BAD_REQUEST(Response.Status.BAD_REQUEST),
         INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR);

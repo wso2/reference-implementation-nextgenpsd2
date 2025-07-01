@@ -20,6 +20,12 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
@@ -29,12 +35,6 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredBasicConsentResourceData;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -78,7 +78,7 @@ public class CommonConsentValidationUtil {
     }
 
     /**
-     * Convert an object to a JSON object
+     * Convert an object to a JSON object.
      * @param object
      * @return
      * @throws Exception
@@ -559,8 +559,8 @@ public class CommonConsentValidationUtil {
             parsedDate = LocalDate.parse(dateToParse, DateTimeFormatter.ISO_DATE);
         } catch (DateTimeParseException e) {
             log.error(errorMessage, e);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, errorCode, errorMessage));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, errorCode, errorMessage));
         }
         return parsedDate;
     }
@@ -576,9 +576,9 @@ public class CommonConsentValidationUtil {
 
         if (accountRefObject == null) {
             log.error(ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
         }
 
         Set<String> accountRefKeys = accountRefObject.keySet();
@@ -598,17 +598,17 @@ public class CommonConsentValidationUtil {
 
         if (!isAccountReferenceValid) {
             log.error(ErrorConstants.INVALID_ACCOUNT_REFERENCE);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.INVALID_ACCOUNT_REFERENCE));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_ACCOUNT_REFERENCE));
         }
 
         String accountReference = getAccountReference(accountRefObject);
         if (StringUtils.isBlank(accountReference)) {
             log.error(ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY));
         }
     }
 
@@ -628,11 +628,12 @@ public class CommonConsentValidationUtil {
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_MISSING));
         }
 
-        if (!CommonConsentValidationUtil.isValidUuid(headersJSON.getString(ConsentExtensionConstants.X_REQUEST_ID_HEADER))) {
+        if (!CommonConsentValidationUtil.isValidUuid(headersJSON
+                .getString(ConsentExtensionConstants.X_REQUEST_ID_HEADER))) {
             log.error(ErrorConstants.X_REQUEST_ID_INVALID);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.X_REQUEST_ID_INVALID));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_INVALID));
         }
     }
 
@@ -650,16 +651,17 @@ public class CommonConsentValidationUtil {
             if (StringUtils.isEmpty(psuIpAddress)) {
                 log.error(String.format("Invalid %s header",
                         ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER));
-                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                        null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                        String.format("Invalid %s header", ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)
+                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                                TPPMessage.CodeEnum.FORMAT_ERROR, String.format("Invalid %s header",
+                                        ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)
                 ));
             }
         } else {
             log.error(ErrorConstants.PSU_IP_ADDRESS_MISSING);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    ErrorConstants.PSU_IP_ADDRESS_MISSING));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PSU_IP_ADDRESS_MISSING));
         }
     }
 
@@ -676,9 +678,10 @@ public class CommonConsentValidationUtil {
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
                 && getScaApproach(ScaApproachEnum.REDIRECT) == null) {
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT));
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT)));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
+                                    ScaApproachEnum.REDIRECT)));
         }
 
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isFalse(isRedirectPreferred.get()))
@@ -687,9 +690,10 @@ public class CommonConsentValidationUtil {
             //ToDo: Since decoupled approach is not supported yet, an error is thrown if the redirect header is false.
             //issue: https://github.com/wso2-enterprise/financial-open-banking/issues/6858
             log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
-                    String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED)));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
+                                    ScaApproachEnum.DECOUPLED)));
         }
     }
 
@@ -703,9 +707,9 @@ public class CommonConsentValidationUtil {
             throws FailedValidationException {
 
         if (!StringUtils.equals(registeredClientId, consentClientId)) {
-            throw new FailedValidationException(FailedValidationException.ErrorCode.FORBIDDEN, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.RESOURCE_UNKNOWN,
-                    ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.FORBIDDEN,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.RESOURCE_UNKNOWN, ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
         }
     }
 
@@ -720,9 +724,9 @@ public class CommonConsentValidationUtil {
 
         if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
             log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.UNAUTHORIZED, ErrorUtil.constructBerlinError(null,
-                    TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.CONSENT_INVALID,
-                    ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
+            throw new FailedValidationException(FailedValidationException.ErrorCode.UNAUTHORIZED,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
         }
     }
 

@@ -40,11 +40,13 @@ public class ConsentAuthorisationHandler implements ConsentHandler, ConsentRespo
      * @param validationResponse
      */
     @Override
-    public void handleCreation(PreProcessConsentCreationRequestBody requestBody, SuccessResponsePreProcessConsentCreation validationResponse) throws FailedValidationException {
+    public void handleCreation(PreProcessConsentCreationRequestBody requestBody,
+                               SuccessResponsePreProcessConsentCreation validationResponse)
+            throws FailedValidationException {
         // Throws an error since creating auth object for an existing consent is not supported
-        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SERVICE_INVALID_405,
-                ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
+        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                        TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
 
     /**
@@ -59,9 +61,9 @@ public class ConsentAuthorisationHandler implements ConsentHandler, ConsentRespo
                                 SuccessResponseForResponseAlternation validationResponse)
             throws FailedValidationException, ServerException {
         // Throws an error since auth resources for a consent cannot be retrieved through consent creation
-        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
-                null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SERVICE_INVALID_405,
-                ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
+        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                        TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
 
     /**

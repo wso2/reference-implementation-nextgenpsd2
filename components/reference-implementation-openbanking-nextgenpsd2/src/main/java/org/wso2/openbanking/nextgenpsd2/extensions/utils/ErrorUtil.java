@@ -18,15 +18,18 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessages;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ErrorResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for building and processing error objects.
+ */
 public class ErrorUtil {
     /**
      * Method to get ErrorResponse object for error.

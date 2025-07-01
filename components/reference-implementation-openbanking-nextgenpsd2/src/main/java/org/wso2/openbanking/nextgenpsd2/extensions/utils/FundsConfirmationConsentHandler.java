@@ -18,6 +18,11 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
 import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.AuthTypeEnum;
@@ -25,12 +30,17 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.*;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.Authorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.DetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.PreProcessConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.PreProcessConsentRetrievalData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternationData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponsePreProcessConsentCreation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseWithDetailedConsentData;
 
 import java.util.Optional;
 
@@ -167,7 +177,7 @@ public class FundsConfirmationConsentHandler implements ConsentHandler, ConsentR
 
         // Build response body
         JSONObject payloadToSend = new JSONObject();
-        if(!requestBody.getData().getConsentResourcePath().contains(ConsentExtensionConstants.STATUS)) {
+        if (!requestBody.getData().getConsentResourcePath().contains(ConsentExtensionConstants.STATUS)) {
             payloadToSend = CommonConsentValidationUtil.convertObjectToJson(consentResource.getReceipt());
         }
 

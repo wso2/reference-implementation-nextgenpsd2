@@ -61,7 +61,7 @@ public class PreProcessConsentCreationApi {
                 consentInitiationDataJSON = CommonConsentValidationUtil.convertObjectToJson(requestBody.getData()
                         .getConsentInitiationData());
 
-                if (consentInitiationDataJSON.length() < 1) {
+                if (consentInitiationDataJSON.isEmpty()) {
                     // If payload is empty
                     throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
