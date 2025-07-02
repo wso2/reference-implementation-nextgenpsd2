@@ -47,8 +47,8 @@ import java.util.Optional;
 /**
  * Consent handler for payment consents.
  */
-public class PaymentConsentHandler implements ConsentHandler, ConsentResponseHandler {
-    private static final Log log = LogFactory.getLog(PaymentConsentHandler.class);
+public class PaymentConsentManagementHandler implements ConsentManagementHandler, ConsentResponseHandler {
+    private static final Log log = LogFactory.getLog(PaymentConsentManagementHandler.class);
 
     /**
      * Handles creation of payment consent creation.

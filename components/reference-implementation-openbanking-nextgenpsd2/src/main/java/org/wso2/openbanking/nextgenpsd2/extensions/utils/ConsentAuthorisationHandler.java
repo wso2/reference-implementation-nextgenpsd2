@@ -30,7 +30,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessRespon
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationHandler implements ConsentHandler, ConsentResponseHandler {
+public class ConsentAuthorisationHandler implements ConsentManagementHandler, ConsentResponseHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**

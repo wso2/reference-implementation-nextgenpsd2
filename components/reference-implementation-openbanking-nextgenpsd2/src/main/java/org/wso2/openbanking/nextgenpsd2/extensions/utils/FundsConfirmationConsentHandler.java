@@ -47,7 +47,7 @@ import java.util.Optional;
 /**
  * Consent handler for account consents.
  */
-public class FundsConfirmationConsentHandler implements ConsentHandler, ConsentResponseHandler {
+public class FundsConfirmationConsentHandler implements ConsentManagementHandler, ConsentResponseHandler {
     private static final Log log = LogFactory.getLog(FundsConfirmationConsentUtil.class);
 
     /**
