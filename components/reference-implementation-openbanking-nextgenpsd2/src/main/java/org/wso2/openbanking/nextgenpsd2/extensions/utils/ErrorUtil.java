@@ -20,9 +20,9 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessages;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.ErrorResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;

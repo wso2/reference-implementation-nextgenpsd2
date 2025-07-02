@@ -18,14 +18,14 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.PreProcessConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.PreProcessConsentRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternation;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponsePreProcessConsentCreation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
 
 /**
  * Consent authorisation handler for explicit authorisation.

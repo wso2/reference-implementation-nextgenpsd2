@@ -20,17 +20,17 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaApproach;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredDetailedConsentResourceData;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternation;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternationData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternationData;
 
 import java.util.ArrayList;
 import java.util.List;

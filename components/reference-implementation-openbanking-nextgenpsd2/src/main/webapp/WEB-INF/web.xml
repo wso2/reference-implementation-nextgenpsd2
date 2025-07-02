@@ -61,26 +61,26 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessConsentCreationApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.EnrichConsentCreationResponseApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessConsentRetrievalApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessConsentRevokeApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PopulateConsentAuthorizeScreenApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PersistAuthorizedConsentApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.ValidateConsentAccessApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.IssueRefreshTokenApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.ValidateAuthorizationRequestApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.ValidateEventCreationApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.ValidateEventPollingApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.EnrichEventPollingResponseApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.ValidateEventSubscriptionApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.EnrichEventSubscriptionResponseApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessClientCreationApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessClientUpdateApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.MapAcceleratorErrorResponseApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessClientRetrievalApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessApplicationCreationApi,
-                org.wso2.openbanking.nextgenpsd2.extensions.api.PreProcessApplicationUpdateApi
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessConsentCreationApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.EnrichConsentCreationResponseApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessConsentRetrievalApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessConsentRevokeApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PopulateConsentAuthorizeScreenApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PersistAuthorizedConsentApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.ValidateConsentAccessApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.IssueRefreshTokenApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.ValidateAuthorizationRequestApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.ValidateEventCreationApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.ValidateEventPollingApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.EnrichEventPollingResponseApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.ValidateEventSubscriptionApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.EnrichEventSubscriptionResponseApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessClientCreationApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessClientUpdateApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.MapAcceleratorErrorResponseApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessClientRetrievalApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessApplicationCreationApi,
+                org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessApplicationUpdateApi
             </param-value>
         </init-param>
         <init-param>

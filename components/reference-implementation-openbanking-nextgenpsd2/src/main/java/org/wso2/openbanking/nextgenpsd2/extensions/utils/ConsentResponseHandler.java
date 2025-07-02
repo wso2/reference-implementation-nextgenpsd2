@@ -19,8 +19,8 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.EnrichConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 
 /**
  * Consent response handler interface for response enrichment functions.

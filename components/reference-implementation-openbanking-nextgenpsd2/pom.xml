@@ -157,7 +157,7 @@
                     <suppressionsLocation>
                         https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/suppressions.xml
                     </suppressionsLocation>
-                    <excludes>**/api/**/**,**/model/**/**,**/RestApplication.java,**/RestResourceRoot.java</excludes>
+                    <excludes>**/generated/**/**,**/RestApplication.java,**/RestResourceRoot.java</excludes>
                 </configuration>
             </plugin>
             <plugin>

@@ -25,11 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;

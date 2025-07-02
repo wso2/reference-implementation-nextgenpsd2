@@ -19,7 +19,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponse;
 
 /**
  * Exception class for success responses carrying FailedResponse objects.

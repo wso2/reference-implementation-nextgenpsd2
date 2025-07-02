@@ -27,14 +27,14 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaApproach;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.ScaMethod;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredBasicConsentResourceData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

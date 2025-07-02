@@ -19,8 +19,8 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.datamodels.TPPMessage;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.ErrorResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import javax.ws.rs.core.Response;
