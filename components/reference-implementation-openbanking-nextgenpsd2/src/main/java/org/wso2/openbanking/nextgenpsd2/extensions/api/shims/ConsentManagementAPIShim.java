@@ -33,8 +33,8 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentExtensionConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentManagementHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentResponseEnrichmentHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
@@ -55,7 +55,7 @@ public class ConsentManagementAPIShim {
         SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
 
         try {
-            ConsentResponseHandler consentHandler = CommonConsentValidationUtil
+            ConsentResponseEnrichmentHandler consentHandler = CommonConsentValidationUtil
                     .getConsentResponseHandler(requestBody.getData().getConsentResourcePath());
 
             if (consentHandler != null) {
@@ -122,11 +122,11 @@ public class ConsentManagementAPIShim {
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
             }
 
-            ConsentManagementHandler consentManagementHandler = CommonConsentValidationUtil.getConsentHandler(requestBody.getData()
-                    .getConsentResourcePath());
+            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+                    .getConsentHandler(requestBody.getData().getConsentResourcePath());
 
-            if (consentManagementHandler != null) {
-                consentManagementHandler.handleCreation(requestBody, validationResponse);
+            if (consentManagementResponseHandler != null) {
+                consentManagementResponseHandler.handleCreation(requestBody, validationResponse);
             } else {
                 throw new FailedValidationException(FailedValidationException.ErrorCode.NOT_FOUND,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
@@ -167,11 +167,11 @@ public class ConsentManagementAPIShim {
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
 
-            ConsentManagementHandler consentManagementHandler = CommonConsentValidationUtil.getConsentHandler(requestBody.getData()
-                    .getConsentResourcePath());
+            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+                    .getConsentHandler(requestBody.getData().getConsentResourcePath());
 
-            if (consentManagementHandler != null) {
-                consentManagementHandler.handleRetrieval(requestBody, validationResponse);
+            if (consentManagementResponseHandler != null) {
+                consentManagementResponseHandler.handleRetrieval(requestBody, validationResponse);
             } else {
                 throw new FailedValidationException(FailedValidationException.ErrorCode.NOT_FOUND,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,

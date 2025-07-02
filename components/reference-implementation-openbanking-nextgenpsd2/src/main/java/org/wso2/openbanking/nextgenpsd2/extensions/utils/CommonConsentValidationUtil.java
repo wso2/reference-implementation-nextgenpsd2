@@ -165,7 +165,7 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentManagementHandler getConsentHandler(String requestPath) {
+    public static ConsentManagementResponseHandler getConsentHandler(String requestPath) {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {
             case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
@@ -173,7 +173,7 @@ public class CommonConsentValidationUtil {
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
             case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
             case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                return new PaymentConsentManagementHandler();
+                return new PaymentConsentHandler();
             case ConsentExtensionConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
                 return new FundsConfirmationConsentHandler();
             case ConsentExtensionConstants.EXPLICIT_AUTHORISATION_PATH_END:
@@ -190,8 +190,8 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentResponseHandler getConsentResponseHandler(String requestPath) {
-        return (ConsentResponseHandler) getConsentHandler(requestPath);
+    public static ConsentResponseEnrichmentHandler getConsentResponseHandler(String requestPath) {
+        return (ConsentResponseEnrichmentHandler) getConsentHandler(requestPath);
     }
 
     /**

@@ -25,7 +25,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessRespon
 /**
  * Consent response handler interface for response enrichment functions.
  */
-public interface ConsentResponseHandler {
+public interface ConsentResponseEnrichmentHandler {
     void enrichCreationResponse(EnrichConsentCreationRequestBody requestBody,
                                 SuccessResponseForResponseAlternation validationResponse) throws ServerException;
 }
