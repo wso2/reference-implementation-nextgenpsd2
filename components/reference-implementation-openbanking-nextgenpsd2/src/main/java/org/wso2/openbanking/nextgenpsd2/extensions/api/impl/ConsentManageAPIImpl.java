@@ -16,15 +16,17 @@
  * under the License.
  */
 
-package org.wso2.openbanking.nextgenpsd2.extensions.api.shims;
+package org.wso2.openbanking.nextgenpsd2.extensions.api.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.api.generated.PreProcessConsentCreationApi;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
@@ -32,18 +34,15 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessCon
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentExtensionConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentManagementResponseHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentResponseEnrichmentHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import javax.ws.rs.core.Response;
 
 /**
- * Shim class maintaining the methods for consent management extension APIs.
+ * Implementation class maintaining the methods for consent management extension APIs.
  */
-public class ConsentManagementAPIShim {
+public class ConsentManageAPIImpl {
+    public static Log log = LogFactory.getLog(ConsentManageAPIImpl.class);
 
     /**
      * Method for returning the response for enriching consent creation request.
@@ -51,41 +50,32 @@ public class ConsentManagementAPIShim {
      * @return
      */
     public static Response enrichConsentCreationResponse(EnrichConsentCreationRequestBody requestBody) {
-        Log log = LogFactory.getLog(PreProcessConsentCreationApi.class);
-        SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-
         try {
-            ConsentResponseEnrichmentHandler consentHandler = CommonConsentValidationUtil
-                    .getConsentResponseHandler(requestBody.getData().getConsentResourcePath());
+            ConsentManagementResponseHandler consentHandler = CommonConsentValidationUtil
+                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+
+            SuccessResponseForResponseAlternation validationResponse;
 
             if (consentHandler != null) {
-                consentHandler.enrichCreationResponse(requestBody, validationResponse);
+                validationResponse = consentHandler.enrichCreationResponse(requestBody);
             } else {
                 // Server error since if path is invalid consent creation should have failed
                 // thus making this unreachable
-                throw new ServerException(ServerException.ErrorCode.BAD_REQUEST,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
-                                ErrorConstants.PATH_INVALID));
+                JSONObject errorResponse = ErrorUtil.getFormattedErrorResponse(ErrorUtil.constructBerlinError(null,
+                        TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorResponse).build();
             }
 
-        } catch (ServerException e) {
+            return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
+
+        } catch (BadRequestException e) {
             log.error(e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
-        } catch (JSONException e) {
+        } catch (ServerErrorException e) {
             log.error(e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.INVALID_REQUEST, e.getMessage())
-            ).toString()).build();
-
-        } catch (Exception e) {
-            log.error(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.SERVER_ERROR, e.getMessage())
-            ).toString()).build();
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
-
-        return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
     }
 
     /**
@@ -94,9 +84,6 @@ public class ConsentManagementAPIShim {
      * @return
      */
     public static Response preProcessConsentCreation(PreProcessConsentCreationRequestBody requestBody) {
-        Log log = LogFactory.getLog(PreProcessConsentCreationApi.class);
-        SuccessResponsePreProcessConsentCreation validationResponse = new SuccessResponsePreProcessConsentCreation();
-
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
@@ -110,47 +97,48 @@ public class ConsentManagementAPIShim {
 
                 if (consentInitiationDataJSON.isEmpty()) {
                     // If payload is empty
-                    throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
+                    return Response.ok().entity(errorResponse.toString()).build();
                 }
 
             } catch (JSONException e) {
                 // If payload is not JSON
-                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+                return Response.status(Response.Status.OK).entity(errorResponse.toString()).build();
             }
 
             ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
-                    .getConsentHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+
+            SuccessResponsePreProcessConsentCreation validationResponse;
 
             if (consentManagementResponseHandler != null) {
-                consentManagementResponseHandler.handleCreation(requestBody, validationResponse);
+                validationResponse = consentManagementResponseHandler.handleCreation(requestBody);
             } else {
-                throw new FailedValidationException(FailedValidationException.ErrorCode.NOT_FOUND,
+                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
                                 ErrorConstants.PATH_INVALID));
+                return Response.ok().entity(errorObject).build();
             }
 
-        } catch (FailedValidationException e) {
+            return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
+
+        } catch (ValidationFailureException e) {
             log.error("Validation failed for consent creation. Returning failed response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (JSONException e) {
+        } catch (BadRequestException e) {
             log.error(e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.INVALID_REQUEST, e.getMessage())
-            ).toString()).build();
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
-        } catch (Exception e) {
+        } catch (ServerErrorException e) {
             log.error(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.SERVER_ERROR, e.getMessage())
-            ).toString()).build();
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
-
-        return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
     }
 
     /**
@@ -159,46 +147,38 @@ public class ConsentManagementAPIShim {
      * @return
      */
     public static Response preProcessConsentRetrieval(PreProcessConsentRequestBody requestBody) {
-        Log log = LogFactory.getLog(PreProcessConsentCreationApi.class);
-        SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
 
             ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
-                    .getConsentHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+
+            SuccessResponseForResponseAlternation validationResponse;
 
             if (consentManagementResponseHandler != null) {
-                consentManagementResponseHandler.handleRetrieval(requestBody, validationResponse);
+                validationResponse = consentManagementResponseHandler.handleRetrieval(requestBody);
             } else {
-                throw new FailedValidationException(FailedValidationException.ErrorCode.NOT_FOUND,
+                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
                                 ErrorConstants.PATH_INVALID));
+                return Response.ok().entity(errorObject).build();
             }
 
-        } catch (FailedValidationException e) {
+            return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
+
+        } catch (ValidationFailureException e) {
             log.error("Validation failed for consent creation. Returning failed response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (ServerException e) {
+        } catch (BadRequestException e) {
             log.error(e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
-        } catch (JSONException e) {
+        } catch (ServerErrorException e) {
             log.error(e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.INVALID_REQUEST, e.getMessage())
-            ).toString()).build();
-
-        } catch (Exception e) {
-            log.error(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new JSONObject(
-                    ErrorUtil.getErrorResponse(ConsentExtensionConstants.SERVER_ERROR, e.getMessage())
-            ).toString()).build();
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
-
-        return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
     }
 }

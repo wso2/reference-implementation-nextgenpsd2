@@ -22,7 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
@@ -42,7 +44,7 @@ public class FundsConfirmationConsentUtil {
      *
      * @param cardExpiryDate requested card expiry date
      */
-    public static void validateCardExpiryDate(String cardExpiryDate) throws FailedValidationException {
+    public static void validateCardExpiryDate(String cardExpiryDate) throws ValidationFailureException {
 
         LocalDate parsedCardExpiryDate = CommonConsentValidationUtil.parseDateToISO(cardExpiryDate,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.CARD_EXPIRY_DATE_INVALID);
@@ -51,7 +53,7 @@ public class FundsConfirmationConsentUtil {
             String errorMessage = String.format("The provided card expiry date %s is a past date",
                     parsedCardExpiryDate);
             log.error(errorMessage);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.TIMESTAMP_INVALID,
                             errorMessage));
@@ -63,13 +65,14 @@ public class FundsConfirmationConsentUtil {
      *
      * @param payload
      */
-    public static void validateFundsConfirmationInitiationPayload(JSONObject payload) throws FailedValidationException {
+    public static void validateFundsConfirmationInitiationPayload(JSONObject payload) throws
+            ValidationFailureException {
 
         log.debug("Validating mandatory request body elements");
         if (!payload.has(ConsentExtensionConstants.ACCOUNT)
                 || payload.opt(ConsentExtensionConstants.ACCOUNT) == null) {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.MANDATORY_ELEMENTS_MISSING));

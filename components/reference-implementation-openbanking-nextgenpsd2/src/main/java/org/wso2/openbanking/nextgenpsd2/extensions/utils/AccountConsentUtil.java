@@ -24,10 +24,12 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.AccessMethodEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.PermissionEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredBasicConsentResourceData;
@@ -55,11 +57,11 @@ public class AccountConsentUtil {
      * Helper method to validate account initiation payload.
      *
      * @param payload
-     * @throws FailedValidationException
+     * @throws ValidationFailureException
      * @return permission
      */
     public static String validateAccountInitiationPayloadAndGetPermission(JSONObject payload) throws
-            FailedValidationException {
+            ValidationFailureException {
         int configuredMinimumFreqPerDay = Integer.parseInt(ConfigurableProperties.FREQ_PER_DAY);
         boolean isValidUntilDateCapEnabled = Boolean.parseBoolean(ConfigurableProperties.VALID_UNTIL_DATE_CAP_ENABLED);
         int validUntilDaysCap = Integer.parseInt(ConfigurableProperties.VALID_UNTIL_DAYS);
@@ -73,7 +75,7 @@ public class AccountConsentUtil {
                 || !payload.has(ConsentExtensionConstants.FREQUENCY_PER_DAY)
                 || !payload.has(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR)) {
             log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.MANDATORY_ELEMENTS_MISSING));
         }
@@ -87,7 +89,7 @@ public class AccountConsentUtil {
                 && !accessObject.has(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())
                 && !accessObject.has(PermissionEnum.ALL_PSD2.toString())) {
             log.error(ErrorConstants.ACCESS_OBJECT_MANDATORY_ELEMENTS_MISSING);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCESS_OBJECT_MANDATORY_ELEMENTS_MISSING));
         }
@@ -99,7 +101,7 @@ public class AccountConsentUtil {
                 || accessObject.has(AccessMethodEnum.BALANCES.toString())
                 || accessObject.has(AccessMethodEnum.TRANSACTIONS.toString()))) {
             log.error(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE));
         }
@@ -122,7 +124,7 @@ public class AccountConsentUtil {
         log.debug("Validating frequency per day and recurring indicator");
         if (payload.getInt(ConsentExtensionConstants.FREQUENCY_PER_DAY) < 1) {
             log.error(ErrorConstants.INVALID_FREQ_PER_DAY);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_FREQ_PER_DAY));
         }
@@ -130,7 +132,7 @@ public class AccountConsentUtil {
         if (!(payload.getBoolean(ConsentExtensionConstants.RECURRING_INDICATOR))
                 && payload.getInt(ConsentExtensionConstants.FREQUENCY_PER_DAY) > 1) {
             log.error(ErrorConstants.INVALID_FREQ_PER_DAY_COUNT);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_FREQ_PER_DAY_COUNT));
         }
@@ -142,7 +144,7 @@ public class AccountConsentUtil {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(errorMessageTemplate, configuredMinimumFreqPerDay));
             }
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format(errorMessageTemplate,
                                     configuredMinimumFreqPerDay)));
@@ -158,7 +160,7 @@ public class AccountConsentUtil {
         // (Not supported)
         if (payload.getBoolean(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR)) {
             log.error(ErrorConstants.COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED);
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.SESSIONS_NOT_SUPPORTED,
                             ErrorConstants.COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED));
@@ -199,7 +201,7 @@ public class AccountConsentUtil {
      * @return permission
      */
     public static String getPermissionByValidatingAccountAccessAttribute(JSONObject accessObject) throws
-            FailedValidationException {
+            ValidationFailureException {
         String availableAccounts = accessObject.optString(PermissionEnum.AVAILABLE_ACCOUNTS.toString(), null);
         String availableAccountsWithBalances = accessObject
                 .optString(PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString(), null);
@@ -213,7 +215,7 @@ public class AccountConsentUtil {
                 if (availableAccountsWithBalances != null || allPsd2 != null) {
                     log.error("availableAccounts permission cannot be set with availableAccountsWithBalances " +
                             "or allPsd2 permissions");
-                    throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
                 } else {
@@ -229,7 +231,7 @@ public class AccountConsentUtil {
                 if (availableAccounts != null || allPsd2 != null) {
                     log.error("availableAccountsWithBalances permission cannot be set with availableAccounts " +
                             "or allPsd2 permissions");
-                    throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
                 } else {
@@ -245,7 +247,7 @@ public class AccountConsentUtil {
                 if (availableAccounts != null || availableAccountsWithBalances != null) {
                     log.error("allPsd2 permission cannot be set with availableAccounts or " +
                             "availableAccountsWithBalances permissions");
-                    throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                    throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
                 } else {
@@ -290,14 +292,14 @@ public class AccountConsentUtil {
                     && numberOfEmptyAccessMethodArrays != 0) {
                 // If either all arrays are not empty or not non-empty, an error is thrown.
                 log.error("Either all arrays should be empty or non-empty");
-                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
             }
             if (availableAccounts != null || availableAccountsWithBalances != null || allPsd2 != null) {
                 log.error("Special permissions availableAccounts, availableAccountsWithBalances or allPsd2 " +
                         "cannot be applied when account, balances or transaction access is specified");
-                throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+                throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
             }
@@ -325,7 +327,7 @@ public class AccountConsentUtil {
      *
      * @param accountRefs account refs object array
      */
-    public static void validateAccountRefObjects(JSONArray accountRefs) throws FailedValidationException {
+    public static void validateAccountRefObjects(JSONArray accountRefs) throws ValidationFailureException {
 
         if (accountRefs != null) {
             for (Object accountRef : accountRefs) {
@@ -343,7 +345,7 @@ public class AccountConsentUtil {
      * @return allowed valid until date
      */
     public static String getValidatedValidUntil(String validUntil, boolean isValidUntilDateCapEnabled,
-                                                int validUntilDaysCap) throws FailedValidationException {
+                                                int validUntilDaysCap) throws ValidationFailureException {
 
         LocalDate validUntilDate = CommonConsentValidationUtil.parseDateToISO(validUntil,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.VALID_UNTIL_DATE_INVALID);
@@ -351,7 +353,7 @@ public class AccountConsentUtil {
         if (validUntilDate.isBefore(today)) {
             String errorMessage = "validUntil has to be today, %s or a future date";
             log.error(String.format(errorMessage, today));
-            throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.TIMESTAMP_INVALID, String.format(errorMessage, today)));
         }
@@ -379,7 +381,7 @@ public class AccountConsentUtil {
      * @param date date in string format
      * @return date/time after converting to UTC timestamp
      */
-    public static long convertToUtcTimestamp(String date) throws FailedValidationException {
+    public static long convertToUtcTimestamp(String date) throws ValidationFailureException {
 
         LocalDate localDate = CommonConsentValidationUtil.parseDateToISO(date, TPPMessage.CodeEnum.FORMAT_ERROR,
                 ErrorConstants.VALID_UNTIL_DATE_INVALID);

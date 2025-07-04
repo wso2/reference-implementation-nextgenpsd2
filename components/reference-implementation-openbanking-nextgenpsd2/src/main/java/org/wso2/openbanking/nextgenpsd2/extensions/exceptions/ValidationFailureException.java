@@ -19,12 +19,12 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 /**
  * Exception class for success responses carrying FailedResponse objects.
  */
-public class FailedValidationException extends Exception {
+public class ValidationFailureException extends Exception {
 
     /**
      * Error response code enums.
@@ -47,17 +47,16 @@ public class FailedValidationException extends Exception {
         }
     }
 
-    private final FailedResponse.StatusEnum status = FailedResponse.StatusEnum.ERROR;
     private final ErrorCode errorCode;
     private final JSONObject data;
 
-    public FailedValidationException(ErrorCode errorCode, JSONObject data) {
+    public ValidationFailureException(ErrorCode errorCode, JSONObject data) {
         super(data.toString());
         this.errorCode = errorCode;
         this.data = data;
     }
 
-    public FailedValidationException(ErrorCode errorCode, JSONObject data, Throwable e) {
+    public ValidationFailureException(ErrorCode errorCode, JSONObject data, Throwable e) {
         super(data.toString(), e);
         this.errorCode = errorCode;
         this.data = data;
@@ -68,13 +67,7 @@ public class FailedValidationException extends Exception {
      * @return
      */
     public JSONObject getFormattedError() {
-        FailedResponse failedResponse = new FailedResponse();
-
-        failedResponse.setStatus(this.status);
-        failedResponse.setErrorCode(this.errorCode.getCode());
-        failedResponse.setData(this.data);
-
-        return new JSONObject(failedResponse);
+        return ErrorUtil.getFormattedFailedResponse(this.errorCode.getCode(), this.data);
     }
 
     /**

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.openbanking.nextgenpsd2.extensions.utils;
+package org.wso2.openbanking.nextgenpsd2.extensions.constants;
 
 /**
  * Constants related to errors.

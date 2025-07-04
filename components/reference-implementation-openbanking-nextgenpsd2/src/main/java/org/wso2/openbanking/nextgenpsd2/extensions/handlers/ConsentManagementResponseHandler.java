@@ -16,10 +16,12 @@
  * under the License.
  */
 
-package org.wso2.openbanking.nextgenpsd2.extensions.utils;
+package org.wso2.openbanking.nextgenpsd2.extensions.handlers;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
@@ -30,9 +32,10 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessRespon
  */
 public interface ConsentManagementResponseHandler {
 
-    void handleCreation(PreProcessConsentCreationRequestBody requestBody,
-                        SuccessResponsePreProcessConsentCreation validationResponse) throws FailedValidationException;
-    void handleRetrieval(PreProcessConsentRequestBody requestBody,
-                         SuccessResponseForResponseAlternation validationResponse)
-            throws FailedValidationException, ServerException;
+    SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
+            throws ValidationFailureException, BadRequestException, ServerErrorException;
+    SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
+            throws BadRequestException, ServerErrorException;
+    SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
+            throws ValidationFailureException, BadRequestException, ServerErrorException;
 }

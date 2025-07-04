@@ -1,6 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.api.generated;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.api.shims.ConsentManagementAPIShim;
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManageAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Response200ForPreProcessConsentCreation;
@@ -35,7 +35,7 @@ public class PreProcessConsentCreationApi {
         @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
-    public Response preProcessConsentCreationPost(@Valid @NotNull PreProcessConsentCreationRequestBody requestBody) {
-        return ConsentManagementAPIShim.preProcessConsentCreation(requestBody);
+    public Response preProcessConsentCreationPost(@Valid @NotNull PreProcessConsentCreationRequestBody preProcessConsentCreationRequestBody) {
+        return ConsentManageAPIImpl.preProcessConsentCreation(preProcessConsentCreationRequestBody);
     }
 }

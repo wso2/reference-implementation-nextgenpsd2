@@ -16,36 +16,38 @@
  * under the License.
  */
 
-package org.wso2.openbanking.nextgenpsd2.extensions.utils;
+package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.FailedValidationException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationHandler implements ConsentManagementResponseHandler,
-        ConsentResponseEnrichmentHandler {
+public class ConsentAuthorisationManageHandler implements ConsentManagementResponseHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**
      * Handle creation of authorisations for consents.
      *
      * @param requestBody
-     * @param validationResponse
+     * @return
+     * @throws ValidationFailureException
      */
     @Override
-    public void handleCreation(PreProcessConsentCreationRequestBody requestBody,
-                               SuccessResponsePreProcessConsentCreation validationResponse)
-            throws FailedValidationException {
+    public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
+            throws ValidationFailureException {
         // Throws an error since creating auth object for an existing consent is not supported
-        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                 ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                         TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
@@ -54,15 +56,14 @@ public class ConsentAuthorisationHandler implements ConsentManagementResponseHan
      * Handles retrieval of consent authorisations.
      *
      * @param requestBody
-     * @param validationResponse
-     * @throws FailedValidationException
+     * @return
+     * @throws ValidationFailureException
      */
     @Override
-    public void handleRetrieval(PreProcessConsentRequestBody requestBody,
-                                SuccessResponseForResponseAlternation validationResponse)
-            throws FailedValidationException, ServerException {
+    public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
+            throws ValidationFailureException {
         // Throws an error since auth resources for a consent cannot be retrieved through consent creation
-        throw new FailedValidationException(FailedValidationException.ErrorCode.BAD_REQUEST,
+        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                 ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                         TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
@@ -71,15 +72,14 @@ public class ConsentAuthorisationHandler implements ConsentManagementResponseHan
      * Handles consent authorization creation response customization.
      *
      * @param requestBody
-     * @param validationResponse
-     * @throws FailedValidationException
+     * @return
+     * @throws BadRequestException
      */
     @Override
-    public void enrichCreationResponse(EnrichConsentCreationRequestBody requestBody,
-                                       SuccessResponseForResponseAlternation validationResponse)
-            throws ServerException {
+    public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
+            throws BadRequestException {
         // Throws an error since this should be unreachable
-        throw new ServerException(ServerException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
+        throw new BadRequestException(ErrorUtil.constructBerlinError(
                 null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SERVICE_INVALID_405,
                 ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }

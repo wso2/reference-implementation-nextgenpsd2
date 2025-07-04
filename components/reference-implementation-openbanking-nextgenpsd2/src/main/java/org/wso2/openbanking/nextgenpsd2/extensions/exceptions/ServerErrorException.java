@@ -20,7 +20,6 @@ package org.wso2.openbanking.nextgenpsd2.extensions.exceptions;
 
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import javax.ws.rs.core.Response;
@@ -29,52 +28,30 @@ import javax.ws.rs.core.Response;
  * Exception class for internal server and bad request errors,
  * formatted to return a custom ErrorResponse object.
  */
-public class ServerException extends RuntimeException {
+public class ServerErrorException extends Exception {
 
-    /**
-     * Error code enum for server exceptions.
-     */
-    public enum ErrorCode {
-        BAD_REQUEST(Response.Status.BAD_REQUEST),
-        INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR);
-
-        private final Response.Status status;
-
-        ErrorCode(Response.Status status) {
-            this.status = status;
-        }
-
-        public Response.Status getStatus() {
-            return status;
-        }
-    }
-
-    private final ErrorCode errorCode;
+    private final Response.Status errorStatus = Response.Status.INTERNAL_SERVER_ERROR;
     private final JSONObject data;
 
-    public ServerException(ErrorCode errorCode, JSONObject data) {
+    public ServerErrorException(JSONObject data) {
         super(data.toString());
-        this.errorCode = errorCode;
         this.data = data;
     }
 
-    public ServerException(ErrorCode errorCode, JSONObject data, Throwable cause) {
+    public ServerErrorException(JSONObject data, Throwable cause) {
         super(data.toString(), cause);
-        this.errorCode = errorCode;
         this.data = data;
     }
 
-    public ServerException(ErrorCode errorCode, TPPMessage.CodeEnum code, String message) {
+    public ServerErrorException(TPPMessage.CodeEnum code, String message) {
         super(message);
-        this.errorCode = errorCode;
         this.data = ErrorUtil.constructBerlinError(
                 null, TPPMessage.CategoryEnum.ERROR, code,
                 message);
     }
 
-    public ServerException(ErrorCode errorCode, TPPMessage.CodeEnum code, String message, Throwable cause) {
+    public ServerErrorException(TPPMessage.CodeEnum code, String message, Throwable cause) {
         super(message, cause);
-        this.errorCode = errorCode;
         this.data = ErrorUtil.constructBerlinError(
                 null, TPPMessage.CategoryEnum.ERROR, code,
                 message);
@@ -85,7 +62,7 @@ public class ServerException extends RuntimeException {
      * @return
      */
     public Response.Status getStatus() {
-        return this.errorCode.getStatus();
+        return this.errorStatus;
     }
 
     /**
@@ -93,10 +70,7 @@ public class ServerException extends RuntimeException {
      * @return JSONObject representing the error
      */
     public JSONObject getFormattedError() {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setStatus(ErrorResponse.StatusEnum.ERROR);
-        errorResponse.setData(data);
-        return new JSONObject(errorResponse);
+        return ErrorUtil.getFormattedErrorResponse(data);
     }
 
     /**

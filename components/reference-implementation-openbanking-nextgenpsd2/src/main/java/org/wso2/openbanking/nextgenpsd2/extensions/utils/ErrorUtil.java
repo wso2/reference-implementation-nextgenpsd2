@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,5 +122,30 @@ public class ErrorUtil {
         tppMessages.setTppMessages(tppErrorMessages);
 
         return CommonConsentValidationUtil.convertObjectToJson(tppMessages);
+    }
+
+    /**
+     * Get formatted error object for validation failures.
+     * @return a correctly formatted FailedResponse JSONObject
+     */
+    public static JSONObject getFormattedFailedResponse(int errorCode, JSONObject data) {
+        FailedResponse failedResponse = new FailedResponse();
+
+        failedResponse.setStatus(FailedResponse.StatusEnum.ERROR);
+        failedResponse.setErrorCode(errorCode);
+        failedResponse.setData(data);
+
+        return new JSONObject(failedResponse);
+    }
+
+    /**
+     * Get formatted error object for internal errors.
+     * @return JSONObject representing the error
+     */
+    public static JSONObject getFormattedErrorResponse(JSONObject data) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(ErrorResponse.StatusEnum.ERROR);
+        errorResponse.setData(data);
+        return new JSONObject(errorResponse);
     }
 }

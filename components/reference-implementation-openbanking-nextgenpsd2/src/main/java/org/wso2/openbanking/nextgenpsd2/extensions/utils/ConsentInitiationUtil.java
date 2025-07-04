@@ -20,9 +20,12 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
@@ -50,7 +53,7 @@ public class ConsentInitiationUtil {
      * @param apiVersion
      * @param isSCARequired
      * @return
-     * @throws ServerException
+     * @throws BadRequestException
      */
     public static void buildEnrichedConsentInitiationResponse(String consentType,
                                                               EnrichConsentCreationRequestBody requestBody,
@@ -58,7 +61,7 @@ public class ConsentInitiationUtil {
                                                               JSONObject headers,
                                                               boolean isRedirectPreferred,
                                                               String apiVersion, boolean isSCARequired)
-            throws ServerException {
+            throws BadRequestException {
 
         String resourcePath = requestBody.getData().getConsentResourcePath();
         String locationString = String.format(ConsentExtensionConstants.SELF_LINK_TEMPLATE,
@@ -106,11 +109,12 @@ public class ConsentInitiationUtil {
      * @param authorisationId                     authorisation resource consentId
      * @param consentType                         type of consent
      * @return constructed links object for initiation response
+     * @throws BadRequestException
      */
     public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
                                                 ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
                                                 String requestPath, String consentId, String authorisationId,
-                                                String consentType) throws ServerException {
+                                                String consentType) throws BadRequestException {
         JSONObject links = new JSONObject();
 
         String apiVersion = CommonConsentValidationUtil.getApiVersion(consentType);
@@ -154,7 +158,7 @@ public class ConsentInitiationUtil {
             // Explicit authorisation not supported
             // Should be unreachable since this is validated upon consent creation
             // ToDo: revisit once auth resources can be added explicitly
-            throw new ServerException(ServerException.ErrorCode.BAD_REQUEST, ErrorUtil.constructBerlinError(
+            throw new BadRequestException(ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SERVICE_INVALID_405,
                     ErrorConstants.EXPLICIT_AUTH_NOT_SUPPORTED));
             /*
@@ -187,10 +191,13 @@ public class ConsentInitiationUtil {
      * @param requestBody
      * @param validationResponse
      * @param consentType
+     * @throws BadRequestException
      */
-    static void buildResponseAlterationResponseForConsentCreation(EnrichConsentCreationRequestBody requestBody,
-                                                                  SuccessResponseForResponseAlternation
-                                                                          validationResponse, String consentType) {
+    public static void buildResponseAlterationResponseForConsentCreation(EnrichConsentCreationRequestBody requestBody,
+                                                                         SuccessResponseForResponseAlternation
+                                                                                 validationResponse, String consentType)
+            throws BadRequestException {
+
         JSONObject payloadToSend = new JSONObject();
         JSONObject headersToSend = new JSONObject();
 
