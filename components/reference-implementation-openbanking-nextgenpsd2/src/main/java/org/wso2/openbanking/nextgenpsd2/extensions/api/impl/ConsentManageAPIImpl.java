@@ -90,7 +90,7 @@ public class ConsentManageAPIImpl {
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
-            CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
+            CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
             // Extract consent initiation data
             JSONObject consentInitiationDataJSON;
@@ -154,7 +154,7 @@ public class ConsentManageAPIImpl {
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
-            CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
+            CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
             ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
@@ -196,7 +196,7 @@ public class ConsentManageAPIImpl {
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
-            CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
+            CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
             ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());

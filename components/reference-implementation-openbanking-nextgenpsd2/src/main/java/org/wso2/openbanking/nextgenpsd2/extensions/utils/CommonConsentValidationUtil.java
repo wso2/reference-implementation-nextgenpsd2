@@ -617,7 +617,7 @@ public class CommonConsentValidationUtil {
         }
     }
 
-    public static void validateIdempotencyHeader(Object headers) throws ValidationFailureException {
+    public static void validateRequestIdentificationHeader(Object headers) throws ValidationFailureException {
         // To allow idempotency header validation it needs to be forwarded
         // Therefore X-Request-ID needs to be added to the configuration in the IS deployment.toml
         // [financial_services.consent.manage_extension]
