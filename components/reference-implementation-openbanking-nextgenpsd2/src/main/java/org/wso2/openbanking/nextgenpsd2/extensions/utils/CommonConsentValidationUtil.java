@@ -781,8 +781,7 @@ public class CommonConsentValidationUtil {
 
         // Check if a valid token can exist for transaction
         //ToDo: Verify that these are the only statuses of transaction where a token revocation would be necessary
-        if (TransactionStatusEnum.ACSC.name().equals(consentData.getStatus()) ||
-                TransactionStatusEnum.ACSP.name().equals(consentData.getStatus())) {
+        if (TransactionStatusEnum.ACCP.name().equals(consentData.getStatus())) {
             return "true";
         }
 
@@ -832,6 +831,9 @@ public class CommonConsentValidationUtil {
         }
         CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
 
+        // Validate consent is revocable (single payments cannot be revoked)
+        CommonConsentValidationUtil.validateIfConsentTypeIsRevocable(consentType);
+
         log.debug("Send an error if the consent is already deleted");
         if (StringUtils.equals(ConsentStatusEnum.REVOKED_BY_PSU.toString(), consentResource.getStatus())
                 || StringUtils.equals(ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
@@ -851,5 +853,20 @@ public class CommonConsentValidationUtil {
         }
 
         return buildConsentRevocationResponse(requestBody);
+    }
+
+    /**
+     * Validates if the consent type is revocable.
+     *
+     * @param consentType
+     */
+    private static void validateIfConsentTypeIsRevocable(String consentType) throws ValidationFailureException {
+        if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
+            log.error(String.format(ErrorConstants.CANCELLATION_NOT_APPLICABLE));
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.METHOD_NOT_ALLOWED,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.CANCELLATION_INVALID,
+                            String.format(ErrorConstants.CANCELLATION_NOT_APPLICABLE)));
+        }
     }
 }
