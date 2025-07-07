@@ -85,6 +85,7 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
         JSONObject validPayload = (JSONObject) parser.parse(TestPayloads.VALID_PAYMENTS_PAYLOAD);
         doReturn(validPayload).when(consentManageDataMock).getPayload();
         doReturn(headersMap).when(consentManageDataMock).getHeaders();
+        doReturn("").when(consentManageDataMock).getClientId();
 
         berlinConsentManageHandler.handlePost(consentManageDataMock);
     }
@@ -94,6 +95,7 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
 
         doReturn(null).when(consentManageDataMock).getPayload();
         doReturn(headersMap).when(consentManageDataMock).getHeaders();
+        doReturn("").when(consentManageDataMock).getClientId();
 
         berlinConsentManageHandler.handlePost(consentManageDataMock);
     }
@@ -102,6 +104,7 @@ public class BerlinConsentManageHandlerTests extends PowerMockTestCase {
     public void testHandlePostWithInvalidPayload() throws ParseException {
 
         doReturn("invalid payload").when(consentManageDataMock).getPayload();
+        doReturn("").when(consentManageDataMock).getClientId();
         doReturn(headersMap).when(consentManageDataMock).getHeaders();
 
         berlinConsentManageHandler.handlePost(consentManageDataMock);

@@ -262,4 +262,10 @@ public class ConsentExtensionConstants {
     public static final String START_AUTH_WITH_AUTH_METHOD_SELECTION
             = "startAuthorisationWithAuthenticationMethodSelection";
 
+    public static final String UPDATE_SP_HEADER = "x-wso2-updatesp";
+    public static final String CLIENT_ID_HEADER = "x-wso2-clientid";
+    public static final String TPP_CERT_HEADER = "x-wso2-tpp-certificate";
+    public static final String REGULATORY_HEADER = "x-wso2-regulatory";
+    public static final String TPP_ROLES_HEADER = "x-wso2-tpp-roles";
+    public static final String REGULATORY = "regulatory";
 }

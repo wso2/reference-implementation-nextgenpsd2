@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthenticationConfig;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.script.AuthenticationScriptConfig;
+import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 
 import java.io.IOException;
 
@@ -55,5 +56,33 @@ public class BerlinApplicationUpdater extends ApplicationUpdaterImpl {
 
             }
         }
+    }
+
+    @Override
+    public  void doPreUpdateApplication(boolean isRegulatoryApp, OAuthConsumerAppDTO oauthApplication,
+                                        ServiceProvider serviceProvider, LocalAndOutboundAuthenticationConfig
+                                                localAndOutboundAuthenticationConfig, String tenantDomain,
+                                        String userName) throws OpenBankingException {
+
+        if (isRegulatoryApp) {
+            oauthApplication.setPkceMandatory(true);
+            oauthApplication.setPkceSupportPlain(true);
+            oauthApplication.setTokenType("JWT");
+            if (localAndOutboundAuthenticationConfig.getAuthenticationScriptConfig() == null) {
+                try {
+                    String authScript = TextFileReader.getInstance().readFile(NON_SCA_AUTH_SCRIPT);
+                    if (StringUtils.isNotEmpty(authScript)) {
+                        AuthenticationScriptConfig scriptConfig = new AuthenticationScriptConfig();
+                        scriptConfig.setContent(authScript);
+                        scriptConfig.setEnabled(true);
+                        localAndOutboundAuthenticationConfig.setAuthenticationScriptConfig(scriptConfig);
+                    }
+                } catch (IOException e) {
+                    throw new OpenBankingException("Error occurred while reading file", e);
+                }
+            }
+        }
+        super.doPreUpdateApplication(isRegulatoryApp, oauthApplication, serviceProvider,
+                localAndOutboundAuthenticationConfig, tenantDomain, userName);
     }
 }
