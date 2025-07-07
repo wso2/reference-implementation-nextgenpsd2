@@ -30,9 +30,12 @@ import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurablePr
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.enums.TransactionStatusEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentManageHandler;
@@ -42,7 +45,11 @@ import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentM
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRetrievalData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocationData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -732,5 +739,117 @@ public class CommonConsentValidationUtil {
         JSONObject idempotencyHeader = new JSONObject();
         idempotencyHeader.put(ConsentExtensionConstants.X_REQUEST_ID_PROPER_CASE_HEADER, xRequestID);
         return idempotencyHeader;
+    }
+
+    /**
+     * Builds consent revocation response.
+     *
+     * @param requestBody
+     * @return
+     */
+    public static SuccessResponseConsentRevocation buildConsentRevocationResponse(
+            PreProcessConsentRequestBody requestBody) {
+        SuccessResponseConsentRevocation validationResponse = new SuccessResponseConsentRevocation();
+        validationResponse.setResponseId(requestBody.getRequestId());
+        validationResponse.setStatus(SuccessResponseConsentRevocation.StatusEnum.SUCCESS);
+
+        // Set revocation response data
+        StoredBasicConsentResourceData consentData = requestBody.getData().getConsentResource();
+        SuccessResponseConsentRevocationData responseData = new SuccessResponseConsentRevocationData();
+        if (consentData.getType().contains(ConsentExtensionConstants.PAYMENTS)) {
+            responseData.setRevocationStatusName(TransactionStatusEnum.CANC.name());
+        } else {
+            responseData.setRevocationStatusName(ConsentStatusEnum.TERMINATED_BY_TPP.toString());
+        }
+        responseData.setRequireTokenRevocation(getIfRequireTokenRevocation(consentData));
+
+        validationResponse.setData(responseData);
+        return validationResponse;
+    }
+
+    /**
+     * Decide if token revocation is necessary given the status of consent.
+     *
+     * @param consentData
+     * @return
+     */
+    private static String getIfRequireTokenRevocation(StoredBasicConsentResourceData consentData) {
+        // Check if consent is authorized
+        if (ConsentStatusEnum.VALID.toString().equals(consentData.getStatus())) {
+            return "true";
+        }
+
+        // Check if a valid token can exist for transaction
+        //ToDo: Verify that these are the only statuses of transaction where a token revocation would be necessary
+        if (TransactionStatusEnum.ACSC.name().equals(consentData.getStatus()) ||
+                TransactionStatusEnum.ACSP.name().equals(consentData.getStatus())) {
+            return "true";
+        }
+
+        return "false";
+    }
+
+    /**
+     * Validates revoke request for payment, account and funds confirmation consents and returns built response.
+     *
+     * @param requestBody
+     * @return
+     * @throws BadRequestException
+     * @throws ValidationFailureException
+     */
+    public static SuccessResponseConsentRevocation
+    validateRevokeRequestAndReturnResponse(PreProcessConsentRequestBody requestBody) throws BadRequestException,
+            ValidationFailureException {
+
+        PreProcessConsentRetrievalData data = requestBody.getData();
+        StoredBasicConsentResourceData consentResource = data.getConsentResource();
+        String requestPath = data.getConsentResourcePath();
+        String consentType = CommonConsentValidationUtil.getConsentTypeFromRequestPath(requestPath);
+        String consentId = requestBody.getData().getConsentId();
+
+        // Validate client
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating consent of Id %s for valid client", consentId));
+        }
+
+        // Get request client id from the headers
+        String requestClientId;
+        JSONObject headers;
+        try {
+            headers = CommonConsentValidationUtil.convertObjectToJson(data.getRequestHeaders());
+            requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
+        } catch (JSONException e) {
+            // Should be unreachable (since insequence always adds client id header)
+            throw new BadRequestException(ErrorUtil.constructBerlinError(
+                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR,
+                    "x-wso2-client-id header not found"));
+        }
+        CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
+
+        // Validate consent type
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating consent of Id %s for correct type", consentId));
+        }
+        CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
+
+        log.debug("Send an error if the consent is already deleted");
+        if (StringUtils.equals(ConsentStatusEnum.REVOKED_BY_PSU.toString(), consentResource.getStatus())
+                || StringUtils.equals(ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
+                consentResource.getStatus())) {
+            log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ALREADY_DELETED));
+        }
+
+        // Check whether the consent is already expired before deleting
+        if (StringUtils.equals(ConsentStatusEnum.EXPIRED.toString(), consentResource.getStatus())) {
+            log.error(ErrorConstants.CONSENT_ALREADY_EXPIRED);
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ALREADY_EXPIRED));
+        }
+
+        return buildConsentRevocationResponse(requestBody);
     }
 }

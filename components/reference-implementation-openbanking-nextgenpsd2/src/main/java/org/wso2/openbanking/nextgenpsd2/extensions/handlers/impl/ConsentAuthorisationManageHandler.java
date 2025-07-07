@@ -26,6 +26,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
@@ -61,6 +62,21 @@ public class ConsentAuthorisationManageHandler implements ConsentManagementRespo
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
+            throws ValidationFailureException {
+        // Throws an error since auth resources for a consent cannot be retrieved through consent creation
+        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                        TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.DELETE_NOT_SUPPORTED));
+    }
+
+    /**
+     * Handles revocation of consent authorizations.
+     *
+     * @param requestBody
+     * @return
+     */
+    @Override
+    public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException {
         // Throws an error since auth resources for a consent cannot be retrieved through consent creation
         throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,

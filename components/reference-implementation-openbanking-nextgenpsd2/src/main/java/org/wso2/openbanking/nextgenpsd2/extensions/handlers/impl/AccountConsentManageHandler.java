@@ -43,6 +43,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessCon
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRetrievalData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
@@ -234,6 +235,18 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                         headers.getString(ConsentExtensionConstants.X_REQUEST_ID_HEADER))));
 
         return validationResponse;
+    }
+
+    /**
+     * Handles revocation of account consents.
+     *
+     * @param requestBody
+     * @return
+     */
+    @Override
+    public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
+            throws BadRequestException, ValidationFailureException {
+        return CommonConsentValidationUtil.validateRevokeRequestAndReturnResponse(requestBody);
     }
 
     /**

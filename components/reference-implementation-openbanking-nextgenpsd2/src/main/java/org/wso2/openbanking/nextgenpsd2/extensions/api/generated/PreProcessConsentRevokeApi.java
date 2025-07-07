@@ -1,5 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.api.generated;
 
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManageAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Response200ForConsentRevocation;
@@ -35,6 +36,6 @@ public class PreProcessConsentRevokeApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response preProcessConsentRevokePost(@Valid @NotNull PreProcessConsentRequestBody preProcessConsentRequestBody) {
-        return Response.ok().entity("magic!").build();
+        return ConsentManageAPIImpl.preProcessConsentRevoke(preProcessConsentRequestBody);
     }
 }

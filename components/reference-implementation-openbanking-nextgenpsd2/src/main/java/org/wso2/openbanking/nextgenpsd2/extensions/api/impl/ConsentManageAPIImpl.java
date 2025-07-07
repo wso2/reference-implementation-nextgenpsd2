@@ -31,6 +31,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
@@ -46,6 +47,7 @@ public class ConsentManageAPIImpl {
 
     /**
      * Method for returning the response for enriching consent creation request.
+     *
      * @param requestBody
      * @return
      */
@@ -80,6 +82,7 @@ public class ConsentManageAPIImpl {
 
     /**
      * Method for returning the response for pre-processing consent creation request.
+     *
      * @param requestBody
      * @return
      */
@@ -143,6 +146,7 @@ public class ConsentManageAPIImpl {
 
     /**
      * Method for returning the response for pre-processing consent retrieval request.
+     *
      * @param requestBody
      * @return
      */
@@ -159,6 +163,48 @@ public class ConsentManageAPIImpl {
 
             if (consentManagementResponseHandler != null) {
                 validationResponse = consentManagementResponseHandler.handleRetrieval(requestBody);
+            } else {
+                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
+                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
+                                ErrorConstants.PATH_INVALID));
+                return Response.ok().entity(errorObject).build();
+            }
+
+            return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
+
+        } catch (ValidationFailureException e) {
+            log.error("Validation failed for consent creation. Returning failed response.", e);
+            return Response.ok().entity(e.getFormattedErrorAsString()).build();
+
+        } catch (BadRequestException e) {
+            log.error(e);
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+
+        } catch (ServerErrorException e) {
+            log.error(e);
+            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        }
+    }
+
+    /**
+     * Method for returning response for pre-processing consent revocation request.
+     *
+     * @param requestBody
+     * @return
+     */
+    public static Response preProcessConsentRevoke(PreProcessConsentRequestBody requestBody) {
+        try {
+            // Validate X-request-ID header
+            // Enable forwarding of the specific header in accelerator configurations
+            CommonConsentValidationUtil.validateIdempotencyHeader(requestBody.getData().getRequestHeaders());
+
+            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+
+            SuccessResponseConsentRevocation validationResponse;
+
+            if (consentManagementResponseHandler != null) {
+                validationResponse = consentManagementResponseHandler.handleRevocation(requestBody);
             } else {
                 JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
