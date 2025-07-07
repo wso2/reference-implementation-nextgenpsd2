@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
@@ -145,17 +145,17 @@ public class CommonConsentValidationUtil {
      */
     public static String getApiVersion(String consentType) {
         if (ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
-            return ConfigurableProperties.AIS_API_VERSION;
+            return ConfigurationConstants.AIS_API_VERSION;
         }
 
         if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)
                 || ConsentTypeEnum.BULK_PAYMENTS.toString().equals(consentType)
                 || ConsentTypeEnum.PERIODIC_PAYMENTS.toString().equals(consentType)) {
-            return ConfigurableProperties.PIS_API_VERSION;
+            return ConfigurationConstants.PIS_API_VERSION;
         }
 
         if (ConsentTypeEnum.FUNDS_CONFIRMATION.toString().equals(consentType)) {
-            return ConfigurableProperties.PIIS_API_VERSION;
+            return ConfigurationConstants.PIIS_API_VERSION;
         }
 
         return "";
@@ -460,7 +460,7 @@ public class CommonConsentValidationUtil {
     public static List<ScaMethod> getSupportedScaMethods() {
         List<ScaMethod> supportedScaMethods = new ArrayList<>();
 
-        for (Map<String, String> supportedScaMethod : ConfigurableProperties.SUPPORTED_SCA_METHODS) {
+        for (Map<String, String> supportedScaMethod : ConfigurationConstants.SUPPORTED_SCA_METHODS) {
             ScaMethod scaMethod = new ScaMethod();
 
             scaMethod.setAuthenticationType(supportedScaMethod.get(CommonConstants.SCA_TYPE));
@@ -486,7 +486,7 @@ public class CommonConsentValidationUtil {
     public static List<ScaApproach> getSupportedScaApproaches() {
         List<ScaApproach> supportedScaApproaches = new ArrayList<>();
 
-        for (Map<String, String> supportedScaApproach : ConfigurableProperties.SUPPORTED_SCA_APPROACHES) {
+        for (Map<String, String> supportedScaApproach : ConfigurationConstants.SUPPORTED_SCA_APPROACHES) {
             ScaApproach scaApproach = new ScaApproach();
 
             scaApproach.setApproach(ScaApproachEnum.fromValue(supportedScaApproach.get(CommonConstants.SCA_NAME)));
@@ -506,7 +506,7 @@ public class CommonConsentValidationUtil {
      */
     private static boolean hasUnSupportedAccountRefTypes(Set<String> accountRefKeys) {
 
-        List<String> configuredAccountRefTypes = ConfigurableProperties.SUPPORTED_ACC_REFERNCE_TYPES;
+        List<String> configuredAccountRefTypes = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
         for (String accountRef : accountRefKeys) {
             // Skipping currency since it is not an account reference type
             if (StringUtils.equals(accountRef, ConsentExtensionConstants.CURRENCY)) {

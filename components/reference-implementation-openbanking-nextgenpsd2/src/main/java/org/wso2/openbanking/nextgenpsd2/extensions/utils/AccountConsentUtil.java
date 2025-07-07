@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.AccessMethodEnum;
@@ -62,9 +62,9 @@ public class AccountConsentUtil {
      */
     public static String validateAccountInitiationPayloadAndGetPermission(JSONObject payload) throws
             ValidationFailureException {
-        int configuredMinimumFreqPerDay = Integer.parseInt(ConfigurableProperties.FREQ_PER_DAY);
-        boolean isValidUntilDateCapEnabled = Boolean.parseBoolean(ConfigurableProperties.VALID_UNTIL_DATE_CAP_ENABLED);
-        int validUntilDaysCap = Integer.parseInt(ConfigurableProperties.VALID_UNTIL_DAYS);
+        int configuredMinimumFreqPerDay = Integer.parseInt(ConfigurationConstants.FREQ_PER_DAY);
+        boolean isValidUntilDateCapEnabled = Boolean.parseBoolean(ConfigurationConstants.VALID_UNTIL_DATE_CAP_ENABLED);
+        int validUntilDaysCap = Integer.parseInt(ConfigurationConstants.VALID_UNTIL_DAYS);
 
         JSONObject accessObject = payload.optJSONObject(ConsentExtensionConstants.ACCESS);
 

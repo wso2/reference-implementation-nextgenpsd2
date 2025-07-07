@@ -19,7 +19,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
@@ -137,7 +137,7 @@ public class ConsentInitiationUtil {
                     apiVersion, requestPath, consentId, authorisationId);
             if (ScaApproachEnum.REDIRECT.equals(currentScaApproach.getApproach())) {
                 // Implicit REDIRECT approach
-                String wellKnown = ConfigurableProperties.OAUTH_METADATA_ENDPOINT;
+                String wellKnown = ConfigurationConstants.OAUTH_METADATA_ENDPOINT;
                 JSONObject scaOAuth = new JSONObject();
                 scaOAuth.put(ConsentExtensionConstants.HREF, wellKnown);
                 links.put(ConsentExtensionConstants.SCA_OAUTH, scaOAuth);
@@ -202,7 +202,7 @@ public class ConsentInitiationUtil {
         JSONObject headersToSend = new JSONObject();
 
         String apiVersion = CommonConsentValidationUtil.getApiVersion(consentType);
-        boolean isScaRequired = Boolean.parseBoolean(ConfigurableProperties.IS_SCA_REQUIRED);
+        boolean isScaRequired = Boolean.parseBoolean(ConfigurationConstants.IS_SCA_REQUIRED);
 
         buildEnrichedConsentInitiationResponse(consentType, requestBody, payloadToSend, headersToSend,
                 true, apiVersion, isScaRequired);

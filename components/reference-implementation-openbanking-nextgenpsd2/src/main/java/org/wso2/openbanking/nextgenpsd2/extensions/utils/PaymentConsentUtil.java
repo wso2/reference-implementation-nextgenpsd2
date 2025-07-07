@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
@@ -70,7 +70,7 @@ public class PaymentConsentUtil {
      * @throws ValidationFailureException
      */
     private static void validateBulkPaymentInitiation(JSONObject requestPayload) throws ValidationFailureException {
-        String maxPaymentExecutionDays = ConfigurableProperties.MAX_FUTURE_PAYMENT_DAYS;
+        String maxPaymentExecutionDays = ConfigurationConstants.MAX_FUTURE_PAYMENT_DAYS;
         PaymentConsentUtil.validateDebtorAccount(requestPayload);
 
         if (requestPayload.opt(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
@@ -344,7 +344,7 @@ public class PaymentConsentUtil {
 
     private static void validateSinglePaymentInitiation(JSONObject requestPayload) throws ValidationFailureException {
         validateDebtorAccount(requestPayload);
-        validateRequestedExecutionDate(requestPayload, ConfigurableProperties.MAX_FUTURE_PAYMENT_DAYS);
+        validateRequestedExecutionDate(requestPayload, ConfigurationConstants.MAX_FUTURE_PAYMENT_DAYS);
         validateCommonPaymentElements(requestPayload);
     }
 

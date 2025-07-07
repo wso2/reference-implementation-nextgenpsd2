@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurableProperties;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
@@ -73,7 +73,7 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
         // Skipping idempotency check as it's handled by the accelerator
         // ToDo: Add explicit authorisation support
 
-        boolean isSCARequired = Boolean.parseBoolean(ConfigurableProperties.IS_SCA_REQUIRED);
+        boolean isSCARequired = Boolean.parseBoolean(ConfigurationConstants.IS_SCA_REQUIRED);
 
         JSONObject headersJSON =
                 CommonConsentValidationUtil.convertObjectToJson(requestBody.getData().getRequestHeaders());

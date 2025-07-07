@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Placeholder class for configuration setup.
  */
-public class ConfigurableProperties {
+public class ConfigurationConstants {
     public static final String IS_SCA_REQUIRED = "true";
     public static final String FREQ_PER_DAY = "4";
     public static final String VALID_UNTIL_DATE_CAP_ENABLED = "false";
