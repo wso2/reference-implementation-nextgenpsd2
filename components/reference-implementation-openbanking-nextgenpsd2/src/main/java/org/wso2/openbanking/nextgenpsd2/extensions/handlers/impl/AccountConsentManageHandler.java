@@ -18,6 +18,10 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,6 +39,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Authorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.DetailedConsentResourceData;
@@ -54,12 +59,23 @@ import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentInitiationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 /**
  * Consent handler for account consents.
  */
 public class AccountConsentManageHandler implements ConsentManagementResponseHandler {
     private static final Log log = LogFactory.getLog(AccountConsentManageHandler.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
 
     /**
      * Handles creation of account consents.
@@ -93,7 +109,27 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
-        String permission = AccountConsentUtil.validateAccountInitiationPayloadAndGetPermission(requestPayload);
+
+        // Parse account initiation payload and validate its structure
+        AccountInitiationPayload payload;
+        try {
+             payload = objectMapper.readValue(requestPayload.toString(), AccountInitiationPayload.class);
+        } catch (JsonProcessingException e) {
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
+        }
+        Set<ConstraintViolation<AccountInitiationPayload>> violations = validator.validate(payload);
+
+        // Throw validation error from validation failures
+        if (!violations.isEmpty()) {
+            String[] codeAndMessage = CommonConsentValidationUtil
+                    .splitViolationMessage(violations.iterator().next().getMessage());
+
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.valueOf(codeAndMessage[0]), codeAndMessage[1]));
+        }
 
         Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(headersJSON);
 
@@ -129,11 +165,6 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                 // setting null for one off consent's validity period
                 consentResource.setValidityTime(0L);
             }
-
-            // Set consent attributes
-            JSONObject attributesJSON = new JSONObject();
-            attributesJSON.put(ConsentExtensionConstants.PERMISSION, permission);
-            consentResource.setAttributes(attributesJSON);
 
             // Build auth resource for implicit authorisation
             // ToDo: Revisit once explicit authorisation is supported

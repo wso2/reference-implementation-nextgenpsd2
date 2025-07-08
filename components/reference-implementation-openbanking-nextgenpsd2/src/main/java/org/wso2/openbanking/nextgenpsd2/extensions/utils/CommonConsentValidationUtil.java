@@ -62,6 +62,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.validation.ConstraintValidatorContext;
+
 /**
  * Common utility class for handling consent operations.
  */
@@ -868,5 +870,48 @@ public class CommonConsentValidationUtil {
                             TPPMessage.CodeEnum.CANCELLATION_INVALID,
                             String.format(ErrorConstants.CANCELLATION_NOT_APPLICABLE)));
         }
+    }
+
+    /**
+     * Disables default violation and sets built constraint violation.
+     *
+     * @param context
+     * @param violationMessage
+     */
+    public static void setConstrainViolation(ConstraintValidatorContext context, String violationMessage) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(violationMessage).addConstraintViolation();
+    }
+
+    /**
+     * Builds constraint violation message with error and error code.
+     * Sets FORMAT_ERROR as default
+     *
+     * @param error
+     * @return
+     */
+    public static String buildViolationMessage(String error) {
+        return buildViolationMessage(TPPMessage.CodeEnum.FORMAT_ERROR, error);
+    }
+
+    /**
+     * Builds constraint violation message with error and error code.
+     *
+     * @param errorCode
+     * @param error
+     * @return
+     */
+    public static String buildViolationMessage(TPPMessage.CodeEnum errorCode, String error) {
+        return errorCode.toString() + ":" + error;
+    }
+
+    /**
+     * Splits retrieved violation message to error and error code.
+     *
+     * @param violationMessage
+     * @return
+     */
+    public static String[] splitViolationMessage(String violationMessage) {
+        return violationMessage.split(":", 2);
     }
 }
