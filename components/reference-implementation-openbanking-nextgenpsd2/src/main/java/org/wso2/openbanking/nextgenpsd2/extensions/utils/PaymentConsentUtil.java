@@ -56,7 +56,6 @@ public class PaymentConsentUtil {
     public static void areDatesValid(LocalDate startDate, LocalDate endDate) throws ValidationFailureException {
 
         if (endDate.compareTo(startDate) <= 0) {
-            log.error(ErrorConstants.DATES_INCONSISTENT);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.DATES_INCONSISTENT));
@@ -69,32 +68,30 @@ public class PaymentConsentUtil {
      * @param requestPayload
      * @throws ValidationFailureException
      */
-    private static void validateBulkPaymentInitiation(JSONObject requestPayload) throws ValidationFailureException {
+    private static void validateBulkPaymentInitiation(String requestId, JSONObject requestPayload)
+            throws ValidationFailureException {
         String maxPaymentExecutionDays = ConfigurationConstants.MAX_FUTURE_PAYMENT_DAYS;
-        PaymentConsentUtil.validateDebtorAccount(requestPayload);
+        PaymentConsentUtil.validateDebtorAccount(requestId, requestPayload);
 
         if (requestPayload.opt(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
                 && requestPayload.opt(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME) != null) {
-            log.error(ErrorConstants.EXECUTION_DATE_TIME_ERROR);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.EXECUTION_DATE_TIME_ERROR));
         }
 
-        PaymentConsentUtil.validateRequestedExecutionDate(requestPayload, maxPaymentExecutionDays);
+        PaymentConsentUtil.validateRequestedExecutionDate(requestId, requestPayload, maxPaymentExecutionDays);
 
         JSONArray payments;
 
-        log.debug("Validate presence of payment objects");
+        log.debug("[" + requestId + "] " + "Validate presence of payment objects");
         if (requestPayload.opt(ConsentExtensionConstants.PAYMENTS) == null) {
-            log.error(ErrorConstants.NO_PAYMENTS_IN_BODY);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.NO_PAYMENTS_IN_BODY));
         } else {
             payments = requestPayload.getJSONArray(ConsentExtensionConstants.PAYMENTS);
             if (payments.isEmpty()) {
-                log.error(ErrorConstants.EMPTY_PAYMENTS_ELEMENT);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.EMPTY_PAYMENTS_ELEMENT));
@@ -102,7 +99,7 @@ public class PaymentConsentUtil {
         }
 
         // Validate each payment object present in bulk payments payload
-        validatePaymentElements(payments);
+        validatePaymentElements(requestId, payments);
     }
 
     /**
@@ -111,22 +108,21 @@ public class PaymentConsentUtil {
      * @param payload request payload
      * @throws ValidationFailureException
      */
-    public static void validateCommonPaymentElements(JSONObject payload) throws ValidationFailureException {
-        log.debug("Validating payload for instructed amount");
+    public static void validateCommonPaymentElements(String requestId, JSONObject payload) throws
+            ValidationFailureException {
+        log.debug("[" + requestId + "] " + "Validating payload for instructed amount");
         if (payload.opt(ConsentExtensionConstants.INSTRUCTED_AMOUNT) == null
                 || !payload.has(ConsentExtensionConstants.INSTRUCTED_AMOUNT) ||
                 !(payload.get(ConsentExtensionConstants.INSTRUCTED_AMOUNT) instanceof JSONObject)) {
-            log.error(ErrorConstants.INSTRUCTED_AMOUNT_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.INSTRUCTED_AMOUNT_MISSING));
         } else {
-            log.debug("Validate the amount and currency of instructed amount");
+            log.debug("[" + requestId + "] " + "Validate the amount and currency of instructed amount");
             JSONObject instructedAmountJson = payload.getJSONObject(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
             if (instructedAmountJson.opt(ConsentExtensionConstants.CURRENCY) == null
                     || StringUtils.isBlank(instructedAmountJson.getString(ConsentExtensionConstants.CURRENCY))) {
-                log.error(ErrorConstants.CURRENCY_CODE_MISSING);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null,
                                 TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -135,7 +131,6 @@ public class PaymentConsentUtil {
 
             if (instructedAmountJson.opt(ConsentExtensionConstants.AMOUNT) == null
                     || StringUtils.isBlank(instructedAmountJson.getString(ConsentExtensionConstants.AMOUNT))) {
-                log.error(ErrorConstants.AMOUNT_IS_MISSING);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null,
                                 TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -143,9 +138,8 @@ public class PaymentConsentUtil {
             }
         }
 
-        log.debug("Validating payload for creditor account");
+        log.debug("[" + requestId + "] " + "Validating payload for creditor account");
         if (payload.opt(ConsentExtensionConstants.CREDITOR_ACCOUNT) == null) {
-            log.error(ErrorConstants.CREDITOR_ACCOUNT_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -159,7 +153,6 @@ public class PaymentConsentUtil {
                     && !creditorAccountObject.has(ConsentExtensionConstants.MASKED_PAN)
                     && !creditorAccountObject.has(ConsentExtensionConstants.MSISDN)) {
 
-                log.error(ErrorConstants.CREDITOR_ACCOUNT_REFERENCE_MISSING);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null,
                                 TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -167,10 +160,9 @@ public class PaymentConsentUtil {
             }
         }
 
-        log.debug("Validating payload for creditor name");
+        log.debug("[" + requestId + "] " + "Validating payload for creditor name");
         if (payload.opt(ConsentExtensionConstants.CREDITOR_NAME) == null
                 || StringUtils.isBlank(payload.getString(ConsentExtensionConstants.CREDITOR_NAME))) {
-            log.error(ErrorConstants.CREDITOR_NAME_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -184,21 +176,19 @@ public class PaymentConsentUtil {
      * @param payload request payload
      * @throws ValidationFailureException
      */
-    public static void validateDayOfExecution(JSONObject payload) throws ValidationFailureException {
+    public static void validateDayOfExecution(String requestId, JSONObject payload) throws ValidationFailureException {
 
         if (payload.opt(ConsentExtensionConstants.DAY_OF_EXECUTION) != null) {
-            log.debug("Validating payload for dayOfExecution");
+            log.debug("[" + requestId + "] " + "Validating payload for dayOfExecution");
             try {
                 int dayOfExecution = Integer.parseInt(
                         payload.get(ConsentExtensionConstants.DAY_OF_EXECUTION).toString());
                 if (dayOfExecution > 31 || dayOfExecution < 1) {
-                    log.error("Invalid dayOfExecution value received : " + dayOfExecution);
                     throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_DAY_OF_EXECUTION));
                 }
             } catch (NumberFormatException e) {
-                log.error("Error occurred while validating payload for dayOfExecution", e);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_DAY_OF_EXECUTION));
@@ -212,11 +202,11 @@ public class PaymentConsentUtil {
      * @param payload the request payload
      * @throws ValidationFailureException
      */
-    public static void validateDebtorAccount(JSONObject payload) throws ValidationFailureException {
+    public static void validateDebtorAccount(String requestId, JSONObject payload) throws ValidationFailureException {
 
         JSONObject debtorAccountObject = payload.getJSONObject(ConsentExtensionConstants.DEBTOR_ACCOUNT);
 
-        log.debug("Validating payload for debtor account");
+        log.debug("[" + requestId + "] " + "Validating payload for debtor account");
         CommonConsentValidationUtil.validateAccountRefObject(debtorAccountObject);
     }
 
@@ -229,7 +219,6 @@ public class PaymentConsentUtil {
     public static void validateFutureDate(LocalDate date, String errorMessage) throws ValidationFailureException {
 
         if (!date.isAfter(LocalDate.now(ZoneOffset.UTC))) {
-            log.error(errorMessage);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, errorMessage));
@@ -243,19 +232,20 @@ public class PaymentConsentUtil {
      * @param resourcePath
      * @throws ValidationFailureException
      */
-    public static void validatePaymentInitiationPayload(JSONObject requestPayload, String resourcePath)
+    public static void validatePaymentInitiationPayload(String requestId, JSONObject requestPayload,
+                                                        String resourcePath)
             throws ValidationFailureException {
         switch (CommonConsentValidationUtil.getServiceDifferentiatingRequestPath(resourcePath)) {
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
-                validateSinglePaymentInitiation(requestPayload);
+                validateSinglePaymentInitiation(requestId, requestPayload);
                 break;
 
             case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
-                validateBulkPaymentInitiation(requestPayload);
+                validateBulkPaymentInitiation(requestId, requestPayload);
                 break;
 
             case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                validatePeriodicPaymentInitiation(requestPayload);
+                validatePeriodicPaymentInitiation(requestId, requestPayload);
                 break;
 
             default:
@@ -272,33 +262,32 @@ public class PaymentConsentUtil {
      * @param requestPayload
      * @throws ValidationFailureException
      */
-    private static void validatePeriodicPaymentInitiation(JSONObject requestPayload) throws ValidationFailureException {
+    private static void validatePeriodicPaymentInitiation(String requestId, JSONObject requestPayload)
+            throws ValidationFailureException {
         LocalDate startDate;
-        PaymentConsentUtil.validateDebtorAccount(requestPayload);
-        PaymentConsentUtil.validateCommonPaymentElements(requestPayload);
-        PaymentConsentUtil.validateDayOfExecution(requestPayload);
+        PaymentConsentUtil.validateDebtorAccount(requestId, requestPayload);
+        PaymentConsentUtil.validateCommonPaymentElements(requestId, requestPayload);
+        PaymentConsentUtil.validateDayOfExecution(requestId, requestPayload);
 
-        log.debug("Validating periodic payments payload for start date");
+        log.debug("[" + requestId + "] " + "Validating periodic payments payload for start date");
         if (requestPayload.opt(ConsentExtensionConstants.START_DATE) == null
                 || StringUtils.isBlank(requestPayload.getString(ConsentExtensionConstants.START_DATE))) {
-            log.error(ErrorConstants.START_DATE_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.START_DATE_MISSING));
         } else {
-            log.debug("Validating start date for correct date format");
+            log.debug("[" + requestId + "] " + "Validating start date for correct date format");
             startDate = CommonConsentValidationUtil
                     .parseDateToISO(requestPayload.getString(ConsentExtensionConstants.START_DATE),
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.START_DATE_INVALID);
 
-            log.debug("Validating whether the start date is a future date");
+            log.debug("[" + requestId + "] " + "Validating whether the start date is a future date");
             validateFutureDate(startDate, ErrorConstants.START_DATE_NOT_FUTURE);
         }
 
-        log.debug("Validating periodic payments payload for frequency");
+        log.debug("[" + requestId + "] " + "Validating periodic payments payload for frequency");
         if (requestPayload.opt(ConsentExtensionConstants.FREQUENCY) == null
                 || StringUtils.isBlank(requestPayload.getString(ConsentExtensionConstants.FREQUENCY))) {
-            log.error(ErrorConstants.FREQUENCY_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -307,7 +296,6 @@ public class PaymentConsentUtil {
 
         if (!ConsentExtensionConstants.SUPPORTED_PERIODIC_PAYMENT_FREQUENCY_CODES.contains(
                 requestPayload.getString(ConsentExtensionConstants.FREQUENCY))) {
-            log.error(ErrorConstants.FREQUENCY_UNSUPPORTED);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -317,7 +305,7 @@ public class PaymentConsentUtil {
         if (requestPayload.opt(ConsentExtensionConstants.END_DATE) != null &&
                 StringUtils.isNotBlank(requestPayload.getString(
                         ConsentExtensionConstants.END_DATE))) {
-            log.debug("Validating whether periodic payments end date if a future date");
+            log.debug("[" + requestId + "] " + "Validating whether periodic payments end date if a future date");
             LocalDate endDate =
                     CommonConsentValidationUtil.parseDateToISO(
                             requestPayload.getString(ConsentExtensionConstants.END_DATE),
@@ -329,11 +317,10 @@ public class PaymentConsentUtil {
         if (requestPayload.opt(ConsentExtensionConstants.EXECUTION_RULE) != null &&
                 StringUtils.isNotBlank(requestPayload.getString(
                         ConsentExtensionConstants.EXECUTION_RULE))) {
-            log.debug("Validating execution rule");
+            log.debug("[" + requestId + "] " + "Validating execution rule");
             String executionRule = requestPayload.getString(ConsentExtensionConstants.EXECUTION_RULE);
             if (!(StringUtils.equals(ConsentExtensionConstants.FOLLOWING_EXECUTION_RULE, executionRule)
                     || StringUtils.equals(ConsentExtensionConstants.PRECEDING_EXECUTION_RULE, executionRule))) {
-                log.error(ErrorConstants.INVALID_EXECUTION_RULE);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null,
                                 TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -342,28 +329,29 @@ public class PaymentConsentUtil {
         }
     }
 
-    private static void validateSinglePaymentInitiation(JSONObject requestPayload) throws ValidationFailureException {
-        validateDebtorAccount(requestPayload);
-        validateRequestedExecutionDate(requestPayload, ConfigurationConstants.MAX_FUTURE_PAYMENT_DAYS);
-        validateCommonPaymentElements(requestPayload);
+    private static void validateSinglePaymentInitiation(String requestId, JSONObject requestPayload)
+            throws ValidationFailureException {
+        validateDebtorAccount(requestId, requestPayload);
+        validateRequestedExecutionDate(requestId, requestPayload, ConfigurationConstants.MAX_FUTURE_PAYMENT_DAYS);
+        validateCommonPaymentElements(requestId, requestPayload);
     }
 
     /**
      * Validates debtor account, requested execution date, requested executed time presence in bulk payment elements.
      *
+     * @param requestId id of the request
      * @param payments payment elements array
      * @throws ValidationFailureException
      */
-    public static void validatePaymentElements(JSONArray payments) throws ValidationFailureException {
+    public static void validatePaymentElements(String requestId, JSONArray payments) throws ValidationFailureException {
 
-        log.debug("Iterating and validating payment objects");
+        log.debug("[" + requestId + "] " + "Iterating and validating payment objects");
         JSONObject paymentJSON;
         for (int i = 0; i < payments.length(); i++) {
             paymentJSON = payments.getJSONObject(i);
-            PaymentConsentUtil.validateCommonPaymentElements(paymentJSON);
+            PaymentConsentUtil.validateCommonPaymentElements(requestId, paymentJSON);
 
             if (paymentJSON.has(ConsentExtensionConstants.DEBTOR_ACCOUNT)) {
-                log.error("Debtor account cannot be present in bulk payment objects");
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -371,7 +359,6 @@ public class PaymentConsentUtil {
                                         ConsentExtensionConstants.DEBTOR_ACCOUNT)));
             }
             if (paymentJSON.has(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)) {
-                log.error("Requested execution date cannot be present in bulk payment objects");
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -379,7 +366,6 @@ public class PaymentConsentUtil {
                                         ConsentExtensionConstants.REQUESTED_EXECUTION_DATE)));
             }
             if (paymentJSON.has(ConsentExtensionConstants.REQUESTED_EXECUTION_TIME)) {
-                log.error("Requested execution time cannot be present in bulk payment objects");
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -396,10 +382,11 @@ public class PaymentConsentUtil {
      * @param maxPaymentExecutionDays maximum payment execution days allowed
      * @throws ValidationFailureException
      */
-    public static void validateRequestedExecutionDate(JSONObject payload, String maxPaymentExecutionDays)
+    public static void validateRequestedExecutionDate(String requestId, JSONObject payload,
+                                                      String maxPaymentExecutionDays)
             throws ValidationFailureException {
 
-        log.debug("Validating requested execution date");
+        log.debug("[" + requestId + "] " + "Validating requested execution date");
         if (payload.opt(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE) != null
                 && StringUtils.isNotBlank(payload.getString(ConsentExtensionConstants.REQUESTED_EXECUTION_DATE))) {
 
@@ -411,7 +398,6 @@ public class PaymentConsentUtil {
             LocalDate today = LocalDate.now(ZoneOffset.UTC);
 
             if (!requestedExecutionDate.isAfter(today)) { //Checks whether the requested execution date is a future date
-                log.error(ErrorConstants.EXECUTION_DATE_NOT_FUTURE);
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null,
                                 TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,
@@ -422,7 +408,6 @@ public class PaymentConsentUtil {
                 long maxNumberPaymentExecutionDays = Long.parseLong(maxPaymentExecutionDays);
                 if (ChronoUnit.DAYS.between(today.plusDays(maxNumberPaymentExecutionDays),
                         requestedExecutionDate) > 0) {
-                    log.error(ErrorConstants.PAYMENT_EXECUTION_DATE_EXCEEDED);
                     throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                             ErrorUtil.constructBerlinError(null,
                                     TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.EXECUTION_DATE_INVALID,

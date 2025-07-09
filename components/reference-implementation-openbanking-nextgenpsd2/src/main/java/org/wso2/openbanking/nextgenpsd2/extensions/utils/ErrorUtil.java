@@ -19,6 +19,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
@@ -147,5 +148,29 @@ public class ErrorUtil {
         errorResponse.setStatus(ErrorResponse.StatusEnum.ERROR);
         errorResponse.setData(data);
         return new JSONObject(errorResponse);
+    }
+
+    /**
+     * Method to extract error message from nextgenpsd2 error message if exists.
+     *
+     * @param data
+     * @return
+     */
+    public static String getErrorMessage(JSONObject data) {
+        String message = data.toString();
+
+        // Extract error message from data if it exists
+        JSONArray tppMessages = data.optJSONArray("tppMessages");
+        if (tppMessages != null) {
+            JSONObject errorObj = tppMessages.optJSONObject(0);
+            if (errorObj != null) {
+                String text = errorObj.optString("text");
+                if (text != null && !text.isEmpty()) {
+                    message = text;
+                }
+            }
+        }
+
+        return message;
     }
 }

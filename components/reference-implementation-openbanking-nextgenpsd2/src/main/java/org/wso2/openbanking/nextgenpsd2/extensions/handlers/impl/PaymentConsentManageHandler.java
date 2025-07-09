@@ -70,6 +70,8 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
             throws ValidationFailureException {
+        String requestId = requestBody.getRequestId();
+
         // Skipping idempotency check as it's handled by the accelerator
         // ToDo: Add explicit authorisation support
 
@@ -79,8 +81,8 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
                 CommonConsentValidationUtil.convertObjectToJson(requestBody.getData().getRequestHeaders());
 
         // Validate headers
-        CommonConsentValidationUtil.validateTppRedirectPreferredHeader(headersJSON);
-        CommonConsentValidationUtil.validatePsuIpAddress(headersJSON);
+        CommonConsentValidationUtil.validateTppRedirectPreferredHeader(requestId, headersJSON);
+        CommonConsentValidationUtil.validatePsuIpAddress(requestId, headersJSON);
 
         // Validate payload
         JSONObject requestPayload;
@@ -93,13 +95,14 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
-        PaymentConsentUtil.validatePaymentInitiationPayload(requestPayload,
+        PaymentConsentUtil.validatePaymentInitiationPayload(requestId, requestPayload,
                 requestBody.getData().getConsentResourcePath());
 
-        Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(headersJSON);
+        Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,
+                headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("SCA approach is Redirect SCA (OAuth2)");
+            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
 
             String paymentConsentType = CommonConsentValidationUtil
                     .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
@@ -150,7 +153,6 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
             return validationResponse;
         } else {
             //ToDo: revisit once decoupled approach is implemented.
-            log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
@@ -169,6 +171,7 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, BadRequestException {
+        String requestId = requestBody.getRequestId();
 
         PreProcessConsentRetrievalData data = requestBody.getData();
         StoredBasicConsentResourceData consentResource = data.getConsentResource();
@@ -177,7 +180,8 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
                 .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for valid client", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
+                    consentId));
         }
 
         // Get request client id from the headers
@@ -198,13 +202,15 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
 
         // Validate consent type
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for correct type", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
+                    consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentTypeFromPath, consentResource.getType());
 
         // Validate consent payment product
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for correct payment product", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct payment " +
+                    "product", consentId));
         }
         PaymentConsentUtil.validatePaymentProductFromAttributes(consentResource.getAttributes(),
                 data.getConsentResourcePath());

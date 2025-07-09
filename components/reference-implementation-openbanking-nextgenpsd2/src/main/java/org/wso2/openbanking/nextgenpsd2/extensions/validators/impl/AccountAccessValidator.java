@@ -1,7 +1,5 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.validators.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountAccess;
@@ -18,7 +16,6 @@ import javax.validation.ConstraintValidatorContext;
  * Validator implementation for validating account access object.
  */
 public class AccountAccessValidator implements ConstraintValidator<ValidAccountAccess, AccountAccess> {
-    private static final Log log = LogFactory.getLog(AccountAccessValidator.class);
 
     @Override
     public boolean isValid(AccountAccess access, ConstraintValidatorContext context) {
@@ -32,7 +29,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
         // At least one must be present
         if (!hasArrays && !hasPermissions) {
-            log.debug("At least one access method or permission must be provided");
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil
                             .buildViolationMessage(ErrorConstants.ACCESS_OBJECT_MANDATORY_ELEMENTS_MISSING));
@@ -41,8 +37,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
         // Permissions and arrays must not coexist
         if (hasArrays && hasPermissions) {
-            log.debug("Special permissions availableAccounts, availableAccountsWithBalances or allPsd2 cannot be" +
-                    "applied when account, balances or transaction access is specified");
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
             return false;
@@ -53,8 +47,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
             if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(access.getAvailableAccounts())
                     || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAvailableAccounts())) {
                 if (access.getAvailableAccountsWithBalances() != null || access.getAllPsd2() != null) {
-                    log.debug("availableAccounts permission cannot be set with availableAccountsWithBalances or " +
-                            "allPsd2 permissions");
                     CommonConsentValidationUtil.setConstrainViolation(context,
                             CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
                 }
@@ -63,8 +55,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
                     || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME
                     .equals(access.getAvailableAccountsWithBalances())) {
                 if (access.getAvailableAccounts() != null || access.getAllPsd2() != null) {
-                    log.debug("availableAccountsWithBalances permission cannot be set with availableAccounts or " +
-                            "allPsd2 permissions");
                     CommonConsentValidationUtil.setConstrainViolation(context,
                             CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
                 }
@@ -72,8 +62,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
             if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(access.getAllPsd2())
                     || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAllPsd2())) {
                 if (access.getAvailableAccounts() != null || access.getAvailableAccountsWithBalances() != null) {
-                    log.debug("allPsd2 permission cannot be set with availableAccounts or " +
-                            "availableAccountsWithBalances permissions");
                     CommonConsentValidationUtil.setConstrainViolation(context,
                             CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
                 }
@@ -82,7 +70,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
         // Additional info only with at least one array
         if (access.getAdditionalInformation() != null && !hasArrays) {
-            log.debug("additionalInformation requires account access arrays");
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil
                             .buildViolationMessage(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE));
@@ -95,7 +82,6 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
         long nonEmptyCount = arrays.stream().filter(arr -> arr != null && !arr.isEmpty()).count();
 
         if (emptyCount > 0 && nonEmptyCount > 0) {
-            log.debug("Either all arrays should be empty or non-empty");
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
             return false;

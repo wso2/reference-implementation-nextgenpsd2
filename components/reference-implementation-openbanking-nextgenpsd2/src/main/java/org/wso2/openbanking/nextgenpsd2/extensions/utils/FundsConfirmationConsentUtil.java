@@ -44,7 +44,8 @@ public class FundsConfirmationConsentUtil {
      *
      * @param cardExpiryDate requested card expiry date
      */
-    public static void validateCardExpiryDate(String cardExpiryDate) throws ValidationFailureException {
+    public static void validateCardExpiryDate(String cardExpiryDate)
+            throws ValidationFailureException {
 
         LocalDate parsedCardExpiryDate = CommonConsentValidationUtil.parseDateToISO(cardExpiryDate,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.CARD_EXPIRY_DATE_INVALID);
@@ -52,7 +53,6 @@ public class FundsConfirmationConsentUtil {
         if (parsedCardExpiryDate.isBefore(LocalDate.now(ZoneOffset.UTC))) {
             String errorMessage = String.format("The provided card expiry date %s is a past date",
                     parsedCardExpiryDate);
-            log.error(errorMessage);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.TIMESTAMP_INVALID,
@@ -65,13 +65,12 @@ public class FundsConfirmationConsentUtil {
      *
      * @param payload
      */
-    public static void validateFundsConfirmationInitiationPayload(JSONObject payload) throws
+    public static void validateFundsConfirmationInitiationPayload(String requestId, JSONObject payload) throws
             ValidationFailureException {
 
-        log.debug("Validating mandatory request body elements");
+        log.debug("[" + requestId + "] " + "Validating mandatory request body elements");
         if (!payload.has(ConsentExtensionConstants.ACCOUNT)
                 || payload.opt(ConsentExtensionConstants.ACCOUNT) == null) {
-            log.error(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null,
                             TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
@@ -79,13 +78,13 @@ public class FundsConfirmationConsentUtil {
         }
 
         if (payload.has(ConsentExtensionConstants.CARD_EXPIRY_DATE)) {
-            log.debug("Validating card expiry date");
+            log.debug("[" + requestId + "] " + "Validating card expiry date");
             validateCardExpiryDate(payload.getString(ConsentExtensionConstants.CARD_EXPIRY_DATE));
         }
 
         JSONObject accountObject = payload.optJSONObject(ConsentExtensionConstants.ACCOUNT);
 
-        log.debug("Validating account reference object");
+        log.debug("[" + requestId + "] " + "Validating account reference object");
         CommonConsentValidationUtil.validateAccountRefObject(accountObject);
     }
 

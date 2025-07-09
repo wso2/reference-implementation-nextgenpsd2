@@ -18,8 +18,6 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.validators.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
@@ -45,7 +43,6 @@ public class AccountInitiationPayloadValidator implements
     private final boolean isValidUntilDateCapEnabled =
             Boolean.parseBoolean(ConfigurationConstants.VALID_UNTIL_DATE_CAP_ENABLED);
     private final int validUntilDaysCap = Integer.parseInt(ConfigurationConstants.VALID_UNTIL_DAYS);
-    private static final Log log = LogFactory.getLog(AccountInitiationPayloadValidator.class);
 
     @Override
     public boolean isValid(AccountInitiationPayload payload, ConstraintValidatorContext context) {
@@ -56,13 +53,11 @@ public class AccountInitiationPayloadValidator implements
                 payload.getFrequencyPerDay() == null ||
                 payload.getCombinedServiceIndicator() == null
         ) {
-            log.debug(ErrorConstants.MANDATORY_ELEMENTS_MISSING);
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.MANDATORY_ELEMENTS_MISSING));
         }
 
         if (!payload.getRecurringIndicator() && payload.getFrequencyPerDay() > 1) {
-            log.debug(ErrorConstants.INVALID_FREQ_PER_DAY_COUNT);
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_FREQ_PER_DAY_COUNT));
             return false;
@@ -71,9 +66,6 @@ public class AccountInitiationPayloadValidator implements
         if (payload.getRecurringIndicator() && payload.getFrequencyPerDay() < configuredMinimumFreqPerDay) {
             String errorMessageTemplate = "Frequency per day for recurring consent is lesser than the supported " +
                     "minimum value %s";
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(errorMessageTemplate, configuredMinimumFreqPerDay));
-            }
             CommonConsentValidationUtil.setConstrainViolation(context, String.format(errorMessageTemplate,
                     configuredMinimumFreqPerDay));
             return false;
@@ -84,7 +76,6 @@ public class AccountInitiationPayloadValidator implements
 
         if (validUntil.isBefore(today)) {
             String errorMessage = "validUntil has to be today, %s or a future date";
-            log.error(String.format(errorMessage, today));
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil.buildViolationMessage(TPPMessage.CodeEnum.TIMESTAMP_INVALID,
                             String.format(errorMessage, today)

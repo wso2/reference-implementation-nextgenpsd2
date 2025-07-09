@@ -18,8 +18,6 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
@@ -39,7 +37,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -47,7 +44,6 @@ import java.util.Date;
  * Utility class for Account consent management.
  */
 public class AccountConsentUtil {
-    private static final Log log = LogFactory.getLog(AccountConsentUtil.class);
 
     /**
      * Method to get the account initiation response without links.
@@ -81,8 +77,8 @@ public class AccountConsentUtil {
      */
     public static long convertToUtcTimestamp(String date) throws ValidationFailureException {
 
-        LocalDate localDate = CommonConsentValidationUtil.parseDateToISO(date, TPPMessage.CodeEnum.FORMAT_ERROR,
-                ErrorConstants.VALID_UNTIL_DATE_INVALID);
+        LocalDate localDate = CommonConsentValidationUtil.parseDateToISO(date,
+                TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDateTime localDateTime = localDate.atStartOfDay();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(ConsentExtensionConstants.UTC));
 

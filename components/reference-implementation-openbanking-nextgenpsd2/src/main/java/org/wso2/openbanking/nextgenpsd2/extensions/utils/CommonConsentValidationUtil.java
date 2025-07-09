@@ -81,10 +81,10 @@ public class CommonConsentValidationUtil {
      * @param headerKey header key that need to be checked
      * @return true if present, false otherwise
      */
-    public static boolean checkCaseIgnoredHeader(JSONObject headersJson, String headerKey) {
+    public static boolean checkCaseIgnoredHeader(String requestId, JSONObject headersJson, String headerKey) {
 
         if (log.isDebugEnabled()) {
-            log.debug("Validating header: " + headerKey);
+            log.debug("[" + requestId + "] " + "Validating header: " + headerKey);
         }
         for (String header : headersJson.keySet()) {
             if (header.equalsIgnoreCase(headerKey)) {
@@ -527,9 +527,10 @@ public class CommonConsentValidationUtil {
      * @param headersJSON request headers
      * @return if redirect approach preferred or not
      */
-    public static Optional<Boolean> isTppRedirectPreferred(JSONObject headersJSON) {
-        log.debug("Determining whether the TPP-Redirect-Preferred header is true or false or not present");
-        if (checkCaseIgnoredHeader(headersJSON,
+    public static Optional<Boolean> isTppRedirectPreferred(String requestId, JSONObject headersJSON) {
+        log.debug("[" + requestId + "] " + "Determining whether the TPP-Redirect-Preferred header is true or false " +
+                "or not present");
+        if (checkCaseIgnoredHeader(requestId, headersJSON,
                 ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
             return Optional.of(Boolean.parseBoolean(headersJSON
                     .getString(ConsentExtensionConstants.TPP_REDIRECT_PREFERRED_HEADER)));
@@ -557,7 +558,8 @@ public class CommonConsentValidationUtil {
      * @return
      * @throws ValidationFailureException
      */
-    public static LocalDate parseDateToISO(String dateToParse, TPPMessage.CodeEnum errorCode, String errorMessage)
+    public static LocalDate parseDateToISO(String dateToParse, TPPMessage.CodeEnum errorCode,
+                                           String errorMessage)
             throws ValidationFailureException {
 
         LocalDate parsedDate;
@@ -565,7 +567,6 @@ public class CommonConsentValidationUtil {
         try {
             parsedDate = LocalDate.parse(dateToParse, DateTimeFormatter.ISO_DATE);
         } catch (DateTimeParseException e) {
-            log.error(errorMessage, e);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, errorCode, errorMessage));
         }
@@ -582,7 +583,6 @@ public class CommonConsentValidationUtil {
     public static void validateAccountRefObject(JSONObject accountRefObject) throws ValidationFailureException {
 
         if (accountRefObject == null) {
-            log.error(ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
@@ -604,7 +604,6 @@ public class CommonConsentValidationUtil {
         }
 
         if (!isAccountReferenceValid) {
-            log.error(ErrorConstants.INVALID_ACCOUNT_REFERENCE);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_ACCOUNT_REFERENCE));
@@ -612,7 +611,6 @@ public class CommonConsentValidationUtil {
 
         String accountReference = getAccountReference(accountRefObject);
         if (StringUtils.isBlank(accountReference)) {
-            log.error(ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY));
@@ -629,7 +627,6 @@ public class CommonConsentValidationUtil {
         JSONObject headersJSON = convertObjectToJson(headers);
 
         if (!headersJSON.has(ConsentExtensionConstants.X_REQUEST_ID_HEADER)) {
-            log.error(ErrorConstants.X_REQUEST_ID_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_MISSING));
@@ -637,7 +634,6 @@ public class CommonConsentValidationUtil {
 
         if (!CommonConsentValidationUtil.isValidUuid(headersJSON
                 .getString(ConsentExtensionConstants.X_REQUEST_ID_HEADER))) {
-            log.error(ErrorConstants.X_REQUEST_ID_INVALID);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_INVALID));
@@ -649,15 +645,13 @@ public class CommonConsentValidationUtil {
      *
      * @param headers request headers
      */
-    public static void validatePsuIpAddress(JSONObject headers) throws ValidationFailureException {
+    public static void validatePsuIpAddress(String requestId, JSONObject headers) throws ValidationFailureException {
 
-        log.debug("Validating PSU-IP-Address header");
+        log.debug("[" + requestId + "] " + "Validating PSU-IP-Address header");
         if (headers.has(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.getString(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER);
 
             if (StringUtils.isEmpty(psuIpAddress)) {
-                log.error(String.format("Invalid %s header",
-                        ConsentExtensionConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER));
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, String.format("Invalid %s header",
@@ -665,7 +659,6 @@ public class CommonConsentValidationUtil {
                 ));
             }
         } else {
-            log.error(ErrorConstants.PSU_IP_ADDRESS_MISSING);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PSU_IP_ADDRESS_MISSING));
@@ -677,14 +670,14 @@ public class CommonConsentValidationUtil {
      *
      * @param headers request headers
      */
-    public static void validateTppRedirectPreferredHeader(JSONObject headers) throws ValidationFailureException {
+    public static void validateTppRedirectPreferredHeader(String requestId, JSONObject headers)
+            throws ValidationFailureException {
 
-        log.debug("Validating TPP-Redirect-Preferred header according to the specification");
-        Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(headers);
+        log.debug("[" + requestId + "] " + "Validating TPP-Redirect-Preferred header according to the specification");
+        Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(requestId, headers);
 
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
                 && getScaApproach(ScaApproachEnum.REDIRECT) == null) {
-            log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.REDIRECT));
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
@@ -696,7 +689,6 @@ public class CommonConsentValidationUtil {
 
             //ToDo: Since decoupled approach is not supported yet, an error is thrown if the redirect header is false.
             //issue: https://github.com/wso2-enterprise/financial-open-banking/issues/6858
-            log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
@@ -730,7 +722,6 @@ public class CommonConsentValidationUtil {
             throws ValidationFailureException {
 
         if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
-            log.error(ErrorConstants.CONSENT_ID_TYPE_MISMATCH);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ID_TYPE_MISMATCH));
@@ -801,6 +792,7 @@ public class CommonConsentValidationUtil {
     public static SuccessResponseConsentRevocation
     validateRevokeRequestAndReturnResponse(PreProcessConsentRequestBody requestBody) throws BadRequestException,
             ValidationFailureException {
+        String requestId = requestBody.getRequestId();
 
         PreProcessConsentRetrievalData data = requestBody.getData();
         StoredBasicConsentResourceData consentResource = data.getConsentResource();
@@ -810,7 +802,8 @@ public class CommonConsentValidationUtil {
 
         // Validate client
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for valid client", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
+                    consentId));
         }
 
         // Get request client id from the headers
@@ -829,18 +822,18 @@ public class CommonConsentValidationUtil {
 
         // Validate consent type
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for correct type", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
+                    consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
 
         // Validate consent is revocable (single payments cannot be revoked)
         CommonConsentValidationUtil.validateIfConsentTypeIsRevocable(consentType);
 
-        log.debug("Send an error if the consent is already deleted");
+        log.debug("[" + requestId + "] " + "Verify if the consent is already revoked");
         if (StringUtils.equals(ConsentStatusEnum.REVOKED_BY_PSU.toString(), consentResource.getStatus())
                 || StringUtils.equals(ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
                 consentResource.getStatus())) {
-            log.error(ErrorConstants.CONSENT_ALREADY_DELETED);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ALREADY_DELETED));
@@ -848,7 +841,6 @@ public class CommonConsentValidationUtil {
 
         // Check whether the consent is already expired before deleting
         if (StringUtils.equals(ConsentStatusEnum.EXPIRED.toString(), consentResource.getStatus())) {
-            log.error(ErrorConstants.CONSENT_ALREADY_EXPIRED);
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.CONSENT_INVALID, ErrorConstants.CONSENT_ALREADY_EXPIRED));
@@ -864,7 +856,6 @@ public class CommonConsentValidationUtil {
      */
     private static void validateIfConsentTypeIsRevocable(String consentType) throws ValidationFailureException {
         if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
-            log.error(String.format(ErrorConstants.CANCELLATION_NOT_APPLICABLE));
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.METHOD_NOT_ALLOWED,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.CANCELLATION_INVALID,

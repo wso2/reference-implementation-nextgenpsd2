@@ -52,6 +52,7 @@ public class ConsentManageAPIImpl {
      * @return
      */
     public static Response enrichConsentCreationResponse(EnrichConsentCreationRequestBody requestBody) {
+        String requestId = requestBody.getRequestId();
         try {
             ConsentManagementResponseHandler consentHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
@@ -71,11 +72,12 @@ public class ConsentManageAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (BadRequestException e) {
-            log.error(e);
+            log.error("[" + requestId + "] " + "A bad request was made to consent creation response enrichment." +
+                    "endpoint", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
         } catch (ServerErrorException e) {
-            log.error(e);
+            log.error("[" + requestId + "] " + "A server error occurred enriching consent creation response.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -87,6 +89,7 @@ public class ConsentManageAPIImpl {
      * @return
      */
     public static Response preProcessConsentCreation(PreProcessConsentCreationRequestBody requestBody) {
+        String requestId = requestBody.getRequestId();
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
@@ -131,15 +134,15 @@ public class ConsentManageAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.error("Validation failed for consent creation. Returning failed response.", e);
+            log.debug("[" + requestId + "] " + "Validation failed for consent creation. Returning failed response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (BadRequestException e) {
-            log.error(e);
+        }  catch (BadRequestException e) {
+            log.error("[" + requestId + "] " + "A bad request was made to consent creation extension endpoint.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
         } catch (ServerErrorException e) {
-            log.error(e);
+            log.error("[" + requestId + "] " + "A server error occurred creating consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -151,6 +154,7 @@ public class ConsentManageAPIImpl {
      * @return
      */
     public static Response preProcessConsentRetrieval(PreProcessConsentRequestBody requestBody) {
+        String requestId = requestBody.getRequestId();
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
@@ -173,15 +177,16 @@ public class ConsentManageAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.error("Validation failed for consent creation. Returning failed response.", e);
+            log.debug("[" + requestId + "] " + "Validation failed for consent retrieval. Returning failed response.",
+                    e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (BadRequestException e) {
-            log.error(e);
+        }  catch (BadRequestException e) {
+            log.error("[" + requestId + "] " + "A bad request was made to consent retrieval extension endpoint.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
         } catch (ServerErrorException e) {
-            log.error(e);
+            log.error("[" + requestId + "] " + "A server error occurred retrieving consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -193,6 +198,7 @@ public class ConsentManageAPIImpl {
      * @return
      */
     public static Response preProcessConsentRevoke(PreProcessConsentRequestBody requestBody) {
+        String requestId = requestBody.getRequestId();
         try {
             // Validate X-request-ID header
             // Enable forwarding of the specific header in accelerator configurations
@@ -215,15 +221,17 @@ public class ConsentManageAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.error("Validation failed for consent creation. Returning failed response.", e);
+            log.debug("[" + requestId + "] " + "Validation failed for consent revocation. Returning failed" +
+                            "response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        } catch (BadRequestException e) {
-            log.error(e);
+        }  catch (BadRequestException e) {
+            log.error("[" + requestId + "] " + "A bad request was made to consent revocation extension endpoint.",
+                    e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
         } catch (ServerErrorException e) {
-            log.error(e);
+            log.error("[" + requestId + "] " + "A server error occurred revoking consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }

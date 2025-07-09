@@ -52,13 +52,13 @@ public class ValidationFailureException extends Exception {
     private final JSONObject data;
 
     public ValidationFailureException(ErrorCode errorCode, JSONObject data) {
-        super(data.toString());
+        super(ErrorUtil.getErrorMessage(data));
         this.errorCode = errorCode;
         this.data = data;
     }
 
     public ValidationFailureException(ErrorCode errorCode, JSONObject data, Throwable e) {
-        super(data.toString(), e);
+        super(ErrorUtil.getErrorMessage(data), e);
         this.errorCode = errorCode;
         this.data = data;
     }

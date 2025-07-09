@@ -87,6 +87,8 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
             throws ValidationFailureException {
+        String requestId = requestBody.getRequestId();
+
         // Skipping idempotency check as it's handled by the accelerator
         // ToDo: Add explicit authorisation support
 
@@ -96,8 +98,8 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                 .getRequestHeaders());
 
         // Validate headers
-        CommonConsentValidationUtil.validateTppRedirectPreferredHeader(headersJSON);
-        CommonConsentValidationUtil.validatePsuIpAddress(headersJSON);
+        CommonConsentValidationUtil.validateTppRedirectPreferredHeader(requestId, headersJSON);
+        CommonConsentValidationUtil.validatePsuIpAddress(requestId, headersJSON);
 
         // Validate payload
         JSONObject requestPayload;
@@ -131,10 +133,11 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                             TPPMessage.CodeEnum.valueOf(codeAndMessage[0]), codeAndMessage[1]));
         }
 
-        Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(headersJSON);
+        Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,
+                headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("SCA approach is Redirect SCA (OAuth2)");
+            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
             String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
 
             // Response body
@@ -187,7 +190,6 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
             return validationResponse;
         } else {
             //ToDo: revisit once decoupled approach is implemented.
-            log.error(String.format("%s SCA Approach is not supported", ScaApproachEnum.DECOUPLED));
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
@@ -206,6 +208,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, BadRequestException {
+        String requestId = requestBody.getRequestId();
 
         PreProcessConsentRetrievalData data = requestBody.getData();
         String requestPath = data.getConsentResourcePath();
@@ -214,7 +217,8 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
         StoredBasicConsentResourceData consentResource = data.getConsentResource();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for valid client", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
+                    consentId));
         }
 
         // Get request client id from the headers
@@ -234,7 +238,8 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Validating consent of Id %s for correct type", consentId));
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
+                    consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
 
@@ -244,7 +249,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
                 ConsentStatusEnum.TERMINATED_BY_TPP.toString())
                 || StringUtils.equals(consentResource.getStatus(),
                 ConsentStatusEnum.REVOKED_BY_PSU.toString()))) {
-            log.debug("The Consent is expired");
+            log.debug("[" + requestId + "] " + "The Consent is expired");
             consentResource.setStatus(ConsentStatusEnum.EXPIRED.toString());
         }
 
