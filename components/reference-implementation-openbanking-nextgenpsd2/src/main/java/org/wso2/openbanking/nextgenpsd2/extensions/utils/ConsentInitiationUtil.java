@@ -158,9 +158,7 @@ public class ConsentInitiationUtil {
             // Explicit authorisation not supported
             // Should be unreachable since this is validated upon consent creation
             // ToDo: revisit once auth resources can be added explicitly
-            throw new BadRequestException(ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.SERVICE_INVALID_405,
-                    ErrorConstants.EXPLICIT_AUTH_NOT_SUPPORTED));
+            throw new BadRequestException(ErrorConstants.EXPLICIT_AUTH_NOT_SUPPORTED);
             /*
             String startAuthorisationsLink = String.format(ConsentExtensionConstants.START_AUTH_LINK_TEMPLATE,
                     apiVersion, requestPath, consentId);

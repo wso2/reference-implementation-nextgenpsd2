@@ -824,9 +824,7 @@ public class CommonConsentValidationUtil {
             requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
         } catch (JSONException e) {
             // Should be unreachable (since insequence always adds client id header)
-            throw new BadRequestException(ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR,
-                    "x-wso2-client-id header not found"));
+            throw new BadRequestException("x-wso2-client-id header not found");
         }
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 

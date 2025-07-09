@@ -310,9 +310,8 @@ public class PaymentConsentUtil {
             paymentProductFromAttributes = attributesJSON.getString(ConsentExtensionConstants.PAYMENT_PRODUCT_CC);
         } catch (JSONException e) {
             // Should be unreachable as payment product gets added as an attribute at initiation
-            throw new BadRequestException(ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR,
-                    "Payment product not stored at consent initiation. Product validation failed."));
+            throw new BadRequestException("Payment product not stored at consent initiation. Product validation" +
+                    " failed.");
         }
 
         if (!paymentProductFromAttributes.equals(paymentProductFromPath)) {

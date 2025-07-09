@@ -32,6 +32,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.AuthTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
@@ -71,7 +72,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
-            throws ValidationFailureException {
+            throws ValidationFailureException, ApiException {
         String requestId = requestBody.getRequestId();
 
         // Skipping idempotency check as it's handled by the accelerator
@@ -174,7 +175,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
-            throws ValidationFailureException, BadRequestException {
+            throws ValidationFailureException, ApiException {
         String requestId = requestBody.getRequestId();
 
         PreProcessConsentRetrievalData data = requestBody.getData();
@@ -196,9 +197,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
             requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
         } catch (JSONException e) {
             // Should be unreachable (since insequence always adds client id header)
-            throw new BadRequestException(ErrorUtil.constructBerlinError(
-                    null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.INTERNAL_SERVER_ERROR,
-                    "x-wso2-client-id header not found"));
+            throw new BadRequestException("x-wso2-client-id header not found");
         }
 
         // Validate client
@@ -248,7 +247,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
-            throws BadRequestException, ValidationFailureException {
+            throws ValidationFailureException, ApiException {
         return CommonConsentValidationUtil.validateRevokeRequestAndReturnResponse(requestBody);
     }
 
@@ -261,7 +260,7 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
-            throws BadRequestException {
+            throws ApiException {
         SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
         ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody, validationResponse,
                 ConsentTypeEnum.ACCOUNTS.toString());

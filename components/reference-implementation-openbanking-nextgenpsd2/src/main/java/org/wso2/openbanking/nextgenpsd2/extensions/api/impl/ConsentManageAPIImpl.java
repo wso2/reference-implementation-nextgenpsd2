@@ -71,14 +71,11 @@ public class ConsentManageAPIImpl {
 
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
-        } catch (BadRequestException e) {
-            log.error("[" + requestId + "] " + "A bad request was made to consent creation response enrichment." +
-                    "endpoint", e);
+        } catch (BadRequestException | ServerErrorException e) {
+            log.error("[" + requestId + "] " + "An error occurred creating consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
-        } catch (ServerErrorException e) {
-            log.error("[" + requestId + "] " + "A server error occurred enriching consent creation response.", e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        } catch (org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -137,13 +134,11 @@ public class ConsentManageAPIImpl {
             log.debug("[" + requestId + "] " + "Validation failed for consent creation. Returning failed response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        }  catch (BadRequestException e) {
-            log.error("[" + requestId + "] " + "A bad request was made to consent creation extension endpoint.", e);
+        }  catch (BadRequestException | ServerErrorException e) {
+            log.error("[" + requestId + "] " + "An error occurred creating consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
-        } catch (ServerErrorException e) {
-            log.error("[" + requestId + "] " + "A server error occurred creating consent.", e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        } catch (org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -181,13 +176,11 @@ public class ConsentManageAPIImpl {
                     e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        }  catch (BadRequestException e) {
-            log.error("[" + requestId + "] " + "A bad request was made to consent retrieval extension endpoint.", e);
+        }  catch (BadRequestException | ServerErrorException e) {
+            log.error("[" + requestId + "] " + "An error occurred retrieving consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
-        } catch (ServerErrorException e) {
-            log.error("[" + requestId + "] " + "A server error occurred retrieving consent.", e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        } catch (org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -225,14 +218,11 @@ public class ConsentManageAPIImpl {
                             "response.", e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
-        }  catch (BadRequestException e) {
-            log.error("[" + requestId + "] " + "A bad request was made to consent revocation extension endpoint.",
-                    e);
+        }  catch (BadRequestException | ServerErrorException e) {
+            log.error("[" + requestId + "] " + "An error occurred revoking consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
-        } catch (ServerErrorException e) {
-            log.error("[" + requestId + "] " + "A server error occurred revoking consent.", e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        } catch (org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException e) {
+            throw new RuntimeException(e);
         }
     }
 }
