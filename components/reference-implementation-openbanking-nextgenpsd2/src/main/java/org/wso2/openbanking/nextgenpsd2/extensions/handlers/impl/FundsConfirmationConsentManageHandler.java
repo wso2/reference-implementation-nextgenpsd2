@@ -34,6 +34,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.FundsConfirmationInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Authorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.DetailedConsentResourceData;
@@ -92,7 +93,10 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementR
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
-        FundsConfirmationConsentUtil.validateFundsConfirmationInitiationPayload(requestId, requestPayload);
+
+        // Validate confirmation of funds initiation payload
+        CommonConsentValidationUtil.validateJSONFromModel(requestPayload.toString(),
+                FundsConfirmationInitiationPayload.class);
 
         Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,
                 headersJSON);
