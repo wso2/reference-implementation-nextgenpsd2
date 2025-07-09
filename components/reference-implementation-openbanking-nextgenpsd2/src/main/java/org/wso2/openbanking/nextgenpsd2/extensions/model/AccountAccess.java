@@ -28,7 +28,7 @@ import javax.validation.Valid;
 /**
  * Account access object sent with account initiation request.
  */
-@ValidAccountAccess(message = "")
+@ValidAccountAccess
 public class AccountAccess {
 
     private List<@Valid AccountReference> accounts;

@@ -18,10 +18,6 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -59,23 +55,12 @@ import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentInitiationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 /**
  * Consent handler for account consents.
  */
 public class AccountConsentManageHandler implements ConsentManagementResponseHandler {
     private static final Log log = LogFactory.getLog(AccountConsentManageHandler.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
 
     /**
      * Handles creation of account consents.
@@ -113,25 +98,8 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
         }
 
         // Parse account initiation payload and validate its structure
-        AccountInitiationPayload payload;
-        try {
-             payload = objectMapper.readValue(requestPayload.toString(), AccountInitiationPayload.class);
-        } catch (JsonProcessingException e) {
-            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_PERMISSION));
-        }
-        Set<ConstraintViolation<AccountInitiationPayload>> violations = validator.validate(payload);
-
-        // Throw validation error from validation failures
-        if (!violations.isEmpty()) {
-            String[] codeAndMessage = CommonConsentValidationUtil
-                    .splitViolationMessage(violations.iterator().next().getMessage());
-
-            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.valueOf(codeAndMessage[0]), codeAndMessage[1]));
-        }
+        AccountInitiationPayload payload = CommonConsentValidationUtil
+                .validateJSONFromModel(requestPayload.toString(), AccountInitiationPayload.class);
 
         Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,
                 headersJSON);
@@ -156,12 +124,11 @@ public class AccountConsentManageHandler implements ConsentManagementResponseHan
             consentResource.setStatus(ConsentStatusEnum.RECEIVED.toString());
 
             // Setting additional properties to consent resource
-            boolean recurringIndicator = requestPayload.getBoolean(ConsentExtensionConstants.RECURRING_INDICATOR);
+            boolean recurringIndicator = payload.getRecurringIndicator();
             consentResource.setRecurringIndicator(recurringIndicator);
-            consentResource.setFrequency(requestPayload
-                    .getInt(ConsentExtensionConstants.FREQUENCY_PER_DAY));
+            consentResource.setFrequency(payload.getFrequencyPerDay());
 
-            String validUntilString = requestPayload.getString(ConsentExtensionConstants.VALID_UNTIL);
+            String validUntilString = String.valueOf(payload.getValidUntil());
             if (recurringIndicator) {
                 consentResource.setValidityTime(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
             } else {

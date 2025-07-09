@@ -20,6 +20,8 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -63,6 +65,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 /**
  * Common utility class for handling consent operations.
@@ -73,6 +79,11 @@ public class CommonConsentValidationUtil {
     private static final Pattern uuidPattern = Pattern.compile
             ("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
                     Pattern.CASE_INSENSITIVE);
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final Validator validator = factory.getValidator();
 
     /**
      * This method checks a provided header key is in the header map without considering the case.
@@ -105,7 +116,6 @@ public class CommonConsentValidationUtil {
 
         try {
             // Convert Object to JSON string
-            ObjectMapper objectMapper = new ObjectMapper();
             jsonString = objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new JSONException(e);
@@ -904,5 +914,43 @@ public class CommonConsentValidationUtil {
      */
     public static String[] splitViolationMessage(String violationMessage) {
         return violationMessage.split(":", 2);
+    }
+
+    /**
+     * Validates the given JSON payload against a model class using Hibernate Validator.
+     * This method expects all violation messages to be built by
+     * {@link CommonConsentValidationUtil#buildViolationMessage(TPPMessage.CodeEnum, String)}
+     *
+     * @param jsonPayload   JSON string representing the model payload
+     * @param modelClass    Class object of the model
+     * @param <T>   The model type to be validated
+     * @return  validated and mapped object
+     * @throws ValidationFailureException   if deserialization or validation fails
+     */
+    public static <T> T validateJSONFromModel(String jsonPayload, Class<T> modelClass)
+            throws ValidationFailureException {
+        T mappedObject;
+
+        // Map to object
+        try {
+            mappedObject = objectMapper.readValue(jsonPayload, modelClass);
+        } catch (JsonProcessingException e) {
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+        }
+
+        // Find violations
+        Set<ConstraintViolation<T>> violations = validator.validate(mappedObject);
+
+        // Throw first validation error from validation failures
+        if (!violations.isEmpty()) {
+            String[] codeAndMessage = splitViolationMessage(violations.iterator().next().getMessage());
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                            TPPMessage.CodeEnum.valueOf(codeAndMessage[0]), codeAndMessage[1]));
+        }
+
+        return mappedObject;
     }
 }

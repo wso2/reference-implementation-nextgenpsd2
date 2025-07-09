@@ -36,7 +36,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = AccountAccessValidator.class)
 public @interface ValidAccountAccess {
 
-    String message() default "Invalid account access object";
+    String message() default "FORMAT_ERROR:" + "Invalid account access object";
 
     Class<?>[] groups() default {};
 

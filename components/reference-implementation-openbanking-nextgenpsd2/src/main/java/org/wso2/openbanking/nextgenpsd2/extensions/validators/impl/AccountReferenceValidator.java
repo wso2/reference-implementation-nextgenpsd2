@@ -50,20 +50,25 @@ public class AccountReferenceValidator implements ConstraintValidator<ValidAccou
 
         Set<String> keys = props.keySet();
 
-        boolean isValid = false;
-
         List<String> supportedKeys = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
         if (keys.size() == 1) {
-            isValid = supportedKeys.contains(keys.iterator().next());
+            if (!supportedKeys.contains(keys.iterator().next())) {
+                CommonConsentValidationUtil.setConstrainViolation(context,
+                        CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_ACCOUNT_REFERENCE));
+                return false;
+            }
         } else if (keys.size() == 2) {
             boolean hasCurrency = keys.contains(ConsentExtensionConstants.CURRENCY);
             boolean hasRefType = keys.stream().anyMatch(supportedKeys::contains);
-            isValid = hasCurrency && hasRefType;
-        }
-
-        if (!isValid) {
+            if (!hasCurrency || !hasRefType) {
+                CommonConsentValidationUtil.setConstrainViolation(context,
+                        CommonConsentValidationUtil
+                                .buildViolationMessage(ErrorConstants.UNRECOGNIZED_ATTRIBUTES_ACCOUNT_REFERENCE));
+                return false;
+            }
+        } else {
             CommonConsentValidationUtil.setConstrainViolation(context,
-                    CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_ACCOUNT_REFERENCE));
+                    CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
             return false;
         }
 

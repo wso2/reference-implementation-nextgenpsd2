@@ -36,7 +36,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = AccountInitiationPayloadValidator.class)
 public @interface ValidAccountInitiationPayload {
 
-    String message() default "Invalid account initiation payload";
+    String message() default "FORMAT_ERROR:" + "Invalid account initiation payload";
 
     Class<?>[] groups() default {};
 

@@ -21,6 +21,7 @@ package org.wso2.openbanking.nextgenpsd2.extensions.model;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.validators.annotations.ValidAccountInitiationPayload;
 
 import java.time.LocalDate;
@@ -38,26 +39,26 @@ import javax.validation.constraints.NotNull;
 @ValidAccountInitiationPayload
 public class AccountInitiationPayload {
 
-    @NotNull
+    @NotNull(message = "FORMAT_ERROR:" + ErrorConstants.MANDATORY_ELEMENTS_MISSING)
     @Valid
     private AccountAccess access;
 
-    @NotNull
+    @NotNull(message = "FORMAT_ERROR:" + ErrorConstants.MANDATORY_ELEMENTS_MISSING)
     private Boolean recurringIndicator;
 
-    @NotNull
-    @Min(1)
+    @NotNull(message = "FORMAT_ERROR:" + ErrorConstants.MANDATORY_ELEMENTS_MISSING)
+    @Min(value = 1, message = "FORMAT_ERROR:" + ErrorConstants.INVALID_FREQ_PER_DAY)
     private Integer frequencyPerDay;
 
-    @NotNull
+    @NotNull(message = "FORMAT_ERROR:" + ErrorConstants.MANDATORY_ELEMENTS_MISSING)
     private LocalDate validUntil;
 
-    @NotNull
-    @AssertFalse(message = "Combined service indicator is not supported")
+    @NotNull(message = "FORMAT_ERROR:" + ErrorConstants.MANDATORY_ELEMENTS_MISSING)
+    @AssertFalse(message = "FORMAT_ERROR:" + ErrorConstants.COMBINED_SERVICE_INDICATOR_NOT_SUPPORTED)
     private Boolean combinedServiceIndicator;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    private final Map<String, Object> additionalProperties = new HashMap<>();
 
     public AccountAccess getAccess() {
         return access;

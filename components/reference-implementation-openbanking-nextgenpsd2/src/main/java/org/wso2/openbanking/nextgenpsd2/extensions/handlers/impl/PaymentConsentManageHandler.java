@@ -95,7 +95,7 @@ public class PaymentConsentManageHandler implements ConsentManagementResponseHan
                             null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
-        PaymentConsentUtil.validatePaymentInitiationPayload(requestId, requestPayload,
+        PaymentConsentUtil.validatePaymentInitiationPayload(requestPayload,
                 requestBody.getData().getConsentResourcePath());
 
         Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,

@@ -18,7 +18,7 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.validators.annotations;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.validators.impl.AccountReferenceValidator;
+import org.wso2.openbanking.nextgenpsd2.extensions.validators.impl.PeriodicPaymentInitiationPayloadValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -29,15 +29,13 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * Annotation to validate account reference object.
+ * Annotation to validate periodic payment initiation object.
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AccountReferenceValidator.class)
-public @interface ValidAccountReference {
-    String message() default "FORMAT_ERROR:" + "Invalid account reference";
-
+@Constraint(validatedBy = PeriodicPaymentInitiationPayloadValidator.class)
+public @interface ValidPeriodicPaymentInitiationPayload {
+    String message() default "FORMAT_ERROR:" + "Invalid periodic payment initiation payload";
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
 }
