@@ -21,6 +21,7 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
 
@@ -39,7 +40,8 @@ public class FundsConfirmationConsentUtil {
      * @param payload
      */
     public static void appendPaymentInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
-                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload) {
+                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload)
+            throws BadRequestException {
         payload.put(ConsentExtensionConstants.CONSENT_STATUS, createdConsent.getStatus());
         payload.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getId());
 

@@ -111,18 +111,18 @@ public class CommonConsentValidationUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject convertObjectToJson(Object object) throws JSONException {
+    public static JSONObject convertObjectToJson(Object object) throws BadRequestException {
         String jsonString;
 
         try {
             // Convert Object to JSON string
             jsonString = objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new JSONException(e);
-        }
 
-        // Parse JSON string to JSONObject
-        return new JSONObject(jsonString);
+            // Parse JSON string to JSONObject
+            return new JSONObject(jsonString);
+        } catch (JsonProcessingException | JSONException e) {
+            throw new BadRequestException(e.getMessage().replaceAll("[\r\n]", ""), e);
+        }
     }
 
     /**
@@ -570,7 +570,7 @@ public class CommonConsentValidationUtil {
      */
     public static LocalDate parseDateToISO(String dateToParse, TPPMessage.CodeEnum errorCode,
                                            String errorMessage)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
 
         LocalDate parsedDate;
 
@@ -590,7 +590,8 @@ public class CommonConsentValidationUtil {
      *
      * @param accountRefObject account reference object
      */
-    public static void validateAccountRefObject(JSONObject accountRefObject) throws ValidationFailureException {
+    public static void validateAccountRefObject(JSONObject accountRefObject)
+            throws ValidationFailureException, BadRequestException {
 
         if (accountRefObject == null) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
@@ -627,7 +628,8 @@ public class CommonConsentValidationUtil {
         }
     }
 
-    public static void validateRequestIdentificationHeader(Object headers) throws ValidationFailureException {
+    public static void validateRequestIdentificationHeader(Object headers)
+            throws ValidationFailureException, BadRequestException {
         // To allow idempotency header validation it needs to be forwarded
         // Therefore X-Request-ID needs to be added to the configuration in the IS deployment.toml
         // [financial_services.consent.manage_extension]
@@ -655,7 +657,8 @@ public class CommonConsentValidationUtil {
      *
      * @param headers request headers
      */
-    public static void validatePsuIpAddress(String requestId, JSONObject headers) throws ValidationFailureException {
+    public static void validatePsuIpAddress(String requestId, JSONObject headers)
+            throws ValidationFailureException, BadRequestException {
 
         log.debug("[" + requestId + "] " + "Validating PSU-IP-Address header");
         if (headers.has(ConsentExtensionConstants.PSU_IP_ADDRESS_HEADER)) {
@@ -681,7 +684,7 @@ public class CommonConsentValidationUtil {
      * @param headers request headers
      */
     public static void validateTppRedirectPreferredHeader(String requestId, JSONObject headers)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
 
         log.debug("[" + requestId + "] " + "Validating TPP-Redirect-Preferred header according to the specification");
         Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(requestId, headers);
@@ -713,7 +716,7 @@ public class CommonConsentValidationUtil {
      * @param consentClientId    the client id of the current consent
      */
     public static void validateClient(String registeredClientId, String consentClientId)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
 
         if (!StringUtils.equals(registeredClientId, consentClientId)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.FORBIDDEN,
@@ -729,7 +732,7 @@ public class CommonConsentValidationUtil {
      * @param typeOfRetrievedConsent the consent type of the current consent
      */
     public static void validateConsentType(String requestConsentType, String typeOfRetrievedConsent)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
 
         if (!StringUtils.equals(requestConsentType, typeOfRetrievedConsent)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.UNAUTHORIZED,
@@ -862,7 +865,8 @@ public class CommonConsentValidationUtil {
      *
      * @param consentType
      */
-    private static void validateIfConsentTypeIsRevocable(String consentType) throws ValidationFailureException {
+    private static void validateIfConsentTypeIsRevocable(String consentType)
+            throws ValidationFailureException, BadRequestException {
         if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.METHOD_NOT_ALLOWED,
                     ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
@@ -926,7 +930,7 @@ public class CommonConsentValidationUtil {
      * @throws ValidationFailureException   if deserialization or validation fails
      */
     public static <T> T validateJSONFromModel(String jsonPayload, Class<T> modelClass)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
         T mappedObject;
 
         // Map to object

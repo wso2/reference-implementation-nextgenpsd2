@@ -48,7 +48,7 @@ public class PaymentConsentUtil {
      * @throws ValidationFailureException
      */
     public static void validatePaymentInitiationPayload(JSONObject requestPayload, String resourcePath)
-            throws ValidationFailureException {
+            throws ValidationFailureException, BadRequestException {
         switch (CommonConsentValidationUtil.getServiceDifferentiatingRequestPath(resourcePath)) {
             case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
                 CommonConsentValidationUtil
@@ -81,7 +81,8 @@ public class PaymentConsentUtil {
      * @return
      */
     public static void appendPaymentInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
-                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload) {
+                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload)
+            throws BadRequestException {
 
         payload.put(ConsentExtensionConstants.TRANSACTION_STATUS, createdConsent.getStatus());
         payload.put(CommonConstants.PAYMENT_ID, createdConsent.getId());

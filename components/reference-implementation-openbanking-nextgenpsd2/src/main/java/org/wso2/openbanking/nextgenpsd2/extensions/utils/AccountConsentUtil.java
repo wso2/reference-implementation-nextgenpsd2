@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
@@ -52,7 +53,8 @@ public class AccountConsentUtil {
      * @param scaMethods     decided SCA methods
      */
     public static void appendAccountInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
-                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload) {
+                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload)
+            throws BadRequestException {
 
         payload.put(ConsentExtensionConstants.CONSENT_STATUS, createdConsent.getStatus());
         payload.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getId());
@@ -75,7 +77,7 @@ public class AccountConsentUtil {
      * @param date date in string format
      * @return date/time after converting to UTC timestamp
      */
-    public static long convertToUtcTimestamp(String date) throws ValidationFailureException {
+    public static long convertToUtcTimestamp(String date) throws ValidationFailureException, BadRequestException {
 
         LocalDate localDate = CommonConsentValidationUtil.parseDateToISO(date,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.VALID_UNTIL_DATE_INVALID);

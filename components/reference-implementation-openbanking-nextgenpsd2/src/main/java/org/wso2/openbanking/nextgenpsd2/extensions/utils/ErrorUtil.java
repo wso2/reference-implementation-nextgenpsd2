@@ -21,6 +21,7 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
@@ -69,7 +70,7 @@ public class ErrorUtil {
      * @return an error constructed as a json object
      */
     public static JSONObject constructBerlinError(String path, TPPMessage.CategoryEnum category,
-                                                  TPPMessage.CodeEnum code, String text) {
+                                                  TPPMessage.CodeEnum code, String text) throws BadRequestException {
 
         List<TPPMessage> tppMessagesList = new ArrayList();
         TPPMessages tppMessages = new TPPMessages();
@@ -117,7 +118,7 @@ public class ErrorUtil {
      * @param tppErrorMessages a list of TPPMessage error objects
      * @return a set of errors constructed as a json object
      */
-    public static JSONObject constructBerlinError(List<TPPMessage> tppErrorMessages) {
+    public static JSONObject constructBerlinError(List<TPPMessage> tppErrorMessages) throws BadRequestException {
 
         TPPMessages tppMessages = new TPPMessages();
         tppMessages.setTppMessages(tppErrorMessages);
