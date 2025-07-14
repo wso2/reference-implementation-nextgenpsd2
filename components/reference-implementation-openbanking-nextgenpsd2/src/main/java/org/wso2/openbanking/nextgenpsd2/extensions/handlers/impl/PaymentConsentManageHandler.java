@@ -34,7 +34,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.TransactionStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Authorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.DetailedConsentResourceData;
@@ -58,7 +58,7 @@ import java.util.Optional;
 /**
  * Consent handler for payment consents.
  */
-public class PaymentConsentManageHandler implements ConsentManagementResponseHandler {
+public class PaymentConsentManageHandler implements ConsentManagementValidationHandler {
     private static final Log log = LogFactory.getLog(PaymentConsentManageHandler.class);
 
     /**

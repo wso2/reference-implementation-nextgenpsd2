@@ -1,6 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.api.generated;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManageAPIImpl;
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManagementAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Response200ForResponseAlternation;
@@ -36,6 +36,6 @@ public class PreProcessConsentRetrievalApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response preProcessConsentRetrievalPost(@Valid @NotNull PreProcessConsentRequestBody preProcessConsentRequestBody) {
-        return ConsentManageAPIImpl.preProcessConsentRetrieval(preProcessConsentRequestBody);
+        return ConsentManagementAPIImpl.preProcessConsentRetrieval(preProcessConsentRequestBody);
     }
 }

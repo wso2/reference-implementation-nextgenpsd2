@@ -30,7 +30,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessRespon
 /**
  * Consent handler interface for processing consent related requests.
  */
-public interface ConsentManagementResponseHandler {
+public interface ConsentManagementValidationHandler {
 
     SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
             throws ValidationFailureException, ApiException;

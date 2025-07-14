@@ -26,7 +26,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
@@ -42,8 +42,8 @@ import javax.ws.rs.core.Response;
 /**
  * Implementation class maintaining the methods for consent management extension APIs.
  */
-public class ConsentManageAPIImpl {
-    public static Log log = LogFactory.getLog(ConsentManageAPIImpl.class);
+public class ConsentManagementAPIImpl {
+    public static Log log = LogFactory.getLog(ConsentManagementAPIImpl.class);
 
     /**
      * Method for returning the response for enriching consent creation request.
@@ -54,7 +54,7 @@ public class ConsentManageAPIImpl {
     public static Response enrichConsentCreationResponse(EnrichConsentCreationRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
         try {
-            ConsentManagementResponseHandler consentHandler = CommonConsentValidationUtil
+            ConsentManagementValidationHandler consentHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
 
             SuccessResponseForResponseAlternation validationResponse;
@@ -114,13 +114,13 @@ public class ConsentManageAPIImpl {
                 return Response.status(Response.Status.OK).entity(errorResponse.toString()).build();
             }
 
-            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+            ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
 
             SuccessResponsePreProcessConsentCreation validationResponse;
 
-            if (consentManagementResponseHandler != null) {
-                validationResponse = consentManagementResponseHandler.handleCreation(requestBody);
+            if (consentManagementValidationHandler != null) {
+                validationResponse = consentManagementValidationHandler.handleCreation(requestBody);
             } else {
                 JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
@@ -155,13 +155,13 @@ public class ConsentManageAPIImpl {
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
-            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+            ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
 
             SuccessResponseForResponseAlternation validationResponse;
 
-            if (consentManagementResponseHandler != null) {
-                validationResponse = consentManagementResponseHandler.handleRetrieval(requestBody);
+            if (consentManagementValidationHandler != null) {
+                validationResponse = consentManagementValidationHandler.handleRetrieval(requestBody);
             } else {
                 JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
@@ -197,13 +197,13 @@ public class ConsentManageAPIImpl {
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
-            ConsentManagementResponseHandler consentManagementResponseHandler = CommonConsentValidationUtil
+            ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
 
             SuccessResponseConsentRevocation validationResponse;
 
-            if (consentManagementResponseHandler != null) {
-                validationResponse = consentManagementResponseHandler.handleRevocation(requestBody);
+            if (consentManagementValidationHandler != null) {
+                validationResponse = consentManagementValidationHandler.handleRevocation(requestBody);
             } else {
                 JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,

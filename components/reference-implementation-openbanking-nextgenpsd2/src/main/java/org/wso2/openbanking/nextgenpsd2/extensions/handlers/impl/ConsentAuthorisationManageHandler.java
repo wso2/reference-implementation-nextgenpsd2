@@ -22,7 +22,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentCreationRequestBody;
@@ -35,7 +35,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationManageHandler implements ConsentManagementResponseHandler {
+public class ConsentAuthorisationManageHandler implements ConsentManagementValidationHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**

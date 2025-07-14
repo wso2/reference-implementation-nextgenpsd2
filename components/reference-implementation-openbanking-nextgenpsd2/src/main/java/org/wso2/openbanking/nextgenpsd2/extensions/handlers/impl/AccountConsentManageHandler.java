@@ -35,7 +35,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ApiException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Authorization;
@@ -60,7 +60,7 @@ import java.util.Optional;
 /**
  * Consent handler for account consents.
  */
-public class AccountConsentManageHandler implements ConsentManagementResponseHandler {
+public class AccountConsentManageHandler implements ConsentManagementValidationHandler {
     private static final Log log = LogFactory.getLog(AccountConsentManageHandler.class);
 
     /**

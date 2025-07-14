@@ -39,7 +39,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.TransactionStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementResponseHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentManageHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationManageHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentManageHandler;
@@ -192,7 +192,7 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentManagementResponseHandler getConsentManagementResponseHandler(String requestPath) {
+    public static ConsentManagementValidationHandler getConsentManagementResponseHandler(String requestPath) {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {
             case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
