@@ -18,6 +18,9 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.validators.annotations.ValidAccountAccess;
 
 import java.util.List;
@@ -31,13 +34,46 @@ import javax.validation.Valid;
 @ValidAccountAccess
 public class AccountAccess {
 
+    /**
+     * Access scope values for availableAccounts, availableAccountsWithBalance
+     * or allPsd2.
+     */
+    public enum AccessScope {
+        ALL_ACCOUNTS(ConsentExtensionConstants.ALL_ACCOUNTS),
+        ALL_ACCOUNTS_WITH_OWNER_NAME(ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME);
+
+        private final String value;
+
+        AccessScope(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static AccessScope fromValue(String value) {
+            for (AccessScope scope : values()) {
+                if (scope.value.equalsIgnoreCase(value)) {
+                    return scope;
+                }
+            }
+            throw new IllegalArgumentException(
+                    "Invalid value for '" + value + "'. Expected '"
+                            + ConsentExtensionConstants.ALL_ACCOUNTS + "' or '"
+                            + ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME + "'.");
+        }
+    }
+
     private List<@Valid AccountReference> accounts;
     private List<@Valid AccountReference> balances;
     private List<@Valid AccountReference> transactions;
 
-    private String availableAccounts;
-    private String availableAccountsWithBalances;
-    private String allPsd2;
+    private AccessScope availableAccounts;
+    private AccessScope availableAccountsWithBalances;
+    private AccessScope allPsd2;
 
     private Map<String, Object> additionalInformation;
 
@@ -65,27 +101,27 @@ public class AccountAccess {
         this.transactions = transactions;
     }
 
-    public String getAvailableAccounts() {
+    public AccessScope getAvailableAccounts() {
         return availableAccounts;
     }
 
-    public void setAvailableAccounts(String availableAccounts) {
+    public void setAvailableAccounts(AccessScope availableAccounts) {
         this.availableAccounts = availableAccounts;
     }
 
-    public String getAvailableAccountsWithBalances() {
+    public AccessScope getAvailableAccountsWithBalances() {
         return availableAccountsWithBalances;
     }
 
-    public void setAvailableAccountsWithBalances(String availableAccountsWithBalances) {
+    public void setAvailableAccountsWithBalances(AccessScope availableAccountsWithBalances) {
         this.availableAccountsWithBalances = availableAccountsWithBalances;
     }
 
-    public String getAllPsd2() {
+    public AccessScope getAllPsd2() {
         return allPsd2;
     }
 
-    public void setAllPsd2(String allPsd2) {
+    public void setAllPsd2(AccessScope allPsd2) {
         this.allPsd2 = allPsd2;
     }
 

@@ -1,6 +1,5 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.validators.impl;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountAccess;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
@@ -42,37 +41,41 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
             return false;
         }
 
-        // Validate permission configurations
-        if (hasPermissions) {
-            if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(access.getAvailableAccounts())
-                    || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAvailableAccounts())) {
-                if (access.getAvailableAccountsWithBalances() != null || access.getAllPsd2() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-            if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(access.getAvailableAccountsWithBalances())
-                    || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME
-                    .equals(access.getAvailableAccountsWithBalances())) {
-                if (access.getAvailableAccounts() != null || access.getAllPsd2() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-            if (ConsentExtensionConstants.ALL_ACCOUNTS.equals(access.getAllPsd2())
-                    || ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAllPsd2())) {
-                if (access.getAvailableAccounts() != null || access.getAvailableAccountsWithBalances() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-        }
-
         // Additional info only with at least one array
         if (access.getAdditionalInformation() != null && !hasArrays) {
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil
                             .buildViolationMessage(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE));
+            return false;
+        }
+
+        // Validate permission configurations
+        if (hasPermissions) {
+            if (access.getAvailableAccounts() != null) {
+                if (access.getAvailableAccountsWithBalances() != null || access.getAllPsd2() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+            if (access.getAvailableAccountsWithBalances() != null) {
+                if (access.getAvailableAccounts() != null || access.getAllPsd2() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+            if (access.getAllPsd2() != null) {
+                if (access.getAvailableAccounts() != null || access.getAvailableAccountsWithBalances() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+
+            // Should be unreachable because of a prior schema validation
+            CommonConsentValidationUtil.setConstrainViolation(context,
+                    CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
             return false;
         }
 
