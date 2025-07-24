@@ -245,6 +245,7 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, BadRequestException {
+        // ToDo: Implement cancel-authorizations once explicit auth is implemented
         return CommonConsentValidationUtil.validateRevokeRequestAndReturnResponse(requestBody);
     }
 
