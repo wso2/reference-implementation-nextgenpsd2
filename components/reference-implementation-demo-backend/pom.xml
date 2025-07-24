@@ -69,7 +69,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-                    <warName>api#openbanking#berlin#backend</warName>
+                    <warName>api#openbanking#nextgenpsd2#backend</warName>
                 </configuration>
                 <version>${maven-war-plugin.version}</version>
             </plugin>
