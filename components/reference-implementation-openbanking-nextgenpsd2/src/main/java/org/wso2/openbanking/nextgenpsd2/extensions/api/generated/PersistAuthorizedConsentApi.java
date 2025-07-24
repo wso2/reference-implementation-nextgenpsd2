@@ -1,5 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.api.generated;
 
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentAuthorizationAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PersistAuthorizedConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Response200ForPersistAuthorizedConsent;
@@ -35,6 +36,6 @@ public class PersistAuthorizedConsentApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response persistAuthorizedConsentPost(@Valid @NotNull PersistAuthorizedConsentRequestBody persistAuthorizedConsentRequestBody) {
-        return Response.ok().entity("magic!").build();
+        return ConsentAuthorizationAPIImpl.persistAuthorizedConsent(persistAuthorizedConsentRequestBody);
     }
 }

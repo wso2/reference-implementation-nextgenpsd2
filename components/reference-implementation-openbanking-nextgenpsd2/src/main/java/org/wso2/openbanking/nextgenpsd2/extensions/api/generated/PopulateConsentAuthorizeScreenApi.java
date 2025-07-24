@@ -1,5 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.api.generated;
 
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentAuthorizationAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PopulateConsentAuthorizeScreenRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Response200ForPopulateConsentAuthorizeScreen;
@@ -34,6 +35,6 @@ public class PopulateConsentAuthorizeScreenApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response populateConsentAuthorizeScreenPost(@Valid PopulateConsentAuthorizeScreenRequestBody populateConsentAuthorizeScreenRequestBody) {
-        return Response.ok().entity("magic!").build();
+        return ConsentAuthorizationAPIImpl.populateConsentAuthorizeScreen(populateConsentAuthorizeScreenRequestBody);
     }
 }
