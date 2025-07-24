@@ -26,6 +26,8 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponseInConsentAuthorize;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponseInConsentAuthorizeData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,5 +175,28 @@ public class ErrorUtil {
         }
 
         return message;
+    }
+
+    /**
+     * Method to build FailedResponseInConsentAuthorize object from failed authorization exceptions.
+     *
+     * @param responseId
+     * @param message
+     * @param newStatus
+     * @return
+     */
+    public static JSONObject getFormattedAuthorizationFailureException(String responseId, String message,
+                                                                       String newStatus) {
+        FailedResponseInConsentAuthorize failedResponse = new FailedResponseInConsentAuthorize();
+        failedResponse.setResponseId(responseId);
+        failedResponse.setStatus(FailedResponseInConsentAuthorize.StatusEnum.ERROR);
+
+        FailedResponseInConsentAuthorizeData responseData = new FailedResponseInConsentAuthorizeData();
+        responseData.setErrorMessage(message);
+        if (newStatus != null && !newStatus.isEmpty()) {
+            responseData.setNewConsentStatus(newStatus);
+        }
+
+        return new JSONObject(failedResponse.data(responseData));
     }
 }

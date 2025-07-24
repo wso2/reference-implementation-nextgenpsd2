@@ -26,6 +26,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
@@ -37,21 +38,30 @@ import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaApproachEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
 import org.wso2.openbanking.nextgenpsd2.extensions.enums.TransactionStatusEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentAuthorizeHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentManageHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentAuthorizeHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentAuthorizeHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Account;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PreProcessConsentRetrievalData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredBasicConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponseConsentRevocationData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePopulateConsentAuthorizeScreenData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -209,6 +219,28 @@ public class CommonConsentValidationUtil {
             default:
                 return null;
         }
+    }
+
+    /**
+     * Method to get the account list authorize handler.
+     *
+     * @param type consent type of the request
+     * @return the selected account list retrieval handler
+     */
+    public static ConsentAuthorizationHandler getAuthorizationHandler(String type) {
+
+        ConsentAuthorizationHandler authorizationHandler = null;
+
+        if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), type)) {
+            authorizationHandler = new AccountConsentAuthorizeHandler();
+        } else if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), type)
+                || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
+                || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
+            authorizationHandler = new PaymentConsentAuthorizeHandler();
+        } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
+            authorizationHandler = new FundsConfirmationConsentAuthorizeHandler();
+        }
+        return authorizationHandler;
     }
 
     /**
@@ -583,51 +615,6 @@ public class CommonConsentValidationUtil {
         return parsedDate;
     }
 
-    /**
-     * Validating the account reference object.
-     * A valid account reference object can have a single supported account reference
-     * type attribute and optionally a currency attribute.
-     *
-     * @param accountRefObject account reference object
-     */
-    public static void validateAccountRefObject(JSONObject accountRefObject)
-            throws ValidationFailureException, BadRequestException {
-
-        if (accountRefObject == null) {
-            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_OBJECT_MISSING));
-        }
-
-        Set<String> accountRefKeys = accountRefObject.keySet();
-        boolean isAccountReferenceValid = true;
-        if (accountRefKeys.size() == 1) {
-            if (hasUnSupportedAccountRefTypes(accountRefKeys)) {
-                isAccountReferenceValid = false;
-            }
-        } else if (accountRefKeys.size() == 2) {
-            if (!accountRefKeys.contains(ConsentExtensionConstants.CURRENCY)
-                    || hasUnSupportedAccountRefTypes(accountRefKeys)) {
-                isAccountReferenceValid = false;
-            }
-        } else {
-            isAccountReferenceValid = false;
-        }
-
-        if (!isAccountReferenceValid) {
-            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.INVALID_ACCOUNT_REFERENCE));
-        }
-
-        String accountReference = getAccountReference(accountRefObject);
-        if (StringUtils.isBlank(accountReference)) {
-            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.ACCOUNT_REFERENCE_IS_EMPTY));
-        }
-    }
-
     public static void validateRequestIdentificationHeader(Object headers)
             throws ValidationFailureException, BadRequestException {
         // To allow idempotency header validation it needs to be forwarded
@@ -954,5 +941,114 @@ public class CommonConsentValidationUtil {
         }
 
         return mappedObject;
+    }
+
+    /**
+     * Returns the extracted account reference type from the account reference object.
+     *
+     * @param accountRefObject account reference JSON object
+     * @return account reference type
+     */
+    public static String getAccountReferenceType(JSONObject accountRefObject) {
+
+        List<String> configuredAccountReferences = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.has(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the extracted account reference type from the account reference object.
+     *
+     * @param accountRefObject account reference map object
+     * @return account reference type
+     */
+    public static String getAccountReferenceType(Map<String, ?> accountRefObject) {
+
+        List<String> configuredAccountReferences = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.containsKey(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Populates consent initiated accounts for both payment and funds confirmation consents.
+     *
+     * @param responseData
+     * @param requestData
+     * @param accountRefJSON
+     * @throws AuthorizationFailureException
+     */
+    public static void populateConsentInitiatedAccounts(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
+                                                        PopulateConsentAuthorizeScreenData requestData,
+                                                        JSONObject accountRefJSON)
+            throws AuthorizationFailureException {
+        String payableAccountsEndpoint = ConfigurationConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT;
+        JSONArray userAccountsArray = DataRetrievalUtil.getAccountsFromEndpoint(requestData.getUserId(),
+                payableAccountsEndpoint, new HashMap<>(), new HashMap<>());
+
+        if (userAccountsArray == null || userAccountsArray.isEmpty()) {
+            throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+        }
+
+        Account validatedAccountRefObject;
+        if (accountRefJSON.has(ConsentExtensionConstants.MASKED_PAN)) {
+            // Skipping validation for maskedPan based account reference types and this needs to be validated
+            // from the bank back end since there might be scenarios where there are 2 similar maskedPans
+            // for a single user therefore we are not sure which account to validate it against
+            // Eg: 123456xxxxxx1234, 123456xxxxxx1234 -> Both these maskedPans can belong to the same user
+            validatedAccountRefObject = ConsentAuthorizationUtil.getAccountFromAccountRef(accountRefJSON);
+        } else {
+            JSONArray accountRefsArray = new JSONArray();
+            accountRefsArray.put(accountRefJSON);
+            List<Account> validatedAccountList = ConsentAuthorizationUtil.getValidatedAccountObjects(accountRefsArray,
+                    userAccountsArray);
+
+            // Validate account existence under user
+            if (validatedAccountList == null || validatedAccountList.isEmpty()) {
+                throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+            }
+
+            validatedAccountRefObject = validatedAccountList.get(0);
+        }
+
+        if (validatedAccountRefObject == null) {
+            throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+        }
+
+        // Add to consent page to be displayed
+        responseData.getConsentData().setInitiatedAccountsForConsent(List.of(validatedAccountRefObject));
+    }
+
+    /**
+     * Extracts account reference object from authorized account objects.
+     *
+     * @param accounts
+     * @return
+     */
+    public static List<AccountReference> extractAccountRef(List<Account> accounts) {
+        List<AccountReference> accountRefs = new ArrayList<>();
+
+        for (Account authorizedAccount: accounts) {
+            AccountReference accountRef = new AccountReference();
+            if (authorizedAccount.getAdditionalProperties().containsKey(ConsentExtensionConstants.CURRENCY)) {
+                accountRef.setAdditionalProperties(ConsentExtensionConstants.CURRENCY,
+                        (String) authorizedAccount.getAdditionalProperties().get(ConsentExtensionConstants.CURRENCY));
+            }
+            String accountRefType = CommonConsentValidationUtil
+                    .getAccountReferenceType(authorizedAccount.getAdditionalProperties());
+            accountRef.setAdditionalProperties(accountRefType,
+                    (String) authorizedAccount.getAdditionalProperties().get(accountRefType));
+
+            accountRefs.add(accountRef);
+        }
+
+        return accountRefs;
     }
 }

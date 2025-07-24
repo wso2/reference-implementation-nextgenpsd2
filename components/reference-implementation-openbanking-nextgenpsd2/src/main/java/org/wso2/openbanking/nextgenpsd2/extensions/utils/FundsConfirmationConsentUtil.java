@@ -18,14 +18,20 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePopulateConsentAuthorizeScreenData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for payment consent management.
@@ -55,5 +61,49 @@ public class FundsConfirmationConsentUtil {
         } else {
             payload.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
+    }
+
+    /**
+     * Method to populate funds confirmation data into basic consent data.
+     *
+     * @param responseData the response object to populate
+     * @param requestData the request data containing consent receipt
+     * @throws BadRequestException if receipt parsing fails
+     */
+    public static void populateFundsConfirmationBasicConsentData
+    (SuccessResponsePopulateConsentAuthorizeScreenData responseData, PopulateConsentAuthorizeScreenData requestData)
+            throws BadRequestException {
+
+        Map<String, List<String>> basicConsentData = new HashMap<>();
+
+        JSONObject receipt = CommonConsentValidationUtil
+                .convertObjectToJson(requestData.getConsentResource().getReceipt());
+
+        List<String> consentDetails = new ArrayList<>();
+
+        // Card number
+        if (receipt.has(ConsentExtensionConstants.CARD_NUMBER) &&
+                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_NUMBER))) {
+            consentDetails.add(ConsentExtensionConstants.CARD_NUMBER_TITLE + ": " +
+                    receipt.optString(ConsentExtensionConstants.CARD_NUMBER));
+        }
+
+        // Card expiry date
+        if (receipt.has(ConsentExtensionConstants.CARD_EXPIRY_DATE) &&
+                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_EXPIRY_DATE))) {
+            consentDetails.add(ConsentExtensionConstants.CARD_EXPIRY_DATE_TITLE + ": " +
+                    receipt.optString(ConsentExtensionConstants.CARD_EXPIRY_DATE));
+        }
+
+        // Card information
+        if (receipt.has(ConsentExtensionConstants.CARD_INFORMATION) &&
+                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_INFORMATION))) {
+            consentDetails.add(ConsentExtensionConstants.CARD_INFORMATION_TITLE + ": " +
+                    receipt.optString(ConsentExtensionConstants.CARD_INFORMATION));
+        }
+
+        basicConsentData.put(ConsentExtensionConstants.CONSENT_DETAILS_TITLE, consentDetails);
+
+        responseData.getConsentData().setBasicConsentData(basicConsentData);
     }
 }
