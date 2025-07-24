@@ -40,7 +40,7 @@ public class AccountReferenceValidator implements ConstraintValidator<ValidAccou
 
     @Override
     public boolean isValid(AccountReference ref, ConstraintValidatorContext context) {
-        Map<String, String> props = ref.getProperties();
+        Map<String, String> props = ref.getAdditionalProperties();
 
         if (props == null || props.isEmpty()) {
             CommonConsentValidationUtil.setConstrainViolation(context,

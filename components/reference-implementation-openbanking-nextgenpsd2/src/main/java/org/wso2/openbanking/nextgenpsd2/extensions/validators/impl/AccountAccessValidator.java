@@ -18,9 +18,9 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
     @Override
     public boolean isValid(AccountAccess access, ConstraintValidatorContext context) {
-        boolean hasArrays = notEmpty(access.getAccounts()) ||
-                notEmpty(access.getBalances()) ||
-                notEmpty(access.getTransactions());
+        boolean hasArrays = access.getAccounts() != null ||
+                access.getTransactions() != null ||
+                access.getBalances() != null;
 
         boolean hasPermissions = access.getAvailableAccounts() != null ||
                 access.getAvailableAccountsWithBalances() != null ||
@@ -74,9 +74,7 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
             }
 
             // Should be unreachable because of a prior schema validation
-            CommonConsentValidationUtil.setConstrainViolation(context,
-                    CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-            return false;
+            return true;
         }
 
         // Arrays must all be empty or all non-empty
