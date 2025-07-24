@@ -17,17 +17,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 
 @JsonTypeName("AuthorizedResources")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-15T13:10:30.062370600+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class AuthorizedResources extends HashMap<String, Object>  {
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSpecServerCodegen", date = "2025-07-15T13:10:30.062370600+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+public class AuthorizedResources  {
   private Boolean approval;
   private Boolean isReauthorization;
   private String type;
   private @Valid List<@Valid AuthorizedResourcesAuthorizedDataInner> authorizedData = new ArrayList<>();
   private Object metadata;
+  private Map<String, Object> additionalProperties = new HashMap<>(); // Added to store additional properties
 
   public AuthorizedResources() {
   }
@@ -148,6 +150,25 @@ public class AuthorizedResources extends HashMap<String, Object>  {
     this.metadata = metadata;
   }
 
+  /**
+   * Get any additional properties that are not explicitly defined in the OpenAPI spec
+   * @return a map of additional properties
+   */
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  /**
+   * Set any additional property that is not explicitly defined in the OpenAPI spec
+   * @param name The key of the additional property
+   * @param value The value of the additional property
+   */
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -163,24 +184,24 @@ public class AuthorizedResources extends HashMap<String, Object>  {
         Objects.equals(this.type, authorizedResources.type) &&
         Objects.equals(this.authorizedData, authorizedResources.authorizedData) &&
         Objects.equals(this.metadata, authorizedResources.metadata) &&
-        super.equals(o);
+        Objects.equals(this.additionalProperties, authorizedResources.additionalProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(approval, isReauthorization, type, authorizedData, metadata, super.hashCode());
+    return Objects.hash(approval, isReauthorization, type, authorizedData, metadata, additionalProperties);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AuthorizedResources {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    approval: ").append(toIndentedString(approval)).append("\n");
     sb.append("    isReauthorization: ").append(toIndentedString(isReauthorization)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    authorizedData: ").append(toIndentedString(authorizedData)).append("\n");
     sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
+    sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n"); // Include additional properties in toString
     sb.append("}");
     return sb.toString();
   }

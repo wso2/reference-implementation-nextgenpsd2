@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /**
  * A user account or resource representation
@@ -20,8 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @ApiModel(description = "A user account or resource representation")
 @JsonTypeName("Account")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class Account extends HashMap<String, Object>  {
+public class Account  {
   private String displayName;
+  private Map<String, Object> additionalProperties = new HashMap<>();
 
   public Account() {
   }
@@ -30,8 +33,6 @@ public class Account extends HashMap<String, Object>  {
   public Account(
     @JsonProperty(required = true, value = "displayName") String displayName
   ) {
-    super(
-    );
     this.displayName = displayName;
   }
 
@@ -55,6 +56,16 @@ public class Account extends HashMap<String, Object>  {
     this.displayName = displayName;
   }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -66,20 +77,20 @@ public class Account extends HashMap<String, Object>  {
     }
     Account account = (Account) o;
     return Objects.equals(this.displayName, account.displayName) &&
-        super.equals(o);
+        Objects.equals(this.additionalProperties, account.additionalProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(displayName, super.hashCode());
+    return Objects.hash(displayName, additionalProperties);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Account {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+    sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n");
     sb.append("}");
     return sb.toString();
   }

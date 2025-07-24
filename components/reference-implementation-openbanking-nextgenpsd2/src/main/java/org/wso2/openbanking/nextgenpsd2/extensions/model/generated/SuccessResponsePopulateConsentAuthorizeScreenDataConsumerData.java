@@ -18,15 +18,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /**
  * Consumer related data fetched from the banking backend.
  **/
 @ApiModel(description = "Consumer related data fetched from the banking backend.")
 @JsonTypeName("SuccessResponsePopulateConsentAuthorizeScreenData_consumerData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-15T13:10:30.062370600+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
-public class SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData extends HashMap<String, Object>  {
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-17T14:09:27.461176800+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+public class SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData  {
   private @Valid List<@Valid SuccessResponsePopulateConsentAuthorizeScreenDataConsumerDataAccountsInner> accounts = new ArrayList<>();
+  private Map<String, Object> additionalProperties = new HashMap<>();
 
   public SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData() {
   }
@@ -68,6 +71,17 @@ public class SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData exten
     return this;
   }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -78,20 +92,20 @@ public class SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData exten
     }
     SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData successResponsePopulateConsentAuthorizeScreenDataConsumerData = (SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData) o;
     return Objects.equals(this.accounts, successResponsePopulateConsentAuthorizeScreenDataConsumerData.accounts) &&
-        super.equals(o);
+        Objects.equals(this.additionalProperties, successResponsePopulateConsentAuthorizeScreenDataConsumerData.additionalProperties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(accounts, super.hashCode());
+    return Objects.hash(accounts, additionalProperties);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
     sb.append("    accounts: ").append(toIndentedString(accounts)).append("\n");
+    sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n");
     sb.append("}");
     return sb.toString();
   }
