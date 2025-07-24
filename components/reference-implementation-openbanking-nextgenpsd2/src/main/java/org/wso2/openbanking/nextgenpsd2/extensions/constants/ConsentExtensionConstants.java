@@ -121,6 +121,7 @@ public class ConsentExtensionConstants {
 
     // Constants that are used by accounts service
     public static final String ACCOUNT_DETAILS_LIST = "accountDetailsList";
+    public static final String AUTHORIZING_AUTHORIZATION = "authorizingAuthorization";
     public static final String ACCOUNTS_CONSENT_PATH = "consents";
     public static final String ACCOUNTS_SUBMISSION_PATH_IDENTIFIER = "accounts";
     public static final String PAYMENTS_RETRIEVAL_PATH_IDENTIFIER = "payments";

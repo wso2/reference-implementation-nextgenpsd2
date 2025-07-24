@@ -67,4 +67,10 @@ public class ConfigurationConstants {
     public static final String PIIS_API_VERSION = "v2";
     public static final String MAX_FUTURE_PAYMENT_DAYS = "30";
     public static final String OAUTH_METADATA_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
+    public static final String SHARABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "http://localhost:9766/api/openbanking/" +
+            "nextgenpsd2/backend/services/v130/accounts/shareable";
+    public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "http://localhost:9766/api/openbanking/" +
+            "nextgenpsd2/backend/services/v130/accounts/payable";
+    public static final String PAYMENT_BACKEND_URL = "http://localhost:9766/api/openbanking/nextgenpsd2/backend/" +
+            "services/payments";
 }

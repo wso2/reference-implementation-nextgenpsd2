@@ -47,6 +47,8 @@ public class CommonConstants {
     public static final String SCA_DESCRIPTION = "Description";
     public static final String SCA_DEFAULT = "Default";
     public static final String X_WSO2_CLIENT_ID_KEY = "x-wso2-client-id";
+    public static final String CLIENT_ID_PARAM = "client_id";
+    public static final String SCOPE_PARAM = "scope";
     public static final String SUPPORTED_ACCOUNT_REFERENCE_TYPES_PATH = "ConsentManagement" +
             ".SupportedAccountReferenceTypes.AccountReferenceType";
     public static final String MAX_FUTURE_PAYMENT_DAYS = "ConsentManagement.Payments.BulkPayments" +
