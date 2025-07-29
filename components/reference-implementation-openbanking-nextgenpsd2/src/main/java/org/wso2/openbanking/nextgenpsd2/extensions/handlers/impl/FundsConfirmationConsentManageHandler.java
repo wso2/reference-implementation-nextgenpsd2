@@ -243,9 +243,7 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws BadRequestException {
-        SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-        ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody, validationResponse,
+        return ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody,
                 ConsentTypeEnum.FUNDS_CONFIRMATION.toString());
-        return validationResponse;
     }
 }
