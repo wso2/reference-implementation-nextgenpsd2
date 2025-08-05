@@ -41,12 +41,12 @@ public class FundsConfirmationConsentUtil {
     /**
      * Method to get the funds confirmation initiation response without links.
      *
-     * @param createdConsent
+     * @param createdConsent created consent retrieved
      * @param scaMethods
      * @param payload
      */
-    public static void appendPaymentInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
-                                                                ArrayList<ScaMethod> scaMethods, JSONObject payload)
+    public static void appendCoFInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
+                                                            ArrayList<ScaMethod> scaMethods, JSONObject payload)
             throws BadRequestException {
         payload.put(ConsentExtensionConstants.CONSENT_STATUS, createdConsent.getStatus());
         payload.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getId());

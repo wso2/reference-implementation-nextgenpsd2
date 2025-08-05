@@ -43,16 +43,14 @@ import java.util.Map;
  */
 public class ConsentInitiationUtil {
     /**
-     * Method to construct account initiation response.
+     * Method to construct consent initiation response.
      *
-     * @param requestBody
-     * @param payload
-     * @param headers
-     * @param isRedirectPreferred
-     * @param apiVersion
-     * @param isSCARequired
-     * @return
-     * @throws BadRequestException
+     * @param requestBody consent initiation request body
+     * @param payload consent initiation payload
+     * @param headers consent initiation request headers
+     * @param isRedirectPreferred 'is-redirect-preferred' header value
+     * @param apiVersion api version based on consent
+     * @param isSCARequired whether SCA is required as per configuration
      */
     public static void buildEnrichedConsentInitiationResponse(String consentType,
                                                               EnrichConsentCreationRequestBody requestBody,
@@ -81,7 +79,7 @@ public class ConsentInitiationUtil {
         } else if (ConsentTypeEnum.PAYMENTS.toString().equals(consentType)) {
             PaymentConsentUtil.appendPaymentInitiationResponseToPayload(createdConsent, scaMethods, payload);
         } else if (ConsentTypeEnum.FUNDS_CONFIRMATION.toString().equals(consentType)) {
-            FundsConfirmationConsentUtil.appendPaymentInitiationResponseToPayload(createdConsent, scaMethods, payload);
+            FundsConfirmationConsentUtil.appendCoFInitiationResponseToPayload(createdConsent, scaMethods, payload);
         }
 
         String authId = null;
@@ -108,7 +106,6 @@ public class ConsentInitiationUtil {
      * @param authorisationId                     authorisation resource consentId
      * @param consentType                         type of consent
      * @return constructed links object for initiation response
-     * @throws BadRequestException
      */
     public static JSONObject getInitiationLinks(boolean isTppExplicitAuthorisationPreferred,
                                                 ScaApproach currentScaApproach, List<ScaMethod> currentScaMethods,
@@ -185,15 +182,14 @@ public class ConsentInitiationUtil {
     /**
      * Build response alteration response for success consent initiations.
      *
-     * @param requestBody
-     * @param validationResponse
-     * @param consentType
-     * @throws BadRequestException
+     * @param requestBody consent initiation enrichment request body
+     * @param consentType consent type of initiated consent
+     * @throws BadRequestException if the request body is malformed
      */
-    public static void buildResponseAlterationResponseForConsentCreation(EnrichConsentCreationRequestBody requestBody,
-                                                                         SuccessResponseForResponseAlternation
-                                                                                 validationResponse, String consentType)
-            throws BadRequestException {
+    public static SuccessResponseForResponseAlternation buildResponseAlterationResponseForConsentCreation(
+            EnrichConsentCreationRequestBody requestBody, String consentType) throws BadRequestException {
+
+        SuccessResponseForResponseAlternation enrichedResponse = new SuccessResponseForResponseAlternation();
 
         JSONObject payloadToSend = new JSONObject();
         JSONObject headersToSend = new JSONObject();
@@ -208,8 +204,10 @@ public class ConsentInitiationUtil {
         data.setResponseHeaders(headersToSend);
         data.setModifiedResponse(payloadToSend);
 
-        validationResponse.setResponseId(requestBody.getRequestId());
-        validationResponse.setStatus(SuccessResponseForResponseAlternation.StatusEnum.SUCCESS);
-        validationResponse.setData(data);
+        enrichedResponse.setResponseId(requestBody.getRequestId());
+        enrichedResponse.setStatus(SuccessResponseForResponseAlternation.StatusEnum.SUCCESS);
+        enrichedResponse.setData(data);
+
+        return enrichedResponse;
     }
 }

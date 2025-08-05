@@ -54,9 +54,9 @@ public class PaymentConsentUtil {
     /**
      * Validates payment consent initiation payload based on payment type.
      *
-     * @param requestPayload
-     * @param resourcePath
-     * @throws ValidationFailureException
+     * @param requestPayload consent initiation request payload
+     * @param resourcePath called resource path
+     * @throws ValidationFailureException if the payment initiation payload is invalid
      */
     public static void validatePaymentInitiationPayload(JSONObject requestPayload, String resourcePath)
             throws ValidationFailureException, BadRequestException {
@@ -87,9 +87,8 @@ public class PaymentConsentUtil {
     /**
      * Method to get the payment initiation response without links.
      *
-     * @param createdConsent
-     * @param scaMethods
-     * @return
+     * @param createdConsent created consent resource data
+     * @param scaMethods supported SCA methods
      */
     public static void appendPaymentInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                                 ArrayList<ScaMethod> scaMethods, JSONObject payload)
@@ -113,8 +112,8 @@ public class PaymentConsentUtil {
     /**
      * Method to return a JSON Object with payment product.
      *
-     * @param consentResourcePath
-     * @return
+     * @param consentResourcePath resource path of created consent
+     * @return attribute object
      */
     public static Object getPaymentProductAttribute(String consentResourcePath) {
         JSONObject attributesJSON = new JSONObject();
@@ -125,8 +124,8 @@ public class PaymentConsentUtil {
     /**
      * Helper method to extract payment product from resource path.
      *
-     * @param consentResourcePath
-     * @return
+     * @param consentResourcePath payment consent resource path
+     * @return payment product
      */
     public static String getPaymentProduct(String consentResourcePath) {
         return consentResourcePath.split("/")[1];
@@ -135,10 +134,11 @@ public class PaymentConsentUtil {
     /**
      * Method to validate payment product for payment consents.
      *
-     * @param attributes
-     * @param consentResourcePath
-     * @throws ValidationFailureException
-     * @throws BadRequestException
+     * @param attributes consent attribute object
+     * @param consentResourcePath consent resource path
+     * @throws ValidationFailureException if stored payment product does not match one specified in consent resource
+     * path
+     * @throws BadRequestException is payment product is missing in consent attributes
      */
     public static void validatePaymentProductFromAttributes(Object attributes, String consentResourcePath)
             throws ValidationFailureException, BadRequestException {

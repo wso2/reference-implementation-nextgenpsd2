@@ -260,9 +260,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws BadRequestException {
-        SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-        ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody, validationResponse,
+        return ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody,
                 ConsentTypeEnum.ACCOUNTS.toString());
-        return validationResponse;
     }
 }

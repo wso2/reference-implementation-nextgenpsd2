@@ -259,9 +259,7 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws BadRequestException {
-        SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-        ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody, validationResponse,
+        return ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody,
                 ConsentTypeEnum.PAYMENTS.toString());
-        return  validationResponse;
     }
 }

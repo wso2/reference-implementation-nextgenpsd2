@@ -38,9 +38,9 @@ import java.util.List;
 public class ErrorUtil {
     /**
      * Method to get ErrorResponse object for error.
-     * @param errorMessage
-     * @param errorDescription
-     * @return
+     * @param errorMessage error message
+     * @param errorDescription error description
+     * @return built error response object
      */
     public static ErrorResponse getErrorResponse(String errorMessage, String errorDescription) {
         return new ErrorResponse(ErrorResponse.StatusEnum.ERROR, getErrorDataObject(errorMessage, errorDescription));
@@ -51,7 +51,7 @@ public class ErrorUtil {
      *
      * @param errorMessage Error Message
      * @param errorDescription Error Description
-     * @return
+     * @return accelerator compatible data object for the error response
      */
     public static JSONObject getErrorDataObject(String errorMessage, String errorDescription) {
 
@@ -74,7 +74,7 @@ public class ErrorUtil {
     public static JSONObject constructBerlinError(String path, TPPMessage.CategoryEnum category,
                                                   TPPMessage.CodeEnum code, String text) throws BadRequestException {
 
-        List<TPPMessage> tppMessagesList = new ArrayList();
+        List<TPPMessage> tppMessagesList = new ArrayList<>();
         TPPMessages tppMessages = new TPPMessages();
 
         TPPMessage tppMessage = new TPPMessage();
@@ -154,10 +154,10 @@ public class ErrorUtil {
     }
 
     /**
-     * Method to extract error message from nextgenpsd2 error message if exists.
+     * Method to extract error message from nextGenPSD2 error message if exists.
      *
-     * @param data
-     * @return
+     * @param data extracts error message from error message object
+     * @return error message from return object
      */
     public static String getErrorMessage(JSONObject data) {
         String message = data.toString();

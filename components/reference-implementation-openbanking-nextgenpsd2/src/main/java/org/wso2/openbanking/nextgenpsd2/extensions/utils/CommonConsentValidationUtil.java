@@ -117,9 +117,10 @@ public class CommonConsentValidationUtil {
 
     /**
      * Convert an object to a JSON object.
-     * @param object
-     * @return
-     * @throws Exception
+     *
+     * @param object json convertible object
+     * @return JSONObject of passed object
+     * @throws BadRequestException if the passed object cannot be converted to JSON
      */
     public static JSONObject convertObjectToJson(Object object) throws BadRequestException {
         String jsonString;
@@ -161,9 +162,11 @@ public class CommonConsentValidationUtil {
     }
 
     /**
+     * Get api version from consent type.
+     * eg: consents for funds-confirmation was introduced in v2 extension of the nextGenPSD2 specification
      *
-     * @param consentType
-     * @return
+     * @param consentType type of consent
+     * @return api version
      */
     public static String getApiVersion(String consentType) {
         if (ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
@@ -185,9 +188,9 @@ public class CommonConsentValidationUtil {
 
     /**
      * Returns authorisation status based on preference.
-     * @param isSCARequired
-     * @param headers
-     * @return
+     * @param isSCARequired whether Strong Customer Authentication is required for consents
+     * @param headers request headers
+     * @return the authorization status after consent creation (implicit authorization)
      */
     public static String getAuthorizationStatus(boolean isSCARequired, JSONObject headers) {
         return (isSCARequired) ?
@@ -202,7 +205,8 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentManagementValidationHandler getConsentManagementResponseHandler(String requestPath) {
+    public static ConsentManagementValidationHandler getConsentManagementResponseHandler(String requestPath)
+            throws BadRequestException, ValidationFailureException {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {
             case ConsentExtensionConstants.ACCOUNTS_CONSENT_PATH:
@@ -217,7 +221,9 @@ public class CommonConsentValidationUtil {
             case ConsentExtensionConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
                 return new ConsentAuthorisationManageHandler();
             default:
-                return null;
+                throw new ValidationFailureException(ValidationFailureException.ErrorCode.NOT_FOUND,
+                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
+                                ErrorConstants.PATH_INVALID));
         }
     }
 
@@ -584,8 +590,8 @@ public class CommonConsentValidationUtil {
     /**
      * Validates a format of UUID.
      *
-     * @param stringUuid
-     * @return
+     * @param stringUuid string of UUID format
+     * @return whether the sting matches UUID pattern
      */
     public static boolean isValidUuid(String stringUuid) {
         return uuidPattern.matcher(stringUuid.trim()).matches();
@@ -594,11 +600,12 @@ public class CommonConsentValidationUtil {
     /**
      * Method to parse a provided date to ISO date. Throws an error is the provided date is invalid.
      *
-     * @param dateToParse
-     * @param errorCode
-     * @param errorMessage
-     * @return
-     * @throws ValidationFailureException
+     * @param dateToParse date to parse as a string
+     * @param errorCode error code for the error to throw if parsing failed
+     * @param errorMessage error message for the error to throw is parsing failed
+     * @return string parsed to a LocalData object
+     * @throws ValidationFailureException if parsing failed
+     * @throws BadRequestException if construction of error in nextGenPSD2 format failed
      */
     public static LocalDate parseDateToISO(String dateToParse, TPPMessage.CodeEnum errorCode,
                                            String errorMessage)
@@ -737,8 +744,8 @@ public class CommonConsentValidationUtil {
     /**
      * Builds consent revocation response.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request body from the pre-process consent revocation request
+     * @return success response for consent revocation
      */
     public static SuccessResponseConsentRevocation buildConsentRevocationResponse(
             PreProcessConsentRequestBody requestBody) {
@@ -763,8 +770,8 @@ public class CommonConsentValidationUtil {
     /**
      * Decide if token revocation is necessary given the status of consent.
      *
-     * @param consentData
-     * @return
+     * @param consentData consent data from request
+     * @return whether token revocation is required or not as a string
      */
     private static String getIfRequireTokenRevocation(StoredBasicConsentResourceData consentData) {
         // Check if consent is authorized
@@ -784,10 +791,10 @@ public class CommonConsentValidationUtil {
     /**
      * Validates revoke request for payment, account and funds confirmation consents and returns built response.
      *
-     * @param requestBody
-     * @return
-     * @throws BadRequestException
-     * @throws ValidationFailureException
+     * @param requestBody consent revocation request body
+     * @return success response for consent revocation
+     * @throws BadRequestException if the request body is malformed
+     * @throws ValidationFailureException if consent revocation request fails validations
      */
     public static SuccessResponseConsentRevocation
     validateRevokeRequestAndReturnResponse(PreProcessConsentRequestBody requestBody) throws BadRequestException,
@@ -850,7 +857,8 @@ public class CommonConsentValidationUtil {
     /**
      * Validates if the consent type is revocable.
      *
-     * @param consentType
+     * @param consentType consent type of consent to revoke
+     * @throws ValidationFailureException if consent is irrevocable
      */
     private static void validateIfConsentTypeIsRevocable(String consentType)
             throws ValidationFailureException, BadRequestException {
@@ -865,8 +873,8 @@ public class CommonConsentValidationUtil {
     /**
      * Disables default violation and sets built constraint violation.
      *
-     * @param context
-     * @param violationMessage
+     * @param context context of the constraint validator
+     * @param violationMessage violation message to return
      */
     public static void setConstrainViolation(ConstraintValidatorContext context, String violationMessage) {
         context.disableDefaultConstraintViolation();
@@ -875,10 +883,11 @@ public class CommonConsentValidationUtil {
 
     /**
      * Builds constraint violation message with error and error code.
-     * Sets FORMAT_ERROR as default
+     * Sets FORMAT_ERROR as default.
+     * overload method for {@link #buildViolationMessage(TPPMessage.CodeEnum, String)} with default error code.
      *
-     * @param error
-     * @return
+     * @param error error message to return from violation
+     * @return built violation message
      */
     public static String buildViolationMessage(String error) {
         return buildViolationMessage(TPPMessage.CodeEnum.FORMAT_ERROR, error);
@@ -887,9 +896,9 @@ public class CommonConsentValidationUtil {
     /**
      * Builds constraint violation message with error and error code.
      *
-     * @param errorCode
-     * @param error
-     * @return
+     * @param errorCode error code to return from violation
+     * @param error error message to return from violation
+     * @return built violation message
      */
     public static String buildViolationMessage(TPPMessage.CodeEnum errorCode, String error) {
         return errorCode.toString() + ":" + error;
@@ -898,8 +907,8 @@ public class CommonConsentValidationUtil {
     /**
      * Splits retrieved violation message to error and error code.
      *
-     * @param violationMessage
-     * @return
+     * @param violationMessage breaks violation message to get error code and error message
+     * @return split error code and error message
      */
     public static String[] splitViolationMessage(String violationMessage) {
         return violationMessage.split(":", 2);

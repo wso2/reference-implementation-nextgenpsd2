@@ -48,40 +48,38 @@ public class ConsentManagementAPIImpl {
     /**
      * Method for returning the response for enriching consent creation request.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request body from enrich consent creation request
+     * @return built enrich consent creation response
      */
     public static Response enrichConsentCreationResponse(EnrichConsentCreationRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
         try {
             ConsentManagementValidationHandler consentHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
-
-            SuccessResponseForResponseAlternation validationResponse;
-
-            if (consentHandler != null) {
-                validationResponse = consentHandler.enrichCreationResponse(requestBody);
-            } else {
-                // Server error since if path is invalid consent creation should have failed
-                // thus making this unreachable
-                JSONObject errorResponse = ErrorUtil.getFormattedErrorResponse(ErrorUtil.constructBerlinError(null,
-                        TPPMessage.CategoryEnum.ERROR, null, ErrorConstants.PATH_INVALID));
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorResponse).build();
-            }
+            SuccessResponseForResponseAlternation validationResponse = consentHandler
+                    .enrichCreationResponse(requestBody);
 
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (BadRequestException | ServerErrorException e) {
-            log.error("[" + requestId + "] " + "An error occurred creating consent.", e);
+            log.error("[" + requestId + "] " + "An error occurred enriching consent creation response.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+        } catch (ValidationFailureException e) {
+            // Should be unreachable since resource path is validated in consent creation
+            // Thus bad request error is thrown
+            log.error("[" + requestId + "] " + "Invalid resource path received when enriching consent " +
+                    "creation response.", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ErrorUtil.getErrorResponse(
+                    "invalid_request", "Invalid resource path received when enriching " +
+                            "consent creation response.")).build();
         }
     }
 
     /**
      * Method for returning the response for pre-processing consent creation request.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request body from pre-process consent creation request
+     * @return built pre-processed consent creation response
      */
     public static Response preProcessConsentCreation(PreProcessConsentCreationRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
@@ -98,6 +96,7 @@ public class ConsentManagementAPIImpl {
 
                 if (consentInitiationDataJSON.isEmpty()) {
                     // If payload is empty
+                    log.error("[" + requestId + "] " + ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
                     JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
@@ -106,30 +105,24 @@ public class ConsentManagementAPIImpl {
 
             } catch (JSONException e) {
                 // If payload is not JSON
+                log.error("[" + requestId + "] " + ErrorConstants.PAYLOAD_FORMAT_ERROR);
                 JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
                 return Response.ok().entity(errorResponse.toString()).build();
             }
 
+            // Get validation response for consent creation based on consent type
             ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
-
-            SuccessResponsePreProcessConsentCreation validationResponse;
-
-            if (consentManagementValidationHandler != null) {
-                validationResponse = consentManagementValidationHandler.handleCreation(requestBody);
-            } else {
-                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
-                                ErrorConstants.PATH_INVALID));
-                return Response.ok().entity(errorObject).build();
-            }
+            SuccessResponsePreProcessConsentCreation validationResponse = consentManagementValidationHandler
+                    .handleCreation(requestBody);
 
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.debug("[" + requestId + "] " + "Validation failed for consent creation. Returning failed response.", e);
+            log.debug("[" + requestId + "] " + "Validation failed for consent creation. Returning failed response.",
+                    e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
         }  catch (BadRequestException | ServerErrorException e) {
@@ -141,8 +134,8 @@ public class ConsentManagementAPIImpl {
     /**
      * Method for returning the response for pre-processing consent retrieval request.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request body from pre-process consent retrieval request
+     * @return built pre-processed consent retrieval response
      */
     public static Response preProcessConsentRetrieval(PreProcessConsentRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
@@ -151,19 +144,11 @@ public class ConsentManagementAPIImpl {
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
+            // Get validation response for consent retrieval based on consent type
             ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
-
-            SuccessResponseForResponseAlternation validationResponse;
-
-            if (consentManagementValidationHandler != null) {
-                validationResponse = consentManagementValidationHandler.handleRetrieval(requestBody);
-            } else {
-                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
-                                ErrorConstants.PATH_INVALID));
-                return Response.ok().entity(errorObject).build();
-            }
+            SuccessResponseForResponseAlternation validationResponse = consentManagementValidationHandler
+                    .handleRetrieval(requestBody);
 
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
@@ -181,8 +166,8 @@ public class ConsentManagementAPIImpl {
     /**
      * Method for returning response for pre-processing consent revocation request.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request body from pre-process consent revocation request
+     * @return built pre-processed consent revocation response
      */
     public static Response preProcessConsentRevoke(PreProcessConsentRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
@@ -191,19 +176,11 @@ public class ConsentManagementAPIImpl {
             // Enable forwarding of the specific header in accelerator configurations
             CommonConsentValidationUtil.validateRequestIdentificationHeader(requestBody.getData().getRequestHeaders());
 
+            // Get validation response for consent revocation based on consent type
             ConsentManagementValidationHandler consentManagementValidationHandler = CommonConsentValidationUtil
                     .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
-
-            SuccessResponseConsentRevocation validationResponse;
-
-            if (consentManagementValidationHandler != null) {
-                validationResponse = consentManagementValidationHandler.handleRevocation(requestBody);
-            } else {
-                JSONObject errorObject = ErrorUtil.getFormattedFailedResponse(404,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
-                                ErrorConstants.PATH_INVALID));
-                return Response.ok().entity(errorObject).build();
-            }
+            SuccessResponseConsentRevocation validationResponse = consentManagementValidationHandler
+                    .handleRevocation(requestBody);
 
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
