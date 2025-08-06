@@ -6,7 +6,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 import javax.ws.rs.core.Response;
 
 /**
- * Exception class for internal server and bad request errors,
+ * Exception class for internal server and bad request errors caused within the service extension,
  * formatted to return a custom ErrorResponse object.
  */
 public class ExtensionException extends Exception {
