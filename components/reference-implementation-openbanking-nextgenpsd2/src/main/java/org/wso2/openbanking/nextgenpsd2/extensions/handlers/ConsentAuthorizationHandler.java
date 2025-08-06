@@ -19,8 +19,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers;
 
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
@@ -33,11 +32,11 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 public interface ConsentAuthorizationHandler {
     void populateBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                   PopulateConsentAuthorizeScreenData requestData)
-            throws AuthorizationFailureException, BadRequestException, ServerErrorException;
+            throws AuthorizationFailureException, ExtensionException;
     void populateAccountsData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                               PopulateConsentAuthorizeScreenData requestData)
-            throws AuthorizationFailureException, BadRequestException, ServerErrorException;
+            throws AuthorizationFailureException, ExtensionException;
     DetailedConsentResourceDataWithAmendments getAmendedConsentResource
             (PersistAuthorizedConsentRequestBody requestBody, StoredAuthorization authorizingResource)
-            throws AuthorizationFailureException, BadRequestException, ServerErrorException;
+            throws AuthorizationFailureException, ExtensionException;
 }

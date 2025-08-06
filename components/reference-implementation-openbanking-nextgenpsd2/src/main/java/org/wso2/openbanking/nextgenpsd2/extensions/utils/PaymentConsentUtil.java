@@ -24,27 +24,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentAuthorizationAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.AuthTypeEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.BulkPaymentInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.PeriodicPaymentInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.SinglePaymentInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.Response;
 
 /**
  * Utility class for payment consent management.
@@ -59,19 +59,19 @@ public class PaymentConsentUtil {
      * @throws ValidationFailureException if the payment initiation payload is invalid
      */
     public static void validatePaymentInitiationPayload(JSONObject requestPayload, String resourcePath)
-            throws ValidationFailureException, BadRequestException {
+            throws ValidationFailureException, ExtensionException {
         switch (CommonConsentValidationUtil.getServiceDifferentiatingRequestPath(resourcePath)) {
-            case ConsentExtensionConstants.PAYMENTS_SERVICE_PATH:
+            case CommonConstants.PAYMENTS_SERVICE_PATH:
                 CommonConsentValidationUtil
                         .validateJSONFromModel(requestPayload.toString(), SinglePaymentInitiationPayload.class);
                 break;
 
-            case ConsentExtensionConstants.BULK_PAYMENTS_SERVICE_PATH:
+            case CommonConstants.BULK_PAYMENTS_SERVICE_PATH:
                 CommonConsentValidationUtil
                         .validateJSONFromModel(requestPayload.toString(), BulkPaymentInitiationPayload.class);
                 break;
 
-            case ConsentExtensionConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
+            case CommonConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
                 CommonConsentValidationUtil
                         .validateJSONFromModel(requestPayload.toString(), PeriodicPaymentInitiationPayload.class);
                 break;
@@ -92,9 +92,9 @@ public class PaymentConsentUtil {
      */
     public static void appendPaymentInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                                 ArrayList<ScaMethod> scaMethods, JSONObject payload)
-            throws BadRequestException {
+            throws ExtensionException {
 
-        payload.put(ConsentExtensionConstants.TRANSACTION_STATUS, createdConsent.getStatus());
+        payload.put(CommonConstants.TRANSACTION_STATUS, createdConsent.getStatus());
         payload.put(CommonConstants.PAYMENT_ID, createdConsent.getId());
 
         JSONArray chosenSCAMethods = new JSONArray();
@@ -103,9 +103,9 @@ public class PaymentConsentUtil {
         }
 
         if (scaMethods.size() > 1) {
-            payload.put(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
+            payload.put(CommonConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            payload.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
+            payload.put(CommonConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
     }
 
@@ -117,7 +117,7 @@ public class PaymentConsentUtil {
      */
     public static Object getPaymentProductAttribute(String consentResourcePath) {
         JSONObject attributesJSON = new JSONObject();
-        attributesJSON.put(ConsentExtensionConstants.PAYMENT_PRODUCT_CC, getPaymentProduct(consentResourcePath));
+        attributesJSON.put(CommonConstants.PAYMENT_PRODUCT_CC, getPaymentProduct(consentResourcePath));
         return attributesJSON;
     }
 
@@ -138,21 +138,21 @@ public class PaymentConsentUtil {
      * @param consentResourcePath consent resource path
      * @throws ValidationFailureException if stored payment product does not match one specified in consent resource
      * path
-     * @throws BadRequestException is payment product is missing in consent attributes
+     * @throws ExtensionException is payment product is missing in consent attributes
      */
     public static void validatePaymentProductFromAttributes(Object attributes, String consentResourcePath)
-            throws ValidationFailureException, BadRequestException {
+            throws ValidationFailureException, ExtensionException {
         String paymentProductFromPath = getPaymentProduct(consentResourcePath);
 
         // Extract payment product from attributes
         String paymentProductFromAttributes;
         try {
             JSONObject attributesJSON = CommonConsentValidationUtil.convertObjectToJson(attributes);
-            paymentProductFromAttributes = attributesJSON.getString(ConsentExtensionConstants.PAYMENT_PRODUCT_CC);
+            paymentProductFromAttributes = attributesJSON.getString(CommonConstants.PAYMENT_PRODUCT_CC);
         } catch (JSONException e) {
             // Should be unreachable as payment product gets added as an attribute at initiation
-            throw new BadRequestException("Payment product not stored at consent initiation. Product validation" +
-                    " failed.");
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Payment product not stored at consent initiation. Product validation failed.");
         }
 
         if (!paymentProductFromAttributes.equals(paymentProductFromPath)) {
@@ -168,11 +168,11 @@ public class PaymentConsentUtil {
      *
      * @param responseData the response object to populate
      * @param requestData the request data containing consent receipt
-     * @throws BadRequestException if receipt parsing fails
+     * @throws ExtensionException if receipt parsing fails
      */
     public static void populateSinglePaymentBasicConsentData(
             SuccessResponsePopulateConsentAuthorizeScreenData responseData,
-            PopulateConsentAuthorizeScreenData requestData) throws BadRequestException {
+            PopulateConsentAuthorizeScreenData requestData) throws ExtensionException {
 
         // Initialize basic consent data
         Map<String, List<String>> basicConsentData = new HashMap<>();
@@ -183,7 +183,7 @@ public class PaymentConsentUtil {
         // Populate basic consent data with common payment details
         List<String> paymentDetails = new ArrayList<>();
         populateCommonData(receipt, paymentDetails);
-        basicConsentData.put(ConsentExtensionConstants.REQUESTED_DATA_TITLE, paymentDetails);
+        basicConsentData.put(CommonConstants.REQUESTED_DATA_TITLE, paymentDetails);
 
         // Set basic consent data
         responseData.getConsentData().setBasicConsentData(basicConsentData);
@@ -194,11 +194,11 @@ public class PaymentConsentUtil {
      *
      * @param responseData the response object to populate
      * @param requestData the request data containing consent receipt
-     * @throws BadRequestException in case of invalid data
+     * @throws ExtensionException in case of invalid data
      */
     public static void populateBulkPaymentBasicConsentData
     (SuccessResponsePopulateConsentAuthorizeScreenData responseData, PopulateConsentAuthorizeScreenData requestData)
-            throws BadRequestException {
+            throws ExtensionException {
 
         // Initialize basic consent data
         Map<String, List<String>> basicConsentData = new HashMap<>();
@@ -207,7 +207,7 @@ public class PaymentConsentUtil {
                 .convertObjectToJson(requestData.getConsentResource().getReceipt());
 
         // Build bulk payment array
-        JSONArray paymentsArray = receipt.getJSONArray(ConsentExtensionConstants.PAYMENTS);
+        JSONArray paymentsArray = receipt.getJSONArray(CommonConstants.PAYMENTS);
         for (int paymentIndex = 0; paymentIndex < paymentsArray.length(); paymentIndex++) {
             JSONObject bulkPayment = paymentsArray.getJSONObject(paymentIndex);
             List<String> consentDataList = new ArrayList<>();
@@ -215,7 +215,7 @@ public class PaymentConsentUtil {
             // Populate common payment data per each payment in bulk payments
             populateCommonData(bulkPayment, consentDataList);
 
-            String title = ConsentExtensionConstants.PAYMENT_TITLE + (paymentIndex + 1);
+            String title = CommonConstants.PAYMENT_TITLE + (paymentIndex + 1);
             basicConsentData.put(title, consentDataList);
         }
 
@@ -231,43 +231,43 @@ public class PaymentConsentUtil {
      */
     private static void populateCommonData(JSONObject receipt, List<String> paymentDataList) {
 
-        JSONObject instructedAmount = receipt.getJSONObject(ConsentExtensionConstants.INSTRUCTED_AMOUNT);
+        JSONObject instructedAmount = receipt.getJSONObject(CommonConstants.INSTRUCTED_AMOUNT);
 
-        paymentDataList.add(ConsentExtensionConstants.INSTRUCTED_AMOUNT_TITLE + ": "
-                + instructedAmount.getString(ConsentExtensionConstants.AMOUNT));
-        paymentDataList.add(ConsentExtensionConstants.INSTRUCTED_CURRENCY_TITLE + ": "
-                + instructedAmount.getString(ConsentExtensionConstants.CURRENCY));
+        paymentDataList.add(CommonConstants.INSTRUCTED_AMOUNT_TITLE + ": "
+                + instructedAmount.getString(CommonConstants.AMOUNT));
+        paymentDataList.add(CommonConstants.INSTRUCTED_CURRENCY_TITLE + ": "
+                + instructedAmount.getString(CommonConstants.CURRENCY));
 
-        paymentDataList.add(ConsentExtensionConstants.CREDITOR_NAME_TITLE + ": "
-                + receipt.getString(ConsentExtensionConstants.CREDITOR_NAME));
+        paymentDataList.add(CommonConstants.CREDITOR_NAME_TITLE + ": "
+                + receipt.getString(CommonConstants.CREDITOR_NAME));
 
-        if (StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CREDITOR_AGENT))) {
-            paymentDataList.add(ConsentExtensionConstants.CREDITOR_AGENT_TITLE + ": "
-                    + receipt.getString(ConsentExtensionConstants.CREDITOR_AGENT));
+        if (StringUtils.isNotBlank(receipt.optString(CommonConstants.CREDITOR_AGENT))) {
+            paymentDataList.add(CommonConstants.CREDITOR_AGENT_TITLE + ": "
+                    + receipt.getString(CommonConstants.CREDITOR_AGENT));
         }
 
-        JSONObject creditorAccount = receipt.getJSONObject(ConsentExtensionConstants.CREDITOR_ACCOUNT);
+        JSONObject creditorAccount = receipt.getJSONObject(CommonConstants.CREDITOR_ACCOUNT);
 
         String creditorAccRefType = CommonConsentValidationUtil.getAccountReferenceType(creditorAccount);
         if (StringUtils.isNotBlank(creditorAccRefType)) {
-            paymentDataList.add(String.format(ConsentExtensionConstants.CREDITOR_REFERENCE_TITLE,
+            paymentDataList.add(String.format(CommonConstants.CREDITOR_REFERENCE_TITLE,
                     creditorAccRefType) + ": " + creditorAccount.getString(creditorAccRefType));
         }
 
-        if (creditorAccount.has(ConsentExtensionConstants.CURRENCY)
-                && StringUtils.isNotBlank(creditorAccount.optString(ConsentExtensionConstants.CURRENCY))) {
-            paymentDataList.add(ConsentExtensionConstants.CREDITOR_ACCOUNT_CURRENCY_TITLE + ": "
-                    + creditorAccount.getString(ConsentExtensionConstants.CURRENCY));
+        if (creditorAccount.has(CommonConstants.CURRENCY)
+                && StringUtils.isNotBlank(creditorAccount.optString(CommonConstants.CURRENCY))) {
+            paymentDataList.add(CommonConstants.CREDITOR_ACCOUNT_CURRENCY_TITLE + ": "
+                    + creditorAccount.getString(CommonConstants.CURRENCY));
         }
 
-        if (StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED))) {
-            paymentDataList.add(ConsentExtensionConstants.REMITTANCE_INFORMATION_UNSTRUCTURED_TITLE + ": "
-                    + receipt.getString(ConsentExtensionConstants.REMITTANCE_INFO_UNSTRUCTURED));
+        if (StringUtils.isNotBlank(receipt.optString(CommonConstants.REMITTANCE_INFO_UNSTRUCTURED))) {
+            paymentDataList.add(CommonConstants.REMITTANCE_INFORMATION_UNSTRUCTURED_TITLE + ": "
+                    + receipt.getString(CommonConstants.REMITTANCE_INFO_UNSTRUCTURED));
         }
 
-        if (StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION))) {
-            paymentDataList.add(ConsentExtensionConstants.END_TO_END_IDENTIFICATION_TITLE + ": "
-                    + receipt.getString(ConsentExtensionConstants.END_TO_END_IDENTIFICATION));
+        if (StringUtils.isNotBlank(receipt.optString(CommonConstants.END_TO_END_IDENTIFICATION))) {
+            paymentDataList.add(CommonConstants.END_TO_END_IDENTIFICATION_TITLE + ": "
+                    + receipt.getString(CommonConstants.END_TO_END_IDENTIFICATION));
         }
     }
 
@@ -276,11 +276,11 @@ public class PaymentConsentUtil {
      *
      * @param responseData the response object to populate
      * @param requestData the request data containing consent receipt
-     * @throws BadRequestException if receipt parsing fails
+     * @throws ExtensionException if receipt parsing fails
      */
     public static void populatePeriodicPaymentBasicConsentData(
             SuccessResponsePopulateConsentAuthorizeScreenData responseData,
-            PopulateConsentAuthorizeScreenData requestData) throws BadRequestException {
+            PopulateConsentAuthorizeScreenData requestData) throws ExtensionException {
 
         // Initialize basic consent data
         Map<String, List<String>> basicConsentData = new HashMap<>();
@@ -293,23 +293,23 @@ public class PaymentConsentUtil {
         populateCommonData(receipt, paymentDetails);
 
         // Append periodic-specific fields
-        paymentDetails.add(ConsentExtensionConstants.START_DATE_TITLE + ": " +
-                receipt.optString(ConsentExtensionConstants.START_DATE));
+        paymentDetails.add(CommonConstants.START_DATE_TITLE + ": " +
+                receipt.optString(CommonConstants.START_DATE));
 
-        if (StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.END_DATE))) {
-            paymentDetails.add(ConsentExtensionConstants.END_DATE_TITLE + ": " +
-                    receipt.optString(ConsentExtensionConstants.END_DATE));
+        if (StringUtils.isNotBlank(receipt.optString(CommonConstants.END_DATE))) {
+            paymentDetails.add(CommonConstants.END_DATE_TITLE + ": " +
+                    receipt.optString(CommonConstants.END_DATE));
         }
 
-        paymentDetails.add(ConsentExtensionConstants.FREQUENCY_TITLE + ": " +
-                receipt.optString(ConsentExtensionConstants.FREQUENCY));
+        paymentDetails.add(CommonConstants.FREQUENCY_TITLE + ": " +
+                receipt.optString(CommonConstants.FREQUENCY));
 
-        if (StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.EXECUTION_RULE))) {
-            paymentDetails.add(ConsentExtensionConstants.EXECUTION_RULE_TITLE + ": " +
-                    receipt.optString(ConsentExtensionConstants.EXECUTION_RULE));
+        if (StringUtils.isNotBlank(receipt.optString(CommonConstants.EXECUTION_RULE))) {
+            paymentDetails.add(CommonConstants.EXECUTION_RULE_TITLE + ": " +
+                    receipt.optString(CommonConstants.EXECUTION_RULE));
         }
 
-        basicConsentData.put(ConsentExtensionConstants.REQUESTED_DATA_TITLE, paymentDetails);
+        basicConsentData.put(CommonConstants.REQUESTED_DATA_TITLE, paymentDetails);
 
         // Set basic consent data
         responseData.getConsentData().setBasicConsentData(basicConsentData);
@@ -320,21 +320,21 @@ public class PaymentConsentUtil {
      *
      * @param authorizingResource
      * @param consentResource
-     * @throws BadRequestException
-     * @throws ServerErrorException
+     * @throws ExtensionException
+     * @throws ExtensionException
      */
     public static void handleBackendPayment(StoredAuthorization authorizingResource,
                                             StoredDetailedConsentResourceData consentResource)
-            throws BadRequestException, ServerErrorException {
+            throws ExtensionException {
         String consentType = consentResource.getType();
 
-        if (StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
-                || StringUtils.equals(ConsentExtensionConstants.BULK_PAYMENTS, consentType)
-                || StringUtils.equals(ConsentExtensionConstants.PERIODIC_PAYMENTS, consentType)) {
+        if (StringUtils.equals(CommonConstants.PAYMENTS, consentType)
+                || StringUtils.equals(CommonConstants.BULK_PAYMENTS, consentType)
+                || StringUtils.equals(CommonConstants.PERIODIC_PAYMENTS, consentType)) {
             try {
                 String paymentId = consentResource.getId();
 
-                if (StringUtils.equals(AuthTypeEnum.AUTHORISATION.toString(),
+                if (StringUtils.equals(ExtensionEnums.AuthTypeEnum.AUTHORISATION.toString(),
                         authorizingResource.getType())
                         && ConsentAuthorizationUtil.areAllOtherAuthResourcesValid(authorizingResource,
                         consentResource.getAuthorizations())) {
@@ -346,11 +346,12 @@ public class PaymentConsentUtil {
                             "submit")) {
                         ConsentAuthorizationAPIImpl.log.error("Error occurred while submitting the payment," +
                                 " please retry");
-                        throw new ServerErrorException(ErrorConstants.PAYMENT_SUBMISSION_FAILED);
+                        throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                                ErrorConstants.PAYMENT_SUBMISSION_FAILED);
                     }
-                } else if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(),
+                } else if (StringUtils.equals(ExtensionEnums.AuthTypeEnum.CANCELLATION.toString(),
                         authorizingResource.getType())
-                        && !StringUtils.equals(ConsentExtensionConstants.PAYMENTS, consentType)
+                        && !StringUtils.equals(CommonConstants.PAYMENTS, consentType)
                         && ConsentAuthorizationUtil.areAllOtherAuthResourcesValid(authorizingResource,
                         consentResource.getAuthorizations())) {
                     // If the current authorisation resource is a cancellation auth resource
@@ -362,12 +363,14 @@ public class PaymentConsentUtil {
                             "cancel")) {
                         ConsentAuthorizationAPIImpl.log.error("Error occurred while cancelling the payment," +
                                 " please retry");
-                        throw new ServerErrorException(ErrorConstants.PAYMENT_CANCELLATION_FAILED);
+                        throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                                ErrorConstants.PAYMENT_CANCELLATION_FAILED);
                     }
                 }
             } catch (IOException e) {
                 ConsentAuthorizationAPIImpl.log.error("Exception occurred processing payment, please retry", e);
-                throw new ServerErrorException(ErrorConstants.PAYMENT_FAILED);
+                throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                        ErrorConstants.PAYMENT_FAILED);
             }
         }
     }

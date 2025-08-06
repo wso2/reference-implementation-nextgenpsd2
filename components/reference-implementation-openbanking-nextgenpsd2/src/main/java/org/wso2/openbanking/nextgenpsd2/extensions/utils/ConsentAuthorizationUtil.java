@@ -16,17 +16,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.AuthTypeEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentStatusEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.TransactionStatusEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AmendedAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
@@ -35,6 +28,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthor
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Resource;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -47,6 +41,7 @@ import java.util.Optional;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Utility class for consent authorization.
@@ -70,21 +65,21 @@ public class ConsentAuthorizationUtil {
 
         log.debug("Validating whether the provided consent Id matches with the scope type");
 
-        if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), consentType)
+        if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.AIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
         }
 
-        if ((StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), consentType)
-                || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)
-                || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType))
+        if ((StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString(), consentType)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType))
                 && !StringUtils.contains(scopeString, CommonConstants.PIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
         }
 
-        if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), consentType)
+        if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.PIIS_SCOPE)) {
             log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
@@ -101,10 +96,10 @@ public class ConsentAuthorizationUtil {
                                                               StoredDetailedConsentResourceData consentResource)
             throws AuthorizationFailureException {
         String authType;
-        if (StringUtils.equals(consentResource.getType(), TransactionStatusEnum.ACTC.name())) {
-            authType = AuthTypeEnum.CANCELLATION.toString();
+        if (StringUtils.equals(consentResource.getType(), ExtensionEnums.TransactionStatusEnum.ACTC.name())) {
+            authType = ExtensionEnums.AuthTypeEnum.CANCELLATION.toString();
         } else {
-            authType = AuthTypeEnum.AUTHORISATION.toString();
+            authType = ExtensionEnums.AuthTypeEnum.AUTHORISATION.toString();
         }
 
         // Filter by auth type and status
@@ -115,8 +110,8 @@ public class ConsentAuthorizationUtil {
             userIdFromAuthObj = authObj.getUserId();
             if (StringUtils.equals(userIdFromAuthObj, userId)) {
                 if (authType.equals(authObj.getType()) &&
-                        !ScaStatusEnum.FINALISED.toString().equals(authObj.getStatus()) &&
-                        !ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus())) {
+                        !ExtensionEnums.ScaStatusEnum.FINALISED.toString().equals(authObj.getStatus()) &&
+                        !ExtensionEnums.ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus())) {
                     // Validate consent status
                     validateConsentStatus(consentResource, authObj);
                     return authObj;
@@ -127,8 +122,8 @@ public class ConsentAuthorizationUtil {
             }
 
             if (authType.equals(authObj.getType()) &&
-                    !ScaStatusEnum.FINALISED.toString().equals(authObj.getStatus()) &&
-                    !ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus()) &&
+                    !ExtensionEnums.ScaStatusEnum.FINALISED.toString().equals(authObj.getStatus()) &&
+                    !ExtensionEnums.ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus()) &&
                     userIdFromAuthObj == null) {
                 // Validate consent status
                 validateConsentStatus(consentResource, authObj);
@@ -160,24 +155,26 @@ public class ConsentAuthorizationUtil {
         String type = consentResource.getType();
         boolean isApplicable = false;
 
-        if (StringUtils.equals(ConsentTypeEnum.ACCOUNTS.toString(), type)) {
-            isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus)
-                    || StringUtils.equals(ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(), consentStatus);
+        if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), type)) {
+            isApplicable = StringUtils.equals(ExtensionEnums.ConsentStatusEnum.RECEIVED.toString(), consentStatus)
+                    || StringUtils.equals(ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(),
+                    consentStatus);
 
-        } else if (StringUtils.equals(ConsentTypeEnum.PAYMENTS.toString(), type)
-                || StringUtils.equals(ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
-                || StringUtils.equals(ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
-            if (StringUtils.equals(AuthTypeEnum.CANCELLATION.toString(), authObj.getType())) {
+        } else if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString(), type)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
+            if (StringUtils.equals(ExtensionEnums.AuthTypeEnum.CANCELLATION.toString(), authObj.getType())) {
                 // Ignores consent status
                 isApplicable = true;
             } else {
-                isApplicable = StringUtils.equals(TransactionStatusEnum.RCVD.name(), consentStatus)
-                        || StringUtils.equals(TransactionStatusEnum.PATC.name(), consentStatus);
+                isApplicable = StringUtils.equals(ExtensionEnums.TransactionStatusEnum.RCVD.name(), consentStatus)
+                        || StringUtils.equals(ExtensionEnums.TransactionStatusEnum.PATC.name(), consentStatus);
             }
 
-        } else if (StringUtils.equals(ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
-            isApplicable = StringUtils.equals(ConsentStatusEnum.RECEIVED.toString(), consentStatus)
-                    || StringUtils.equals(ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(), consentStatus);
+        } else if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
+            isApplicable = StringUtils.equals(ExtensionEnums.ConsentStatusEnum.RECEIVED.toString(), consentStatus)
+                    || StringUtils.equals(ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(),
+                    consentStatus);
         }
 
         if (log.isDebugEnabled()) {
@@ -241,10 +238,10 @@ public class ConsentAuthorizationUtil {
         accountObject.setAdditionalProperty(refType, accountRef);
 
         // Add currency if exists
-        String accountCurrency = accountRefJSON.optString(ConsentExtensionConstants.CURRENCY);
+        String accountCurrency = accountRefJSON.optString(CommonConstants.CURRENCY);
         if (accountCurrency != null && !accountCurrency.isEmpty()) {
             accountObject.setDisplayName(accountObject.getDisplayName() + " (" + accountCurrency + ")");
-            accountObject.setAdditionalProperty(ConsentExtensionConstants.CURRENCY, accountCurrency);
+            accountObject.setAdditionalProperty(CommonConstants.CURRENCY, accountCurrency);
         }
         return accountObject;
     }
@@ -269,7 +266,7 @@ public class ConsentAuthorizationUtil {
             // for a single user therefore we are not sure which account to validate it against
             // Eg: 123456xxxxxx1234, 123456xxxxxx1234 -> Both these maskedPans can belong to the same user
             String accountRefType = CommonConsentValidationUtil.getAccountReferenceType(accountRefObject);
-            if (StringUtils.equals(accountRefType, ConsentExtensionConstants.MASKED_PAN)) {
+            if (StringUtils.equals(accountRefType, CommonConstants.MASKED_PAN)) {
                 validatedAccountObjects.add(accountObj);
                 continue;
             }
@@ -279,11 +276,11 @@ public class ConsentAuthorizationUtil {
 
             if (filteredAccountRefObjects.length() > 1) {
                 // Multi currency account
-                if (accountRefObject.has(ConsentExtensionConstants.CURRENCY)) {
+                if (accountRefObject.has(CommonConstants.CURRENCY)) {
                     for (Object object : filteredAccountRefObjects) {
                         JSONObject filteredAccountRefObject = (JSONObject) object;
-                        if (filteredAccountRefObject.getString(ConsentExtensionConstants.CURRENCY)
-                                .equalsIgnoreCase(accountRefObject.getString(ConsentExtensionConstants.CURRENCY))) {
+                        if (filteredAccountRefObject.getString(CommonConstants.CURRENCY)
+                                .equalsIgnoreCase(accountRefObject.getString(CommonConstants.CURRENCY))) {
                             validatedAccountObjects.add(accountObj);
                             break;
                         }
@@ -297,7 +294,7 @@ public class ConsentAuthorizationUtil {
                     }
                 }
             } else if (filteredAccountRefObjects.length() == 1) {
-                if (!accountRefObject.has(ConsentExtensionConstants.CURRENCY)) {
+                if (!accountRefObject.has(CommonConstants.CURRENCY)) {
                     validatedAccountObjects.add(accountObj);
                 } else {
                     return null;
@@ -318,12 +315,13 @@ public class ConsentAuthorizationUtil {
      * @return
      */
     public static List<Account> getValidatedAccountObjects(List<AccountReference> accountRefList,
-                                                    JSONArray accountList) throws ServerErrorException {
+                                                    JSONArray accountList) throws ExtensionException {
         try {
             JSONArray accountRefArrayJSON = new JSONArray(objectMapper.writeValueAsString(accountRefList));
             return getValidatedAccountObjects(accountRefArrayJSON, accountList);
         } catch (JsonProcessingException e) {
-            throw new ServerErrorException("Failed to map account reference from object to json", e);
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Failed to map account reference from object to json", e);
         }
     }
 
@@ -362,7 +360,8 @@ public class ConsentAuthorizationUtil {
             return true;
         } else {
             return allAuthorizations.stream().allMatch(authorisation
-                    -> StringUtils.equals(authorisation.getStatus(), ScaStatusEnum.PSU_AUTHENTICATED.toString()));
+                    -> StringUtils.equals(authorisation.getStatus(),
+                    ExtensionEnums.ScaStatusEnum.PSU_AUTHENTICATED.toString()));
         }
     }
 
@@ -434,39 +433,41 @@ public class ConsentAuthorizationUtil {
 
         // Have all authorisations passed.
         boolean hasPassed = storedAuthorizations.stream().allMatch(
-                authorisation -> authorisation.getStatus().equals(ScaStatusEnum.FINALISED.toString())
+                authorisation -> authorisation.getStatus().equals(
+                        ExtensionEnums.ScaStatusEnum.FINALISED.toString())
                         || StringUtils.equals(authorisation.getId(), authorizingResource.getId()));
 
         if (hasPassed) {
             if (isTransaction) {
-                return Optional.of(TransactionStatusEnum.ACCP.name());
+                return Optional.of(ExtensionEnums.TransactionStatusEnum.ACCP.name());
             } else {
-                return Optional.of(ConsentStatusEnum.VALID.toString());
+                return Optional.of(ExtensionEnums.ConsentStatusEnum.VALID.toString());
             }
         }
 
         // Has at least one authorisation failed
         boolean hasFailed = storedAuthorizations.stream().anyMatch(
-                authorisation -> authorisation.getStatus().equals(ScaStatusEnum.FAILED.toString())
+                authorisation -> authorisation.getStatus().equals(
+                        ExtensionEnums.ScaStatusEnum.FAILED.toString())
                         || StringUtils.equals(authorisation.getId(), authorizingResource.getId()));
 
         if (hasFailed) {
             if (isTransaction) {
-                return Optional.of(TransactionStatusEnum.RJCT.name());
+                return Optional.of(ExtensionEnums.TransactionStatusEnum.RJCT.name());
             } else {
-                return Optional.of(ConsentStatusEnum.REJECTED.toString());
+                return Optional.of(ExtensionEnums.ConsentStatusEnum.REJECTED.toString());
             }
         }
 
         // Has at least a single successful authorisation taken place.
         boolean partiallyPassed = storedAuthorizations.stream().anyMatch(authorisation ->
-                authorisation.getStatus().equals(ScaStatusEnum.FINALISED.toString()));
+                authorisation.getStatus().equals(ExtensionEnums.ScaStatusEnum.FINALISED.toString()));
 
         if (partiallyPassed) {
             if (isTransaction) {
-                return Optional.of(TransactionStatusEnum.PATC.name());
+                return Optional.of(ExtensionEnums.TransactionStatusEnum.PATC.name());
             } else {
-                return Optional.of(ConsentStatusEnum.PARTIALLY_AUTHORISED.toString());
+                return Optional.of(ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString());
             }
         }
         return Optional.empty();
@@ -488,11 +489,12 @@ public class ConsentAuthorizationUtil {
      * @param authorizedData
      */
     public static void verifySingleAuthorizedResource(List<AuthorizedResourcesAuthorizedDataInner> authorizedData)
-            throws BadRequestException {
+            throws ExtensionException {
         if (authorizedData.size() > 1 || authorizedData.get(0).getAccounts().size() > 1) {
             log.error("Retrieved more than one authorized account for a consent that " +
             "can have only a single account mapping");
-            throw new BadRequestException("Retrieved more than one authorized account for a consent that " +
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Retrieved more than one authorized account for a consent that " +
                     "can have only a single account mapping");
         }
     }
@@ -506,32 +508,33 @@ public class ConsentAuthorizationUtil {
      * @param accountMappingResources list of account to permission mapping resources
      * @param authStatus new status of the authorization resource
      * @return built consent amendment resource
-     * @throws ServerErrorException
+     * @throws ExtensionException
      */
     public static DetailedConsentResourceDataWithAmendments buildAmendedConsentResource(
             StoredAuthorization authorizingResource, boolean isApproved, PersistAuthorizedConsent requestData,
             List<Resource> accountMappingResources, String authStatus)
-            throws ServerErrorException, AuthorizationFailureException {
+            throws ExtensionException, AuthorizationFailureException {
 
         String consentType = requestData.getConsentResource().getType();
-        boolean isTransaction = ConsentTypeEnum.PAYMENTS.toString().equals(consentType)
-                || ConsentTypeEnum.PERIODIC_PAYMENTS.toString().equals(consentType)
-                || ConsentTypeEnum.BULK_PAYMENTS.toString().equals(consentType);
+        boolean isTransaction = ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString().equals(consentType)
+                || ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString().equals(consentType)
+                || ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString().equals(consentType);
 
         String newConsentStatus;
         if (!isApproved) {
-            newConsentStatus = (isTransaction) ? TransactionStatusEnum.RJCT.name() :
-                    ConsentStatusEnum.REJECTED.toString();
+            newConsentStatus = (isTransaction) ? ExtensionEnums.TransactionStatusEnum.RJCT.name() :
+                    ExtensionEnums.ConsentStatusEnum.REJECTED.toString();
         } else {
             if (accountMappingResources.isEmpty()) {
-                if (ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
+                if (ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
                     // Approved with no account selections
                     log.debug(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                     throw new AuthorizationFailureException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 } else {
                     // Approved with no account selections, should be unreachable since the account is initiated
                     log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
-                    throw new ServerErrorException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+                    throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                            ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 }
             }
 
@@ -547,7 +550,7 @@ public class ConsentAuthorizationUtil {
             } else {
                 log.error(String.format(ErrorConstants.INVALID_CONSENT_STATUS_UPDATE,
                         requestData.getConsentId()));
-                throw new ServerErrorException(
+                throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request", 
                         String.format(ErrorConstants.INVALID_CONSENT_STATUS_UPDATE,
                                 requestData.getConsentId()));
             }

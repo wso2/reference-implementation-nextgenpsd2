@@ -20,7 +20,7 @@ package org.wso2.openbanking.nextgenpsd2.extensions.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.validators.annotations.ValidAccountAccess;
 
 import java.util.List;
@@ -39,8 +39,8 @@ public class AccountAccess {
      * or allPsd2.
      */
     public enum AccessScope {
-        ALL_ACCOUNTS(ConsentExtensionConstants.ALL_ACCOUNTS),
-        ALL_ACCOUNTS_WITH_OWNER_NAME(ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME);
+        ALL_ACCOUNTS(CommonConstants.ALL_ACCOUNTS),
+        ALL_ACCOUNTS_WITH_OWNER_NAME(CommonConstants.ALL_ACCOUNTS_WITH_OWNER_NAME);
 
         private final String value;
 
@@ -62,8 +62,8 @@ public class AccountAccess {
             }
             throw new IllegalArgumentException(
                     "Invalid value for '" + value + "'. Expected '"
-                            + ConsentExtensionConstants.ALL_ACCOUNTS + "' or '"
-                            + ConsentExtensionConstants.ALL_ACCOUNTS_WITH_OWNER_NAME + "'.");
+                            + CommonConstants.ALL_ACCOUNTS + "' or '"
+                            + CommonConstants.ALL_ACCOUNTS_WITH_OWNER_NAME + "'.");
         }
     }
 

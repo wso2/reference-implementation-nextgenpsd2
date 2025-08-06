@@ -18,8 +18,7 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentCreationRequestBody;
@@ -34,11 +33,11 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 public interface ConsentManagementValidationHandler {
 
     SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
-            throws ValidationFailureException, BadRequestException, ServerErrorException;
+            throws ValidationFailureException, ExtensionException;
     SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
-            throws BadRequestException, ServerErrorException;
+            throws ExtensionException;
     SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
-            throws ValidationFailureException, BadRequestException, ServerErrorException;
+            throws ValidationFailureException, ExtensionException;
     SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
-            throws ValidationFailureException, BadRequestException, ServerErrorException;
+            throws ValidationFailureException, ExtensionException;
 }

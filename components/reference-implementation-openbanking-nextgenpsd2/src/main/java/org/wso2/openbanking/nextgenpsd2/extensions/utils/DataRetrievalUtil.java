@@ -30,7 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 
 import java.io.BufferedReader;
@@ -191,10 +191,10 @@ public class DataRetrievalUtil {
 
                 JSONObject accountRefObject = new JSONObject();
                 accountRefObject.put(accountRefType, accountId);
-                accountRefObject.put(ConsentExtensionConstants.CURRENCY,
-                        slide.get(ConsentExtensionConstants.CURRENCY));
-                accountRefObject.put(ConsentExtensionConstants.IS_DEFAULT,
-                        slide.get(ConsentExtensionConstants.IS_DEFAULT));
+                accountRefObject.put(CommonConstants.CURRENCY,
+                        slide.get(CommonConstants.CURRENCY));
+                accountRefObject.put(CommonConstants.IS_DEFAULT,
+                        slide.get(CommonConstants.IS_DEFAULT));
 
                 accountList.put(accountRefObject);
             }
@@ -219,7 +219,7 @@ public class DataRetrievalUtil {
             JSONObject accountJSON = (JSONObject) accountObject;
             if (ConsentAuthorizationUtil
                     .getFilteredAccountsForAccountNumber(accountJSON, accountRefArray).length() == 1) {
-                accountJSON.remove(ConsentExtensionConstants.CURRENCY);
+                accountJSON.remove(CommonConstants.CURRENCY);
             }
         }
 

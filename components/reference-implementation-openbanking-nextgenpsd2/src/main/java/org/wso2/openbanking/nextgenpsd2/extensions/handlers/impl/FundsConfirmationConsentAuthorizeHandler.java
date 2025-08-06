@@ -21,12 +21,10 @@ package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.ScaStatusEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
@@ -36,12 +34,15 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Resource;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsentData;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.AccountConsentUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentAuthorizationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.FundsConfirmationConsentUtil;
 
 import java.util.List;
+
+import javax.ws.rs.core.Response;
 
 /**
  * Consent handler interface for processing CoF consent authorization related requests.
@@ -58,7 +59,7 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
      */
     @Override
     public void populateBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
-                                         PopulateConsentAuthorizeScreenData requestData) throws BadRequestException {
+                                         PopulateConsentAuthorizeScreenData requestData) throws ExtensionException {
         // Add consent data if null
         if (responseData.getConsentData() == null) {
             responseData.setConsentData(new SuccessResponsePopulateConsentAuthorizeScreenDataConsentData());
@@ -79,16 +80,17 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
     @Override
     public void populateAccountsData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                      PopulateConsentAuthorizeScreenData requestData)
-            throws AuthorizationFailureException, ServerErrorException {
+            throws AuthorizationFailureException, ExtensionException {
 
         // Extract account reference from receipt
         JSONObject accountRef;
         try {
             JSONObject receipt =
                     new JSONObject(objectMapper.writeValueAsString(requestData.getConsentResource().getReceipt()));
-            accountRef = receipt.getJSONObject(ConsentExtensionConstants.ACCOUNT);
+            accountRef = receipt.getJSONObject(CommonConstants.ACCOUNT);
         } catch (JsonProcessingException e) {
-            throw new ServerErrorException("Failed to extract receipt from payment consent", e);
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Failed to extract receipt from payment consent", e);
         }
 
         // Populate subject account of the consent to be authorized by user
@@ -102,13 +104,13 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
      * @param authorizingResource
      * @return
      * @throws AuthorizationFailureException
-     * @throws BadRequestException
-     * @throws ServerErrorException
+     * @throws ExtensionException
+     * @throws ExtensionException
      */
     @Override
     public DetailedConsentResourceDataWithAmendments getAmendedConsentResource(
             PersistAuthorizedConsentRequestBody requestBody, StoredAuthorization authorizingResource)
-            throws BadRequestException, ServerErrorException, AuthorizationFailureException {
+            throws ExtensionException, AuthorizationFailureException {
 
         PersistAuthorizedConsent requestData = requestBody.getData();
         boolean isApproved = requestData.getIsApproved();
@@ -116,9 +118,9 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
         // Get auth status from approval
         String authStatus;
         if (isApproved) {
-            authStatus = ScaStatusEnum.FINALISED.toString();
+            authStatus = ExtensionEnums.ScaStatusEnum.FINALISED.toString();
         } else {
-            authStatus = ScaStatusEnum.FAILED.toString();
+            authStatus = ExtensionEnums.ScaStatusEnum.FAILED.toString();
         }
 
         // Verify that there's only one authorization
@@ -128,7 +130,7 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
 
         List<Resource> accountMappingResources = AccountConsentUtil.createAccountPermissionMappings(
                 requestData.getUserGrantedData().getAuthorizedResources().getAuthorizedData().get(0),
-                ConsentExtensionConstants.DEFAULT_PERMISSION
+                CommonConstants.DEFAULT_PERMISSION
         );
 
         // Set new consent status

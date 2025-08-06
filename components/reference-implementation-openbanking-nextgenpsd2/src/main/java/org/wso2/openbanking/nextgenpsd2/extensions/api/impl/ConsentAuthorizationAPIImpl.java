@@ -27,13 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
@@ -45,6 +42,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreen;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.UserGrantedData;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentAuthorizationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
@@ -136,7 +134,7 @@ public class ConsentAuthorizationAPIImpl {
                 } else {
                     consentMetadata = (HashMap) responseData.getConsentData().getConsentMetadata();
                 }
-                consentMetadata.put(ConsentExtensionConstants.AUTHORIZING_AUTHORIZATION, unauthorizedObj);
+                consentMetadata.put(CommonConstants.AUTHORIZING_AUTHORIZATION, unauthorizedObj);
                 responseData.getConsentData().setConsentMetadata(consentMetadata);
 
                 // Set response data to response
@@ -164,7 +162,7 @@ public class ConsentAuthorizationAPIImpl {
             e.setResponseId(requestId);
             return Response.status(Response.Status.OK).entity(e.getFormattedErrorAsString()).build();
 
-        } catch (BadRequestException | ServerErrorException e) {
+        } catch (ExtensionException e) {
             log.error("[" + requestId + "] " + "An error occurred populating consent authorize screen.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 
@@ -194,10 +192,11 @@ public class ConsentAuthorizationAPIImpl {
             StoredAuthorization authorizingResource;
             try {
                 authorizingResource = objectMapper.readValue(retrievalMetadata
-                        .getJSONObject(ConsentExtensionConstants.AUTHORIZING_AUTHORIZATION).toString(),
+                        .getJSONObject(CommonConstants.AUTHORIZING_AUTHORIZATION).toString(),
                         StoredAuthorization.class);
             } catch (JsonProcessingException e) {
-                throw new ServerErrorException("Authorization resource being authorized is invalid", e);
+                throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                        "Authorization resource being authorized is invalid", e);
             }
 
             // Banking backend integration for payments
@@ -233,7 +232,7 @@ public class ConsentAuthorizationAPIImpl {
             e.setResponseId(requestId);
             return Response.status(Response.Status.OK).entity(e.getFormattedErrorAsString()).build();
 
-        } catch (BadRequestException | ServerErrorException e) {
+        } catch (ExtensionException e) {
             log.error("[" + requestId + "] " + "An error occurred persisting authorized consent.", e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
 

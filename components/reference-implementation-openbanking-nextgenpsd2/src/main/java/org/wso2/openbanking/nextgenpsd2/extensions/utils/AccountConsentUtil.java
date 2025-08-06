@@ -28,19 +28,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.ConsentTypeEnum;
-import org.wso2.openbanking.nextgenpsd2.extensions.enums.PermissionEnum;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountAccess;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
@@ -51,6 +43,11 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsumerDataAccountsInner;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountAccess;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,6 +63,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.ws.rs.core.Response;
 
 /**
  * Utility class for Account consent management.
@@ -84,10 +83,10 @@ public class AccountConsentUtil {
      */
     public static void appendAccountInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                                 ArrayList<ScaMethod> scaMethods, JSONObject payload)
-            throws BadRequestException {
+            throws ExtensionException {
 
-        payload.put(ConsentExtensionConstants.CONSENT_STATUS, createdConsent.getStatus());
-        payload.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getId());
+        payload.put(CommonConstants.CONSENT_STATUS, createdConsent.getStatus());
+        payload.put(CommonConstants.CONSENT_ID, createdConsent.getId());
 
         JSONArray chosenSCAMethods = new JSONArray();
         for (ScaMethod scaMethod : scaMethods) {
@@ -95,9 +94,9 @@ public class AccountConsentUtil {
         }
 
         if (scaMethods.size() > 1) {
-            payload.put(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
+            payload.put(CommonConstants.SCA_METHODS, chosenSCAMethods);
         } else if (scaMethods.size() == 1) {
-            payload.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
+            payload.put(CommonConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
     }
 
@@ -107,12 +106,12 @@ public class AccountConsentUtil {
      * @param date date in string format
      * @return date/time after converting to UTC timestamp
      */
-    public static long convertToUtcTimestamp(String date) throws ValidationFailureException, BadRequestException {
+    public static long convertToUtcTimestamp(String date) throws ValidationFailureException, ExtensionException {
 
         LocalDate localDate = CommonConsentValidationUtil.parseDateToISO(date,
                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.VALID_UNTIL_DATE_INVALID);
         LocalDateTime localDateTime = localDate.atStartOfDay();
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(ConsentExtensionConstants.UTC));
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(CommonConstants.UTC));
 
         // Retrieve the UTC timestamp in long.
         return Instant.from(zonedDateTime).getEpochSecond();
@@ -143,7 +142,7 @@ public class AccountConsentUtil {
                                                        JSONObject payloadToSend) {
 
         AccountConsentUtil.addAdditionalAccountConsentAttributes(retrievedConsent, payloadToSend);
-        payloadToSend.put(ConsentExtensionConstants.LINKS, getAccountConsentGetLinks());
+        payloadToSend.put(CommonConstants.LINKS, getAccountConsentGetLinks());
     }
 
     /**
@@ -155,12 +154,13 @@ public class AccountConsentUtil {
 
         JSONObject links = new JSONObject();
 
-        String apiVersion = CommonConsentValidationUtil.getApiVersion(ConsentTypeEnum.ACCOUNTS.toString());
+        String apiVersion = CommonConsentValidationUtil
+                .getApiVersion(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString());
 
         JSONObject account = new JSONObject();
-        account.put(ConsentExtensionConstants.HREF,
-                String.format(ConsentExtensionConstants.ACCOUNTS_LINK_TEMPLATE, apiVersion));
-        links.put(ConsentExtensionConstants.ACCOUNT, account);
+        account.put(CommonConstants.HREF,
+                String.format(CommonConstants.ACCOUNTS_LINK_TEMPLATE, apiVersion));
+        links.put(CommonConstants.ACCOUNT, account);
 
         return links;
     }
@@ -173,13 +173,13 @@ public class AccountConsentUtil {
     public static void addAdditionalAccountConsentAttributes(StoredBasicConsentResourceData retrievedConsent,
                                                              JSONObject payloadToSend) {
 
-        payloadToSend.put(ConsentExtensionConstants.CONSENT_STATUS, retrievedConsent.getStatus());
+        payloadToSend.put(CommonConstants.CONSENT_STATUS, retrievedConsent.getStatus());
 
         Date currentDate = new Date(retrievedConsent.getUpdatedTime() * 1000L);
-        DateFormat dateFormat = new SimpleDateFormat(ConsentExtensionConstants.DATE_FORMAT);
+        DateFormat dateFormat = new SimpleDateFormat(CommonConstants.DATE_FORMAT);
         String lastActionDate = dateFormat.format(currentDate);
 
-        payloadToSend.put(ConsentExtensionConstants.LAST_ACTION_DATE, lastActionDate);
+        payloadToSend.put(CommonConstants.LAST_ACTION_DATE, lastActionDate);
     }
 
     /**
@@ -187,27 +187,27 @@ public class AccountConsentUtil {
      *
      * @param responseData
      * @param requestData
-     * @throws BadRequestException
+     * @throws ExtensionException
      */
     public static void populateAccountsBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                                         PopulateConsentAuthorizeScreenData requestData)
-            throws BadRequestException {
+            throws ExtensionException {
         Map<String, List<String>> basicConsentData = new HashMap<>();
         JSONObject receipt = CommonConsentValidationUtil
                 .convertObjectToJson(requestData.getConsentResource().getReceipt());
 
         List<String> consentDetails = new ArrayList<>();
-        consentDetails.add(ConsentExtensionConstants.RECURRING_INDICATOR_TITLE + ": " +
-                receipt.getBoolean(ConsentExtensionConstants.RECURRING_INDICATOR));
-        consentDetails.add(ConsentExtensionConstants.VALID_UNTIL_TITLE + ": " +
-                receipt.getString(ConsentExtensionConstants.VALID_UNTIL));
-        consentDetails.add(ConsentExtensionConstants.FREQUENCY_PER_DAY_TITLE + ": " +
-                receipt.getInt(ConsentExtensionConstants.FREQUENCY_PER_DAY));
-        consentDetails.add(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR_TITLE + ": " +
-                receipt.getBoolean(ConsentExtensionConstants.COMBINED_SERVICE_INDICATOR));
+        consentDetails.add(CommonConstants.RECURRING_INDICATOR_TITLE + ": " +
+                receipt.getBoolean(CommonConstants.RECURRING_INDICATOR));
+        consentDetails.add(CommonConstants.VALID_UNTIL_TITLE + ": " +
+                receipt.getString(CommonConstants.VALID_UNTIL));
+        consentDetails.add(CommonConstants.FREQUENCY_PER_DAY_TITLE + ": " +
+                receipt.getInt(CommonConstants.FREQUENCY_PER_DAY));
+        consentDetails.add(CommonConstants.COMBINED_SERVICE_INDICATOR_TITLE + ": " +
+                receipt.getBoolean(CommonConstants.COMBINED_SERVICE_INDICATOR));
 
         // Add basic consent details
-        basicConsentData.put(ConsentExtensionConstants.CONSENT_DETAILS_TITLE, consentDetails);
+        basicConsentData.put(CommonConstants.CONSENT_DETAILS_TITLE, consentDetails);
 
         responseData.getConsentData().setBasicConsentData(basicConsentData);
     }
@@ -218,7 +218,7 @@ public class AccountConsentUtil {
      * @param receipt
      * @return
      */
-    public static String identifyPermissionFromReceipt(AccountInitiationPayload receipt) throws BadRequestException {
+    public static String identifyPermissionFromReceipt(AccountInitiationPayload receipt) throws ExtensionException {
         // Access object not validated here given that it's validated at consent initiation and cannot be updated since
         AccountAccess accessObject = receipt.getAccess();
 
@@ -226,15 +226,15 @@ public class AccountConsentUtil {
                 && accessObject.getTransactions() == null) {
 
             if (accessObject.getAvailableAccounts() != null) {
-                return PermissionEnum.AVAILABLE_ACCOUNTS.toString();
+                return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS.toString();
             }
 
             if (accessObject.getAvailableAccountsWithBalances() != null) {
-                return PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString();
+                return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString();
             }
 
             if (accessObject.getAllPsd2() != null) {
-                return PermissionEnum.ALL_PSD2.toString();
+                return ExtensionEnums.PermissionEnum.ALL_PSD2.toString();
             }
 
         } else {
@@ -268,14 +268,15 @@ public class AccountConsentUtil {
             }
 
             if (numberOfProvidedAccessTypes == numberOfEmptyAccessMethodArrays) {
-                return PermissionEnum.BANK_OFFERED.toString();
+                return ExtensionEnums.PermissionEnum.BANK_OFFERED.toString();
             } else {
-                return PermissionEnum.DEDICATED_ACCOUNTS.toString();
+                return ExtensionEnums.PermissionEnum.DEDICATED_ACCOUNTS.toString();
             }
         }
 
         // Should be unreachable since this is validated
-        throw new BadRequestException("Poorly validated consent initiation payload received");
+        throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                "Poorly validated consent initiation payload received");
     }
 
     /**
@@ -296,21 +297,21 @@ public class AccountConsentUtil {
         if (access.getAccounts() != null) {
             permissionList.add(new SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner()
                     .uid(UUID.randomUUID().toString())
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION));
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION));
         }
 
         if (access.getBalances() != null) {
             permissionList.add(new SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner()
                     .uid(UUID.randomUUID().toString())
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                    .addDisplayValuesItem(ConsentExtensionConstants.BALANCES_PERMISSION));
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                    .addDisplayValuesItem(CommonConstants.BALANCES_PERMISSION));
         }
 
         if (access.getTransactions() != null) {
             permissionList.add(new SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner()
                     .uid(UUID.randomUUID().toString())
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                    .addDisplayValuesItem(ConsentExtensionConstants.TRANSACTIONS_PERMISSION));
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                    .addDisplayValuesItem(CommonConstants.TRANSACTIONS_PERMISSION));
         }
 
         // Set permissions in consent data
@@ -354,7 +355,7 @@ public class AccountConsentUtil {
      * @return
      */
     public static List<SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner>
-    buildPermissionsForDedicatedAccounts(AccountInitiationPayload receipt, String userId) throws ServerErrorException {
+    buildPermissionsForDedicatedAccounts(AccountInitiationPayload receipt, String userId) throws ExtensionException {
         List<SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner> permissionsList =
                 new ArrayList<>();
         AccountAccess accessObject = receipt.getAccess();
@@ -417,8 +418,8 @@ public class AccountConsentUtil {
 
             // Set permission display values
             balancePermissions
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                    .addDisplayValuesItem(ConsentExtensionConstants.BALANCES_PERMISSION);
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                    .addDisplayValuesItem(CommonConstants.BALANCES_PERMISSION);
 
             // Set initiated accounts
             balancePermissions.setInitiatedAccounts(validatedBalancesAccountObjects);
@@ -435,8 +436,8 @@ public class AccountConsentUtil {
 
             // Set permission display values
             transactionPermissions
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                    .addDisplayValuesItem(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                    .addDisplayValuesItem(CommonConstants.TRANSACTIONS_PERMISSION);
 
             // Set initiated accounts
             transactionPermissions.setInitiatedAccounts(validatedTransactionsAccountObjects);
@@ -453,7 +454,7 @@ public class AccountConsentUtil {
 
             // Set permission display values
             accountsPermissions
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION);
 
             // Set initiated accounts
             accountsPermissions.setInitiatedAccounts(validatedAccountsAccountObjects);
@@ -493,9 +494,9 @@ public class AccountConsentUtil {
 
         // Set permission display values
         permissionObj
-                .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                .addDisplayValuesItem(ConsentExtensionConstants.BALANCES_PERMISSION)
-                .addDisplayValuesItem(ConsentExtensionConstants.TRANSACTIONS_PERMISSION);
+                .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                .addDisplayValuesItem(CommonConstants.BALANCES_PERMISSION)
+                .addDisplayValuesItem(CommonConstants.TRANSACTIONS_PERMISSION);
 
 
         // Set initiated accounts for populate consent page
@@ -539,13 +540,14 @@ public class AccountConsentUtil {
         permissionObj.setUid(UUID.randomUUID().toString());
 
         // Set permission display values
-        if (StringUtils.equalsIgnoreCase(permission, PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
+        if (StringUtils.equalsIgnoreCase(permission,
+                ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString())) {
             permissionObj
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION)
-                    .addDisplayValuesItem(ConsentExtensionConstants.BALANCES_PERMISSION);
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION)
+                    .addDisplayValuesItem(CommonConstants.BALANCES_PERMISSION);
         } else {
             permissionObj
-                    .addDisplayValuesItem(ConsentExtensionConstants.ACCOUNTS_PERMISSION);
+                    .addDisplayValuesItem(CommonConstants.ACCOUNTS_PERMISSION);
         }
 
         // Set initiated accounts for populate consent page
@@ -580,9 +582,9 @@ public class AccountConsentUtil {
             // Append account reference type, reference and currency to account id for mapping
             String referenceToPersist = String.format("%s%s%s", referenceType, CommonConstants.DELIMITER,
                     account.getAdditionalProperties().get(referenceType));
-            if (account.getAdditionalProperties().containsKey(ConsentExtensionConstants.CURRENCY)) {
+            if (account.getAdditionalProperties().containsKey(CommonConstants.CURRENCY)) {
                 referenceToPersist += String.format("%s%s", CommonConstants.DELIMITER,
-                        account.getAdditionalProperties().get(ConsentExtensionConstants.CURRENCY));
+                        account.getAdditionalProperties().get(CommonConstants.CURRENCY));
             }
 
             // Create a new Resource object with the account ID, permission, and status

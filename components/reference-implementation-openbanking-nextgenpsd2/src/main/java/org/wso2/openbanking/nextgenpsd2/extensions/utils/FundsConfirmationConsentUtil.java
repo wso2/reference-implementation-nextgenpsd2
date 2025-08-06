@@ -21,12 +21,12 @@ package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ConsentExtensionConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,9 +47,9 @@ public class FundsConfirmationConsentUtil {
      */
     public static void appendCoFInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                             ArrayList<ScaMethod> scaMethods, JSONObject payload)
-            throws BadRequestException {
-        payload.put(ConsentExtensionConstants.CONSENT_STATUS, createdConsent.getStatus());
-        payload.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getId());
+            throws ExtensionException {
+        payload.put(CommonConstants.CONSENT_STATUS, createdConsent.getStatus());
+        payload.put(CommonConstants.CONSENT_ID, createdConsent.getId());
 
         JSONArray chosenSCAMethods = new JSONArray();
         for (ScaMethod scaMethod : scaMethods) {
@@ -57,9 +57,9 @@ public class FundsConfirmationConsentUtil {
         }
 
         if (scaMethods.size() > 1) {
-            payload.put(ConsentExtensionConstants.SCA_METHODS, chosenSCAMethods);
+            payload.put(CommonConstants.SCA_METHODS, chosenSCAMethods);
         } else {
-            payload.put(ConsentExtensionConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
+            payload.put(CommonConstants.CHOSEN_SCA_METHOD, chosenSCAMethods.get(0));
         }
     }
 
@@ -68,11 +68,11 @@ public class FundsConfirmationConsentUtil {
      *
      * @param responseData the response object to populate
      * @param requestData the request data containing consent receipt
-     * @throws BadRequestException if receipt parsing fails
+     * @throws ExtensionException if receipt parsing fails
      */
     public static void populateFundsConfirmationBasicConsentData
     (SuccessResponsePopulateConsentAuthorizeScreenData responseData, PopulateConsentAuthorizeScreenData requestData)
-            throws BadRequestException {
+            throws ExtensionException {
 
         Map<String, List<String>> basicConsentData = new HashMap<>();
 
@@ -82,27 +82,27 @@ public class FundsConfirmationConsentUtil {
         List<String> consentDetails = new ArrayList<>();
 
         // Card number
-        if (receipt.has(ConsentExtensionConstants.CARD_NUMBER) &&
-                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_NUMBER))) {
-            consentDetails.add(ConsentExtensionConstants.CARD_NUMBER_TITLE + ": " +
-                    receipt.optString(ConsentExtensionConstants.CARD_NUMBER));
+        if (receipt.has(CommonConstants.CARD_NUMBER) &&
+                StringUtils.isNotBlank(receipt.optString(CommonConstants.CARD_NUMBER))) {
+            consentDetails.add(CommonConstants.CARD_NUMBER_TITLE + ": " +
+                    receipt.optString(CommonConstants.CARD_NUMBER));
         }
 
         // Card expiry date
-        if (receipt.has(ConsentExtensionConstants.CARD_EXPIRY_DATE) &&
-                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_EXPIRY_DATE))) {
-            consentDetails.add(ConsentExtensionConstants.CARD_EXPIRY_DATE_TITLE + ": " +
-                    receipt.optString(ConsentExtensionConstants.CARD_EXPIRY_DATE));
+        if (receipt.has(CommonConstants.CARD_EXPIRY_DATE) &&
+                StringUtils.isNotBlank(receipt.optString(CommonConstants.CARD_EXPIRY_DATE))) {
+            consentDetails.add(CommonConstants.CARD_EXPIRY_DATE_TITLE + ": " +
+                    receipt.optString(CommonConstants.CARD_EXPIRY_DATE));
         }
 
         // Card information
-        if (receipt.has(ConsentExtensionConstants.CARD_INFORMATION) &&
-                StringUtils.isNotBlank(receipt.optString(ConsentExtensionConstants.CARD_INFORMATION))) {
-            consentDetails.add(ConsentExtensionConstants.CARD_INFORMATION_TITLE + ": " +
-                    receipt.optString(ConsentExtensionConstants.CARD_INFORMATION));
+        if (receipt.has(CommonConstants.CARD_INFORMATION) &&
+                StringUtils.isNotBlank(receipt.optString(CommonConstants.CARD_INFORMATION))) {
+            consentDetails.add(CommonConstants.CARD_INFORMATION_TITLE + ": " +
+                    receipt.optString(CommonConstants.CARD_INFORMATION));
         }
 
-        basicConsentData.put(ConsentExtensionConstants.CONSENT_DETAILS_TITLE, consentDetails);
+        basicConsentData.put(CommonConstants.CONSENT_DETAILS_TITLE, consentDetails);
 
         responseData.getConsentData().setBasicConsentData(basicConsentData);
     }

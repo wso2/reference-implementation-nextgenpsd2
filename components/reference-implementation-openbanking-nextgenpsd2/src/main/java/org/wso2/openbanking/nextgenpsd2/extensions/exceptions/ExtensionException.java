@@ -9,18 +9,18 @@ import javax.ws.rs.core.Response;
  * Exception class for internal server and bad request errors,
  * formatted to return a custom ErrorResponse object.
  */
-public abstract class ApiException extends Exception {
+public class ExtensionException extends Exception {
 
     private final Response.Status errorStatus;
     private final JSONObject data;
 
-    protected ApiException(Response.Status status, String message, String description) {
+    public ExtensionException(Response.Status status, String message, String description) {
         super(description);
         this.errorStatus = status;
         this.data = ErrorUtil.getErrorDataObject(message, description);
     }
 
-    protected ApiException(Response.Status status, String message, String description, Throwable cause) {
+    public ExtensionException(Response.Status status, String message, String description, Throwable cause) {
         super(description, cause);
         this.errorStatus = status;
         this.data = ErrorUtil.getErrorDataObject(message, description);
