@@ -27,14 +27,14 @@ import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailu
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Account;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.AmendedAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.AuthorizedResourcesAuthorizedDataInner;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.DetailedConsentResourceDataWithAmendments;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PersistAuthorizedConsent;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.Resource;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredDetailedConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AmendedAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Resource;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

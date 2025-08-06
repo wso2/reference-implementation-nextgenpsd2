@@ -21,11 +21,11 @@ package org.wso2.openbanking.nextgenpsd2.extensions.handlers;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ServerErrorException;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.DetailedConsentResourceDataWithAmendments;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PersistAuthorizedConsentRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.PopulateConsentAuthorizeScreenData;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.SuccessResponsePopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 
 /**
  * Consent handler interface for processing consent authorization related requests.

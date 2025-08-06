@@ -24,10 +24,10 @@ import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.BadRequestException;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.ErrorResponse;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponse;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponseInConsentAuthorize;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.generated.FailedResponseInConsentAuthorizeData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.ErrorResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorize;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorizeData;
 
 import java.util.ArrayList;
 import java.util.List;
