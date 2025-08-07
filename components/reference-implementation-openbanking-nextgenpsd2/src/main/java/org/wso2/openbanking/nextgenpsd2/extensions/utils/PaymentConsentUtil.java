@@ -19,10 +19,11 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentAuthorizationAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
@@ -50,6 +51,7 @@ import javax.ws.rs.core.Response;
  * Utility class for payment consent management.
  */
 public class PaymentConsentUtil {
+    private static final Log log = LogFactory.getLog(PaymentConsentUtil.class);
 
     /**
      * Validates payment consent initiation payload based on payment type.
@@ -344,7 +346,7 @@ public class PaymentConsentUtil {
                             .convertObjectToJson(consentResource.getReceipt()).toString();
                     if (!ConsentAuthorizationUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
                             "submit")) {
-                        ConsentAuthorizationAPIImpl.log.error("Error occurred while submitting the payment," +
+                        log.error("Error occurred while submitting the payment," +
                                 " please retry");
                         throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                                 ErrorConstants.PAYMENT_SUBMISSION_FAILED);
@@ -361,14 +363,14 @@ public class PaymentConsentUtil {
                             .convertObjectToJson(consentResource.getReceipt()).toString();
                     if (!ConsentAuthorizationUtil.isPaymentResourceSubmitted(paymentId, paymentReceipt,
                             "cancel")) {
-                        ConsentAuthorizationAPIImpl.log.error("Error occurred while cancelling the payment," +
+                        log.error("Error occurred while cancelling the payment," +
                                 " please retry");
                         throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                                 ErrorConstants.PAYMENT_CANCELLATION_FAILED);
                     }
                 }
             } catch (IOException e) {
-                ConsentAuthorizationAPIImpl.log.error("Exception occurred processing payment, please retry", e);
+                log.error("Exception occurred processing payment, please retry", e);
                 throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                         ErrorConstants.PAYMENT_FAILED);
             }

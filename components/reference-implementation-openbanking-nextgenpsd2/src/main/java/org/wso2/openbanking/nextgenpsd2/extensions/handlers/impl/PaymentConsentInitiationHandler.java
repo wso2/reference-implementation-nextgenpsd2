@@ -19,7 +19,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -42,26 +41,25 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseWithDetailedConsentData;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
-import org.wso2.openbanking.nextgenpsd2.extensions.utils.AccountConsentUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentInitiationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.PaymentConsentUtil;
 
 import java.util.Optional;
 
 import javax.ws.rs.core.Response;
 
 /**
- * Consent handler for account consents.
+ * Consent handler for payment consents.
  */
-public class AccountConsentManageHandler implements ConsentManagementValidationHandler {
-    private static final Log log = LogFactory.getLog(AccountConsentManageHandler.class);
+public class PaymentConsentInitiationHandler implements ConsentInitiationHandler {
+    private static final Log log = LogFactory.getLog(PaymentConsentInitiationHandler.class);
 
     /**
-     * Handles creation of account consents.
+     * Handles creation of payment consent.
      *
      * @param requestBody
      * @return
@@ -77,8 +75,8 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
 
         boolean isSCARequired = Boolean.parseBoolean(ConfigurationConstants.IS_SCA_REQUIRED);
 
-        JSONObject headersJSON = CommonConsentValidationUtil.convertObjectToJson(requestBody.getData()
-                .getRequestHeaders());
+        JSONObject headersJSON =
+                CommonConsentValidationUtil.convertObjectToJson(requestBody.getData().getRequestHeaders());
 
         // Validate headers
         CommonConsentValidationUtil.validateTppRedirectPreferredHeader(requestId, headersJSON);
@@ -91,20 +89,21 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
                     .convertObjectToJson(requestBody.getData().getConsentInitiationData());
         } catch (JSONException e) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+                    ErrorUtil.constructBerlinError(
+                            null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
-
-        // Parse account initiation payload and validate its structure
-        AccountInitiationPayload payload = CommonConsentValidationUtil
-                .validateJSONFromModel(requestPayload.toString(), AccountInitiationPayload.class);
+        PaymentConsentUtil.validatePaymentInitiationPayload(requestPayload,
+                requestBody.getData().getConsentResourcePath());
 
         Optional<Boolean> isRedirectPreferred = CommonConsentValidationUtil.isTppRedirectPreferred(requestId,
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
             log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
-            String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
+
+            String paymentConsentType = CommonConsentValidationUtil
+                    .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
             // Response body
             SuccessResponsePreProcessConsentCreation validationResponse =
@@ -118,21 +117,13 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
             // Consent resource
             DetailedConsentResourceData consentResource = new DetailedConsentResourceData();
             consentResource.setReceipt(requestPayload);
-            consentResource.setType(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString());
-            consentResource.setStatus(ExtensionEnums.ConsentStatusEnum.RECEIVED.toString());
+            consentResource.setType(paymentConsentType);
+            consentResource.setStatus(ExtensionEnums.TransactionStatusEnum.RCVD.name());
 
-            // Setting additional properties to consent resource
-            boolean recurringIndicator = payload.getRecurringIndicator();
-            consentResource.setRecurringIndicator(recurringIndicator);
-            consentResource.setFrequency(payload.getFrequencyPerDay());
-
-            String validUntilString = String.valueOf(payload.getValidUntil());
-            if (recurringIndicator) {
-                consentResource.setValidityTime(AccountConsentUtil.convertToUtcTimestamp(validUntilString));
-            } else {
-                // setting null for one off consent's validity period
-                consentResource.setValidityTime(0L);
-            }
+            // Setting inapplicable consent parameters
+            consentResource.setFrequency(0);
+            consentResource.setValidityTime(0L);
+            consentResource.setRecurringIndicator(false);
 
             // Build auth resource for implicit authorisation
             // ToDo: Revisit once explicit authorisation is supported
@@ -141,10 +132,15 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
                 authObj.setUserId(headersJSON.getString(CommonConstants.PSU_ID_HEADER));
             }
             authObj.setType(ExtensionEnums.AuthTypeEnum.AUTHORISATION.toString());
+            String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
             authObj.setStatus(authStatus);
 
             // Append auth resource to consent
             consentResource.addAuthorizationsItem(authObj);
+
+            // Store payment product as consent attribute
+            consentResource.setAttributes(
+                    PaymentConsentUtil.getPaymentProductAttribute(requestBody.getData().getConsentResourcePath()));
 
             // Envelop consent in response data
             data.setConsentResource(consentResource);
@@ -163,7 +159,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     }
 
     /**
-     * Handles retrieval of account requests.
+     * Handles retrieval of payment consents.
      *
      * @param requestBody
      * @return
@@ -176,10 +172,10 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
         String requestId = requestBody.getRequestId();
 
         PreProcessConsentRetrievalData data = requestBody.getData();
-        String requestPath = data.getConsentResourcePath();
-        String consentType = CommonConsentValidationUtil.getConsentTypeFromRequestPath(requestPath);
-        String consentId = data.getConsentId();
         StoredBasicConsentResourceData consentResource = data.getConsentResource();
+        String consentId = consentResource.getId();
+        String consentTypeFromPath = CommonConsentValidationUtil
+                .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
         if (log.isDebugEnabled()) {
             log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
@@ -201,44 +197,46 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
         // Validate client
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
+        // Validate consent type
         if (log.isDebugEnabled()) {
             log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
                     consentId));
         }
-        CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
+        CommonConsentValidationUtil.validateConsentType(consentTypeFromPath, consentResource.getType());
 
-        if ((consentResource.getRecurringIndicator() && AccountConsentUtil.isConsentExpired(
-                consentResource.getValidityTime()))
-                && !(StringUtils.equals(consentResource.getStatus(),
-                ExtensionEnums.ConsentStatusEnum.TERMINATED_BY_TPP.toString())
-                || StringUtils.equals(consentResource.getStatus(),
-                ExtensionEnums.ConsentStatusEnum.REVOKED_BY_PSU.toString()))) {
-            log.debug("[" + requestId + "] " + "The Consent is expired");
-            consentResource.setStatus(ExtensionEnums.ConsentStatusEnum.EXPIRED.toString());
+        // Validate consent payment product
+        if (log.isDebugEnabled()) {
+            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct payment " +
+                    "product", consentId));
         }
-
-        JSONObject payloadToSend = new JSONObject();
-
-        if (StringUtils.contains(requestPath, CommonConstants.STATUS)) {
-            CommonConsentValidationUtil.appendConsentStatusResponse(consentResource, consentType, payloadToSend);
-        } else {
-            payloadToSend = CommonConsentValidationUtil.convertObjectToJson(consentResource.getReceipt());
-            AccountConsentUtil.extendAccountConsentGetResponse(consentResource, payloadToSend);
-        }
+        PaymentConsentUtil.validatePaymentProductFromAttributes(consentResource.getAttributes(),
+                data.getConsentResourcePath());
 
         SuccessResponseForResponseAlternation validationResponse = new SuccessResponseForResponseAlternation();
-        validationResponse.setResponseId(requestBody.getRequestId());
         validationResponse.setStatus(SuccessResponseForResponseAlternation.StatusEnum.SUCCESS);
-        validationResponse.setData(new SuccessResponseForResponseAlternationData()
-                .modifiedResponse(payloadToSend)
-                .responseHeaders(CommonConsentValidationUtil.getIdempotencyHeaderJSON(
-                        headers.getString(CommonConstants.X_REQUEST_ID_HEADER))));
+        validationResponse.setResponseId(requestBody.getRequestId());
+
+        SuccessResponseForResponseAlternationData responseData = new SuccessResponseForResponseAlternationData();
+
+        // For status calls
+        JSONObject statusPayload = new JSONObject();
+        if (!requestBody.getData().getConsentResourcePath().contains(CommonConstants.STATUS)) {
+            statusPayload = CommonConsentValidationUtil.convertObjectToJson(consentResource.getReceipt());
+        }
+
+        CommonConsentValidationUtil.appendConsentStatusResponse(consentResource, consentTypeFromPath, statusPayload);
+        responseData.setModifiedResponse(statusPayload);
+        responseData.setResponseHeaders(CommonConsentValidationUtil.getIdempotencyHeaderJSON(
+                headers.getString(CommonConstants.X_REQUEST_ID_HEADER)
+        ));
+
+        validationResponse.setData(responseData);
 
         return validationResponse;
     }
 
     /**
-     * Handles revocation of account consents.
+     * Handles revocation of payment consents.
      *
      * @param requestBody
      * @return
@@ -246,11 +244,12 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, ExtensionException {
+        // ToDo: Implement cancel-authorizations once explicit auth is implemented
         return CommonConsentValidationUtil.validateRevokeRequestAndReturnResponse(requestBody);
     }
 
     /**
-     * Handles account consent creation response customization.
+     * Handles payment consent creation response customization.
      *
      * @param requestBody
      * @return
@@ -260,6 +259,6 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws ExtensionException {
         return ConsentInitiationUtil.buildResponseAlterationResponseForConsentCreation(requestBody,
-                ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString());
+                ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString());
     }
 }

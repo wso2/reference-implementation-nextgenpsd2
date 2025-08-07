@@ -27,7 +27,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessCon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationManageHandler implements ConsentManagementValidationHandler {
+public class ConsentAuthorisationManageHandler implements ConsentInitiationHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**

@@ -45,14 +45,14 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentAuthorizeHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationManageHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentAuthorizeHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentAuthorizeHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
@@ -203,18 +203,18 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentManagementValidationHandler getConsentManagementResponseHandler(String requestPath)
+    public static ConsentInitiationHandler getConsentManagementResponseHandler(String requestPath)
             throws ExtensionException, ValidationFailureException {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {
             case CommonConstants.ACCOUNTS_CONSENT_PATH:
-                return new AccountConsentManageHandler();
+                return new AccountConsentInitiationHandler();
             case CommonConstants.PAYMENTS_SERVICE_PATH:
             case CommonConstants.BULK_PAYMENTS_SERVICE_PATH:
             case CommonConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                return new PaymentConsentManageHandler();
+                return new PaymentConsentInitiationHandler();
             case CommonConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
-                return new FundsConfirmationConsentManageHandler();
+                return new FundsConfirmationConsentInitiationHandler();
             case CommonConstants.EXPLICIT_AUTHORISATION_PATH_END:
             case CommonConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
                 return new ConsentAuthorisationManageHandler();
