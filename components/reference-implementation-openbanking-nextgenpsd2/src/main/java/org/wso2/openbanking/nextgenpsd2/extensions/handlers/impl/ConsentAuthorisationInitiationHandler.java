@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationManageHandler implements ConsentInitiationHandler {
+public class ConsentAuthorisationInitiationHandler implements ConsentInitiationHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**

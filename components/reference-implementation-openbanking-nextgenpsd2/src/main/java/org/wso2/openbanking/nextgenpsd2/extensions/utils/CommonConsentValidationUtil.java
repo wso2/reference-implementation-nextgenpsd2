@@ -48,7 +48,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorization
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentAuthorizeHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentInitiationHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentAuthorizeHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentAuthorizeHandler;
@@ -217,7 +217,7 @@ public class CommonConsentValidationUtil {
                 return new FundsConfirmationConsentInitiationHandler();
             case CommonConstants.EXPLICIT_AUTHORISATION_PATH_END:
             case CommonConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
-                return new ConsentAuthorisationManageHandler();
+                return new ConsentAuthorisationInitiationHandler();
             default:
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.NOT_FOUND,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
