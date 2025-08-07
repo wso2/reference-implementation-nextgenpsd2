@@ -108,9 +108,9 @@ public class DataRetrievalUtil {
     /**
      * Builds an http get request to retrieve data from external endpoints.
      *
-     * @param url
-     * @param headers
-     * @return
+     * @param url url for the request
+     * @param headers headers send with the request
+     * @return http get request object
      */
     private static HttpGet buildHttpGetRequest(String url, Map<String, String> headers) {
         HttpGet request = new HttpGet(url);

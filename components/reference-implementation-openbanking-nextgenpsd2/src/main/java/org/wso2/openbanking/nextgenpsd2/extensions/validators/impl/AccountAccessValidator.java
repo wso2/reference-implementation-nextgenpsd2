@@ -90,14 +90,4 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
         return true;
     }
-
-    /**
-     * Helper method for null and isEmpty check.
-     *
-     * @param list
-     * @return
-     */
-    private boolean notEmpty(List<?> list) {
-        return list != null && !list.isEmpty();
-    }
 }

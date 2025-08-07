@@ -228,8 +228,8 @@ public class PaymentConsentUtil {
     /**
      * Method to populate common payment data for all payment consent types.
      *
-     * @param receipt
-     * @param paymentDataList
+     * @param receipt consent initiation payload
+     * @param paymentDataList list to which common payment data need be appended
      */
     private static void populateCommonData(JSONObject receipt, List<String> paymentDataList) {
 

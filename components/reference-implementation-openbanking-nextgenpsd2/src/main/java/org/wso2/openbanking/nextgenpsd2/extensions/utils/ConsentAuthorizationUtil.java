@@ -33,10 +33,8 @@ import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -90,7 +88,7 @@ public class ConsentAuthorizationUtil {
      * Checks all authorization resources to see if there's any unauthorized resources unbound to a user or bound to
      * this user.
      *
-     * @param authorizations
+     * @param authorizations authorization objects from request body
      */
     public static StoredAuthorization getAuthorizableResource(List<StoredAuthorization> authorizations, String userId,
                                                               StoredDetailedConsentResourceData consentResource)
@@ -145,9 +143,8 @@ public class ConsentAuthorizationUtil {
     /**
      * Validates authorization status based on consent type.
      *
-     * @param consentResource
-     * @param authObj
-     * @return
+     * @param consentResource consent resource from the request
+     * @param authObj authorization object to authorize
      */
     private static void validateConsentStatus(StoredDetailedConsentResourceData consentResource,
                                               StoredAuthorization authObj) throws AuthorizationFailureException {
@@ -190,17 +187,6 @@ public class ConsentAuthorizationUtil {
     }
 
     /**
-     * Adds title data pairs to basic consent data maps.
-     *
-     * @param basicDataMap
-     * @param title
-     * @param data
-     */
-    public static void addTitleDataPairToMap(Map<String, List<String>> basicDataMap, String title, String... data) {
-        basicDataMap.put(title, Arrays.asList(data));
-    }
-
-    /**
      * Retrieves all the accounts for a particular account number in multi-currency scenarios.
      *
      * @param accountRefObject single account json object
@@ -227,8 +213,8 @@ public class ConsentAuthorizationUtil {
     /**
      * Builds account objects for consent page based on account ref objects.
      *
-     * @param accountRefJSON
-     * @return
+     * @param accountRefJSON account reference JSON object
+     * @return built account object to include in populate-consent-authorize-screen response
      */
     public static Account getAccountFromAccountRef(JSONObject accountRefJSON) {
         String refType = CommonConsentValidationUtil.getAccountReferenceType(accountRefJSON);
@@ -249,9 +235,9 @@ public class ConsentAuthorizationUtil {
     /**
      * Validates requested accounts based on retrieved accounts from the banking backend.
      *
-     * @param accountRefList
-     * @param accountList
-     * @return
+     * @param accountRefList list of account references
+     * @param accountList list of account objects from banking backend
+     * @return list of validated account objects
      */
     public static List<Account> getValidatedAccountObjects(JSONArray accountRefList, JSONArray accountList) {
         List<Account> validatedAccountObjects = new ArrayList<>();
@@ -310,9 +296,9 @@ public class ConsentAuthorizationUtil {
     /**
      * Validates requested accounts based on retrieved accounts from the banking backend.
      *
-     * @param accountRefList
-     * @param accountList
-     * @return
+     * @param accountRefList list of account references
+     * @param accountList list of account objects from banking backend
+     * @return list of validated account objects
      */
     public static List<Account> getValidatedAccountObjects(List<AccountReference> accountRefList,
                                                     JSONArray accountList) throws ExtensionException {
@@ -401,10 +387,10 @@ public class ConsentAuthorizationUtil {
     /**
      * Builds detailed consent resource with new consent status and amended authorizations.
      *
-     * @param requestData
-     * @param newConsentStatus
-     * @param amendedAuthorization
-     * @return
+     * @param requestData data sent with the persist-authorized-consent request
+     * @param newConsentStatus updated consent status
+     * @param amendedAuthorization authorization resources being amended (authorized with account mappings)
+     * @return data for the response sent to persist-authorized-consent request
      */
     public static DetailedConsentResourceDataWithAmendments buildDetailedConsentResourceDataWithAmendments(
             PersistAuthorizedConsent requestData, String newConsentStatus, AmendedAuthorization amendedAuthorization) {
@@ -423,9 +409,9 @@ public class ConsentAuthorizationUtil {
     /**
      * Calculates aggregate consent status based on status of all authorization resources.
      *
-     * @param storedAuthorizations
-     * @param authorizingResource
-     * @return
+     * @param storedAuthorizations authorization resources sent with the request
+     * @param authorizingResource resource being authorized by the SCA
+     * @return new consent status based on authorization status of all authorization objects
      */
     public static Optional<String> getAggregatedConsentStatus(List<StoredAuthorization> storedAuthorizations,
                                                                          StoredAuthorization authorizingResource,
@@ -473,6 +459,14 @@ public class ConsentAuthorizationUtil {
         return Optional.empty();
     }
 
+    /**
+     * Builds amended authorization object to be forwarded as response to persist-authorized-consent request.
+     *
+     * @param authorizingResource resource being authorized
+     * @param accountMappingResources account mappings
+     * @param authStatus updated authorization status
+     * @return amended authorization object
+     */
     public static AmendedAuthorization buildAmendedAuthorization(StoredAuthorization authorizingResource,
                                                                  List<Resource> accountMappingResources,
                                                                  String authStatus) {
@@ -486,7 +480,7 @@ public class ConsentAuthorizationUtil {
 
     /**
      * Verify that only a single account was authorized for this consent.
-     * @param authorizedData
+     * @param authorizedData data authorized through the consent authorization user input
      */
     public static void verifySingleAuthorizedResource(List<AuthorizedResourcesAuthorizedDataInner> authorizedData)
             throws ExtensionException {
@@ -508,7 +502,7 @@ public class ConsentAuthorizationUtil {
      * @param accountMappingResources list of account to permission mapping resources
      * @param authStatus new status of the authorization resource
      * @return built consent amendment resource
-     * @throws ExtensionException
+     * @throws ExtensionException if consent was approved without selecting accounts
      */
     public static DetailedConsentResourceDataWithAmendments buildAmendedConsentResource(
             StoredAuthorization authorizingResource, boolean isApproved, PersistAuthorizedConsent requestData,

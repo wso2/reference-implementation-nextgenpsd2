@@ -42,8 +42,8 @@ public class FundsConfirmationConsentUtil {
      * Method to get the funds confirmation initiation response without links.
      *
      * @param createdConsent created consent retrieved
-     * @param scaMethods
-     * @param payload
+     * @param scaMethods supported sca methods
+     * @param payload consent initiation payload
      */
     public static void appendCoFInitiationResponseToPayload(StoredDetailedConsentResourceData createdConsent,
                                                             ArrayList<ScaMethod> scaMethods, JSONObject payload)

@@ -223,8 +223,8 @@ public class ConsentManagementAPIImpl {
     /**
      * Method for returning the response for populating consent authorization page.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request made to populate-consent-authorize-screen
+     * @return payload required to generate the custom consent authorization page
      */
     public static Response populateConsentAuthorizeScreen
     (PopulateConsentAuthorizeScreenRequestBody requestBody) {
@@ -328,8 +328,8 @@ public class ConsentManagementAPIImpl {
     /**
      * Method for building persist authorized consent response.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody request made to persist-authorized-consent endpoint
+     * @return response containing any modified consent information and account mappings with permissions
      */
     public static Response persistAuthorizedConsent(PersistAuthorizedConsentRequestBody
                                                             requestBody) {
@@ -351,8 +351,14 @@ public class ConsentManagementAPIImpl {
                         .getJSONObject(CommonConstants.AUTHORIZING_AUTHORIZATION).toString(),
                         StoredAuthorization.class);
             } catch (JsonProcessingException e) {
-                throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                        "Authorization resource being authorized is invalid", e);
+                // Should be unreachable given that a validated authorization resource is attached
+                // to metadata when populating consent page
+                log.error("Authorization resource being authorized is invalid", e);
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        ErrorUtil.getFormattedErrorResponse(
+                                ErrorUtil.getErrorDataObject("invalid_request",
+                                        "Authorization resource being authorized is invalid")).toString())
+                        .build();
             }
 
             // Banking backend integration for payments

@@ -989,10 +989,10 @@ public class CommonConsentValidationUtil {
     /**
      * Populates consent initiated accounts for both payment and funds confirmation consents.
      *
-     * @param responseData
-     * @param requestData
-     * @param accountRefJSON
-     * @throws AuthorizationFailureException
+     * @param responseData response to the request made to populate-consent-authorize-screen
+     * @param requestData request made to populate-consent-authorize-screen
+     * @param accountRefJSON account to include under initiated account for consent
+     * @throws AuthorizationFailureException if no accounts were found for the user
      */
     public static void populateConsentInitiatedAccounts(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                                         PopulateConsentAuthorizeScreenData requestData,
@@ -1038,8 +1038,8 @@ public class CommonConsentValidationUtil {
     /**
      * Extracts account reference object from authorized account objects.
      *
-     * @param accounts
-     * @return
+     * @param accounts account objects under user granted data
+     * @return list of account reference objects
      */
     public static List<AccountReference> extractAccountRef(List<Account> accounts) {
         List<AccountReference> accountRefs = new ArrayList<>();

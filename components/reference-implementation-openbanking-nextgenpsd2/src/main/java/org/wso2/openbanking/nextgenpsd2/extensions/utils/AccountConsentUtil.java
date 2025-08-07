@@ -185,9 +185,8 @@ public class AccountConsentUtil {
     /**
      * Method used to populate basic consent data for account consents.
      *
-     * @param responseData
-     * @param requestData
-     * @throws ExtensionException
+     * @param responseData response to be sent back to the populate-consent-authorize-screen call
+     * @param requestData request made to the populate-consent-authorize-screen
      */
     public static void populateAccountsBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                                         PopulateConsentAuthorizeScreenData requestData)
@@ -215,8 +214,9 @@ public class AccountConsentUtil {
     /**
      * Method used to identify requested permission type.
      *
-     * @param receipt
-     * @return
+     * @param receipt consent initiation request body
+     * @return requested AIS permission
+     * @throws ExtensionException if consent initiation receipt wasn't properly validated at initiation
      */
     public static String identifyPermissionFromReceipt(AccountInitiationPayload receipt) throws ExtensionException {
         // Access object not validated here given that it's validated at consent initiation and cannot be updated since
@@ -283,8 +283,8 @@ public class AccountConsentUtil {
      * Populates the populate consent authorize page response with consumer accounts and permissions with no initiated
      * accounts.
      *
-     * @param responseData
-     * @param receipt
+     * @param responseData response sent to the request made to populate-consent-authorize screen
+     * @param receipt consent initiation payload
      */
     public static void populatePermissionsAndConsumerAccounts(
             SuccessResponsePopulateConsentAuthorizeScreenData responseData, AccountInitiationPayload receipt,
@@ -350,9 +350,9 @@ public class AccountConsentUtil {
      * Returns build permission objects for the populate consent authorize page response when dedicated account
      * permissions are requested.
      *
-     * @param receipt
-     * @param userId
-     * @return
+     * @param receipt consent initiation payload
+     * @param userId id of the user authorizing the consent
+     * @return list of permission objects to be displayed on consent authorization screen
      */
     public static List<SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner>
     buildPermissionsForDedicatedAccounts(AccountInitiationPayload receipt, String userId) throws ExtensionException {
@@ -469,8 +469,8 @@ public class AccountConsentUtil {
      * Returns build permission objects for the populate consent authorize page response when all psd2 permissions for
      * all valid accounts are requested.
      *
-     * @param userId
-     * @return
+     * @param userId id of the user authorizing the consent
+     * @return list of permission objects to be displayed on consent authorization screen
      */
     public static List<SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner>
     buildPermissionsForAllPsd2Accounts(String userId) {
@@ -515,9 +515,9 @@ public class AccountConsentUtil {
      * Returns build permission objects for the populate consent authorize page response when account permissions for
      * all valid accounts are requested.
      *
-     * @param userId
-     * @param permission
-     * @return
+     * @param userId id of the user authorizing the consent
+     * @param permission requested account permission
+     * @return list of permission objects to be displayed on consent authorization screen
      */
     public static List<SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner>
     buildPermissionsForAvailableAccounts(String userId, String permission) {
@@ -565,9 +565,9 @@ public class AccountConsentUtil {
     /**
      * Returns a set of permission account mappings as expected by the /persist-authorized-consent endpoint.
      *
-     * @param authorizedObject
-     * @param permission
-     * @return
+     * @param authorizedObject authorized permission and account details from the consent page
+     * @param permission permission to bind with accounts
+     * @return account to permission mappings for persistence
      */
     public static List<Resource> createAccountPermissionMappings(
             AuthorizedResourcesAuthorizedDataInner authorizedObject,
@@ -603,8 +603,8 @@ public class AccountConsentUtil {
     /**
      * Updates older receipt with new authorized accounts.
      *
-     * @param consentResource
-     * @param newAccess
+     * @param consentResource consent resource from the persist-authorized-consent request
+     * @param newAccess new access object to replace the old object
      */
     public static void updateReceiptAccess(StoredDetailedConsentResourceData consentResource, AccountAccess newAccess) {
         AccountInitiationPayload receiptObj = objectMapper.convertValue(consentResource.getReceipt(),

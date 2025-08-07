@@ -180,10 +180,10 @@ public class ErrorUtil {
     /**
      * Method to build FailedResponseInConsentAuthorize object from failed authorization exceptions.
      *
-     * @param responseId
-     * @param message
-     * @param newStatus
-     * @return
+     * @param responseId response id for the request
+     * @param message error message
+     * @param newStatus new status if a consent status update is required
+     * @return response object for authorization object
      */
     public static JSONObject getFormattedAuthorizationFailureException(String responseId, String message,
                                                                        String newStatus) {
