@@ -25,6 +25,12 @@ import java.util.Map;
  * Placeholder class for configuration setup.
  */
 public class ConfigurationConstants {
+    // Host and port settings
+    public static final String OAUTH_HOST = "localhost";
+    public static final int OAUTH_PORT = 8243;
+    public static final String BACKEND_HOST = "localhost";
+    public static final int BACKEND_PORT = 9763;
+
     public static final String IS_SCA_REQUIRED = "true";
     public static final String FREQ_PER_DAY = "4";
     public static final String VALID_UNTIL_DATE_CAP_ENABLED = "false";
@@ -66,11 +72,15 @@ public class ConfigurationConstants {
     public static final String PIS_API_VERSION = "v1";
     public static final String PIIS_API_VERSION = "v2";
     public static final String MAX_FUTURE_PAYMENT_DAYS = "30";
-    public static final String OAUTH_METADATA_ENDPOINT = "https://localhost:8243/.well-known/openid-configuration";
-    public static final String SHARABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "http://localhost:9766/api/openbanking/" +
-            "nextgenpsd2/backend/services/v130/accounts/shareable";
-    public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = "http://localhost:9766/api/openbanking/" +
-            "nextgenpsd2/backend/services/v130/accounts/payable";
-    public static final String PAYMENT_BACKEND_URL = "http://localhost:9766/api/openbanking/nextgenpsd2/backend/" +
-            "services/payments";
+
+    // OAuth URLs
+    public static final String OAUTH_METADATA_ENDPOINT =
+            String.format("https://%s:%d/.well-known/openid-configuration", OAUTH_HOST, OAUTH_PORT);
+
+    // Backend URLs
+    public static final String BACKEND_BASE_URL =
+            String.format("http://%s:%d/api/openbanking/nextgenpsd2/backend/services", BACKEND_HOST, BACKEND_PORT);
+    public static final String SHARABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = BACKEND_BASE_URL + "/v130/accounts/shareable";
+    public static final String PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT = BACKEND_BASE_URL + "/v130/accounts/payable";
+    public static final String PAYMENT_BACKEND_URL = BACKEND_BASE_URL + "/payments";
 }
