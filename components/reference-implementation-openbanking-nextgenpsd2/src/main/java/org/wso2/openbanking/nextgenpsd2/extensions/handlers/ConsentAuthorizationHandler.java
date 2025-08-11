@@ -33,9 +33,11 @@ public interface ConsentAuthorizationHandler {
     void populateBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                   PopulateConsentAuthorizeScreenData requestData)
             throws AuthorizationFailureException, ExtensionException;
+
     void populateAccountsData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                               PopulateConsentAuthorizeScreenData requestData)
             throws AuthorizationFailureException, ExtensionException;
+
     DetailedConsentResourceDataWithAmendments getAmendedConsentResource
             (PersistAuthorizedConsentRequestBody requestBody, StoredAuthorization authorizingResource)
             throws AuthorizationFailureException, ExtensionException;

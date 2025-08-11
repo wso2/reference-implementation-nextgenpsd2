@@ -100,7 +100,7 @@ public class PaymentConsentInitiationHandler implements ConsentInitiationHandler
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
+            log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
 
             String paymentConsentType = CommonConsentValidationUtil
                     .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
@@ -178,8 +178,7 @@ public class PaymentConsentInitiationHandler implements ConsentInitiationHandler
                 .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for valid client", requestId, consentId));
         }
 
         // Get request client id from the headers
@@ -199,15 +198,14 @@ public class PaymentConsentInitiationHandler implements ConsentInitiationHandler
 
         // Validate consent type
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct type", requestId, consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentTypeFromPath, consentResource.getType());
 
         // Validate consent payment product
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct payment " +
-                    "product", consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct payment product", requestId,
+                    consentId));
         }
         PaymentConsentUtil.validatePaymentProductFromAttributes(consentResource.getAttributes(),
                 data.getConsentResourcePath());

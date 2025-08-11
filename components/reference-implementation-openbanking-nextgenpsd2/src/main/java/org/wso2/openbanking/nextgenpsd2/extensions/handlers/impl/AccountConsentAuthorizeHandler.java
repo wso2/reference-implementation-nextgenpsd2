@@ -189,7 +189,7 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
         AccountConsentUtil.updateReceiptAccess(requestData.getConsentResource(), newAccess);
 
         // Set new consent status
-        return ConsentAuthorizationUtil.buildAmendedConsentResource(authorizingResource, isApproved,
-                requestData, accountMappingResources, authStatus);
+        return ConsentAuthorizationUtil.buildAmendedConsentResource(requestBody.getRequestId(), authorizingResource,
+                isApproved, requestData, accountMappingResources, authStatus);
     }
 }

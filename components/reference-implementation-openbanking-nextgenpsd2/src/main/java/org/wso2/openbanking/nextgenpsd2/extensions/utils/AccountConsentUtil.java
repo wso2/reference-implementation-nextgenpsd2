@@ -239,8 +239,7 @@ public class AccountConsentUtil {
 
         } else {
             /*
-             * According to Berlin/Israel specifications, either all access arrays should be empty, or non-empty.
-             * The following logic partially checks for this requirement for identifying permission.
+             * According to nextGenPSD2 specifications, either all access arrays should be empty, or non-empty.
              */
 
             int numberOfProvidedAccessTypes = 0;

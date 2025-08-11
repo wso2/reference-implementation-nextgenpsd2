@@ -54,14 +54,16 @@ public class ConsentAuthorizationUtil {
      * Validates the consent Id with provided consent type in scope string. If not valid, an error is sent to the
      * redirect URI of the request.
      *
+     * @param requestId ID of the request to include in logging
      * @param consentType the consent type
      * @param scopeString the scope string sent in request
      * @throws AuthorizationFailureException thrown if a validation failure happen
      */
-    public static void validateConsentTypeWithScopes(String consentType, String scopeString)
+    public static void validateConsentTypeWithScopes(String requestId, String consentType, String scopeString)
             throws AuthorizationFailureException {
 
-        log.debug("Validating whether the provided consent Id matches with the scope type");
+        log.debug(String.format("[%s] Validating whether the provided consent Id matches with the scope type",
+                requestId));
 
         if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.AIS_SCOPE)) {
@@ -88,13 +90,17 @@ public class ConsentAuthorizationUtil {
      * Checks all authorization resources to see if there's any unauthorized resources unbound to a user or bound to
      * this user.
      *
+     * @param requestId ID of the request to include in logging
      * @param authorizations authorization objects from request body
+     * @param userId ID of the authorizing user
+     * @param consentResource stored consent resource retrieved from accelerator
      */
-    public static StoredAuthorization getAuthorizableResource(List<StoredAuthorization> authorizations, String userId,
+    public static StoredAuthorization getAuthorizableResource(String requestId,
+                                                              List<StoredAuthorization> authorizations, String userId,
                                                               StoredDetailedConsentResourceData consentResource)
             throws AuthorizationFailureException {
         String authType;
-        if (StringUtils.equals(consentResource.getType(), ExtensionEnums.TransactionStatusEnum.ACTC.name())) {
+        if (StringUtils.equals(consentResource.getStatus(), ExtensionEnums.TransactionStatusEnum.ACTC.name())) {
             authType = ExtensionEnums.AuthTypeEnum.CANCELLATION.toString();
         } else {
             authType = ExtensionEnums.AuthTypeEnum.AUTHORISATION.toString();
@@ -111,7 +117,7 @@ public class ConsentAuthorizationUtil {
                         !ExtensionEnums.ScaStatusEnum.FINALISED.toString().equals(authObj.getStatus()) &&
                         !ExtensionEnums.ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus())) {
                     // Validate consent status
-                    validateConsentStatus(consentResource, authObj);
+                    validateConsentStatus(requestId, consentResource, authObj);
                     return authObj;
                 }
 
@@ -124,7 +130,7 @@ public class ConsentAuthorizationUtil {
                     !ExtensionEnums.ScaStatusEnum.EXEMPTED.toString().equals(authObj.getStatus()) &&
                     userIdFromAuthObj == null) {
                 // Validate consent status
-                validateConsentStatus(consentResource, authObj);
+                validateConsentStatus(requestId, consentResource, authObj);
                 authorizableAuthObj = authObj;
             }
         }
@@ -134,7 +140,7 @@ public class ConsentAuthorizationUtil {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Valid unauthenticated authorization not found for Consent Id %s%s",
+            log.debug(String.format("[%s] Valid unauthenticated authorization not found for Consent Id %s%s", requestId,
                     consentResource.getId(), ((userId == null) ? "" : " for given PSU of Id: " + userId)));
         }
         throw new AuthorizationFailureException("An unauthenticated authorization is not found for this consent");
@@ -143,10 +149,11 @@ public class ConsentAuthorizationUtil {
     /**
      * Validates authorization status based on consent type.
      *
+     * @param requestId ID of the request to include in logging
      * @param consentResource consent resource from the request
      * @param authObj authorization object to authorize
      */
-    private static void validateConsentStatus(StoredDetailedConsentResourceData consentResource,
+    private static void validateConsentStatus(String requestId, StoredDetailedConsentResourceData consentResource,
                                               StoredAuthorization authObj) throws AuthorizationFailureException {
         String consentStatus = consentResource.getStatus();
         String type = consentResource.getType();
@@ -175,13 +182,13 @@ public class ConsentAuthorizationUtil {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("The consent with Id: %s is in %s status. It is %s to authorize",
+            log.debug(String.format("[%s] The consent with Id: %s is in %s status. It is %s to authorize", requestId,
                     consentResource.getId(), consentStatus, isApplicable ? "applicable" : "not applicable"));
         }
 
         if (!isApplicable) {
-            log.error("The consent of Id: " + consentResource.getId() + " is not in an applicable status for " +
-                    "authorization");
+            log.error(String.format("[%s] The consent of Id: %s is not in an applicable status for authorization",
+                    requestId, consentResource.getId()));
             throw new AuthorizationFailureException("The consent is not in an applicable status for authorization");
         }
     }
@@ -496,6 +503,7 @@ public class ConsentAuthorizationUtil {
     /**
      * Method to build consent amendment resource to forward back to the accelerator.
      *
+     * @param requestId ID of the request to include in logging
      * @param authorizingResource authorization resource being authorized
      * @param isApproved whether the consent was approved or not
      * @param requestData request data retrieved at the persist-authorized-consent endpoint
@@ -504,7 +512,7 @@ public class ConsentAuthorizationUtil {
      * @return built consent amendment resource
      * @throws ExtensionException if consent was approved without selecting accounts
      */
-    public static DetailedConsentResourceDataWithAmendments buildAmendedConsentResource(
+    public static DetailedConsentResourceDataWithAmendments buildAmendedConsentResource(String requestId,
             StoredAuthorization authorizingResource, boolean isApproved, PersistAuthorizedConsent requestData,
             List<Resource> accountMappingResources, String authStatus)
             throws ExtensionException, AuthorizationFailureException {
@@ -522,7 +530,7 @@ public class ConsentAuthorizationUtil {
             if (accountMappingResources.isEmpty()) {
                 if (ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
                     // Approved with no account selections
-                    log.debug(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
+                    log.debug(String.format("[%s] %s", requestId, ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR));
                     throw new AuthorizationFailureException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 } else {
                     // Approved with no account selections, should be unreachable since the account is initiated

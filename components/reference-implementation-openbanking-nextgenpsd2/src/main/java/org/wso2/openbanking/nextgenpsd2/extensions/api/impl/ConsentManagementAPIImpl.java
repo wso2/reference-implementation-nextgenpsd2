@@ -87,13 +87,13 @@ public class ConsentManagementAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ExtensionException e) {
-            log.error("[" + requestId + "] " + "An error occurred enriching consent creation response.", e);
+            log.error(String.format("[%s] An error occurred enriching consent creation response.", requestId), e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         } catch (ValidationFailureException e) {
             // Should be unreachable since resource path is validated in consent creation
             // Thus bad request error is thrown
-            log.error("[" + requestId + "] " + "Invalid resource path received when enriching consent " +
-                    "creation response.", e);
+            log.error(String.format("[%s] Invalid resource path received when enriching consent creation response.",
+                    requestId), e);
             return Response.status(Response.Status.BAD_REQUEST).entity(ErrorUtil.getErrorResponse(
                     "invalid_request", "Invalid resource path received when enriching " +
                             "consent creation response.")).build();
@@ -121,7 +121,7 @@ public class ConsentManagementAPIImpl {
 
                 if (consentInitiationDataJSON.isEmpty()) {
                     // If payload is empty
-                    log.error("[" + requestId + "] " + ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR);
+                    log.error(String.format("[%s] %s", requestId, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
                     JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                             ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
@@ -130,7 +130,7 @@ public class ConsentManagementAPIImpl {
 
             } catch (JSONException e) {
                 // If payload is not JSON
-                log.error("[" + requestId + "] " + ErrorConstants.PAYLOAD_FORMAT_ERROR);
+                log.error(String.format("[%s] %s", requestId, ErrorConstants.PAYLOAD_FORMAT_ERROR));
                 JSONObject errorResponse = ErrorUtil.getFormattedFailedResponse(400,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
@@ -146,12 +146,12 @@ public class ConsentManagementAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.debug("[" + requestId + "] " + "Validation failed for consent creation. Returning failed response.",
-                    e);
+            log.debug(String.format("[%s] Validation failed for consent creation. Returning failed response.",
+                    requestId), e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
         }  catch (ExtensionException e) {
-            log.error("[" + requestId + "] " + "An error occurred creating consent.", e);
+            log.error(String.format("[%s] An error occurred creating consent.", requestId), e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -178,12 +178,12 @@ public class ConsentManagementAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.debug("[" + requestId + "] " + "Validation failed for consent retrieval. Returning failed response.",
-                    e);
+            log.debug(String.format("[%s] Validation failed for consent retrieval. Returning failed response.",
+                    requestId), e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
         }  catch (ExtensionException e) {
-            log.error("[" + requestId + "] " + "An error occurred retrieving consent.", e);
+            log.error(String.format("[%s] An error occurred retrieving consent.", requestId), e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -210,12 +210,12 @@ public class ConsentManagementAPIImpl {
             return Response.ok().entity(new JSONObject(validationResponse).toString()).build();
 
         } catch (ValidationFailureException e) {
-            log.debug("[" + requestId + "] " + "Validation failed for consent revocation. Returning failed" +
-                            "response.", e);
+            log.debug(String.format("[%s] Validation failed for consent revocation. Returning failed response.",
+                    requestId), e);
             return Response.ok().entity(e.getFormattedErrorAsString()).build();
 
         }  catch (ExtensionException e) {
-            log.error("[" + requestId + "] " + "An error occurred revoking consent.", e);
+            log.error(String.format("[%s] An error occurred revoking consent.", requestId), e);
             return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
         }
     }
@@ -243,12 +243,12 @@ public class ConsentManagementAPIImpl {
                 CommonConsentValidationUtil.validateClient(clientId, consentResource
                         .getClientId());
             } catch (JSONException e) {
-                log.debug("[" + requestId + "] " + "Client id not found in request", e);
+                log.debug(String.format("[%s] Client id not found in request", requestId), e);
                 return Response.ok().entity(ErrorUtil
                                 .getFormattedAuthorizationFailureException(requestId,
                                         "Client id not found in request", null)).build();
             } catch (ValidationFailureException e) {
-                log.debug("[" + requestId + "] " + ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR, e);
+                log.debug(String.format("[%s] %s", requestId, ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR), e);
                 return Response.ok().entity(ErrorUtil.getFormattedAuthorizationFailureException(requestId,
                                 ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR, null)).build();
             }
@@ -257,17 +257,17 @@ public class ConsentManagementAPIImpl {
             String scopes;
             scopes = queryParams.optString(CommonConstants.SCOPE_PARAM);
             if (!scopes.isEmpty()) {
-                ConsentAuthorizationUtil.validateConsentTypeWithScopes(
-                        consentType, scopes);
+                ConsentAuthorizationUtil.validateConsentTypeWithScopes(requestId, consentType, scopes);
             } else {
-                log.debug("[" + requestId + "] " + "Scope not found in request");
+                log.debug(String.format("[%s] Scope not found in request", requestId));
                 return Response.ok().entity(ErrorUtil.getFormattedAuthorizationFailureException(requestId,
                                 "Scope not found in request", null)).build();
             }
 
             // Check if authorizable
             StoredAuthorization unauthorizedObj = ConsentAuthorizationUtil
-                    .getAuthorizableResource(consentResource.getAuthorizations(), data.getUserId(), consentResource);
+                    .getAuthorizableResource(requestId, consentResource.getAuthorizations(), data.getUserId(),
+                            consentResource);
 
             ConsentAuthorizationHandler authorizationHandler = CommonConsentValidationUtil.getAuthorizationHandler(
                     consentResource.getType());
@@ -301,7 +301,8 @@ public class ConsentManagementAPIImpl {
                 try {
                     return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
                 } catch (JsonProcessingException e) {
-                    log.debug("[" + requestId + "] " + "Failed to parse built populate response object to JSON.", e);
+                    log.debug(String.format("[%s] Failed to parse built populate response object to JSON.", requestId),
+                            e);
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                             .entity(ErrorUtil.getErrorResponse("invalid_request",
                             "Failed to parse built populate response object to JSON.")).build();
@@ -383,7 +384,7 @@ public class ConsentManagementAPIImpl {
             try {
                 return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
             } catch (JsonProcessingException e) {
-                log.debug("[" + requestId + "] " + "Failed to parse built populate response object to JSON.", e);
+                log.debug(String.format("[%s] Failed to parse built populate response object to JSON.", requestId), e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(ErrorUtil.getErrorResponse("invalid_request",
                                 "Failed to parse built populate response object to JSON.")).build();

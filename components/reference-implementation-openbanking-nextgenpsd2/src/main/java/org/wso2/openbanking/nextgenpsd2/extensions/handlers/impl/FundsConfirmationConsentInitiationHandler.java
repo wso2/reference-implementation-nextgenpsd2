@@ -103,7 +103,7 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
                 new SuccessResponsePreProcessConsentCreation();
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
+            log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
 
             // Response body
             validationResponse.setResponseId(requestBody.getRequestId());
@@ -169,8 +169,7 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
         String consentId = consentResource.getId();
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for valid client", requestId, consentId));
         }
 
         // Get request client id from the headers
@@ -189,8 +188,7 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct type", requestId, consentId));
         }
         CommonConsentValidationUtil.validateConsentType(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(),
                 consentResource.getType());

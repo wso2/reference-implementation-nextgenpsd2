@@ -143,7 +143,7 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
         );
 
         // Set new consent status
-        return ConsentAuthorizationUtil.buildAmendedConsentResource(authorizingResource, isApproved, requestData,
-                accountMappingResources, authStatus);
+        return ConsentAuthorizationUtil.buildAmendedConsentResource(requestBody.getRequestId(), authorizingResource,
+                isApproved, requestData, accountMappingResources, authStatus);
     }
 }
