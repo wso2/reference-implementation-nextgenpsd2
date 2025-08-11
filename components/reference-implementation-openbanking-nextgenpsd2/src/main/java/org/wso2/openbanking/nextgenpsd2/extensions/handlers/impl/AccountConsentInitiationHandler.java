@@ -196,7 +196,7 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
         } catch (JSONException e) {
             // Should be unreachable (since insequence always adds client id header)
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "x-wso2-client-id header not found");
+                    "Organization ID not found for the client");
         }
 
         // Validate client

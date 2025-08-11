@@ -90,7 +90,7 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
             accountRef = receipt.getJSONObject(CommonConstants.ACCOUNT);
         } catch (JsonProcessingException e) {
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Failed to extract receipt from payment consent", e);
+                    "Failed to fetch consent initiation payload from funds confirmation consent", e);
         }
 
         // Populate subject account of the consent to be authorized by user

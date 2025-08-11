@@ -316,7 +316,7 @@ public class ConsentAuthorizationUtil {
             return getValidatedAccountObjects(accountRefArrayJSON, accountList);
         } catch (JsonProcessingException e) {
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Failed to map account reference from object to json", e);
+                    "Failed to process account reference objects", e);
         }
     }
 
@@ -495,10 +495,10 @@ public class ConsentAuthorizationUtil {
             throws ExtensionException {
         if (authorizedData.size() > 1 || authorizedData.get(0).getAccounts().size() > 1) {
             log.error("Retrieved more than one authorized account for a consent that " +
-            "can have only a single account mapping");
+            "can have only a single account");
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                     "Retrieved more than one authorized account for a consent that " +
-                    "can have only a single account mapping");
+                    "can have only a single account");
         }
     }
 

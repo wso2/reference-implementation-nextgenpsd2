@@ -99,7 +99,7 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
             debtorAccountRef = receipt.getJSONObject(CommonConstants.DEBTOR_ACCOUNT);
         } catch (JsonProcessingException e) {
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Failed to extract receipt from payment consent", e);
+                    "Failed to fetch consent initiation payload from payment consent", e);
         }
 
         // Populate subject debtor account of the consent to be authorized by user

@@ -154,14 +154,14 @@ public class PaymentConsentUtil {
         } catch (JSONException e) {
             // Should be unreachable as payment product gets added as an attribute at initiation
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Payment product not stored at consent initiation. Product validation failed.");
+                    "Failed to extract payment product from consent");
         }
 
         if (!paymentProductFromAttributes.equals(paymentProductFromPath)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(
                     null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.PRODUCT_INVALID,
-                    "The provided consent ID valid but belongs to a different payment product"));
+                    "Consent payment product mismatch"));
         }
     }
 
