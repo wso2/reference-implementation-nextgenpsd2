@@ -38,11 +38,16 @@ import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRetrievalData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocationData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreen;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
@@ -1066,5 +1071,146 @@ public class CommonConsentValidationUtil {
         }
 
         return accountRefs;
+    }
+
+    /**
+     * Validates the existence and format of consent initiation payload.
+     *
+     * @param requestBody pre process consent creation request body
+     * @throws ExtensionException         if object to JSON conversion fails
+     * @throws ValidationFailureException if payload format validation fails
+     */
+    public static void validatePayloadFormat(PreProcessConsentCreationRequestBody requestBody)
+            throws ExtensionException, ValidationFailureException {
+        JSONObject consentInitiationDataJSON;
+        try {
+            consentInitiationDataJSON = convertObjectToJson(requestBody.getData()
+                    .getConsentInitiationData());
+
+            if (consentInitiationDataJSON.isEmpty()) {
+                // If payload is empty
+                throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                                TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
+            }
+
+        } catch (JSONException e) {
+            // If payload is not JSON
+            throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+        }
+    }
+
+    /**
+     * Validates that the client requesting consent authorization is the same client that initiated the consent.
+     *
+     * @param consentResource stored consent resource from the accelerator
+     * @param queryParams query parameters sent with the authorization request
+     * @throws AuthorizationFailureException if client id validation failed
+     */
+    public static void validateClient(StoredDetailedConsentResourceData consentResource,
+                                      JSONObject queryParams) throws ExtensionException, AuthorizationFailureException {
+        try {
+            String clientId = queryParams.getString(CommonConstants.CLIENT_ID_PARAM);
+            validateClient(clientId, consentResource.getClientId());
+        } catch (JSONException e) {
+            throw new AuthorizationFailureException("Client id not found in request");
+        } catch (ValidationFailureException e) {
+            throw new AuthorizationFailureException(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+        }
+    }
+
+    /**
+     * Verifies that the request scope matches the authorizing consent type.
+     *
+     * @param requestId ID of the request for logging
+     * @param queryParams query parameters from the authorization request
+     * @param consentType type of the consent
+     * @throws AuthorizationFailureException if scope validation failed
+     */
+    public static void validateScope(String requestId, JSONObject queryParams, String consentType)
+            throws AuthorizationFailureException {
+        String scopes = queryParams.optString(CommonConstants.SCOPE_PARAM);
+        if (!scopes.isEmpty()) {
+            ConsentAuthorizationUtil.validateConsentTypeWithScopes(requestId, consentType, scopes);
+        } else {
+            throw new AuthorizationFailureException("Scope not found in request");
+        }
+    }
+
+    /**
+     * Appends the authorization resource being authorized to consent metadata.
+     *
+     * @param responseData success response data for populating consent authorization screen
+     * @param unauthorizedObj authorization resource being authorized
+     */
+    public static void appendAuthorizationToResponse(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
+                                                     StoredAuthorization unauthorizedObj) {
+        Map<String, Object> consentMetadata;
+        if (responseData.getConsentData().getConsentMetadata() == null) {
+            consentMetadata = new HashMap<>();
+        } else {
+            consentMetadata = (HashMap) responseData.getConsentData().getConsentMetadata();
+        }
+        consentMetadata.put(CommonConstants.AUTHORIZING_AUTHORIZATION, unauthorizedObj);
+        responseData.getConsentData().setConsentMetadata(consentMetadata);
+    }
+
+    /**
+     * Extracts authorization resource being authorized from consent metadata.
+     *
+     * @param retrievalMetadata metadata stored at populate consent authorize screen endpoint
+     * @return authorization resource to authorize mapped to an object
+     * @throws ExtensionException if the authorization resource stored in metadata is invalid
+     */
+    public static StoredAuthorization extractAuthorizingResource(JSONObject retrievalMetadata)
+            throws ExtensionException {
+        StoredAuthorization authorizingResource;
+        try {
+            authorizingResource = objectMapper.readValue(retrievalMetadata
+                    .getJSONObject(CommonConstants.AUTHORIZING_AUTHORIZATION).toString(),
+                    StoredAuthorization.class);
+        } catch (JsonProcessingException e) {
+            // Should be unreachable given that a validated authorization resource is attached
+            // to metadata when populating consent page
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Authorization resource being authorized is invalid");
+        }
+        return authorizingResource;
+    }
+
+    /**
+     * Properly builds response for populate consent authorize screen endpoint.
+     *
+     * @param response built response object for the endpoint
+     * @return endpoint response
+     * @throws ExtensionException if response building failed
+     */
+    public static Response buildPopulateResponseFromObject(SuccessResponsePopulateConsentAuthorizeScreen response)
+            throws ExtensionException {
+        try {
+            return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
+        } catch (JsonProcessingException e) {
+            throw new ExtensionException(Response.Status.INTERNAL_SERVER_ERROR, "server_error",
+                    "Failed to parse built populate response object to JSON.");
+        }
+    }
+
+    /**
+     * Properly builds response for persist authorized consent endpoint.
+     *
+     * @param response built response object for the endpoint
+     * @return endpoint response
+     * @throws ExtensionException if response building failed
+     */
+    public static Response buildPersistResponseFromObject(SuccessResponsePersistAuthorizedConsent response)
+            throws ExtensionException {
+        try {
+            return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
+        } catch (JsonProcessingException e) {
+            throw new ExtensionException(Response.Status.INTERNAL_SERVER_ERROR, "server_error",
+                    "Failed to parse built persist response object to JSON.");
+        }
     }
 }

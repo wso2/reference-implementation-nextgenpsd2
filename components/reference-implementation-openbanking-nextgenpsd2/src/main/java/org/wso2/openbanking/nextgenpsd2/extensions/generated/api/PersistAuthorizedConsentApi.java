@@ -1,6 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.generated.api;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManagementAPIImpl;
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ServiceExtensionAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Response200ForPersistAuthorizedConsent;
@@ -36,6 +36,6 @@ public class PersistAuthorizedConsentApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response persistAuthorizedConsentPost(@Valid @NotNull PersistAuthorizedConsentRequestBody persistAuthorizedConsentRequestBody) {
-        return ConsentManagementAPIImpl.persistAuthorizedConsent(persistAuthorizedConsentRequestBody);
+        return ServiceExtensionAPIImpl.persistAuthorizedConsent(persistAuthorizedConsentRequestBody);
     }
 }
