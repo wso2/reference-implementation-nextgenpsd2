@@ -222,60 +222,44 @@ public class AccountConsentUtil {
         // Access object not validated here given that it's validated at consent initiation and cannot be updated since
         AccountAccess accessObject = receipt.getAccess();
 
-        if (accessObject.getAccounts() == null && accessObject.getBalances() == null
-                && accessObject.getTransactions() == null) {
+        if (accessObject.getAvailableAccounts() != null) {
+            return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS.toString();
+        }
 
-            if (accessObject.getAvailableAccounts() != null) {
-                return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS.toString();
-            }
+        if (accessObject.getAvailableAccountsWithBalances() != null) {
+            return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString();
+        }
 
-            if (accessObject.getAvailableAccountsWithBalances() != null) {
-                return ExtensionEnums.PermissionEnum.AVAILABLE_ACCOUNTS_WITH_BALANCES.toString();
-            }
+        if (accessObject.getAllPsd2() != null) {
+            return ExtensionEnums.PermissionEnum.ALL_PSD2.toString();
+        }
 
-            if (accessObject.getAllPsd2() != null) {
-                return ExtensionEnums.PermissionEnum.ALL_PSD2.toString();
-            }
-
-        } else {
-            /*
-             * According to nextGenPSD2 specifications, either all access arrays should be empty, or non-empty.
-             */
-
-            int numberOfProvidedAccessTypes = 0;
-            int numberOfEmptyAccessMethodArrays = 0;
-
-            if (accessObject.getAccounts() != null) {
-                numberOfProvidedAccessTypes++;
-                if (accessObject.getAccounts().isEmpty()) {
-                    numberOfEmptyAccessMethodArrays++;
-                }
-            }
-
-            if (accessObject.getBalances() != null) {
-                numberOfProvidedAccessTypes++;
-                if (accessObject.getBalances().isEmpty()) {
-                    numberOfEmptyAccessMethodArrays++;
-                }
-            }
-
-            if (accessObject.getTransactions() != null) {
-                numberOfProvidedAccessTypes++;
-                if (accessObject.getTransactions().isEmpty()) {
-                    numberOfEmptyAccessMethodArrays++;
-                }
-            }
-
-            if (numberOfProvidedAccessTypes == numberOfEmptyAccessMethodArrays) {
+        if (accessObject.getAccounts() != null) {
+            if (accessObject.getAccounts().isEmpty()) {
                 return ExtensionEnums.PermissionEnum.BANK_OFFERED.toString();
             } else {
                 return ExtensionEnums.PermissionEnum.DEDICATED_ACCOUNTS.toString();
             }
         }
 
-        // Should be unreachable since this is validated
-        throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                "Poorly validated consent initiation payload received");
+        if (accessObject.getTransactions() != null) {
+            if (accessObject.getTransactions().isEmpty()) {
+                return ExtensionEnums.PermissionEnum.BANK_OFFERED.toString();
+            } else {
+                return ExtensionEnums.PermissionEnum.DEDICATED_ACCOUNTS.toString();
+            }
+        }
+
+        if (accessObject.getBalances() != null) {
+            if (accessObject.getBalances().isEmpty()) {
+                return ExtensionEnums.PermissionEnum.BANK_OFFERED.toString();
+            } else {
+                return ExtensionEnums.PermissionEnum.DEDICATED_ACCOUNTS.toString();
+            }
+        }
+
+        throw new ExtensionException(Response.Status.INTERNAL_SERVER_ERROR, "invalid_request",
+                "Empty access object retrieved");
     }
 
     /**
