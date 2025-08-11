@@ -103,7 +103,9 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
             String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
 
             // Response body
@@ -211,7 +213,9 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
                 ExtensionEnums.ConsentStatusEnum.TERMINATED_BY_TPP.toString())
                 || StringUtils.equals(consentResource.getStatus(),
                 ExtensionEnums.ConsentStatusEnum.REVOKED_BY_PSU.toString()))) {
-            log.debug(String.format("[%s] The Consent is expired", requestId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] The Consent is expired", requestId));
+            }
             consentResource.setStatus(ExtensionEnums.ConsentStatusEnum.EXPIRED.toString());
         }
 

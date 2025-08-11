@@ -103,7 +103,9 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
                 new SuccessResponsePreProcessConsentCreation();
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
 
             // Response body
             validationResponse.setResponseId(requestBody.getRequestId());

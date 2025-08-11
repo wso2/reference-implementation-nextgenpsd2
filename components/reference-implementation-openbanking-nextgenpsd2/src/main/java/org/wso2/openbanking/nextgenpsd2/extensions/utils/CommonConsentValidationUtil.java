@@ -575,8 +575,10 @@ public class CommonConsentValidationUtil {
      * @return if redirect approach preferred or not
      */
     public static Optional<Boolean> isTppRedirectPreferred(String requestId, JSONObject headersJSON) {
-        log.debug(String.format("[%s] Determining whether the TPP-Redirect-Preferred header is true or false or" +
-                "not present", requestId));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("[%s] Determining whether the TPP-Redirect-Preferred header is true or false or" +
+                    "not present", requestId));
+        }
         if (checkCaseIgnoredHeader(requestId, headersJSON,
                 CommonConstants.TPP_REDIRECT_PREFERRED_HEADER)) {
             return Optional.of(Boolean.parseBoolean(headersJSON
@@ -653,7 +655,9 @@ public class CommonConsentValidationUtil {
     public static void validatePsuIpAddress(String requestId, JSONObject headers)
             throws ValidationFailureException, ExtensionException {
 
-        log.debug(String.format("[%s] Validating PSU-IP-Address header", requestId));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("[%s] Validating PSU-IP-Address header", requestId));
+        }
         if (headers.has(CommonConstants.PSU_IP_ADDRESS_HEADER)) {
             String psuIpAddress = headers.getString(CommonConstants.PSU_IP_ADDRESS_HEADER);
 
@@ -679,8 +683,10 @@ public class CommonConsentValidationUtil {
     public static void validateTppRedirectPreferredHeader(String requestId, JSONObject headers)
             throws ValidationFailureException, ExtensionException {
 
-        log.debug(String.format("[%s] Validating TPP-Redirect-Preferred header according to the specification",
-                requestId));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("[%s] Validating TPP-Redirect-Preferred header according to the specification",
+                    requestId));
+        }
         Optional<Boolean> isRedirectPreferred = isTppRedirectPreferred(requestId, headers);
 
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
@@ -834,7 +840,9 @@ public class CommonConsentValidationUtil {
         // Validate consent is revocable (single payments cannot be revoked)
         CommonConsentValidationUtil.validateIfConsentTypeIsRevocable(consentType);
 
-        log.debug(String.format("[%s] Verify if the consent is already revoked", requestId));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("[%s] Verify if the consent is already revoked", requestId));
+        }
         if (StringUtils.equals(ExtensionEnums.ConsentStatusEnum.REVOKED_BY_PSU.toString(), consentResource.getStatus())
                 || StringUtils.equals(ExtensionEnums.ConsentStatusEnum.TERMINATED_BY_TPP.toString(),
                 consentResource.getStatus())) {

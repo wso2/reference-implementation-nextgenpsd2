@@ -62,8 +62,10 @@ public class ConsentAuthorizationUtil {
     public static void validateConsentTypeWithScopes(String requestId, String consentType, String scopeString)
             throws AuthorizationFailureException {
 
-        log.debug(String.format("[%s] Validating whether the provided consent Id matches with the scope type",
-                requestId));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("[%s] Validating whether the provided consent Id matches with the scope type",
+                    requestId));
+        }
 
         if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.AIS_SCOPE)) {
@@ -530,7 +532,9 @@ public class ConsentAuthorizationUtil {
             if (accountMappingResources.isEmpty()) {
                 if (ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
                     // Approved with no account selections
-                    log.debug(String.format("[%s] %s", requestId, ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("[%s] %s", requestId, ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR));
+                    }
                     throw new AuthorizationFailureException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 } else {
                     // Approved with no account selections, should be unreachable since the account is initiated

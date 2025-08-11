@@ -100,7 +100,9 @@ public class PaymentConsentInitiationHandler implements ConsentInitiationHandler
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
 
             String paymentConsentType = CommonConsentValidationUtil
                     .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
