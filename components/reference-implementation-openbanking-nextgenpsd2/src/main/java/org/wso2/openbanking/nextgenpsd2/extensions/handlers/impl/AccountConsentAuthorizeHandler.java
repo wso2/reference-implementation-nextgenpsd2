@@ -125,7 +125,6 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
                 AccountConsentUtil.populatePermissionsAndConsumerAccounts(responseData, receipt, userId);
                 break;
             default:
-                // Should be unreachable as permission is always set to be one of these values
                 throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                         "Unidentified permission found.");
         }

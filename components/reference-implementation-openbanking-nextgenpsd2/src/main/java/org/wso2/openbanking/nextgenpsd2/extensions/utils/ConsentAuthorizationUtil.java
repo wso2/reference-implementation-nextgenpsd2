@@ -537,7 +537,6 @@ public class ConsentAuthorizationUtil {
                     }
                     throw new AuthorizationFailureException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 } else {
-                    // Approved with no account selections, should be unreachable since the account is initiated
                     log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                     throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                             ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
