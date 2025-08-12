@@ -93,7 +93,6 @@ public class ConsentAuthorisationManageHandler implements ConsentInitiationHandl
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws ExtensionException {
-        // Throws an error since this should be unreachable
         throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                 ErrorConstants.AUTH_CREATION_NOT_SUPPORTED);
     }
