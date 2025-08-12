@@ -208,7 +208,7 @@ public class CommonConsentValidationUtil {
      * @param requestPath Request path of the request
      * @return ServiceHandler
      */
-    public static ConsentInitiationHandler getConsentManagementResponseHandler(String requestPath)
+    public static ConsentInitiationHandler getConsentInitiationHandler(String requestPath)
             throws ExtensionException, ValidationFailureException {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {

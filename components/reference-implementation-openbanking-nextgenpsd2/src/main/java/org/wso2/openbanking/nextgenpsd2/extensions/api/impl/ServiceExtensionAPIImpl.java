@@ -67,7 +67,7 @@ public class ServiceExtensionAPIImpl {
         String requestId = requestBody.getRequestId();
         try {
             ConsentInitiationHandler consentHandler = CommonConsentValidationUtil
-                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
             SuccessResponseForResponseAlternation validationResponse = consentHandler
                     .enrichCreationResponse(requestBody);
 
@@ -105,7 +105,7 @@ public class ServiceExtensionAPIImpl {
 
             // Get validation response for consent creation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
-                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
             SuccessResponsePreProcessConsentCreation validationResponse = consentInitiationHandler
                     .handleCreation(requestBody);
 
@@ -138,7 +138,7 @@ public class ServiceExtensionAPIImpl {
 
             // Get validation response for consent retrieval based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
-                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
             SuccessResponseForResponseAlternation validationResponse = consentInitiationHandler
                     .handleRetrieval(requestBody);
 
@@ -172,7 +172,7 @@ public class ServiceExtensionAPIImpl {
 
             // Get validation response for consent revocation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
-                    .getConsentManagementResponseHandler(requestBody.getData().getConsentResourcePath());
+                    .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
             SuccessResponseConsentRevocation validationResponse = consentInitiationHandler
                     .handleRevocation(requestBody);
 
