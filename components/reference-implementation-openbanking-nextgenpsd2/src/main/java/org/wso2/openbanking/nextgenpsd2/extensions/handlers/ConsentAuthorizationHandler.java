@@ -30,14 +30,34 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
  * Consent handler interface for processing consent authorization related requests.
  */
 public interface ConsentAuthorizationHandler {
+
+    /**
+     * Populates consent related information to be displayed on consent authorize screen.
+     *
+     * @param responseData data of the response object to populate consent authorize screen
+     * @param requestData data of the request made to populate consent authorize screen
+     */
     void populateBasicConsentData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                                   PopulateConsentAuthorizeScreenData requestData)
             throws AuthorizationFailureException, ExtensionException;
 
+    /**
+     * Populates account related information associated with the consent to be displayed on consent authorize screen.
+     *
+     * @param responseData data of the response object to populate consent authorize screen
+     * @param requestData data of the request made to populate consent authorize screen
+     */
     void populateAccountsData(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
                               PopulateConsentAuthorizeScreenData requestData)
             throws AuthorizationFailureException, ExtensionException;
 
+    /**
+     * Returns the amended consent resource based on user input to consent authorization page.
+     *
+     * @param requestBody body of the request received by persist-authorized-consent
+     * @param authorizingResource authorization resource being authorized
+     * @return amended consent resource
+     */
     DetailedConsentResourceDataWithAmendments getAmendedConsentResource
             (PersistAuthorizedConsentRequestBody requestBody, StoredAuthorization authorizingResource)
             throws AuthorizationFailureException, ExtensionException;
