@@ -41,7 +41,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseWithDetailedConsentData;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.FundsConfirmationInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
@@ -56,14 +56,14 @@ import javax.ws.rs.core.Response;
 /**
  * Consent handler for account consents.
  */
-public class FundsConfirmationConsentManageHandler implements ConsentManagementValidationHandler {
+public class FundsConfirmationConsentManageHandler implements ConsentInitiationHandler {
     private static final Log log = LogFactory.getLog(FundsConfirmationConsentUtil.class);
 
     /**
      * Handles creation of confirmation of funds consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the pre-process-consent-creation request
+     * @return success
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
@@ -88,7 +88,7 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
                     CommonConsentValidationUtil.convertObjectToJson(requestBody.getData().getConsentInitiationData());
         } catch (JSONException e) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
 
@@ -103,7 +103,9 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
                 new SuccessResponsePreProcessConsentCreation();
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
 
             // Response body
             validationResponse.setResponseId(requestBody.getRequestId());
@@ -146,7 +148,7 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
         } else {
             //ToDo: revisit once decoupled approach is implemented.
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.DECOUPLED)));
         }
@@ -155,9 +157,8 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
     /**
      * Handles retrieval of funds confirmation consents.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-retrieval
+     * @return Successful retrieval response
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
@@ -169,8 +170,7 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
         String consentId = consentResource.getId();
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for valid client", requestId, consentId));
         }
 
         // Get request client id from the headers
@@ -189,8 +189,7 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct type", requestId, consentId));
         }
         CommonConsentValidationUtil.validateConsentType(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(),
                 consentResource.getType());
@@ -223,8 +222,8 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
     /**
      * Handles revocation of funds confirmation consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the request received by pre-process-consent-revocation
+     * @return Successful validation result
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
@@ -235,9 +234,8 @@ public class FundsConfirmationConsentManageHandler implements ConsentManagementV
     /**
      * Handles CoF consent creation response customization.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by enrich-consent-creation-response endpoint
+     * @return Response to forward
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)

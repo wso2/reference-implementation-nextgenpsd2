@@ -1,6 +1,6 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.generated.api;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ConsentManagementAPIImpl;
+import org.wso2.openbanking.nextgenpsd2.extensions.api.impl.ServiceExtensionAPIImpl;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.EnrichConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Response200ForResponseAlternation;
@@ -36,6 +36,6 @@ public class EnrichConsentCreationResponseApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response enrichConsentCreationResponsePost(@Valid @NotNull EnrichConsentCreationRequestBody enrichConsentCreationRequestBody) {
-        return ConsentManagementAPIImpl.enrichConsentCreationResponse(enrichConsentCreationRequestBody);
+        return ServiceExtensionAPIImpl.enrichConsentCreationResponse(enrichConsentCreationRequestBody);
     }
 }

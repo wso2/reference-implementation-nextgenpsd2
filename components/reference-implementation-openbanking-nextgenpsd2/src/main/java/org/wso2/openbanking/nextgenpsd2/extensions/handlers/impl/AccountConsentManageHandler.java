@@ -42,7 +42,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseWithDetailedConsentData;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountInitiationPayload;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.AccountConsentUtil;
@@ -57,15 +57,14 @@ import javax.ws.rs.core.Response;
 /**
  * Consent handler for account consents.
  */
-public class AccountConsentManageHandler implements ConsentManagementValidationHandler {
+public class AccountConsentManageHandler implements ConsentInitiationHandler {
     private static final Log log = LogFactory.getLog(AccountConsentManageHandler.class);
 
     /**
      * Handles creation of account consents.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-creation endpoint
+     * @return Successful validation result
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
@@ -91,7 +90,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
                     .convertObjectToJson(requestBody.getData().getConsentInitiationData());
         } catch (JSONException e) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
 
@@ -103,7 +102,9 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
             String authStatus = CommonConsentValidationUtil.getAuthorizationStatus(isSCARequired, headersJSON);
 
             // Response body
@@ -156,7 +157,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
         } else {
             //ToDo: revisit once decoupled approach is implemented.
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.DECOUPLED)));
         }
@@ -165,10 +166,8 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles retrieval of account requests.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
-     * @throws ExtensionException
+     * @param requestBody body of the request received by pre-process-consent-retrieval
+     * @return Successful retrieval response
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
@@ -182,8 +181,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
         StoredBasicConsentResourceData consentResource = data.getConsentResource();
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for valid client", requestId, consentId));
         }
 
         // Get request client id from the headers
@@ -202,8 +200,7 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct type", requestId, consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentType, consentResource.getType());
 
@@ -213,7 +210,9 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
                 ExtensionEnums.ConsentStatusEnum.TERMINATED_BY_TPP.toString())
                 || StringUtils.equals(consentResource.getStatus(),
                 ExtensionEnums.ConsentStatusEnum.REVOKED_BY_PSU.toString()))) {
-            log.debug("[" + requestId + "] " + "The Consent is expired");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] The Consent is expired", requestId));
+            }
             consentResource.setStatus(ExtensionEnums.ConsentStatusEnum.EXPIRED.toString());
         }
 
@@ -240,8 +239,8 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles revocation of account consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the request received by pre-process-consent-revocation
+     * @return Successful validation result
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
@@ -252,9 +251,8 @@ public class AccountConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles account consent creation response customization.
      *
-     * @param requestBody
-     * @return
-     * @throws ExtensionException
+     * @param requestBody body of the request received by enrich-consent-creation-response endpoint
+     * @return Response to forward
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)

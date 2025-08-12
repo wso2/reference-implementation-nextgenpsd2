@@ -27,7 +27,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessCon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
@@ -36,15 +36,14 @@ import javax.ws.rs.core.Response;
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationManageHandler implements ConsentManagementValidationHandler {
+public class ConsentAuthorisationManageHandler implements ConsentInitiationHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**
      * Handle creation of authorisations for consents.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-creation endpoint
+     * @return Successful validation result
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
@@ -58,9 +57,8 @@ public class ConsentAuthorisationManageHandler implements ConsentManagementValid
     /**
      * Handles retrieval of consent authorisations.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-retrieval
+     * @return Successful retrieval response
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
@@ -74,8 +72,8 @@ public class ConsentAuthorisationManageHandler implements ConsentManagementValid
     /**
      * Handles revocation of consent authorizations.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the request received by pre-process-consent-revocation
+     * @return Successful validation result
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
@@ -89,9 +87,8 @@ public class ConsentAuthorisationManageHandler implements ConsentManagementValid
     /**
      * Handles consent authorization creation response customization.
      *
-     * @param requestBody
-     * @return
-     * @throws ExtensionException
+     * @param requestBody body of the request received by enrich-consent-creation-response endpoint
+     * @return Response to forward
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)

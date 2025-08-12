@@ -30,10 +30,10 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 /**
  * Consent handler interface for processing consent related requests.
  */
-public interface ConsentManagementValidationHandler {
+public interface ConsentInitiationHandler {
 
     /**
-     * Handles the process of building successful validation result for consent creation requests.
+     * Handles the process of building successful validation result for consent creation requests
      *
      * @param requestBody body of the request received by pre-process-consent-creation endpoint
      * @return Successful validation result
@@ -44,7 +44,7 @@ public interface ConsentManagementValidationHandler {
             throws ValidationFailureException, ExtensionException;
 
     /**
-     * Handles the process of enriching the response for consent creation request.
+     * Handles the process of enriching the response for consent creation request
      *
      * @param requestBody body of the request received by enrich-consent-creation-response endpoint
      * @return Response to forward
@@ -54,7 +54,7 @@ public interface ConsentManagementValidationHandler {
             throws ExtensionException;
 
     /**
-     * Handles the process of building successful validation result for consent retrieval requests.
+     * Handles the process of building successful validation result for consent retrieval requests
      *
      * @param requestBody body of the request received by pre-process-consent-retrieval
      * @return Successful retrieval response
@@ -65,7 +65,7 @@ public interface ConsentManagementValidationHandler {
             throws ValidationFailureException, ExtensionException;
 
     /**
-     * Handles the process of building successful validation result for consent revocation requests.
+     * Handles the process of building successful validation result for consent revocation requests
      *
      * @param requestBody body of the request received by pre-process-consent-revocation
      * @return Successful validation result
