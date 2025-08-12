@@ -180,7 +180,6 @@ public class FundsConfirmationConsentManageHandler implements ConsentInitiationH
             headers = CommonConsentValidationUtil.convertObjectToJson(data.getRequestHeaders());
             requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
         } catch (JSONException e) {
-            // Should be unreachable (since insequence always adds client id header)
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                     "x-wso2-client-id header not found");
         }

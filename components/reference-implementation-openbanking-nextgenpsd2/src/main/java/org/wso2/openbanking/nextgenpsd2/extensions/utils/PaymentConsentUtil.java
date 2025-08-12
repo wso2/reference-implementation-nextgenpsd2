@@ -140,7 +140,6 @@ public class PaymentConsentUtil {
             JSONObject attributesJSON = CommonConsentValidationUtil.convertObjectToJson(attributes);
             paymentProductFromAttributes = attributesJSON.getString(CommonConstants.PAYMENT_PRODUCT_CC);
         } catch (JSONException e) {
-            // Should be unreachable as payment product gets added as an attribute at initiation
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                     "Payment product not stored at consent initiation. Product validation failed.");
         }

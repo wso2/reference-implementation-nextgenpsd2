@@ -152,7 +152,6 @@ public class ConsentInitiationUtil {
             }
         } else {
             // Explicit authorisation not supported
-            // Should be unreachable since this is validated upon consent creation
             // ToDo: revisit once auth resources can be added explicitly
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
                     ErrorConstants.EXPLICIT_AUTH_NOT_SUPPORTED);
