@@ -41,7 +41,7 @@ import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessRespon
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternationData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseWithDetailedConsentData;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentManagementValidationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentInitiationUtil;
@@ -55,15 +55,14 @@ import javax.ws.rs.core.Response;
 /**
  * Consent handler for payment consents.
  */
-public class PaymentConsentManageHandler implements ConsentManagementValidationHandler {
+public class PaymentConsentManageHandler implements ConsentInitiationHandler {
     private static final Log log = LogFactory.getLog(PaymentConsentManageHandler.class);
 
     /**
      * Handles creation of payment consent.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-creation endpoint
+     * @return Successful validation result
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
@@ -90,7 +89,7 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
         } catch (JSONException e) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError(
-                            null, TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
+                            "payload", TPPMessage.CategoryEnum.ERROR, TPPMessage.CodeEnum.FORMAT_ERROR,
                             ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
         PaymentConsentUtil.validatePaymentInitiationPayload(requestPayload,
@@ -100,7 +99,9 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
                 headersJSON);
 
         if (!isRedirectPreferred.isPresent() || BooleanUtils.isTrue(isRedirectPreferred.get())) {
-            log.debug("[" + requestId + "] " + "SCA approach is Redirect SCA (OAuth2)");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("[%s] SCA approach is Redirect SCA (OAuth2)", requestId));
+            }
 
             String paymentConsentType = CommonConsentValidationUtil
                     .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
@@ -152,7 +153,7 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
         } else {
             //ToDo: revisit once decoupled approach is implemented.
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.DECOUPLED)));
         }
@@ -161,10 +162,8 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles retrieval of payment consents.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
-     * @throws ExtensionException
+     * @param requestBody body of the request received by pre-process-consent-retrieval
+     * @return Successful retrieval response
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
@@ -178,8 +177,7 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
                 .getConsentTypeFromRequestPath(requestBody.getData().getConsentResourcePath());
 
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for valid client",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for valid client", requestId, consentId));
         }
 
         // Get request client id from the headers
@@ -199,15 +197,14 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
 
         // Validate consent type
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct type",
-                    consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct type", requestId, consentId));
         }
         CommonConsentValidationUtil.validateConsentType(consentTypeFromPath, consentResource.getType());
 
         // Validate consent payment product
         if (log.isDebugEnabled()) {
-            log.debug("[" + requestId + "] " + String.format("Validating consent of Id %s for correct payment " +
-                    "product", consentId));
+            log.debug(String.format("[%s] Validating consent of Id %s for correct payment product", requestId,
+                    consentId));
         }
         PaymentConsentUtil.validatePaymentProductFromAttributes(consentResource.getAttributes(),
                 data.getConsentResourcePath());
@@ -238,8 +235,8 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles revocation of payment consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the request received by pre-process-consent-revocation
+     * @return Successful validation result
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
@@ -250,9 +247,8 @@ public class PaymentConsentManageHandler implements ConsentManagementValidationH
     /**
      * Handles payment consent creation response customization.
      *
-     * @param requestBody
-     * @return
-     * @throws ExtensionException
+     * @param requestBody body of the request received by enrich-consent-creation-response endpoint
+     * @return Response to forward
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
