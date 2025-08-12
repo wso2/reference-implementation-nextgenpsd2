@@ -640,14 +640,14 @@ public class CommonConsentValidationUtil {
 
         if (!headersJSON.has(CommonConstants.X_REQUEST_ID_HEADER)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_MISSING));
         }
 
         if (!CommonConsentValidationUtil.isValidUuid(headersJSON
                 .getString(CommonConstants.X_REQUEST_ID_HEADER))) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.X_REQUEST_ID_INVALID));
         }
     }
@@ -668,14 +668,14 @@ public class CommonConsentValidationUtil {
 
             if (StringUtils.isEmpty(psuIpAddress)) {
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                        ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, String.format("Invalid %s header",
                                         CommonConstants.PSU_IP_ADDRESS_PROPER_CASE_HEADER)
                 ));
             }
         } else {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PSU_IP_ADDRESS_MISSING));
         }
     }
@@ -697,7 +697,7 @@ public class CommonConsentValidationUtil {
         if ((isRedirectPreferred.isPresent() && BooleanUtils.isTrue(isRedirectPreferred.get()))
                 && getScaApproach(ExtensionEnums.ScaApproachEnum.REDIRECT) == null) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.REDIRECT)));
         }
@@ -708,7 +708,7 @@ public class CommonConsentValidationUtil {
             //ToDo: Since decoupled approach is not supported yet, an error is thrown if the redirect header is false.
             //issue: https://github.com/wso2-enterprise/financial-open-banking/issues/6858
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.DECOUPLED)));
         }
@@ -725,7 +725,7 @@ public class CommonConsentValidationUtil {
 
         if (!StringUtils.equals(registeredClientId, consentClientId)) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.FORBIDDEN,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.RESOURCE_UNKNOWN, ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR));
         }
     }
@@ -957,7 +957,7 @@ public class CommonConsentValidationUtil {
         if (!violations.isEmpty()) {
             String[] codeAndMessage = splitViolationMessage(violations.iterator().next().getMessage());
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.valueOf(codeAndMessage[0]), codeAndMessage[1]));
         }
 
@@ -1090,14 +1090,14 @@ public class CommonConsentValidationUtil {
             if (consentInitiationDataJSON.isEmpty()) {
                 // If payload is empty
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                        ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                        ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                                 TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_NOT_PRESENT_ERROR));
             }
 
         } catch (JSONException e) {
             // If payload is not JSON
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                     TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
     }

@@ -62,8 +62,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     /**
      * Handles creation of confirmation of funds consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the pre-process-consent-creation request
+     * @return success
      */
     @Override
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
@@ -88,7 +88,7 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
                     CommonConsentValidationUtil.convertObjectToJson(requestBody.getData().getConsentInitiationData());
         } catch (JSONException e) {
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
         }
 
@@ -148,7 +148,7 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
         } else {
             //ToDo: revisit once decoupled approach is implemented.
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
-                    ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
+                    ErrorUtil.constructBerlinError("headers", TPPMessage.CategoryEnum.ERROR,
                             TPPMessage.CodeEnum.FORMAT_ERROR, String.format("%s SCA Approach is not supported",
                                     ExtensionEnums.ScaApproachEnum.DECOUPLED)));
         }
@@ -157,9 +157,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     /**
      * Handles retrieval of funds confirmation consents.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by pre-process-consent-retrieval
+     * @return Successful retrieval response
      */
     @Override
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
@@ -223,8 +222,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     /**
      * Handles revocation of funds confirmation consents.
      *
-     * @param requestBody
-     * @return
+     * @param requestBody body of the request received by pre-process-consent-revocation
+     * @return Successful validation result
      */
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
@@ -235,9 +234,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     /**
      * Handles CoF consent creation response customization.
      *
-     * @param requestBody
-     * @return
-     * @throws ValidationFailureException
+     * @param requestBody body of the request received by enrich-consent-creation-response endpoint
+     * @return Response to forward
      */
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
