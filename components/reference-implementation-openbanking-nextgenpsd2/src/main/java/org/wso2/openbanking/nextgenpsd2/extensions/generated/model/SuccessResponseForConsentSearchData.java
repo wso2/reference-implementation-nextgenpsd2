@@ -1,17 +1,23 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.*;
+import javax.validation.Valid;
 
+import io.swagger.annotations.*;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 
 @JsonTypeName("SuccessResponseForConsentSearchData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-08-14T10:51:10.584795800+05:30[Asia/Colombo]", comments = "Generator version: 7.14.0")
 public class SuccessResponseForConsentSearchData   {
-  private Object searchResult;
+  private Object enrichedSearchResult;
 
   public SuccessResponseForConsentSearchData() {
   }
@@ -19,21 +25,21 @@ public class SuccessResponseForConsentSearchData   {
   /**
    * Enriched search result
    **/
-  public SuccessResponseForConsentSearchData searchResult(Object searchResult) {
-    this.searchResult = searchResult;
+  public SuccessResponseForConsentSearchData enrichedSearchResult(Object enrichedSearchResult) {
+    this.enrichedSearchResult = enrichedSearchResult;
     return this;
   }
 
   
   @ApiModelProperty(value = "Enriched search result")
-  @JsonProperty("searchResult")
-  public Object getSearchResult() {
-    return searchResult;
+  @JsonProperty("enrichedSearchResult")
+  public Object getEnrichedSearchResult() {
+    return enrichedSearchResult;
   }
 
-  @JsonProperty("searchResult")
-  public void setSearchResult(Object searchResult) {
-    this.searchResult = searchResult;
+  @JsonProperty("enrichedSearchResult")
+  public void setEnrichedSearchResult(Object enrichedSearchResult) {
+    this.enrichedSearchResult = enrichedSearchResult;
   }
 
 
@@ -46,12 +52,12 @@ public class SuccessResponseForConsentSearchData   {
       return false;
     }
     SuccessResponseForConsentSearchData successResponseForConsentSearchData = (SuccessResponseForConsentSearchData) o;
-    return Objects.equals(this.searchResult, successResponseForConsentSearchData.searchResult);
+    return Objects.equals(this.enrichedSearchResult, successResponseForConsentSearchData.enrichedSearchResult);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(searchResult);
+    return Objects.hash(enrichedSearchResult);
   }
 
   @Override
@@ -59,7 +65,7 @@ public class SuccessResponseForConsentSearchData   {
     StringBuilder sb = new StringBuilder();
     sb.append("class SuccessResponseForConsentSearchData {\n");
     
-    sb.append("    searchResult: ").append(toIndentedString(searchResult)).append("\n");
+    sb.append("    enrichedSearchResult: ").append(toIndentedString(enrichedSearchResult)).append("\n");
     sb.append("}");
     return sb.toString();
   }
