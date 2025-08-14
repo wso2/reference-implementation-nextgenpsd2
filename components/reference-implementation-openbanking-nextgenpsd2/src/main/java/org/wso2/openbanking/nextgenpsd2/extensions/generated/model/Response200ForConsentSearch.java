@@ -1,6 +1,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.*;
 
 import java.util.Objects;
@@ -12,10 +13,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("Response200ForConsentSearch")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class Response200ForConsentSearch   {
   private String responseId;
-  private Object data;
   public enum StatusEnum {
 
     ERROR(String.valueOf("ERROR"));
@@ -64,6 +64,7 @@ public class Response200ForConsentSearch   {
 }
 
   private StatusEnum status;
+  private Object data;
   private Integer errorCode;
 
   public Response200ForConsentSearch() {
@@ -71,12 +72,14 @@ public class Response200ForConsentSearch   {
 
   @JsonCreator
   public Response200ForConsentSearch(
-    @JsonProperty(required = true, value = "data") Object data,
+    @JsonProperty(required = true, value = "responseId") String responseId,
     @JsonProperty(required = true, value = "status") StatusEnum status,
+    @JsonProperty(required = true, value = "data") Object data,
     @JsonProperty(required = true, value = "errorCode") Integer errorCode
   ) {
-    this.data = data;
+    this.responseId = responseId;
     this.status = status;
+    this.data = data;
     this.errorCode = errorCode;
   }
 
@@ -88,35 +91,15 @@ public class Response200ForConsentSearch   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("responseId")
-  public String getResponseId() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "responseId")
+  @NotNull public String getResponseId() {
     return responseId;
   }
 
-  @JsonProperty("responseId")
+  @JsonProperty(required = true, value = "responseId")
   public void setResponseId(String responseId) {
     this.responseId = responseId;
-  }
-
-  /**
-   * :\&quot;Custom error object to response back\&quot;
-   **/
-  public Response200ForConsentSearch data(Object data) {
-    this.data = data;
-    return this;
-  }
-
-  
-  @ApiModelProperty(required = true, value = ":\"Custom error object to response back\"")
-  @JsonProperty(required = true, value = "data")
-  @NotNull public Object getData() {
-    return data;
-  }
-
-  @JsonProperty(required = true, value = "data")
-  public void setData(Object data) {
-    this.data = data;
   }
 
   /**
@@ -140,7 +123,27 @@ public class Response200ForConsentSearch   {
   }
 
   /**
-   * If any custom error code to return.
+   * :\&quot;Custom error object to response back\&quot;
+   **/
+  public Response200ForConsentSearch data(Object data) {
+    this.data = data;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = ":\"Custom error object to response back\"")
+  @JsonProperty(required = true, value = "data")
+  @NotNull public Object getData() {
+    return data;
+  }
+
+  @JsonProperty(required = true, value = "data")
+  public void setData(Object data) {
+    this.data = data;
+  }
+
+  /**
+   * If any HTTP error code to return.
    **/
   public Response200ForConsentSearch errorCode(Integer errorCode) {
     this.errorCode = errorCode;
@@ -148,7 +151,7 @@ public class Response200ForConsentSearch   {
   }
 
   
-  @ApiModelProperty(required = true, value = "If any custom error code to return.")
+  @ApiModelProperty(required = true, value = "If any HTTP error code to return.")
   @JsonProperty(required = true, value = "errorCode")
   @NotNull public Integer getErrorCode() {
     return errorCode;
@@ -170,14 +173,14 @@ public class Response200ForConsentSearch   {
     }
     Response200ForConsentSearch response200ForConsentSearch = (Response200ForConsentSearch) o;
     return Objects.equals(this.responseId, response200ForConsentSearch.responseId) &&
-        Objects.equals(this.data, response200ForConsentSearch.data) &&
         Objects.equals(this.status, response200ForConsentSearch.status) &&
+        Objects.equals(this.data, response200ForConsentSearch.data) &&
         Objects.equals(this.errorCode, response200ForConsentSearch.errorCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(responseId, data, status, errorCode);
+    return Objects.hash(responseId, status, data, errorCode);
   }
 
   @Override
@@ -186,8 +189,8 @@ public class Response200ForConsentSearch   {
     sb.append("class Response200ForConsentSearch {\n");
     
     sb.append("    responseId: ").append(toIndentedString(responseId)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("    errorCode: ").append(toIndentedString(errorCode)).append("\n");
     sb.append("}");
     return sb.toString();
