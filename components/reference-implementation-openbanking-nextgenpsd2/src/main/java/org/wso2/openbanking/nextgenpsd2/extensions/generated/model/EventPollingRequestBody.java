@@ -2,21 +2,32 @@ package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 
 @JsonTypeName("EventPollingRequestBody")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class EventPollingRequestBody   {
   private String requestId;
   private EventPollingRequest data;
 
   public EventPollingRequestBody() {
+  }
+
+  @JsonCreator
+  public EventPollingRequestBody(
+    @JsonProperty(required = true, value = "requestId") String requestId,
+    @JsonProperty(required = true, value = "data") EventPollingRequest data
+  ) {
+    this.requestId = requestId;
+    this.data = data;
   }
 
   /**
@@ -28,13 +39,13 @@ public class EventPollingRequestBody   {
   }
 
   
-  @ApiModelProperty(example = "Ec1wMjmiG8", value = "A unique correlation identifier")
-  @JsonProperty("requestId")
-  public String getRequestId() {
+  @ApiModelProperty(example = "Ec1wMjmiG8", required = true, value = "A unique correlation identifier")
+  @JsonProperty(required = true, value = "requestId")
+  @NotNull public String getRequestId() {
     return requestId;
   }
 
-  @JsonProperty("requestId")
+  @JsonProperty(required = true, value = "requestId")
   public void setRequestId(String requestId) {
     this.requestId = requestId;
   }
@@ -47,13 +58,13 @@ public class EventPollingRequestBody   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("data")
-  @Valid public EventPollingRequest getData() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "data")
+  @NotNull @Valid public EventPollingRequest getData() {
     return data;
   }
 
-  @JsonProperty("data")
+  @JsonProperty(required = true, value = "data")
   public void setData(EventPollingRequest data) {
     this.data = data;
   }

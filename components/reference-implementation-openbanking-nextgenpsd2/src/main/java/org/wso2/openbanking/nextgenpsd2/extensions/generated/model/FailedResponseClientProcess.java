@@ -1,6 +1,7 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("FailedResponseClientProcess")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class FailedResponseClientProcess   {
   public enum StatusEnum {
 
@@ -99,7 +100,7 @@ public class FailedResponseClientProcess   {
   }
 
   /**
-   * If any custom error code to return.
+   * If any HTTP error code to return.
    **/
   public FailedResponseClientProcess errorCode(Integer errorCode) {
     this.errorCode = errorCode;
@@ -107,7 +108,7 @@ public class FailedResponseClientProcess   {
   }
 
   
-  @ApiModelProperty(value = "If any custom error code to return.")
+  @ApiModelProperty(value = "If any HTTP error code to return.")
   @JsonProperty("errorCode")
   public Integer getErrorCode() {
     return errorCode;

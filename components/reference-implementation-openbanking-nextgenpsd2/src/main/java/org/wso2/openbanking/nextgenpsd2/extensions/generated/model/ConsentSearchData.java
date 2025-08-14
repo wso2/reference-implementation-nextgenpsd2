@@ -11,11 +11,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("ConsentSearchData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class ConsentSearchData   {
   public enum SearchTypeEnum {
 
-    BULK_SERACH(String.valueOf("BULK_SERACH")), AMENDMENT_HISTORY(String.valueOf("AMENDMENT_HISTORY"));
+    BULK_SEARCH(String.valueOf("BULK_SEARCH")), AMENDMENT_HISTORY(String.valueOf("AMENDMENT_HISTORY"));
 
 
     private String value;

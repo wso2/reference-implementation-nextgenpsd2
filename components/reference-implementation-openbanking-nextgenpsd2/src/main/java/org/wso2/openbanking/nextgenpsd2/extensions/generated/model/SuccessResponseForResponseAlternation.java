@@ -2,6 +2,7 @@ package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("SuccessResponseForResponseAlternation")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class SuccessResponseForResponseAlternation   {
   private String responseId;
   public enum StatusEnum {
@@ -69,6 +70,17 @@ public class SuccessResponseForResponseAlternation   {
   public SuccessResponseForResponseAlternation() {
   }
 
+  @JsonCreator
+  public SuccessResponseForResponseAlternation(
+    @JsonProperty(required = true, value = "responseId") String responseId,
+    @JsonProperty(required = true, value = "status") StatusEnum status,
+    @JsonProperty(required = true, value = "data") SuccessResponseForResponseAlternationData data
+  ) {
+    this.responseId = responseId;
+    this.status = status;
+    this.data = data;
+  }
+
   /**
    **/
   public SuccessResponseForResponseAlternation responseId(String responseId) {
@@ -77,13 +89,13 @@ public class SuccessResponseForResponseAlternation   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("responseId")
-  public String getResponseId() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "responseId")
+  @NotNull public String getResponseId() {
     return responseId;
   }
 
-  @JsonProperty("responseId")
+  @JsonProperty(required = true, value = "responseId")
   public void setResponseId(String responseId) {
     this.responseId = responseId;
   }
@@ -96,13 +108,13 @@ public class SuccessResponseForResponseAlternation   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("status")
-  public StatusEnum getStatus() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "status")
+  @NotNull public StatusEnum getStatus() {
     return status;
   }
 
-  @JsonProperty("status")
+  @JsonProperty(required = true, value = "status")
   public void setStatus(StatusEnum status) {
     this.status = status;
   }
@@ -115,13 +127,13 @@ public class SuccessResponseForResponseAlternation   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("data")
-  @Valid public SuccessResponseForResponseAlternationData getData() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "data")
+  @NotNull @Valid public SuccessResponseForResponseAlternationData getData() {
     return data;
   }
 
-  @JsonProperty("data")
+  @JsonProperty(required = true, value = "data")
   public void setData(SuccessResponseForResponseAlternationData data) {
     this.data = data;
   }

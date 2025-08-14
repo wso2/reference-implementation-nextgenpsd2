@@ -2,6 +2,8 @@ package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.Valid;
+
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -9,51 +11,49 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("SuccessResponsePopulateConsentAuthorizeScreenData")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T16:37:19.273370900+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class SuccessResponsePopulateConsentAuthorizeScreenData   {
-  private Object consentData;
-  private Object consumerData;
+  private SuccessResponsePopulateConsentAuthorizeScreenDataConsentData consentData;
+  private SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData consumerData;
 
   public SuccessResponsePopulateConsentAuthorizeScreenData() {
   }
 
   /**
-   * consent data to be populated on consent grant UI
    **/
-  public SuccessResponsePopulateConsentAuthorizeScreenData consentData(Object consentData) {
+  public SuccessResponsePopulateConsentAuthorizeScreenData consentData(SuccessResponsePopulateConsentAuthorizeScreenDataConsentData consentData) {
     this.consentData = consentData;
     return this;
   }
 
   
-  @ApiModelProperty(value = "consent data to be populated on consent grant UI")
+  @ApiModelProperty(value = "")
   @JsonProperty("consentData")
-  public Object getConsentData() {
+  @Valid public SuccessResponsePopulateConsentAuthorizeScreenDataConsentData getConsentData() {
     return consentData;
   }
 
   @JsonProperty("consentData")
-  public void setConsentData(Object consentData) {
+  public void setConsentData(SuccessResponsePopulateConsentAuthorizeScreenDataConsentData consentData) {
     this.consentData = consentData;
   }
 
   /**
-   * Data provider&#39;s backend data
    **/
-  public SuccessResponsePopulateConsentAuthorizeScreenData consumerData(Object consumerData) {
+  public SuccessResponsePopulateConsentAuthorizeScreenData consumerData(SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData consumerData) {
     this.consumerData = consumerData;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Data provider's backend data")
+  @ApiModelProperty(value = "")
   @JsonProperty("consumerData")
-  public Object getConsumerData() {
+  @Valid public SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData getConsumerData() {
     return consumerData;
   }
 
   @JsonProperty("consumerData")
-  public void setConsumerData(Object consumerData) {
+  public void setConsumerData(SuccessResponsePopulateConsentAuthorizeScreenDataConsumerData consumerData) {
     this.consumerData = consumerData;
   }
 

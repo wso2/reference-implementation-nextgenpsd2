@@ -11,11 +11,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("PersistAuthorizedConsent")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class PersistAuthorizedConsent   {
   private String consentId;
   private Boolean isApproved;
-  private Object userGrantedData;
+  private UserGrantedData userGrantedData;
   private StoredDetailedConsentResourceData consentResource;
 
   public PersistAuthorizedConsent() {
@@ -60,22 +60,21 @@ public class PersistAuthorizedConsent   {
   }
 
   /**
-   * Input data from end user
    **/
-  public PersistAuthorizedConsent userGrantedData(Object userGrantedData) {
+  public PersistAuthorizedConsent userGrantedData(UserGrantedData userGrantedData) {
     this.userGrantedData = userGrantedData;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Input data from end user")
+  @ApiModelProperty(value = "")
   @JsonProperty("userGrantedData")
-  public Object getUserGrantedData() {
+  @Valid public UserGrantedData getUserGrantedData() {
     return userGrantedData;
   }
 
   @JsonProperty("userGrantedData")
-  public void setUserGrantedData(Object userGrantedData) {
+  public void setUserGrantedData(UserGrantedData userGrantedData) {
     this.userGrantedData = userGrantedData;
   }
 

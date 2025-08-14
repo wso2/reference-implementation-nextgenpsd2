@@ -2,21 +2,32 @@ package org.wso2.openbanking.nextgenpsd2.extensions.generated.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 
 @JsonTypeName("PersistAuthorizedConsentRequestBody")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-05-05T12:44:23.299724+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-14T12:25:16.039700400+05:30[Asia/Colombo]", comments = "Generator version: 7.12.0")
 public class PersistAuthorizedConsentRequestBody   {
   private String requestId;
   private PersistAuthorizedConsent data;
 
   public PersistAuthorizedConsentRequestBody() {
+  }
+
+  @JsonCreator
+  public PersistAuthorizedConsentRequestBody(
+    @JsonProperty(required = true, value = "requestId") String requestId,
+    @JsonProperty(required = true, value = "data") PersistAuthorizedConsent data
+  ) {
+    this.requestId = requestId;
+    this.data = data;
   }
 
   /**
@@ -27,13 +38,13 @@ public class PersistAuthorizedConsentRequestBody   {
   }
 
   
-  @ApiModelProperty(example = "Ec1wMjmiG8", value = "")
-  @JsonProperty("requestId")
-  public String getRequestId() {
+  @ApiModelProperty(example = "Ec1wMjmiG8", required = true, value = "")
+  @JsonProperty(required = true, value = "requestId")
+  @NotNull public String getRequestId() {
     return requestId;
   }
 
-  @JsonProperty("requestId")
+  @JsonProperty(required = true, value = "requestId")
   public void setRequestId(String requestId) {
     this.requestId = requestId;
   }
@@ -46,13 +57,13 @@ public class PersistAuthorizedConsentRequestBody   {
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("data")
-  @Valid public PersistAuthorizedConsent getData() {
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(required = true, value = "data")
+  @NotNull @Valid public PersistAuthorizedConsent getData() {
     return data;
   }
 
-  @JsonProperty("data")
+  @JsonProperty(required = true, value = "data")
   public void setData(PersistAuthorizedConsent data) {
     this.data = data;
   }
