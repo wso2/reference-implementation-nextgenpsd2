@@ -25,36 +25,32 @@ import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
  * Exception class for success responses carrying FailedResponseInConsentAuthorize objects.
  */
 public class AuthorizationFailureException extends Exception {
-    String message;
-    String newStatus;
-    String responseId;
+
+    private String newStatus;
+    private String responseId;
 
     public AuthorizationFailureException(String message) {
         super(message);
-        this.message = message;
     }
 
     public AuthorizationFailureException(String message, Throwable e) {
         super(message, e);
-        this.message = message;
     }
 
     public AuthorizationFailureException(String message, String newStatus) {
         super(message);
-        this.message = message;
         this.newStatus = newStatus;
     }
 
     public AuthorizationFailureException(String message, String newStatus, Throwable e) {
         super(message, e);
-        this.message = message;
         this.newStatus = newStatus;
     }
 
     /**
      * Sets response id for the failed response in consent authorize.
      *
-     * @param responseId
+     * @param responseId response id of matching the made request
      */
     public void setResponseId(String responseId) {
         this.responseId = responseId;
@@ -62,17 +58,17 @@ public class AuthorizationFailureException extends Exception {
 
     /**
      * Returns exception formatted as a FailedResponseInConsentAuthorize.
-     * @return
+     * @return formatted error as a JSONObject
      */
-    public JSONObject getFormattedError() {
-        return ErrorUtil.getFormattedAuthorizationFailureException(this.responseId, this.message, this.newStatus);
+    public JSONObject toJson() {
+        return ErrorUtil.getFormattedAuthorizationFailureException(this.responseId, getMessage(), this.newStatus);
     }
 
     /**
      * Returns formatted error as String.
-     * @return
+     * @return formatted error as a String
      */
-    public String getFormattedErrorAsString() {
-        return getFormattedError().toString();
+    public String toJsonString() {
+        return toJson().toString();
     }
 }

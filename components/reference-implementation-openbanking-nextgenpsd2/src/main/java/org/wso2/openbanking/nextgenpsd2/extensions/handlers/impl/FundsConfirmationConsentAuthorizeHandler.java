@@ -121,12 +121,8 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
         boolean isApproved = requestData.getIsApproved();
 
         // Get auth status from approval
-        String authStatus;
-        if (isApproved) {
-            authStatus = ExtensionEnums.ScaStatusEnum.FINALISED.toString();
-        } else {
-            authStatus = ExtensionEnums.ScaStatusEnum.FAILED.toString();
-        }
+        String authStatus = isApproved ? ExtensionEnums.ScaStatusEnum.FINALISED.toString() :
+                ExtensionEnums.ScaStatusEnum.FAILED.toString();
 
         // Verify that there's only one authorization
         List<AuthorizedResourcesAuthorizedDataInner> authorizedData = requestData.getUserGrantedData()

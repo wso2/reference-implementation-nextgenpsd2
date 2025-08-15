@@ -28,7 +28,7 @@ public class ExtensionException extends Exception {
 
     /**
      * Getter for error status to set to response.
-     * @return
+     * @return response status of the extension exception
      */
     public Response.Status getStatus() {
         return this.errorStatus;
@@ -38,7 +38,7 @@ public class ExtensionException extends Exception {
      * Format the error to a simplified ErrorResponse object.
      * @return JSONObject representing the error
      */
-    public JSONObject getFormattedError() {
+    public JSONObject toJson() {
         return ErrorUtil.getFormattedErrorResponse(data);
     }
 
@@ -46,7 +46,7 @@ public class ExtensionException extends Exception {
      * Return the formatted error as a string.
      * @return String representation of the error
      */
-    public String getFormattedErrorAsString() {
-        return getFormattedError().toString();
+    public String toJsonString() {
+        return toJson().toString();
     }
 }

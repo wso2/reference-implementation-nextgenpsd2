@@ -143,7 +143,7 @@ public class DataRetrievalUtil {
                 pairs.add(new BasicNameValuePair(key.getKey(), key.getValue()));
             }
         }
-        String queries = URLEncodedUtils.format(pairs, StandardCharsets.UTF_8.toString());
+        String queries = URLEncodedUtils.format(pairs, StandardCharsets.UTF_8);
         return baseURL + "?" + queries;
     }
 

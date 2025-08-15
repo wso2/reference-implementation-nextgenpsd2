@@ -319,10 +319,8 @@ public class PaymentConsentUtil {
     /**
      * Handles payment processing with the banking backend.
      *
-     * @param authorizingResource
-     * @param consentResource
-     * @throws ExtensionException
-     * @throws ExtensionException
+     * @param authorizingResource authorized authorization resource
+     * @param consentResource authorized consent resource
      */
     public static void handleBackendPayment(StoredAuthorization authorizingResource,
                                             StoredDetailedConsentResourceData consentResource)

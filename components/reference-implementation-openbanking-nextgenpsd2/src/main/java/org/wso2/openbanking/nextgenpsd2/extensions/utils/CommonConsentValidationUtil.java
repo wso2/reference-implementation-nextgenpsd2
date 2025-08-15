@@ -1150,7 +1150,7 @@ public class CommonConsentValidationUtil {
         if (responseData.getConsentData().getConsentMetadata() == null) {
             consentMetadata = new HashMap<>();
         } else {
-            consentMetadata = (HashMap) responseData.getConsentData().getConsentMetadata();
+            consentMetadata = (Map<String, Object>) responseData.getConsentData().getConsentMetadata();
         }
         consentMetadata.put(CommonConstants.AUTHORIZING_AUTHORIZATION, unauthorizedObj);
         responseData.getConsentData().setConsentMetadata(consentMetadata);

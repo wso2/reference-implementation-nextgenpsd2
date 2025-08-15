@@ -75,7 +75,7 @@ public class ServiceExtensionAPIImpl {
 
         } catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred enriching consent creation response.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         } catch (ValidationFailureException e) {
             // Should be unreachable since resource path is validated in consent creation
             // Thus bad request error is thrown
@@ -106,6 +106,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent creation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponsePreProcessConsentCreation validationResponse = consentInitiationHandler
                     .handleCreation(requestBody);
 
@@ -116,11 +117,10 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent creation. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred creating consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -139,6 +139,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent retrieval based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponseForResponseAlternation validationResponse = consentInitiationHandler
                     .handleRetrieval(requestBody);
 
@@ -149,11 +150,10 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent retrieval. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred retrieving consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -173,6 +173,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent revocation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponseConsentRevocation validationResponse = consentInitiationHandler
                     .handleRevocation(requestBody);
 
@@ -183,11 +184,10 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent revocation. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred revoking consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -197,12 +197,10 @@ public class ServiceExtensionAPIImpl {
      * @param requestBody request made to populate-consent-authorize-screen
      * @return payload required to generate the custom consent authorization page
      */
-    public static Response populateConsentAuthorizeScreen
-    (PopulateConsentAuthorizeScreenRequestBody requestBody) {
+    public static Response populateConsentAuthorizeScreen (PopulateConsentAuthorizeScreenRequestBody requestBody) {
         String requestId = requestBody.getRequestId();
         PopulateConsentAuthorizeScreenData data = requestBody.getData();
         StoredDetailedConsentResourceData consentResource = data.getConsentResource();
-        String consentType = consentResource.getType();
 
         try {
             JSONObject queryParams = CommonConsentValidationUtil.convertObjectToJson(data.getRequestParameters());
@@ -211,7 +209,7 @@ public class ServiceExtensionAPIImpl {
             CommonConsentValidationUtil.validateClient(consentResource, queryParams);
 
             // Validate consent type with consent scopes
-            CommonConsentValidationUtil.validateScope(requestId, queryParams, consentType);
+            CommonConsentValidationUtil.validateScope(requestId, queryParams, consentResource.getType());
 
             // Check if authorizable
             StoredAuthorization unauthorizedObj = ConsentAuthorizationUtil
@@ -220,6 +218,7 @@ public class ServiceExtensionAPIImpl {
 
             ConsentAuthorizationHandler authorizationHandler = CommonConsentValidationUtil.getAuthorizationHandler(
                     consentResource.getType());
+
             if (authorizationHandler != null) {
                 SuccessResponsePopulateConsentAuthorizeScreen response =
                         new SuccessResponsePopulateConsentAuthorizeScreen();
@@ -251,12 +250,10 @@ public class ServiceExtensionAPIImpl {
             log.error(String.format("[%s] Authorization retrieval failed. Redirecting to redirect URL with " +
                     "error description", requestId), e);
             e.setResponseId(requestId);
-            return Response.status(Response.Status.OK).entity(e.getFormattedErrorAsString()).build();
-
+            return Response.status(Response.Status.OK).entity(e.toJsonString()).build();
         } catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred populating consent authorize screen.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -297,6 +294,7 @@ public class ServiceExtensionAPIImpl {
 
             ConsentAuthorizationHandler authorizationHandler =
                     CommonConsentValidationUtil.getAuthorizationHandler(consentType);
+
             responseData.setConsentResource(authorizationHandler.getAmendedConsentResource(requestBody,
                     authorizingResource));
 
@@ -308,12 +306,10 @@ public class ServiceExtensionAPIImpl {
             log.error(String.format("[%s] Authorization persistence failed. Redirecting to redirect URL with " +
                     "error description", requestId), e);
             e.setResponseId(requestId);
-            return Response.status(Response.Status.OK).entity(e.getFormattedErrorAsString()).build();
-
+            return Response.status(Response.Status.OK).entity(e.toJsonString()).build();
         } catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred persisting authorized consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
-
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 

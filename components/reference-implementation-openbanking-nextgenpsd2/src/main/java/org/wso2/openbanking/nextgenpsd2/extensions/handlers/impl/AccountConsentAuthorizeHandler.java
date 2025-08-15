@@ -162,12 +162,8 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
         boolean isApproved = requestData.getIsApproved();
 
         // Get auth status from approval
-        String authStatus;
-        if (isApproved) {
-            authStatus = ExtensionEnums.ScaStatusEnum.FINALISED.toString();
-        } else {
-            authStatus = ExtensionEnums.ScaStatusEnum.FAILED.toString();
-        }
+        String authStatus = isApproved ? ExtensionEnums.ScaStatusEnum.FINALISED.toString() :
+                ExtensionEnums.ScaStatusEnum.FAILED.toString();
 
         // Extract accounts and permissions, and build new access object
         UserGrantedData userGrantedData = requestData.getUserGrantedData();
