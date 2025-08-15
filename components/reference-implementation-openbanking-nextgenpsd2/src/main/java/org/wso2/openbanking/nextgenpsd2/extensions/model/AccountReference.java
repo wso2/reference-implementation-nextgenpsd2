@@ -18,6 +18,7 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.wso2.openbanking.nextgenpsd2.extensions.validators.annotations.ValidAccountReference;
 
@@ -30,14 +31,15 @@ import java.util.Map;
 @ValidAccountReference
 public class AccountReference {
 
-    private final Map<String, String> properties = new HashMap<>();
+    private final Map<String, String> additionalProperties = new HashMap<>();
 
     @JsonAnySetter
-    public void setProperty(String key, String value) {
-        this.properties.put(key, value);
+    public void setAdditionalProperties(String key, String value) {
+        this.additionalProperties.put(key, value);
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    @JsonAnyGetter
+    public Map<String, String> getAdditionalProperties() {
+        return additionalProperties;
     }
 }

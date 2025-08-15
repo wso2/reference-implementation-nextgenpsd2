@@ -21,17 +21,33 @@ package org.wso2.openbanking.nextgenpsd2.extensions.api.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePersistAuthorizedConsentData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreen;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.UserGrantedData;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentAuthorizationUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.PaymentConsentUtil;
 
 import javax.ws.rs.core.Response;
 
@@ -59,7 +75,7 @@ public class ServiceExtensionAPIImpl {
 
         } catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred enriching consent creation response.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         } catch (ValidationFailureException e) {
             // Should be unreachable since resource path is validated in consent creation
             // Thus bad request error is thrown
@@ -90,6 +106,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent creation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponsePreProcessConsentCreation validationResponse = consentInitiationHandler
                     .handleCreation(requestBody);
 
@@ -100,11 +117,10 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent creation. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred creating consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -123,6 +139,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent retrieval based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponseForResponseAlternation validationResponse = consentInitiationHandler
                     .handleRetrieval(requestBody);
 
@@ -133,11 +150,10 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent retrieval. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred retrieving consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
 
@@ -157,6 +173,7 @@ public class ServiceExtensionAPIImpl {
             // Get validation response for consent revocation based on consent type
             ConsentInitiationHandler consentInitiationHandler = CommonConsentValidationUtil
                     .getConsentInitiationHandler(requestBody.getData().getConsentResourcePath());
+
             SuccessResponseConsentRevocation validationResponse = consentInitiationHandler
                     .handleRevocation(requestBody);
 
@@ -167,11 +184,133 @@ public class ServiceExtensionAPIImpl {
                 log.debug(String.format("[%s] Validation failed for consent revocation. Returning failed response.",
                         requestId), e);
             }
-            return Response.ok().entity(e.getFormattedErrorAsString()).build();
-
+            return Response.ok().entity(e.toJsonString()).build();
         }  catch (ExtensionException e) {
             log.error(String.format("[%s] An error occurred revoking consent.", requestId), e);
-            return Response.status(e.getStatus()).entity(e.getFormattedErrorAsString()).build();
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
         }
     }
+
+    /**
+     * Method for returning the response for populating consent authorization page.
+     *
+     * @param requestBody request made to populate-consent-authorize-screen
+     * @return payload required to generate the custom consent authorization page
+     */
+    public static Response populateConsentAuthorizeScreen (PopulateConsentAuthorizeScreenRequestBody requestBody) {
+        String requestId = requestBody.getRequestId();
+        PopulateConsentAuthorizeScreenData data = requestBody.getData();
+        StoredDetailedConsentResourceData consentResource = data.getConsentResource();
+
+        try {
+            JSONObject queryParams = CommonConsentValidationUtil.convertObjectToJson(data.getRequestParameters());
+
+            // Verify client
+            CommonConsentValidationUtil.validateClient(consentResource, queryParams);
+
+            // Validate consent type with consent scopes
+            CommonConsentValidationUtil.validateScope(requestId, queryParams, consentResource.getType());
+
+            // Check if authorizable
+            StoredAuthorization unauthorizedObj = ConsentAuthorizationUtil
+                    .getAuthorizableResource(requestId, consentResource.getAuthorizations(), data.getUserId(),
+                            consentResource);
+
+            ConsentAuthorizationHandler authorizationHandler = CommonConsentValidationUtil.getAuthorizationHandler(
+                    consentResource.getType());
+
+            if (authorizationHandler != null) {
+                SuccessResponsePopulateConsentAuthorizeScreen response =
+                        new SuccessResponsePopulateConsentAuthorizeScreen();
+                SuccessResponsePopulateConsentAuthorizeScreenData responseData =
+                        new SuccessResponsePopulateConsentAuthorizeScreenData();
+
+                // Add basic consent data to display
+                authorizationHandler.populateBasicConsentData(responseData, data);
+
+                // Add account data to display
+                authorizationHandler.populateAccountsData(responseData, data);
+
+                // Append authorizable consent as consent metadata
+                CommonConsentValidationUtil.appendAuthorizationToResponse(responseData, unauthorizedObj);
+
+                // Set response data to response
+                response.setResponseId(requestBody.getRequestId());
+                response.setStatus(SuccessResponsePopulateConsentAuthorizeScreen.StatusEnum.SUCCESS);
+                response.setData(responseData);
+
+                return CommonConsentValidationUtil.buildPopulateResponseFromObject(response);
+            } else {
+                // Should be unreachable since only consent types in ConsentTypes enum are used at initiation
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        ErrorUtil.getFormattedAuthorizationFailureException(requestId,
+                                ErrorConstants.INITIATED_CONSENT_TYPE_INVALID, null).toString()).build();
+            }
+        } catch (AuthorizationFailureException e) {
+            log.error(String.format("[%s] Authorization retrieval failed. Redirecting to redirect URL with " +
+                    "error description", requestId), e);
+            e.setResponseId(requestId);
+            return Response.status(Response.Status.OK).entity(e.toJsonString()).build();
+        } catch (ExtensionException e) {
+            log.error(String.format("[%s] An error occurred populating consent authorize screen.", requestId), e);
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
+        }
+    }
+
+    /**
+     * Method for building persist authorized consent response.
+     *
+     * @param requestBody request made to persist-authorized-consent endpoint
+     * @return response containing any modified consent information and account mappings with permissions
+     */
+    public static Response persistAuthorizedConsent(PersistAuthorizedConsentRequestBody
+                                                            requestBody) {
+        String requestId = requestBody.getRequestId();
+        PersistAuthorizedConsent persistData = requestBody.getData();
+        boolean isApproved = persistData.getIsApproved();
+        UserGrantedData userGrantedData = persistData.getUserGrantedData();
+        StoredDetailedConsentResourceData consentResource = persistData.getConsentResource();
+        String consentType = consentResource.getType();
+
+        try {
+            JSONObject retrievalMetadata = CommonConsentValidationUtil
+                    .convertObjectToJson(userGrantedData.getAuthorizedResources().getMetadata());
+
+            // Restore authorizing authorization
+            StoredAuthorization authorizingResource = CommonConsentValidationUtil
+                    .extractAuthorizingResource(retrievalMetadata);
+
+            // Banking backend integration for payments
+            if (isApproved) {
+                PaymentConsentUtil.handleBackendPayment(authorizingResource, consentResource);
+            }
+
+            // Build success response for consent persistence
+            SuccessResponsePersistAuthorizedConsent response = new SuccessResponsePersistAuthorizedConsent();
+            response.setResponseId(requestId);
+            response.setStatus(SuccessResponsePersistAuthorizedConsent.StatusEnum.SUCCESS);
+            SuccessResponsePersistAuthorizedConsentData responseData =
+                    new SuccessResponsePersistAuthorizedConsentData();
+
+            ConsentAuthorizationHandler authorizationHandler =
+                    CommonConsentValidationUtil.getAuthorizationHandler(consentType);
+
+            responseData.setConsentResource(authorizationHandler.getAmendedConsentResource(requestBody,
+                    authorizingResource));
+
+            response.setData(responseData);
+
+            return CommonConsentValidationUtil.buildPersistResponseFromObject(response);
+
+        } catch (AuthorizationFailureException e) {
+            log.error(String.format("[%s] Authorization persistence failed. Redirecting to redirect URL with " +
+                    "error description", requestId), e);
+            e.setResponseId(requestId);
+            return Response.status(Response.Status.OK).entity(e.toJsonString()).build();
+        } catch (ExtensionException e) {
+            log.error(String.format("[%s] An error occurred persisting authorized consent.", requestId), e);
+            return Response.status(e.getStatus()).entity(e.toJsonString()).build();
+        }
+    }
+
 }

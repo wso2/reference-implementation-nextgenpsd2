@@ -26,25 +26,39 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
+import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentCreationRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRequestBody;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRetrievalData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredBasicConsentResourceData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocationData;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreen;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentManageHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationManageHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentManageHandler;
-import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentManageHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentAuthorizeHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.AccountConsentInitiationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.ConsentAuthorisationInitiationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentAuthorizeHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.FundsConfirmationConsentInitiationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentAuthorizeHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl.PaymentConsentInitiationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaApproach;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.ScaMethod;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
@@ -119,8 +133,8 @@ public class CommonConsentValidationUtil {
             // Parse JSON string to JSONObject
             return new JSONObject(jsonString);
         } catch (JsonProcessingException | JSONException e) {
-            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    e.getMessage().replaceAll("[\r\n]", ""), e);
+            throw new ExtensionException(
+                    Response.Status.BAD_REQUEST, "invalid_request", e.getMessage().replaceAll("[\r\n]", ""), e);
         }
     }
 
@@ -199,21 +213,43 @@ public class CommonConsentValidationUtil {
 
         switch (getServiceDifferentiatingRequestPath(requestPath)) {
             case CommonConstants.ACCOUNTS_CONSENT_PATH:
-                return new AccountConsentManageHandler();
+                return new AccountConsentInitiationHandler();
             case CommonConstants.PAYMENTS_SERVICE_PATH:
             case CommonConstants.BULK_PAYMENTS_SERVICE_PATH:
             case CommonConstants.PERIODIC_PAYMENTS_SERVICE_PATH:
-                return new PaymentConsentManageHandler();
+                return new PaymentConsentInitiationHandler();
             case CommonConstants.FUNDS_CONFIRMATIONS_SERVICE_PATH:
-                return new FundsConfirmationConsentManageHandler();
+                return new FundsConfirmationConsentInitiationHandler();
             case CommonConstants.EXPLICIT_AUTHORISATION_PATH_END:
             case CommonConstants.PAYMENT_EXPLICIT_CANCELLATION_AUTHORISATION_PATH_END:
-                return new ConsentAuthorisationManageHandler();
+                return new ConsentAuthorisationInitiationHandler();
             default:
                 throw new ValidationFailureException(ValidationFailureException.ErrorCode.NOT_FOUND,
                         ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR, null,
                                 ErrorConstants.PATH_INVALID));
         }
+    }
+
+    /**
+     * Method to get the account list authorize handler.
+     *
+     * @param type consent type of the request
+     * @return the selected account list retrieval handler
+     */
+    public static ConsentAuthorizationHandler getAuthorizationHandler(String type) {
+
+        ConsentAuthorizationHandler authorizationHandler = null;
+
+        if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), type)) {
+            authorizationHandler = new AccountConsentAuthorizeHandler();
+        } else if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString(), type)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
+                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
+            authorizationHandler = new PaymentConsentAuthorizeHandler();
+        } else if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), type)) {
+            authorizationHandler = new FundsConfirmationConsentAuthorizeHandler();
+        }
+        return authorizationHandler;
     }
 
     /**
@@ -506,8 +542,8 @@ public class CommonConsentValidationUtil {
         for (Map<String, String> supportedScaApproach : ConfigurationConstants.SUPPORTED_SCA_APPROACHES) {
             ScaApproach scaApproach = new ScaApproach();
 
-            scaApproach.setApproach(ExtensionEnums.ScaApproachEnum.fromValue(
-                    supportedScaApproach.get(CommonConstants.SCA_NAME)));
+            scaApproach.setApproach(ExtensionEnums.ScaApproachEnum
+                    .fromValue(supportedScaApproach.get(CommonConstants.SCA_NAME)));
             scaApproach.setDefault(Boolean.parseBoolean(supportedScaApproach.get(CommonConstants.SCA_DEFAULT)));
 
             supportedScaApproaches.add(scaApproach);
@@ -795,7 +831,7 @@ public class CommonConsentValidationUtil {
             requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
         } catch (JSONException e) {
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "x-wso2-client-id header not found");
+                    "Organization ID not found for the client");
         }
         CommonConsentValidationUtil.validateClient(requestClientId, data.getConsentResource().getClientId());
 
@@ -928,6 +964,115 @@ public class CommonConsentValidationUtil {
     }
 
     /**
+     * Returns the extracted account reference type from the account reference object.
+     *
+     * @param accountRefObject account reference JSON object
+     * @return account reference type
+     */
+    public static String getAccountReferenceType(JSONObject accountRefObject) {
+
+        List<String> configuredAccountReferences = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.has(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the extracted account reference type from the account reference object.
+     *
+     * @param accountRefObject account reference map object
+     * @return account reference type
+     */
+    public static String getAccountReferenceType(Map<String, ?> accountRefObject) {
+
+        List<String> configuredAccountReferences = ConfigurationConstants.SUPPORTED_ACC_REFERNCE_TYPES;
+        for (String accountRef : configuredAccountReferences) {
+            if (accountRefObject.containsKey(accountRef)) {
+                return accountRef;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Populates consent initiated accounts for both payment and funds confirmation consents.
+     *
+     * @param responseData response to the request made to populate-consent-authorize-screen
+     * @param requestData request made to populate-consent-authorize-screen
+     * @param accountRefJSON account to include under initiated account for consent
+     * @throws AuthorizationFailureException if no accounts were found for the user
+     */
+    public static void populateConsentInitiatedAccounts(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
+                                                        PopulateConsentAuthorizeScreenData requestData,
+                                                        JSONObject accountRefJSON)
+            throws AuthorizationFailureException {
+        String payableAccountsEndpoint = ConfigurationConstants.PAYABLE_ACCOUNTS_RETRIEVAL_ENDPOINT;
+        JSONArray userAccountsArray = DataRetrievalUtil.getAccountsFromEndpoint(requestData.getUserId(),
+                payableAccountsEndpoint, new HashMap<>(), new HashMap<>());
+
+        if (userAccountsArray == null || userAccountsArray.isEmpty()) {
+            throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+        }
+
+        Account validatedAccountRefObject;
+        if (accountRefJSON.has(CommonConstants.MASKED_PAN)) {
+            // Skipping validation for maskedPan based account reference types and this needs to be validated
+            // from the bank back end since there might be scenarios where there are 2 similar maskedPans
+            // for a single user therefore we are not sure which account to validate it against
+            // Eg: 123456xxxxxx1234, 123456xxxxxx1234 -> Both these maskedPans can belong to the same user
+            validatedAccountRefObject = ConsentAuthorizationUtil.getAccountFromAccountRef(accountRefJSON);
+        } else {
+            JSONArray accountRefsArray = new JSONArray();
+            accountRefsArray.put(accountRefJSON);
+            List<Account> validatedAccountList = ConsentAuthorizationUtil.getValidatedAccountObjects(accountRefsArray,
+                    userAccountsArray);
+
+            // Validate account existence under user
+            if (validatedAccountList == null || validatedAccountList.isEmpty()) {
+                throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+            }
+
+            validatedAccountRefObject = validatedAccountList.get(0);
+        }
+
+        if (validatedAccountRefObject == null) {
+            throw new AuthorizationFailureException(ErrorConstants.ACCOUNTS_NOT_FOUND_FOR_USER);
+        }
+
+        // Add to consent page to be displayed
+        responseData.getConsentData().setInitiatedAccountsForConsent(List.of(validatedAccountRefObject));
+    }
+
+    /**
+     * Extracts account reference object from authorized account objects.
+     *
+     * @param accounts account objects under user granted data
+     * @return list of account reference objects
+     */
+    public static List<AccountReference> extractAccountRef(List<Account> accounts) {
+        List<AccountReference> accountRefs = new ArrayList<>();
+
+        for (Account authorizedAccount: accounts) {
+            AccountReference accountRef = new AccountReference();
+            if (authorizedAccount.getAdditionalProperties().containsKey(CommonConstants.CURRENCY)) {
+                accountRef.setAdditionalProperties(CommonConstants.CURRENCY,
+                        (String) authorizedAccount.getAdditionalProperties().get(CommonConstants.CURRENCY));
+            }
+            String accountRefType = CommonConsentValidationUtil
+                    .getAccountReferenceType(authorizedAccount.getAdditionalProperties());
+            accountRef.setAdditionalProperties(accountRefType,
+                    (String) authorizedAccount.getAdditionalProperties().get(accountRefType));
+
+            accountRefs.add(accountRef);
+        }
+
+        return accountRefs;
+    }
+
+    /**
      * Validates the existence and format of consent initiation payload.
      *
      * @param requestBody pre process consent creation request body
@@ -952,7 +1097,119 @@ public class CommonConsentValidationUtil {
             // If payload is not JSON
             throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
                     ErrorUtil.constructBerlinError("payload", TPPMessage.CategoryEnum.ERROR,
-                            TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+                    TPPMessage.CodeEnum.FORMAT_ERROR, ErrorConstants.PAYLOAD_FORMAT_ERROR));
+        }
+    }
+
+    /**
+     * Validates that the client requesting consent authorization is the same client that initiated the consent.
+     *
+     * @param consentResource stored consent resource from the accelerator
+     * @param queryParams query parameters sent with the authorization request
+     * @throws AuthorizationFailureException if client id validation failed
+     */
+    public static void validateClient(StoredDetailedConsentResourceData consentResource,
+                                      JSONObject queryParams) throws ExtensionException, AuthorizationFailureException {
+        try {
+            String clientId = queryParams.getString(CommonConstants.CLIENT_ID_PARAM);
+            validateClient(clientId, consentResource.getClientId());
+        } catch (JSONException e) {
+            throw new AuthorizationFailureException("Client id not found in request");
+        } catch (ValidationFailureException e) {
+            throw new AuthorizationFailureException(ErrorConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+        }
+    }
+
+    /**
+     * Verifies that the request scope matches the authorizing consent type.
+     *
+     * @param requestId ID of the request for logging
+     * @param queryParams query parameters from the authorization request
+     * @param consentType type of the consent
+     * @throws AuthorizationFailureException if scope validation failed
+     */
+    public static void validateScope(String requestId, JSONObject queryParams, String consentType)
+            throws AuthorizationFailureException {
+        String scopes = queryParams.optString(CommonConstants.SCOPE_PARAM);
+        if (!scopes.isEmpty()) {
+            ConsentAuthorizationUtil.validateConsentTypeWithScopes(requestId, consentType, scopes);
+        } else {
+            throw new AuthorizationFailureException("Scope not found in request");
+        }
+    }
+
+    /**
+     * Appends the authorization resource being authorized to consent metadata.
+     *
+     * @param responseData success response data for populating consent authorization screen
+     * @param unauthorizedObj authorization resource being authorized
+     */
+    public static void appendAuthorizationToResponse(SuccessResponsePopulateConsentAuthorizeScreenData responseData,
+                                                     StoredAuthorization unauthorizedObj) {
+        Map<String, Object> consentMetadata;
+        if (responseData.getConsentData().getConsentMetadata() == null) {
+            consentMetadata = new HashMap<>();
+        } else {
+            consentMetadata = (Map<String, Object>) responseData.getConsentData().getConsentMetadata();
+        }
+        consentMetadata.put(CommonConstants.AUTHORIZING_AUTHORIZATION, unauthorizedObj);
+        responseData.getConsentData().setConsentMetadata(consentMetadata);
+    }
+
+    /**
+     * Extracts authorization resource being authorized from consent metadata.
+     *
+     * @param retrievalMetadata metadata stored at populate consent authorize screen endpoint
+     * @return authorization resource to authorize mapped to an object
+     * @throws ExtensionException if the authorization resource stored in metadata is invalid
+     */
+    public static StoredAuthorization extractAuthorizingResource(JSONObject retrievalMetadata)
+            throws ExtensionException {
+        StoredAuthorization authorizingResource;
+        try {
+            authorizingResource = objectMapper.readValue(retrievalMetadata
+                    .getJSONObject(CommonConstants.AUTHORIZING_AUTHORIZATION).toString(),
+                    StoredAuthorization.class);
+        } catch (JsonProcessingException e) {
+            // Should be unreachable given that a validated authorization resource is attached
+            // to metadata when populating consent page
+            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    "Authorization resource being authorized is invalid");
+        }
+        return authorizingResource;
+    }
+
+    /**
+     * Properly builds response for populate consent authorize screen endpoint.
+     *
+     * @param response built response object for the endpoint
+     * @return endpoint response
+     * @throws ExtensionException if response building failed
+     */
+    public static Response buildPopulateResponseFromObject(SuccessResponsePopulateConsentAuthorizeScreen response)
+            throws ExtensionException {
+        try {
+            return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
+        } catch (JsonProcessingException e) {
+            throw new ExtensionException(Response.Status.INTERNAL_SERVER_ERROR, "server_error",
+                    "Failed to parse built populate response object to JSON.");
+        }
+    }
+
+    /**
+     * Properly builds response for persist authorized consent endpoint.
+     *
+     * @param response built response object for the endpoint
+     * @return endpoint response
+     * @throws ExtensionException if response building failed
+     */
+    public static Response buildPersistResponseFromObject(SuccessResponsePersistAuthorizedConsent response)
+            throws ExtensionException {
+        try {
+            return Response.ok().entity(objectMapper.writeValueAsString(response)).build();
+        } catch (JsonProcessingException e) {
+            throw new ExtensionException(Response.Status.INTERNAL_SERVER_ERROR, "server_error",
+                    "Failed to parse built persist response object to JSON.");
         }
     }
 }

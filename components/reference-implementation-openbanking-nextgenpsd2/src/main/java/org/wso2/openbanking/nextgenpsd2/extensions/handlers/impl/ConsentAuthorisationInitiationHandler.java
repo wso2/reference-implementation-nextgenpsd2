@@ -36,11 +36,14 @@ import javax.ws.rs.core.Response;
 /**
  * Consent authorisation handler for explicit authorisation.
  */
-public class ConsentAuthorisationManageHandler implements ConsentInitiationHandler {
+public class ConsentAuthorisationInitiationHandler implements ConsentInitiationHandler {
     // ToDo: Implement authorisation creation for consents
 
     /**
-     * Handle creation of authorisations for consents.
+     * Handle creation of authorisations for consents. This method is responsible for completing specification specific
+     * explicit authorisation creation request.
+     *
+     * <p><b>Note:</b> Creation of explicit authorizations to existing consents is not supported</p>
      *
      * @param requestBody body of the request received by pre-process-consent-creation endpoint
      * @return Successful validation result
@@ -55,7 +58,12 @@ public class ConsentAuthorisationManageHandler implements ConsentInitiationHandl
     }
 
     /**
-     * Handles retrieval of consent authorisations.
+     * Handles retrieval of consent authorisations. This method is responsible for validating the requested
+     * authorisation resource and building the response encompassing authorisation information as specified by the
+     * specification.
+     *
+     * <p><b>Note:</b> Retrieval of explicit authorization resources cannot be done given creating explicit
+     * authorizations to existing consents is not supported</p>
      *
      * @param requestBody body of the request received by pre-process-consent-retrieval
      * @return Successful retrieval response
@@ -70,7 +78,11 @@ public class ConsentAuthorisationManageHandler implements ConsentInitiationHandl
     }
 
     /**
-     * Handles revocation of consent authorizations.
+     * Handles removal of consent authorizations. This method is responsible for validating the removal request,
+     * checking if the authorization resource is removable and confirming the removal.
+     *
+     * <p><b>Note:</b> Removal of explicit authorization resources cannot be done given creating explicit
+     * authorizations to existing consents is not supported</p>
      *
      * @param requestBody body of the request received by pre-process-consent-revocation
      * @return Successful validation result
@@ -85,7 +97,12 @@ public class ConsentAuthorisationManageHandler implements ConsentInitiationHandl
     }
 
     /**
-     * Handles consent authorization creation response customization.
+     * Handles consent authorization creation response customization. Upon a successful creation of an authorization
+     * resource, this method is responsible for building the specification specified authorization resource creation
+     * response.
+     *
+     * <p><b>Note:</b> Response enrichment for explicit authorization resource creation cannot be done given creating
+     * explicit authorizations to existing consents is not supported</p>
      *
      * @param requestBody body of the request received by enrich-consent-creation-response endpoint
      * @return Response to forward

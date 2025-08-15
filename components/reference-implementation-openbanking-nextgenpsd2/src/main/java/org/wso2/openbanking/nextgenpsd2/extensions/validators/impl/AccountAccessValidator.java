@@ -1,6 +1,5 @@
 package org.wso2.openbanking.nextgenpsd2.extensions.validators.impl;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountAccess;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
@@ -19,9 +18,9 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
 
     @Override
     public boolean isValid(AccountAccess access, ConstraintValidatorContext context) {
-        boolean hasArrays = notEmpty(access.getAccounts()) ||
-                notEmpty(access.getBalances()) ||
-                notEmpty(access.getTransactions());
+        boolean hasArrays = access.getAccounts() != null ||
+                access.getTransactions() != null ||
+                access.getBalances() != null;
 
         boolean hasPermissions = access.getAvailableAccounts() != null ||
                 access.getAvailableAccountsWithBalances() != null ||
@@ -42,38 +41,40 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
             return false;
         }
 
-        // Validate permission configurations
-        if (hasPermissions) {
-            if (CommonConstants.ALL_ACCOUNTS.equals(access.getAvailableAccounts())
-                    || CommonConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAvailableAccounts())) {
-                if (access.getAvailableAccountsWithBalances() != null || access.getAllPsd2() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-            if (CommonConstants.ALL_ACCOUNTS.equals(access.getAvailableAccountsWithBalances())
-                    || CommonConstants.ALL_ACCOUNTS_WITH_OWNER_NAME
-                    .equals(access.getAvailableAccountsWithBalances())) {
-                if (access.getAvailableAccounts() != null || access.getAllPsd2() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-            if (CommonConstants.ALL_ACCOUNTS.equals(access.getAllPsd2())
-                    || CommonConstants.ALL_ACCOUNTS_WITH_OWNER_NAME.equals(access.getAllPsd2())) {
-                if (access.getAvailableAccounts() != null || access.getAvailableAccountsWithBalances() != null) {
-                    CommonConsentValidationUtil.setConstrainViolation(context,
-                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
-                }
-            }
-        }
-
         // Additional info only with at least one array
         if (access.getAdditionalInformation() != null && !hasArrays) {
             CommonConsentValidationUtil.setConstrainViolation(context,
                     CommonConsentValidationUtil
                             .buildViolationMessage(ErrorConstants.INVALID_USE_OF_ADDITIONAL_INFO_ATTRIBUTE));
             return false;
+        }
+
+        // Validate permission configurations
+        if (hasPermissions) {
+            if (access.getAvailableAccounts() != null) {
+                if (access.getAvailableAccountsWithBalances() != null || access.getAllPsd2() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+            if (access.getAvailableAccountsWithBalances() != null) {
+                if (access.getAvailableAccounts() != null || access.getAllPsd2() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+            if (access.getAllPsd2() != null) {
+                if (access.getAvailableAccounts() != null || access.getAvailableAccountsWithBalances() != null) {
+                    CommonConsentValidationUtil.setConstrainViolation(context,
+                            CommonConsentValidationUtil.buildViolationMessage(ErrorConstants.INVALID_PERMISSION));
+                    return false;
+                }
+            }
+
+            // Should be unreachable because of a prior schema validation
+            return true;
         }
 
         // Arrays must all be empty or all non-empty
@@ -88,15 +89,5 @@ public class AccountAccessValidator implements ConstraintValidator<ValidAccountA
         }
 
         return true;
-    }
-
-    /**
-     * Helper method for null and isEmpty check.
-     *
-     * @param list
-     * @return
-     */
-    private boolean notEmpty(List<?> list) {
-        return list != null && !list.isEmpty();
     }
 }

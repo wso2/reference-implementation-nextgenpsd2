@@ -65,17 +65,17 @@ public class ValidationFailureException extends Exception {
 
     /**
      * Format error to the expected FailedResponse object format.
-     * @return
+     * @return formatted error message as a JSONObject
      */
-    public JSONObject getFormattedError() {
+    public JSONObject toJson() {
         return ErrorUtil.getFormattedFailedResponse(this.errorCode.getCode(), this.data);
     }
 
     /**
      * Return formatted error as string.
-     * @return
+     * @return formatted error message as a string
      */
-    public String getFormattedErrorAsString() {
-        return getFormattedError().toString();
+    public String toJsonString() {
+        return toJson().toString();
     }
 }

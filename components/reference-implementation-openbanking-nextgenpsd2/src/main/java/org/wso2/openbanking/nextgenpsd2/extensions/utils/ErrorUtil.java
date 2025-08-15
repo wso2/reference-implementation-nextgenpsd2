@@ -24,6 +24,8 @@ import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.ErrorResponse;
 import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorize;
+import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorizeData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
 
@@ -173,5 +175,28 @@ public class ErrorUtil {
         }
 
         return message;
+    }
+
+    /**
+     * Method to build FailedResponseInConsentAuthorize object from failed authorization exceptions.
+     *
+     * @param responseId response id for the request
+     * @param message error message
+     * @param newStatus new status if a consent status update is required
+     * @return response object for authorization object
+     */
+    public static JSONObject getFormattedAuthorizationFailureException(String responseId, String message,
+                                                                       String newStatus) {
+        FailedResponseInConsentAuthorize failedResponse = new FailedResponseInConsentAuthorize();
+        failedResponse.setResponseId(responseId);
+        failedResponse.setStatus(FailedResponseInConsentAuthorize.StatusEnum.ERROR);
+
+        FailedResponseInConsentAuthorizeData responseData = new FailedResponseInConsentAuthorizeData();
+        responseData.setErrorMessage(message);
+        if (newStatus != null && !newStatus.isEmpty()) {
+            responseData.setNewConsentStatus(newStatus);
+        }
+
+        return new JSONObject(failedResponse.data(responseData));
     }
 }

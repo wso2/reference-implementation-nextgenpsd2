@@ -55,11 +55,12 @@ import javax.ws.rs.core.Response;
 /**
  * Consent handler for payment consents.
  */
-public class PaymentConsentManageHandler implements ConsentInitiationHandler {
-    private static final Log log = LogFactory.getLog(PaymentConsentManageHandler.class);
+public class PaymentConsentInitiationHandler implements ConsentInitiationHandler {
+    private static final Log log = LogFactory.getLog(PaymentConsentInitiationHandler.class);
 
     /**
-     * Handles creation of payment consent.
+     * Handles creation of payment consent. This method is responsible for completing specification specific
+     * validations on the consent initiation payload.
      *
      * @param requestBody body of the request received by pre-process-consent-creation endpoint
      * @return Successful validation result
@@ -160,7 +161,8 @@ public class PaymentConsentManageHandler implements ConsentInitiationHandler {
     }
 
     /**
-     * Handles retrieval of payment consents.
+     * Handles retrieval of payment consents. This method is responsible for validating the requested consent and
+     * building the response encompassing consent information as specified by the specification.
      *
      * @param requestBody body of the request received by pre-process-consent-retrieval
      * @return Successful retrieval response
@@ -188,7 +190,7 @@ public class PaymentConsentManageHandler implements ConsentInitiationHandler {
             requestClientId = headers.getString(CommonConstants.X_WSO2_CLIENT_ID_KEY);
         } catch (JSONException e) {
             throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "x-wso2-client-id header not found");
+                    "Organization ID not found for the client");
         }
 
         // Validate client
@@ -232,7 +234,10 @@ public class PaymentConsentManageHandler implements ConsentInitiationHandler {
     }
 
     /**
-     * Handles revocation of payment consents.
+     * Handles revocation of payment consents. This method is responsible for validating the revocation request,
+     * checking if the consent is revocable and confirming the revocation.
+     *
+     * <p><b>Note:</b> Single payment consents cannot be revoked once created.</p>
      *
      * @param requestBody body of the request received by pre-process-consent-revocation
      * @return Successful validation result
@@ -240,11 +245,13 @@ public class PaymentConsentManageHandler implements ConsentInitiationHandler {
     @Override
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, ExtensionException {
+        // ToDo: Implement cancel-authorizations once explicit auth is implemented
         return CommonConsentValidationUtil.validateRevokeRequestAndReturnResponse(requestBody);
     }
 
     /**
-     * Handles payment consent creation response customization.
+     * Handles payment consent creation response customization. Upon a successful consent creation, this method is
+     * responsible for building the specification specified consent creation response.
      *
      * @param requestBody body of the request received by enrich-consent-creation-response endpoint
      * @return Response to forward

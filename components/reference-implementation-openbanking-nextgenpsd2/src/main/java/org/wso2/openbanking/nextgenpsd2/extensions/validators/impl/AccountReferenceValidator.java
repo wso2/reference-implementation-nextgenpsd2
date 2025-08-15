@@ -6,7 +6,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -40,7 +40,7 @@ public class AccountReferenceValidator implements ConstraintValidator<ValidAccou
 
     @Override
     public boolean isValid(AccountReference ref, ConstraintValidatorContext context) {
-        Map<String, String> props = ref.getProperties();
+        Map<String, String> props = ref.getAdditionalProperties();
 
         if (props == null || props.isEmpty()) {
             CommonConsentValidationUtil.setConstrainViolation(context,
