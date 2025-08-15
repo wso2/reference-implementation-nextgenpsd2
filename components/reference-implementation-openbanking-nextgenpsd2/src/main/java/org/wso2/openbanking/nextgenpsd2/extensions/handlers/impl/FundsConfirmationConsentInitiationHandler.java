@@ -60,7 +60,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     private static final Log log = LogFactory.getLog(FundsConfirmationConsentUtil.class);
 
     /**
-     * Handles creation of confirmation of funds consents.
+     * Handles creation of confirmation of funds consents. This method is responsible for completing specification
+     * specific validations on the consent initiation payload.
      *
      * @param requestBody body of the pre-process-consent-creation request
      * @return success
@@ -155,7 +156,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     }
 
     /**
-     * Handles retrieval of funds confirmation consents.
+     * Handles retrieval of funds confirmation consents. This method is responsible for validating the requested consent
+     * and building the response encompassing consent information as specified by the specification.
      *
      * @param requestBody body of the request received by pre-process-consent-retrieval
      * @return Successful retrieval response
@@ -219,7 +221,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     }
 
     /**
-     * Handles revocation of funds confirmation consents.
+     * Handles revocation of funds confirmation consents. This method is responsible for validating the revocation
+     * request, checking if the consent is revocable and confirming the revocation.
      *
      * @param requestBody body of the request received by pre-process-consent-revocation
      * @return Successful validation result
@@ -231,7 +234,8 @@ public class FundsConfirmationConsentInitiationHandler implements ConsentInitiat
     }
 
     /**
-     * Handles CoF consent creation response customization.
+     * Handles CoF consent creation response customization. Upon a successful consent creation, this method is
+     * responsible for building the specification specified consent creation response.
      *
      * @param requestBody body of the request received by enrich-consent-creation-response endpoint
      * @return Response to forward

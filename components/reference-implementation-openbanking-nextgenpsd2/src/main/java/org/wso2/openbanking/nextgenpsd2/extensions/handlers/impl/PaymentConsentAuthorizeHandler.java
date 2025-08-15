@@ -52,7 +52,15 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Return consent data for payment consents.
+     * Return basic consent data for payment consents.
+     * This includes extracting mandatory consent data (excluding any account data) to be shown in the consent
+     * authorization page.
+     * This method handles data population for payment service types,
+     * <ul>
+     *     <li>single payment</li>
+     *     <li>bulk payment</li>
+     *     <li>periodic payment</li>
+     * </ul>
      *
      * @param responseData data of the response object to populate consent authorize screen for payment consents
      * @param requestData data of the request made to populate-consent-authorize-screen for payment consents
@@ -80,6 +88,8 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
 
     /**
      * Return consumer data for payment consents.
+     * This method is responsible for validating the dedicated debtor account from the initiation request and
+     * appending it to the consent authorization page.
      *
      * @param responseData data of the response object to populate consent authorize screen for payment consents
      * @param requestData data of the request made to populate consent authorize screen for payment consents
@@ -106,6 +116,12 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
 
     /**
      * Returns authorizations and account mappings for account consent persistence.
+     * This method is responsible for,
+     * <ul>
+     *     <li>amending consent status</li>
+     *     <li>amending authorization status of the authorized resource</li>
+     *     <li>adding account permission mappings to the authorized resource</li>
+     * </ul>
      *
      * @param requestBody body of the request received by persist-authorized-consent for payment consents
      * @param authorizingResource authorization resource being authorized for payment consents

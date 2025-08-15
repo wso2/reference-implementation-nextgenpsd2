@@ -61,7 +61,8 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
     private static final Log log = LogFactory.getLog(AccountConsentInitiationHandler.class);
 
     /**
-     * Handles creation of account consents.
+     * Handles creation of account consents. This method is responsible for completing specification specific
+     * validations on the consent initiation payload.
      *
      * @param requestBody body of the request received by pre-process-consent-creation endpoint
      * @return Successful validation result
@@ -164,7 +165,8 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
     }
 
     /**
-     * Handles retrieval of account requests.
+     * Handles retrieval of account requests. This method is responsible for validating the requested consent and
+     * building the response encompassing consent information as specified by the specification.
      *
      * @param requestBody body of the request received by pre-process-consent-retrieval
      * @return Successful retrieval response
@@ -236,7 +238,8 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
     }
 
     /**
-     * Handles revocation of account consents.
+     * Handles revocation of account consents. This method is responsible for validating the revocation request,
+     * checking if the consent is revocable and confirming the revocation.
      *
      * @param requestBody body of the request received by pre-process-consent-revocation
      * @return Successful validation result
@@ -248,7 +251,8 @@ public class AccountConsentInitiationHandler implements ConsentInitiationHandler
     }
 
     /**
-     * Handles account consent creation response customization.
+     * Handles account consent creation response customization. Upon a successful consent creation, this method is
+     * responsible for building the specification specified consent creation response.
      *
      * @param requestBody body of the request received by enrich-consent-creation-response endpoint
      * @return Response to forward

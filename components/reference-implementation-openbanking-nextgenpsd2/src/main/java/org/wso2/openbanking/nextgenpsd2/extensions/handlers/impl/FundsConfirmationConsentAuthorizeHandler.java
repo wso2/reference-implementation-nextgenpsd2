@@ -52,6 +52,8 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
 
     /**
      * Return consent data for confirmation of funds consents.
+     * This includes extracting mandatory consent data (excluding any account data) to be shown in the consent
+     * authorization page.
      *
      * @param responseData data of the response object to populate consent authorize screen for CoF consents
      * @param requestData data of the request made to populate-consent-authorize-screen for CoF consents
@@ -71,6 +73,8 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
 
     /**
      * Return consumer data for confirmation of funds consents.
+     * This method is responsible for validating the dedicated debtor account from the initiation request and
+     * appending it to the consent authorization page.
      *
      * @param responseData data of the response object to populate consent authorize screen for CoF consents
      * @param requestData data of the request made to populate-consent-authorize-screen for CoF consents
@@ -97,6 +101,12 @@ public class FundsConfirmationConsentAuthorizeHandler implements ConsentAuthoriz
 
     /**
      * Returns authorizations and account mappings for account consent persistence.
+     * This method is responsible for,
+     * <ul>
+     *     <li>amending consent status</li>
+     *     <li>amending authorization status of the authorized resource</li>
+     *     <li>adding account permission mappings to the authorized resource</li>
+     * </ul>
      *
      * @param requestBody body of the request received by persist-authorized-consent for CoF consents
      * @param authorizingResource authorization resource being authorized for CoF consents

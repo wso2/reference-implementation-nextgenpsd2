@@ -56,7 +56,9 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     /**
-     * Return consent data for account consents.
+     * Return basic consent data for account consents.
+     * This includes extracting mandatory consent data (excluding any account data) to be shown in the consent
+     * authorization page.
      *
      * @param responseData data of the response object to populate consent authorize screen for account consents
      * @param requestData data of the request made to populate-consent-authorize-screen for account consents
@@ -76,6 +78,14 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
 
     /**
      * Return consumer data for account consents.
+     * This method populates all account related data (including permissions/access types associated with them) that
+     * need to be shown to the PSU for authorization.
+     * This includes either,
+     * <ul>
+     *     <li>a list of dedicated accounts, requested at consent initiation</li>
+     *     <li>a list of bank offered accounts associated with user, not selectable</li>
+     *     <li>a list of bank offered accounts associated with user, for selection</li>
+     * </ul>
      *
      * @param responseData data of the response object to populate consent authorize screen for account consents
      * @param requestData data of the request made to populate-consent-authorize-screen for account consents
@@ -130,6 +140,13 @@ public class AccountConsentAuthorizeHandler implements ConsentAuthorizationHandl
 
     /**
      * Returns authorizations and account mappings for account consent persistence.
+     * This method is responsible for,
+     * <ul>
+     *     <li>amending consent status</li>
+     *     <li>amending authorization status of the authorized resource</li>
+     *     <li>adding account permission mappings to the authorized resource</li>
+     *     <li>updating consent receipt in case they were selected by PSU from a list of available accounts</li>
+     * </ul>
      *
      * @param requestBody body of the request received by persist-authorized-consent for account consents
      * @param authorizingResource authorization resource being authorized for account consents
