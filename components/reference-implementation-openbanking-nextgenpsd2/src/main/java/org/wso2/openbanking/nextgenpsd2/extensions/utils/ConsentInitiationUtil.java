@@ -72,6 +72,10 @@ public class ConsentInitiationUtil {
                 (ArrayList<ScaMethod>) scaElements.get(CommonConstants.SCA_METHODS_KEY);
         headers.put(CommonConstants.ASPSP_SCA_APPROACH, scaApproach.getApproach().toString());
 
+        Map<?, ?> attributesMap = (Map<?, ?>) requestBody.getData().getConsentResource().getAttributes();
+        headers.put(CommonConstants.X_REQUEST_ID_PROPER_CASE_HEADER, attributesMap.values().iterator().next()
+                .toString());
+
         StoredDetailedConsentResourceData createdConsent = requestBody.getData().getConsentResource();
 
         if (ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString().equals(consentType)) {
