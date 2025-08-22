@@ -73,8 +73,9 @@ public class ConsentInitiationUtil {
         headers.put(CommonConstants.ASPSP_SCA_APPROACH, scaApproach.getApproach().toString());
 
         Map<?, ?> attributesMap = (Map<?, ?>) requestBody.getData().getConsentResource().getAttributes();
-        headers.put(CommonConstants.X_REQUEST_ID_PROPER_CASE_HEADER, attributesMap.values().iterator().next()
-                .toString());
+        String xRequestId = (String) attributesMap.get("IdempotencyKey");
+
+        headers.put(CommonConstants.X_REQUEST_ID_PROPER_CASE_HEADER, xRequestId);
 
         StoredDetailedConsentResourceData createdConsent = requestBody.getData().getConsentResource();
 
