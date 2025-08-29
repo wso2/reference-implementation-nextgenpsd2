@@ -153,6 +153,7 @@ class BerlinRequestBuilder {
 
         return TestSuite.buildRequest()
                 .contentType(ContentType.JSON)
+                .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .header(BerlinConstants.X_REQUEST_ID, xRequestId)
                 .header(BerlinConstants.Date, getCurrentDate())
                 .header(BerlinConstants.PSU_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress())

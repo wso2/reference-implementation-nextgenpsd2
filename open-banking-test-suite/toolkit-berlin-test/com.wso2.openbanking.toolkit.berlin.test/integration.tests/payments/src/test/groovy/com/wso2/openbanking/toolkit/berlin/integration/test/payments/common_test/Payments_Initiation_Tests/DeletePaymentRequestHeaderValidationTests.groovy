@@ -61,7 +61,8 @@ class DeletePaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE),
                     BerlinConstants.TOKEN_INVALID)
             Assert.assertTrue (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                    contains ("Incorrect Access Token Type provided"))
+                    contains ("The claim configured in the system and the claim provided in the token do not align. " +
+                            "Please ensure the claims match."))
         }
     }
 

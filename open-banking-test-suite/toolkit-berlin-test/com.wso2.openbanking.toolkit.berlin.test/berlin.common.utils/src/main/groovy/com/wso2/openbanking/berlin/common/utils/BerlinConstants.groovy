@@ -41,7 +41,7 @@ class BerlinConstants {
     static final String COF_SUBMIT_XPATH = """//*[@id="approve"]"""
     static final String COF_DENY_XPATH = """//input[@value='Deny']"""
     static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR = "//body[1]"
-    static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200 ="//body[1]//div[@class='ui visible negative message']"
+    static final String LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200 ="//div/p[@class='portal-tagline-description']"
     static final String LBL_CONSENT_PAGE_ERROR = "/html/body/div/div/div/div/div/div[3]/div/form/div/div/p"
     static final String PSU_EMAIL_ID = "mark@gold.com"
 
@@ -112,7 +112,7 @@ class BerlinConstants {
     static final String TRUSTED_BENEFICIARY_FLAG = "trustedBeneficiaryFlag"
 
     static final String CURRENT_ACCOUNT = "DE98765432109876543210"
-    static final String MULTICURRENCY_ACCOUNT = "DE12345678901234567890"
+    static final String MULTICURRENCY_ACCOUNT = "DE98765432109876543210"
     static final String PAN_ACCOUNT = "5409050000000000"
     static final String BBAN_ACCOUNT = "BARC12345612345678"
     static final String CURRENCY1 = "USD"

@@ -42,6 +42,7 @@ class AbstractPaymentsFlow {
 
     String applicationAccessToken
     String paymentId
+    String basketId
     String code
     String consentStatus
     String userAccessToken
@@ -52,6 +53,7 @@ class AbstractPaymentsFlow {
     Response consentRetrievalResponse
     Response authorisationResponse
     Response deleteResponse
+    Response signingBasketResponse
     BerlinOAuthAuthorization auth
     BrowserAutomation.AutomationContext automation
     final BerlinConstants.SCOPES scopes = BerlinConstants.SCOPES.PAYMENTS
@@ -259,5 +261,59 @@ class AbstractPaymentsFlow {
 
         authorisationResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
                 .get("${consentPath}/${paymentId}/authorisations/${authorisationId}")
+    }
+
+    /**
+     * Signing Basket Initiation Request.
+     * @param consentPath
+     * @param initiationPayload
+     */
+    void doSigningBasketInitiation(String initiationPayload) {
+
+        //initiation
+        signingBasketResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .body(initiationPayload)
+                .post(PaymentsConstants.getConsentPath() + PaymentsConstants.SIGNING_BASKET_PATH)
+
+        basketId = TestUtil.parseResponseBody(signingBasketResponse, "basketId")
+        consentStatus = TestUtil.parseResponseBody(signingBasketResponse, "transactionStatus")
+    }
+
+    /**
+     * Signing Basket Retrieval Request.
+     * @param basketId
+     */
+    void doSigningBasketRetrieval(String basketId) {
+
+        //initiation
+        signingBasketResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get(PaymentsConstants.getConsentPath() + PaymentsConstants.SIGNING_BASKET_PATH + "/" + basketId)
+
+        consentStatus = TestUtil.parseResponseBody(signingBasketResponse, "transactionStatus")
+    }
+
+    /**
+     * Get the status of Signing Basket.
+     * @param basketId
+     */
+    void getStatusOfSigningBasket(String basketId) {
+
+        //initiation
+        signingBasketResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .get(PaymentsConstants.getConsentPath() + PaymentsConstants.SIGNING_BASKET_PATH + "/" + basketId
+                        + "/status")
+
+        consentStatus = TestUtil.parseResponseBody(signingBasketResponse, "transactionStatus")
+    }
+
+    /**
+     * Signing Basket Cancellation.
+     * @param basketId
+     */
+    void doSigningBasketCancellation(String basketId) {
+
+        //initiation
+        signingBasketResponse = BerlinRequestBuilder.buildBasicRequest(applicationAccessToken)
+                .delete(PaymentsConstants.getConsentPath() + PaymentsConstants.SIGNING_BASKET_PATH + "/" + basketId)
     }
 }

@@ -42,7 +42,7 @@ class CofInitiationRequestPayloadValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"account\"])")
+                "Schema validation failed in the Request: Object has missing required properties ([\"account\"]), ")
     }
 
     @Test (groups = ["1.3.6"])

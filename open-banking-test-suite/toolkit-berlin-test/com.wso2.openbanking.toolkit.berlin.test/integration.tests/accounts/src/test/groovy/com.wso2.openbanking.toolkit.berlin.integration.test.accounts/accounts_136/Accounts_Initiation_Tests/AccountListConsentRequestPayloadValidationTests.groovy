@@ -53,7 +53,9 @@ class AccountListConsentRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim().contains(
-                "Instance value (\"allAccountsWithBalances\") not found in enum "))
+                "Schema validation failed in the Request: [Path '/access/availableAccounts'] Instance value " +
+                        "(\"allAccountsWithBalances\") not found in enum (possible values: [\"allAccounts\"," +
+                        "\"allAccountsWithOwnerName\"]), "))
     }
 
     @Test (groups = "1.3.6")

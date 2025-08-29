@@ -117,7 +117,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
                 .baseUri(ConfigParser.getInstance().getBaseURL())
                 .post(consentPath)
 
-        Assert.assertEquals (consentResponse.getStatusCode (), BerlinConstants.STATUS_CODE_401)
+        Assert.assertEquals (consentResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
                 contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
@@ -164,7 +164,8 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("X-Request-ID header is missing in the request"))
+                contains ("Schema validation failed in the Request: Header parameter 'x-request-id' is required on " +
+                        "path '/consents' but not found in request., "))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -187,7 +188,7 @@ class AccountsInitiationRequestHeaderValidationTests extends AbstractAccountsFlo
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Input string \"1234\" is not a valid UUID")
+                "Schema validation failed in the Request: Input string \"1234\" is not a valid UUID, ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

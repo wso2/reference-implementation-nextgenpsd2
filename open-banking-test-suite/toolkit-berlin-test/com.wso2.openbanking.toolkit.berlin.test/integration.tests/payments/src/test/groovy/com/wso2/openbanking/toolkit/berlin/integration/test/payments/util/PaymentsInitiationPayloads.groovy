@@ -774,4 +774,16 @@ class PaymentsInitiationPayloads {
         }"""
             .stripIndent()
 
+    static String signingBasketInitiationPayloadBuilder(String paymentId1, String paymentId2) {
+
+        String signingBasketInitiationPayload =  """{
+             "paymentIds": [
+                "$paymentId1", 
+                "$paymentId2"
+             ]
+        }"""
+        .stripIndent()
+
+        return signingBasketInitiationPayload;
+    }
 }

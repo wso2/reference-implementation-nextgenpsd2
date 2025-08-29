@@ -160,7 +160,7 @@ class AccountsExplicitAuthorisation extends AbstractAccountsFlow{
 
         //Consent Initiation
         doExplicitAuthInitiation(consentPath, initiationPayload)
-        Assert.assertEquals(consentResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
+        Assert.assertEquals(authorisationResponse.statusCode(), BerlinConstants.STATUS_CODE_201)
         Assert.assertNotNull(accountId)
 
         //Create Explicit Authorisation Resources

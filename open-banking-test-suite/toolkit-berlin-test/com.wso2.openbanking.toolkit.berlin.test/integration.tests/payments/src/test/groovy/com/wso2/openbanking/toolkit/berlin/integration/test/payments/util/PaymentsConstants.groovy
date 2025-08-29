@@ -87,4 +87,6 @@ class PaymentsConstants {
         }
         return pispPath
     }
+
+    static final String SIGNING_BASKET_PATH = "/signing-baskets"
 }

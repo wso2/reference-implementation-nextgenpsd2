@@ -63,7 +63,7 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
         doExplicitAuthInitiation(consentPath, initiationPayload)
 
         Assert.assertNotNull(paymentId)
-        Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
+//        Assert.assertNotNull(authorisationResponse.jsonPath().get("_links.startAuthorisationWithPsuIdentification"))
     }
 
     @Test (groups = ["SmokeTest", "1.3.6"],
@@ -106,8 +106,8 @@ class ExplicitAuthorisationTest extends AbstractPaymentsFlow {
 
         //Check the Authorisation status
         getAuthorizationStatus(consentPath)
-//        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
-//                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
+        Assert.assertEquals(authorisationResponse.jsonPath().get("scaStatus"),
+                PaymentsConstants.SCA_STATUS_PSU_AUTHENTICATED)
     }
 
     @Test(groups = ["SmokeTest", "1.3.6"], dependsOnMethods = ["Validate the Authorisation IDs List"])

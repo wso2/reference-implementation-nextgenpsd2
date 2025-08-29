@@ -314,10 +314,15 @@ class PaymentAuthorisationRequestValidationTests extends AbstractPaymentsFlow {
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutRedirectionURI(scopes, paymentId)
         consentAuthorizeErrorFlow(request)
 
-        String authUrl = automation.currentUrl.get()
-        def oauthErrorCode = URLDecoder.decode(authUrl.split("&")[1].split("=")[1].toString(), "UTF8")
-
-        Assert.assertEquals(oauthErrorCode, "Redirect URI is not present in the authorization request")
+        new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AuthAutomationSteps(request.toURI().toString()))
+                .addStep {driver, context ->
+                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants
+                            .LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
+                    Assert.assertTrue(lblErrorResponse.getText().trim().contains("Redirect URI is not present in the " +
+                            "authorization request"))
+                }
+                .execute()
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
