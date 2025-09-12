@@ -383,6 +383,7 @@ public class AccountConsentUtil {
      * @param updatedTimeVal last updated time
      * @return whether consent is expired or not
      */
+    @Deprecated
     public static boolean isConsentExpired(long validUntilDate, long updatedTimeVal) {
 
         LocalDateTime expDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(validUntilDate),
@@ -401,6 +402,20 @@ public class AccountConsentUtil {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Checks if consent is expired based on validUntilDate.
+     *
+     * @param validUntilDate valid until time in epoch seconds
+     * @return whether consent is expired or not
+     */
+    public static boolean isConsentExpired(long validUntilDate) {
+        LocalDateTime expDateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochSecond(validUntilDate), ZoneOffset.UTC);
+        LocalDate expDate = expDateTime.toLocalDate();
+        LocalDate currDate = LocalDate.now(ZoneOffset.UTC);
+        return currDate.isAfter(expDate);
     }
 
     /**

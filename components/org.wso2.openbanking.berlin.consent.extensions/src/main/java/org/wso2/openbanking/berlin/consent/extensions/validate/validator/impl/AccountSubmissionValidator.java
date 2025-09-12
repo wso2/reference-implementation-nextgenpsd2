@@ -62,8 +62,7 @@ public class AccountSubmissionValidator implements SubmissionValidator {
         boolean isConsentExpiredStatus = StringUtils.equals(detailedConsentResource.getCurrentStatus(),
                 ConsentStatusEnum.EXPIRED.toString());
         if (isConsentExpiredStatus || (detailedConsentResource.isRecurringIndicator() &&
-                AccountConsentUtil.isConsentExpired(
-                        detailedConsentResource.getValidityPeriod(), detailedConsentResource.getUpdatedTime()))) {
+                AccountConsentUtil.isConsentExpired(detailedConsentResource.getValidityPeriod()))) {
             if (!isConsentExpiredStatus) {
                 try {
                     coreService.updateConsentStatus(detailedConsentResource.getConsentID(),
