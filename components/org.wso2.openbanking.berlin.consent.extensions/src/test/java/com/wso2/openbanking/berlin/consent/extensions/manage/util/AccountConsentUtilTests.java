@@ -150,6 +150,9 @@ public class AccountConsentUtilTests extends PowerMockTestCase {
         updatedDateTime = OffsetDateTime.now().plusDays(-100);
         Assert.assertTrue(AccountConsentUtil.isConsentExpired(validUntilDateTime.toEpochSecond(),
                 updatedDateTime.toEpochSecond()));
+
+        Assert.assertFalse(AccountConsentUtil.isConsentExpired(OffsetDateTime.now().plusDays(1).toEpochSecond()));
+        Assert.assertTrue(AccountConsentUtil.isConsentExpired(OffsetDateTime.now().plusDays(-1).toEpochSecond()));
     }
 
 }

@@ -443,7 +443,7 @@ public class TestPayloads {
             "    \"iban\": \"DE23100120020123456789\"\n" +
             "  },\n" +
             "  \"remittanceInformationUnstructured\": \"Ref Number Abonnement\",\n" +
-            "  \"startDate\": \"2025-03-01\",\n" +
+            "  \"startDate\": \"" + TestUtil.getCurrentDate(1) + "\",\n" +
             "  \"executionRule\": \"preceding\",\n" +
             "  \"frequency\": \"Monthly\",\n" +
             "  \"dayOfExecution\": \"01\"\n" +
@@ -645,7 +645,7 @@ public class TestPayloads {
             "    \"iban\": \"DE40100100103307118608\"\n" +
             "  },\n" +
             "  \"paymentInformationId\": \"my-bulk-identification-1234\",\n" +
-            "  \"requestedExecutionDate\": \"2025-08-01\",\n" +
+            "  \"requestedExecutionDate\": \"" + TestUtil.getCurrentDate(1) + "\",\n" +
             "  \"payments\": [\n" +
             "    {\n" +
             "      \"instructedAmount\": {\n" +
