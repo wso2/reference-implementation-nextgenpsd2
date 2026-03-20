@@ -22,7 +22,14 @@ This project provides the reference implementation for the Berlin NextGenPSD2 sp
 
 ## Overview
 
-This project contains:
+With the release of Open Banking 4.0.0, it has introduced OpenAPI based extensions such that the toolkit developer
+can implement Open Banking specification requirements in their preferred programming language.
+The custom developed extensions can be deployed externally and tested separately without restarting the WSO2 servers.
+
+The OpenAPI extension can be found from [here](https://ob.docs.wso2.com/en/latest/references/accelerator-extensions-api/).
+
+This reference implementation provides a comprehensive solution for implementing Open Banking NextGenPSD2 specifications, including:
+
 - **Reference Implementation Components**: Core Berlin NextGenPSD2 implementation
 - **Self-Care Portal**: React-based application for account consent management
 - **Integration Test Suite**: Automated testing framework for Berlin toolkit validation
@@ -70,15 +77,15 @@ cd components/reference-implementation-openbanking-nextgenpsd2
 
 1. Goto /components/reference-implementation-openbanking-nextgenpsd2/target/ folder and host the `api#reference-implementation#ob#nextgenpsd2.war` in a preferred location and get the base URL.
 
-!!!tip
-      - If you are hosting this in WSO2 Identity Server copy the `pi#reference-implementation#ob#nextgenpsd2.war` to the `<IS_HOME>/repository/deployment/server/webapps` folder.
-      - Add the following configurations to the deployment.toml file inside the `<IS_HOME>/repository/conf` folder.
-      ```
-      [[resource.access_control]]
-      context = "(.*)/api/reference-implementation/ob/nextgenpsd2/(.*)"
-      http_method = "all"
-      secure = "false"
-      ```
+NOTE:
+- If you are hosting this in WSO2 Identity Server copy the `api#reference-implementation#ob#nextgenpsd2.war` to the `<IS_HOME>/repository/deployment/server/webapps` folder.
+- Add the following configurations to the deployment.toml file inside the `<IS_HOME>/repository/conf` folder.
+  ```
+  [[resource.access_control]]
+  context = "(.*)/api/reference-implementation/ob/nextgenpsd2/(.*)"
+  http_method = "all"
+  secure = "false"
+  ```
 
 ## Configuring WSO2 Open Banking Accelerator 4.0.0 
 
