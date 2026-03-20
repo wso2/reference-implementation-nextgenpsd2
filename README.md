@@ -1,5 +1,5 @@
 <!--
- ~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -16,51 +16,123 @@
  ~ under the License.
 -->
 
-# WSO2 OB Compliance Toolkit Berlin
+# WSO2 Open Banking NextGenPSD2 Reference Implementation
 
-WSO2 OB Compliance Toolkit Berlin provides the Toolkit Implementation for the Berlin NextGenPSD2 Specification
+This project provides the reference implementation for the Berlin NextGenPSD2 specification, enabling banks and financial institutions to comply with PSD2 requirements.
 
-### Building from the source
+## Overview
 
-If you want to build WSO2 OB Compliance Toolkit Berlin from the source code:
+This project contains:
+- **Reference Implementation Components**: Core Berlin NextGenPSD2 implementation
+- **Self-Care Portal**: React-based application for account consent management
+- **Integration Test Suite**: Automated testing framework for Berlin toolkit validation
+- **Open Banking Test Suite**: Comprehensive test framework for Berlin API compliance
 
-1. Install Java8 or above.
-1. Install [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above.
-1. Install [MySQL](https://dev.mysql.com/doc/refman/5.5/en/windows-installation.html).
-1. To get the WSO2 OB Compliance Toolkit Berlin from [this repository](https://github.com/wso2/reference-implementation-nextgenpsd2), click **Clone or download**.
-    * To **clone the solution**, copy the URL and execute the following command in a command prompt.
-      `git clone <the copiedURL>`
-    * To **download the pack**, click **Download ZIP** and unzip the downloaded file.
-1. Navigate to the downloaded solution using a command prompt and run the Maven command.
+## Prerequisites
 
-   |  Command | Description |
-         | :--- |:--- |
-   | ```mvn install``` | This starts building the pack without cleaning the folders. |
-   | ```mvn clean install``` | This cleans the folders and starts building the solution pack from scratch. |
-   | ```mvn clean install -P solution``` | This cleans the folders and starts building the solution pack from scratch. Finally creates the toolkit zip files containing the artifacts required to setup the toolkit. |
-
-1. Once the build is created, navigate to the relevant folder to get the toolkit for each product.
-
-|  Product | Toolkit Path |
-      | :--- |:--- |
-| ```Identity Server``` | `/reference-implementation-nextgenpsd2/toolkits/ob-apim/target` |
-| ```API Manager``` | `/reference-implementation-nextgenpsd2/toolkits/ob-is/target` |
+- Java 11 or above
+- [Apache Maven 3.0.5](https://maven.apache.org/download.cgi) or above
+- MySQL 5.7 or above
+- Node.js 18.16.0 and above and npm 9.7.0 and above (for building React applications)
 
 
-### Running the products
+## Project Structure
 
-Please refer the following READ.ME files to run the products.
+```
+reference-implementation-nextgenpsd2/
+├── components/                              # Core components
+│   └── reference-implementation-openbanking-nextgenpsd2/
+├── react-apps/                              # Frontend applications
+│   └── self-care-portal/                   # User consent management portal
+├── integration-test-suite/                  # Integration test framework
+│   └── berlin-toolkit-integration-test/
+├── open-banking-test-suite/                 # API compliance tests
+│   └── toolkit-berlin-test/
+```
 
-|  Product | Instructions Path |
-| :--- |:--- |
-| ```Identity Server``` | `/wso2ob-apim-toolkit-berlin-1.0.0-M1/READ.ME` |
-| ```API Manager``` | `/wso2ob-is-toolkit-berlin-1.0.0-M1/READ.ME` |
+## Building from Source
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/wso2/reference-implementation-nextgenpsd2.git
+cd components/reference-implementation-openbanking-nextgenpsd2
+```
+
+### Build Commands
+
+| Command | Description |
+| :--- | :--- |
+| `mvn install` | Build the project without cleaning the folders |
+| `mvn clean install` | Clean and build from scratch |
+
+## Installation and Setup
+
+1. Goto /components/reference-implementation-openbanking-nextgenpsd2/target/ folder and host the `api#reference-implementation#ob#nextgenpsd2.war` in a preferred location and get the base URL.
+
+!!!tip
+      - If you are hosting this in WSO2 Identity Server copy the `pi#reference-implementation#ob#nextgenpsd2.war` to the `<IS_HOME>/repository/deployment/server/webapps` folder.
+      - Add the following configurations to the deployment.toml file inside the `<IS_HOME>/repository/conf` folder.
+      ```
+      [[resource.access_control]]
+      context = "(.*)/api/reference-implementation/ob/nextgenpsd2/(.*)"
+      http_method = "all"
+      secure = "false"
+      ```
+
+## Configuring WSO2 Open Banking Accelerator 4.0.0 
+
+1. Update the following configurations in the deployment.toml file inside the `<IS_HOME>/repository/conf` folder.
+
+```
+[financial_services.extensions.endpoint]
+enabled = true
+# allowed extensions: "pre_process_client_creation", "pre_process_consent_creation"
+allowed_extensions = ["pre_process_client_creation", "pre_process_client_update", "pre_process_client_retrieval",
+    "pre_process_consent_creation", "enrich_consent_creation_response", "pre_process_consent_file_upload",
+    "enrich_consent_file_response", "pre_process_consent_retrieval", "validate_consent_file_retrieval",
+    "pre_process_consent_revoke", "enrich_consent_search_response", "populate_consent_authorize_screen",
+    "persist_authorized_consent", "validate_consent_access", "issue_refresh_token", "validate_authorization_request",
+    "validate_event_subscription", "enrich_event_subscription_response", "validate_event_creation",
+    "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
+base_url = "https://<HOSTNAME>:<PORT>/api/reference-implementation/ob/nextgenpsd2/"
+retry_count = 5
+connect_timeout = 5
+read_timeout = 5
+
+[financial_services.extensions.endpoint.security]
+# supported types : Basic-Auth or OAuth2
+type = "Basic-Auth"
+username = "<USERNAME>"
+password = "<PASSWORD>"
+```
+
+2. Start the IS server.
 
 
-### Reporting Issues
+## Running Tests
 
-We encourage you to report issues, documentation faults, and feature requests regarding the WSO2 OB Compliance Toolkit Berlin through the [WSO2 OB Compliance Toolkit Berlin Issue Tracker](https://github.com/wso2/reference-implementation-nextgenpsd2/issues).
+### Berlin Test Suite
 
-### License
+1. Configure `test-config.xml` in `open-banking-test-suite/toolkit-berlin-test/resources/`
+2. Navigate to the specific test package directory
+3. Run tests with:
+   ```bash
+   mvn clean install -DgroupToRun=<apiVersion>
+   # or
+   mvn test -DgroupToRun=<apiVersion>
+   ```
 
-WSO2 Inc. licenses this source under the WSO2 Software License ([LICENSE](https://github.com/wso2/reference-implementation-nextgenpsd2/blob/main/LICENSE)).
+For detailed test execution instructions, refer to [toolkit-berlin-test README](open-banking-test-suite/toolkit-berlin-test/README.md).
+
+## Self-Care Portal
+
+The Self-Care Portal is a React-based application for managing account access consents. See [Self-Care Portal README](react-apps/self-care-portal/README.md) for development and deployment instructions.
+
+## Reporting Issues
+
+We encourage you to report issues, documentation faults, and feature requests through the [WSO2 Open Banking Berlin Toolkit Issue Tracker](https://github.com/wso2/reference-implementation-nextgenpsd2/issues).
+
+## License
+
+WSO2 Inc. licenses this source under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
