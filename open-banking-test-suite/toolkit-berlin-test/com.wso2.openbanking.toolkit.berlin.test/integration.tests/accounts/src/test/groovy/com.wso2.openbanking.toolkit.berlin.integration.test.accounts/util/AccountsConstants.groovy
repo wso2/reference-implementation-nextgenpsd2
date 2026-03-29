@@ -59,9 +59,9 @@ class AccountsConstants {
     static final String SCA_STATUS_FINALISED = "finalised"
 
     //Bank Offered Consent - Account Selection
-    static final String ACCOUNTS_LIST_NORMAL_ACC = "//label[4]/input[@name='checkedAccountsAccountRefs']"
-    static final String TRANSACTION_LIST_NORMAL_ACC = "//label[4]/input[@name='checkedTransactionsAccountRefs']"
-    static final String BALANCES_LIST_NORMAL_ACC = "//label[4]/input[@name='checkedBalancesAccountRefs']"
+    static final String ACCOUNTS_LIST_NORMAL_ACC = "//label/input[contains(@name,'accounts-0') and contains(@id,'DE98765432109876543210')]"
+    static final String BALANCES_LIST_NORMAL_ACC = "//label/input[contains(@name,'accounts-1') and contains(@id,'DE98765432109876543210')]"
+    static final String TRANSACTION_LIST_NORMAL_ACC = "//label/input[contains(@name,'accounts-2') and contains(@id,'DE98765432109876543210')]"
     static final String ACCOUNTS_LIST_MULTICURRENCY_ACC = "//label[1]/input[@name='checkedAccountsAccountRefs']"
     static final String TRANSACTION_LIST_MULTICURRENCY_ACC = "//label[1]/input[@name='checkedTransactionsAccountRefs']"
     static final String BALANCES_LIST_MULTICURRENCY_ACC = "//label[1]/input[@name='checkedBalancesAccountRefs']"
@@ -81,4 +81,6 @@ class AccountsConstants {
         }
         return aispPath
     }
+
+    static final String SIGNING_BASKET_PATH = "/signing-baskets"
 }

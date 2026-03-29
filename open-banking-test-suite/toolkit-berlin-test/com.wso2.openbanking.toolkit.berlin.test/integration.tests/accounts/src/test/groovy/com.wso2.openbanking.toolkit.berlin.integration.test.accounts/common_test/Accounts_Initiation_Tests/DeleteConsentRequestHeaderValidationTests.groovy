@@ -98,7 +98,8 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                toString().contains("X-Request-ID header is missing in the request"))
+                toString().contains("Schema validation failed in the Request: Header parameter 'x-request-id' is " +
+                "required on path '/consents/{consentId}' but not found in request., "))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -126,7 +127,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals (TestUtil.parseResponseBody (consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT)
-                .toString (),"Input string \"1234\" is not a valid UUID")
+                .toString (),"Schema validation failed in the Request: Input string \"1234\" is not a valid UUID, ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -153,7 +154,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString(),
-                "X-Request-ID header is missing in the request")
+                "Schema validation failed in the Request: Parameter 'x-request-id' is required but is missing., ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -178,7 +179,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
 
         Assert.assertEquals(consentDeleteResponse.getStatusCode(), BerlinConstants.STATUS_CODE_401)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains ("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
+                .contains("Invalid Credentials. Make sure your API invocation call has a header: 'Authorization"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -205,7 +206,7 @@ class DeleteConsentRequestHeaderValidationTests extends AbstractAccountsFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_CODE)
                 .toString(), BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue(TestUtil.parseResponseBody(consentDeleteResponse, BerlinConstants.TPPMESSAGE_TEXT).toString()
-                .contains ("Token is not valid"))
+                .contains("Invalid Credentials. Make sure you have provided the correct security credentials"))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

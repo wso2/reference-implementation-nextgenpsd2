@@ -36,21 +36,21 @@ class AccountsDataProviders {
         Collection<Object[]> allAvailableAccounts = new ArrayList<Object[]>()
         List<Map<String, String>> listOfParamMaps = new ArrayList<Map<String, String>>()
         Map<String, String> allAvailableAccountsMap = new HashMap<String, String>()
-//        Map<String, String> allAccountsWithBalancesMap = new HashMap<String, String>()
+        Map<String, String> allAccountsWithBalancesMap = new HashMap<String, String>()
 
         allAvailableAccountsMap.put("consentPath", AccountsConstants.CONSENT_PATH)
         allAvailableAccountsMap.put("initiationPayload", AccountsInitiationPayloads.initiationPayloadForAllAccounts)
 
-//        if (apiVersion.equalsIgnoreCase("1.3.3")) {
-//            allAccountsWithBalancesMap.put("consentPath", AccountsConstants.CONSENT_PATH)
-//            allAccountsWithBalancesMap.put("initiationPayload", AccountsInitiationPayloads.initiationPayloadForAvailableAccountsWithBalances)
-//        } else {
-//            allAccountsWithBalancesMap.put("consentPath", AccountsConstants.CONSENT_PATH)
-//            allAccountsWithBalancesMap.put("initiationPayload", AccountsInitiationPayloads.initiationPayloadForAvailableAccountsWithBalance)
-//        }
+        if (apiVersion.equalsIgnoreCase("1.3.3")) {
+            allAccountsWithBalancesMap.put("consentPath", AccountsConstants.CONSENT_PATH)
+            allAccountsWithBalancesMap.put("initiationPayload", AccountsInitiationPayloads.initiationPayloadForAvailableAccountsWithBalances)
+        } else {
+            allAccountsWithBalancesMap.put("consentPath", AccountsConstants.CONSENT_PATH)
+            allAccountsWithBalancesMap.put("initiationPayload", AccountsInitiationPayloads.initiationPayloadForAvailableAccountsWithBalance)
+        }
 
         listOfParamMaps.add(allAvailableAccountsMap)
-//        listOfParamMaps.add(allAccountsWithBalancesMap)
+        listOfParamMaps.add(allAccountsWithBalancesMap)
 
         for (Map<String, String> map : listOfParamMaps) {
             allAvailableAccounts.add([map] as Object[])
@@ -99,7 +99,7 @@ class AccountsDataProviders {
                                            [AccountsConstants.BALANCES_LIST_NORMAL_ACC],
                                            AccountsInitiationPayloads.BalancesBankOfferedConsentPayload] as Object[])
 
-        invalidBankOfferedConsentList.add(["com.wso2.openbanking.toolkit.berlin.integration.test.accounts from bank offered consent",
+        invalidBankOfferedConsentList.add(["accounts from bank offered consent",
                                            [AccountsConstants.ACCOUNTS_LIST_NORMAL_ACC],
                                            AccountsInitiationPayloads.AccountsBankOfferedConsentPayload] as Object[])
 

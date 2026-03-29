@@ -53,7 +53,7 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"access\"])")
+                "Schema validation failed in the Request: Object has missing required properties ([\"access\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -116,7 +116,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"recurringIndicator\"])")
+                "Schema validation failed in the Request: Object has missing required properties " +
+                        "([\"recurringIndicator\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -155,7 +156,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"validUntil\"])")
+                "Schema validation failed in the Request: Object has missing required properties " +
+                        "([\"validUntil\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -194,7 +196,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"frequencyPerDay\"])")
+                "Schema validation failed in the Request: Object has missing required properties " +
+                        "([\"frequencyPerDay\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -233,7 +236,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Object has missing required properties ([\"combinedServiceIndicator\"])")
+                "Schema validation failed in the Request: Object has missing required properties " +
+                        "([\"combinedServiceIndicator\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -434,7 +438,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Numeric instance is lower than the required minimum (minimum: 1, found: 0)")
+                "Schema validation failed in the Request: [Path '/frequencyPerDay'] Numeric instance is lower than " +
+                        "the required minimum (minimum: 1, found: 0), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -474,7 +479,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
-                .contains("Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])"))
+                .contains("Schema validation failed in the Request: [Path '/frequencyPerDay'] Instance type (string) " +
+                        "does not match any allowed primitive type (allowed: [\"integer\"]), "))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -515,7 +521,8 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim()
-                .contains("Instance type (string) does not match any allowed primitive type (allowed: [\"integer\"])"))
+                .contains("Schema validation failed in the Request: [Path '/frequencyPerDay'] Instance type (string) " +
+                        "does not match any allowed primitive type (allowed: [\"integer\"]), "))
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])
@@ -682,8 +689,9 @@ class AccountsInitiationRequestPayloadValidationTests extends AbstractAccountsFl
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT).trim(),
-                "Object has missing required properties ([\"access\",\"combinedServiceIndicator\",\"frequencyPerDay\"," +
-                        "\"recurringIndicator\",\"validUntil\"])")
+                "Schema validation failed in the Request: Object has missing required properties " +
+                        "([\"access\",\"combinedServiceIndicator\",\"frequencyPerDay\",\"recurringIndicator\"," +
+                        "\"validUntil\"]), ")
     }
 
     @Test (groups = ["1.3.3", "1.3.6"])

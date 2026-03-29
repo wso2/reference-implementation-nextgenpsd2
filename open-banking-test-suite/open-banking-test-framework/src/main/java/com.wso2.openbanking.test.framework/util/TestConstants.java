@@ -215,4 +215,5 @@ public class TestConstants {
 	public static final String CONTENT_TYPE_MULTIPART = "multipart/form-data";
 	public static final String REST_API_SCIM2_ENDPOINT = "/scim2";
 	public static final String CONTENT_TYPE_APPLICATION_SCIM_JSON = "application/scim+json";
+	public static final String X_WSO2_MUTUAL_CERT = "x-wso2-mutual-auth-cert";
 }

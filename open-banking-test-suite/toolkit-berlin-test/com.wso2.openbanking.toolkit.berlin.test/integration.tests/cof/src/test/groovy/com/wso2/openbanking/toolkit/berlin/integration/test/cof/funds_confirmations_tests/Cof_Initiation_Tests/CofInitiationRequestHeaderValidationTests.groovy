@@ -141,7 +141,7 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.TOKEN_INVALID)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains("Token is not valid"))
+                contains("Invalid Credentials. Make sure you have provided the correct security credentials"))
     }
 
     @Test (groups = ["1.3.6"])
@@ -164,7 +164,8 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_CODE),
                 BerlinConstants.FORMAT_ERROR)
         Assert.assertTrue (TestUtil.parseResponseBody (consentResponse, BerlinConstants.TPPMESSAGE_TEXT).
-                contains ("X-Request-ID header is missing in the request"))
+                contains ("Schema validation failed in the Request: Header parameter 'x-request-id' is required on " +
+                        "path '/consents/confirmation-of-funds' but not found in request., "))
     }
 
     @Test (groups = ["1.3.6"])
@@ -189,7 +190,7 @@ class CofInitiationRequestHeaderValidationTests extends AbstractCofFlow {
                 BerlinConstants.FORMAT_ERROR)
 
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, BerlinConstants.TPPMESSAGE_TEXT),
-                "Input string \"1234\" is not a valid UUID")
+                "Schema validation failed in the Request: Input string \"1234\" is not a valid UUID, ")
     }
 
     @Test (groups = ["1.3.6"])

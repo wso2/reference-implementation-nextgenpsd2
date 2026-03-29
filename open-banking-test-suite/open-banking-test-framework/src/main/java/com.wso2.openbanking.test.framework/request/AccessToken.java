@@ -24,6 +24,7 @@ import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto;
 import com.wso2.openbanking.test.framework.model.UserAccessTokenDto;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
+import com.wso2.openbanking.test.framework.util.TestUtil;
 import io.restassured.response.Response;
 
 /**
@@ -41,6 +42,7 @@ public class AccessToken {
 
         ApplicationAccessTokenDto applicationAccessTokenDto = new ApplicationAccessTokenDto();
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+            .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
             .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .relaxedHTTPSValidation()
             .body(applicationAccessTokenDto.getPayload())
@@ -72,6 +74,7 @@ public class AccessToken {
 
         String payload = applicationAccessTokenDto.getPayload(clientId);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+            .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
             .body(payload)
             .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
             .post(TestConstants.TOKEN_ENDPOINT);
@@ -89,6 +92,7 @@ public class AccessToken {
         throws TestFrameworkException {
 
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(payload)
                 .post(TestConstants.TOKEN_ENDPOINT);
@@ -105,6 +109,7 @@ public class AccessToken {
         UserAccessTokenDto userAccessTokenDto = new UserAccessTokenDto();
         userAccessTokenDto.setCode(code);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(userAccessTokenDto.getPayload())
                 .post(TestConstants.TOKEN_ENDPOINT);
@@ -121,6 +126,7 @@ public class AccessToken {
 
         userAccessTokenDto.setCode(code);
         return TestSuite.buildRequest().contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(TestConstants.X_WSO2_MUTUAL_CERT, TestUtil.getPublicKeyFromTransportKeyStore())
                 .baseUri(ConfigParser.getInstance().getAuthorisationServerURL())
                 .body(userAccessTokenDto.getPayload())
                 .post(TestConstants.TOKEN_ENDPOINT);

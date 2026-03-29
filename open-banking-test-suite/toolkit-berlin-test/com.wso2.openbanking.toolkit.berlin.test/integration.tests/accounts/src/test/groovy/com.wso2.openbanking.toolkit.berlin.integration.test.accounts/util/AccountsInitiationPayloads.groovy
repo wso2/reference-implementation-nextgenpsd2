@@ -443,9 +443,22 @@ class AccountsInitiationPayloads {
                },
                "recurringIndicator":false,
                "validUntil":"${BerlinTestUtil.getDateAndTime(5)}",
-               "frequencyPerDay":4,
+               "frequencyPerDay":1,
                "combinedServiceIndicator":false
                
         }
     """.stripIndent()
+
+    static String signingBasketInitiationPayloadBuilder(String consentId1, String consentId2) {
+
+        String signingBasketInitiationPayload =  """{
+             "consentIds": [
+                "$consentId1", 
+                "$consentId2"
+             ]
+        }"""
+                .stripIndent()
+
+        return signingBasketInitiationPayload
+    }
 }

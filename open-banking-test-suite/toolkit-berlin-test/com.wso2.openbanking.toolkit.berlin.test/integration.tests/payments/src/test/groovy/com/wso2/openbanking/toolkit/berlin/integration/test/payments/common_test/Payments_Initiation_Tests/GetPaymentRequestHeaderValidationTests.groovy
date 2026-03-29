@@ -64,7 +64,8 @@ class GetPaymentRequestHeaderValidationTests extends AbstractPaymentsFlow {
             Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_CODE).toString(),
                     BerlinConstants.TOKEN_INVALID)
             Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, BerlinConstants.TPPMESSAGE_TEXT).toString().
-                    contains("Incorrect Access Token Type provided"))
+                    contains("The claim configured in the system and the claim provided in the token do not align. " +
+                            "Please ensure the claims match."))
         }
     }
 

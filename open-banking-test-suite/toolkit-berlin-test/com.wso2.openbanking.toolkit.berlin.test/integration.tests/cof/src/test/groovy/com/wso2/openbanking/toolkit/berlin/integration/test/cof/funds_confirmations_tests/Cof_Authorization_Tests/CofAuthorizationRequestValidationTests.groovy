@@ -172,9 +172,15 @@ class CofAuthorizationRequestValidationTests extends AbstractCofFlow {
         def request = OAuthAuthorizationRequestBuilder.OAuthRequestWithoutRedirectionURI(scopes, consentId)
         consentAuthorizeErrorFlow(request)
 
-        def oauthErrorCode = TestUtil.getDecodedUrl(automation.currentUrl.get())
-
-        Assert.assertEquals(oauthErrorCode, "Redirect URI is not present in the authorization request")
+        new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AuthAutomationSteps(request.toURI().toString()))
+                .addStep {driver, context ->
+                    WebElement lblErrorResponse = driver.findElement(By.xpath(BerlinConstants
+                            .LBL_AUTH_PAGE_CLIENT_INVALID_ERROR_200))
+                    Assert.assertTrue(lblErrorResponse.getText().trim().contains("Redirect URI is not present in the " +
+                            "authorization request"))
+                }
+                .execute()
     }
 
     @Test (groups = ["1.3.6"])
