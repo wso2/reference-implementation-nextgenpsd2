@@ -18,38 +18,34 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsentRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PopulateConsentAuthorizeScreenData;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Resource;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenData;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsentData;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentAuthorizationHandler;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.common.Resource;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.AuthorizedResourcesAuthorizedDataInner;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.DetailedConsentResourceDataWithAmendments;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PersistAuthorizedConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.SuccessResponsePopulateConsentAuthorizeScreenData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.SuccessResponsePopulateConsentAuthorizeScreenDataConsentData;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.AccountConsentUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConsentValidationUtil;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.CommonConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ConsentAuthorizationUtil;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ExtensionEnums;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.JsonUtil;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.PaymentConsentUtil;
 
 import java.util.List;
-
-import javax.ws.rs.core.Response;
 
 /**
  * Consent handler interface for processing account consent authorization related requests.
  */
 public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandler {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Return basic consent data for payment consents.
@@ -100,15 +96,8 @@ public class PaymentConsentAuthorizeHandler implements ConsentAuthorizationHandl
             throws AuthorizationFailureException, ExtensionException {
 
         // Extract debtor account reference
-        JSONObject debtorAccountRef;
-        try {
-            JSONObject receipt =
-                    new JSONObject(objectMapper.writeValueAsString(requestData.getConsentResource().getReceipt()));
-            debtorAccountRef = receipt.getJSONObject(CommonConstants.DEBTOR_ACCOUNT);
-        } catch (JsonProcessingException e) {
-            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Failed to fetch consent initiation payload from payment consent", e);
-        }
+        JSONObject receipt = JsonUtil.convertObjectToJson(requestData.getConsentResource().getReceipt());
+        JSONObject debtorAccountRef = receipt.getJSONObject(CommonConstants.DEBTOR_ACCOUNT);
 
         // Populate subject debtor account of the consent to be authorized by user
         CommonConsentValidationUtil.populateConsentInitiatedAccounts(responseData, requestData, debtorAccountRef);

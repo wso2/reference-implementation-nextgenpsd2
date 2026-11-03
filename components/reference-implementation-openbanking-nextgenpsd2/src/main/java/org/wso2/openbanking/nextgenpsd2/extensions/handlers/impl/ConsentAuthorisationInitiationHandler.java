@@ -18,17 +18,17 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.handlers.impl;
 
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ValidationFailureException;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.EnrichConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentCreationRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PreProcessConsentRequestBody;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseConsentRevocation;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponseForResponseAlternation;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.SuccessResponsePreProcessConsentCreation;
 import org.wso2.openbanking.nextgenpsd2.extensions.handlers.ConsentInitiationHandler;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.EnrichConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PreProcessConsentCreationRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PreProcessConsentRequestBody;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.SuccessResponseConsentRevocation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.SuccessResponseForResponseAlternation;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.SuccessResponsePreProcessConsentCreation;
+import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorConstants;
 import org.wso2.openbanking.nextgenpsd2.extensions.utils.ErrorUtil;
 
 import javax.ws.rs.core.Response;
@@ -52,7 +52,7 @@ public class ConsentAuthorisationInitiationHandler implements ConsentInitiationH
     public SuccessResponsePreProcessConsentCreation handleCreation(PreProcessConsentCreationRequestBody requestBody)
             throws ValidationFailureException, ExtensionException {
         // Throws an error since creating auth object for an existing consent is not supported
-        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+        throw new ValidationFailureException(Response.Status.BAD_REQUEST,
                 ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                         TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
@@ -72,7 +72,7 @@ public class ConsentAuthorisationInitiationHandler implements ConsentInitiationH
     public SuccessResponseForResponseAlternation handleRetrieval(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, ExtensionException {
         // Throws an error since auth resources for a consent cannot be retrieved through consent creation
-        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+        throw new ValidationFailureException(Response.Status.BAD_REQUEST,
                 ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                         TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.DELETE_NOT_SUPPORTED));
     }
@@ -91,7 +91,7 @@ public class ConsentAuthorisationInitiationHandler implements ConsentInitiationH
     public SuccessResponseConsentRevocation handleRevocation(PreProcessConsentRequestBody requestBody)
             throws ValidationFailureException, ExtensionException {
         // Throws an error since auth resources for a consent cannot be retrieved through consent creation
-        throw new ValidationFailureException(ValidationFailureException.ErrorCode.BAD_REQUEST,
+        throw new ValidationFailureException(Response.Status.BAD_REQUEST,
                 ErrorUtil.constructBerlinError(null, TPPMessage.CategoryEnum.ERROR,
                         TPPMessage.CodeEnum.SERVICE_INVALID_405, ErrorConstants.AUTH_CREATION_NOT_SUPPORTED));
     }
@@ -110,7 +110,7 @@ public class ConsentAuthorisationInitiationHandler implements ConsentInitiationH
     @Override
     public SuccessResponseForResponseAlternation enrichCreationResponse(EnrichConsentCreationRequestBody requestBody)
             throws ExtensionException {
-        throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+        throw new ExtensionException(Response.Status.BAD_REQUEST, ErrorConstants.INVALID_REQUEST,
                 ErrorConstants.AUTH_CREATION_NOT_SUPPORTED);
     }
 }

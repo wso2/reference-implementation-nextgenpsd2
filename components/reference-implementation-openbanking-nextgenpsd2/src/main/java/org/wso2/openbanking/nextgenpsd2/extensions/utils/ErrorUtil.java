@@ -22,12 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.ErrorResponse;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponse;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorize;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.FailedResponseInConsentAuthorizeData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessage;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.TPPMessages;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.common.FailedResponse;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.FailedResponseInConsentAuthorize;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.FailedResponseInConsentAuthorizeData;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.error.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,10 @@ import java.util.List;
 /**
  * Utility class for building and processing error objects.
  */
-public class ErrorUtil {
+public final class ErrorUtil {
+
+    private ErrorUtil() {
+    }
     /**
      * Method to get ErrorResponse object for error.
      * @param errorMessage error message
@@ -89,7 +92,7 @@ public class ErrorUtil {
         tppMessagesList.add(tppMessage);
         tppMessages.setTppMessages(tppMessagesList);
 
-        return CommonConsentValidationUtil.convertObjectToJson(tppMessages);
+        return JsonUtil.convertObjectToJson(tppMessages);
     }
 
     /**
@@ -125,7 +128,7 @@ public class ErrorUtil {
         TPPMessages tppMessages = new TPPMessages();
         tppMessages.setTppMessages(tppErrorMessages);
 
-        return CommonConsentValidationUtil.convertObjectToJson(tppMessages);
+        return JsonUtil.convertObjectToJson(tppMessages);
     }
 
     /**

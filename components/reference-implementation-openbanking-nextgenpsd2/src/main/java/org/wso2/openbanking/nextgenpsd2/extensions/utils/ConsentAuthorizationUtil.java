@@ -18,10 +18,6 @@
 
 package org.wso2.openbanking.nextgenpsd2.extensions.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,28 +28,25 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ConfigurationConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.CommonConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ErrorConstants;
-import org.wso2.openbanking.nextgenpsd2.extensions.constants.ExtensionEnums;
+import org.wso2.openbanking.nextgenpsd2.extensions.configurations.ExtensionConfiguration;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.AuthorizationFailureException;
 import org.wso2.openbanking.nextgenpsd2.extensions.exceptions.ExtensionException;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Account;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AmendedAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.AuthorizedResourcesAuthorizedDataInner;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.DetailedConsentResourceDataWithAmendments;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.PersistAuthorizedConsent;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.Resource;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredAuthorization;
-import org.wso2.openbanking.nextgenpsd2.extensions.generated.model.StoredDetailedConsentResourceData;
 import org.wso2.openbanking.nextgenpsd2.extensions.model.AccountReference;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.common.Resource;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.Account;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.AmendedAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.AuthorizedResourcesAuthorizedDataInner;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.DetailedConsentResourceDataWithAmendments;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.PersistAuthorizedConsent;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.StoredAuthorization;
+import org.wso2.openbanking.nextgenpsd2.extensions.model.consent.StoredDetailedConsentResourceData;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -62,11 +55,11 @@ import javax.ws.rs.core.Response;
 /**
  * Utility class for consent authorization.
  */
-public class ConsentAuthorizationUtil {
+public final class ConsentAuthorizationUtil {
+
+    private ConsentAuthorizationUtil() {
+    }
     private static final Log log = LogFactory.getLog(ConsentAuthorizationUtil.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     /**
      * Validates the consent Id with provided consent type in scope string. If not valid, an error is sent to the
@@ -87,21 +80,16 @@ public class ConsentAuthorizationUtil {
 
         if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.ACCOUNTS.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.AIS_SCOPE)) {
-            log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
         }
 
-        if ((StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString(), consentType)
-                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString(), consentType)
-                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), consentType))
+        if (ExtensionEnums.ConsentTypeEnum.isPaymentType(consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.PIS_SCOPE)) {
-            log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
         }
 
         if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.FUNDS_CONFIRMATION.toString(), consentType)
                 && !StringUtils.contains(scopeString, CommonConstants.PIIS_SCOPE)) {
-            log.error(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
             throw new AuthorizationFailureException(ErrorConstants.CONSENT_ID_AND_SCOPE_MISMATCH);
         }
     }
@@ -184,9 +172,7 @@ public class ConsentAuthorizationUtil {
                     || StringUtils.equals(ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString(),
                     consentStatus);
 
-        } else if (StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString(), type)
-                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString(), type)
-                || StringUtils.equals(ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString(), type)) {
+        } else if (ExtensionEnums.ConsentTypeEnum.isPaymentType(type)) {
             if (StringUtils.equals(ExtensionEnums.AuthTypeEnum.CANCELLATION.toString(), authObj.getType())) {
                 // Ignores consent status
                 isApplicable = true;
@@ -207,9 +193,7 @@ public class ConsentAuthorizationUtil {
         }
 
         if (!isApplicable) {
-            log.error(String.format("[%s] The consent of Id: %s is not in an applicable status for authorization",
-                    requestId, consentResource.getId()));
-            throw new AuthorizationFailureException("The consent is not in an applicable status for authorization");
+            throw new AuthorizationFailureException(ErrorConstants.CONSENT_STATUS_NOT_APPLICABLE);
         }
     }
 
@@ -329,13 +313,8 @@ public class ConsentAuthorizationUtil {
      */
     public static List<Account> getValidatedAccountObjects(List<AccountReference> accountRefList,
                                                     JSONArray accountList) throws ExtensionException {
-        try {
-            JSONArray accountRefArrayJSON = new JSONArray(objectMapper.writeValueAsString(accountRefList));
-            return getValidatedAccountObjects(accountRefArrayJSON, accountList);
-        } catch (JsonProcessingException e) {
-            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Failed to process account reference objects", e);
-        }
+        return getValidatedAccountObjects(new JSONArray(JsonUtil.serializeToJsonString(accountRefList)),
+                accountList);
     }
 
     /**
@@ -364,18 +343,31 @@ public class ConsentAuthorizationUtil {
     public static boolean areAllOtherAuthResourcesValid(StoredAuthorization authorizingResource,
                                                         List<StoredAuthorization> allAuthorizations) {
         //ToDo: Make sure in explicit consent authorization that only one authorization can be created per user
-        //Remove current authorization resource from the list
-        allAuthorizations.removeIf(resource
-                -> (StringUtils.equals(resource.getId(), authorizingResource.getId())
-                || !StringUtils.equals(resource.getType(), authorizingResource.getType())));
+        // The authorizations of the consent are read, never modified, since the caller keeps using the list
+        // after this check, most notably to calculate the aggregated consent status.
+        return getOtherAuthorizationsOfSameType(authorizingResource, allAuthorizations).stream()
+                .allMatch(authorisation -> StringUtils.equals(authorisation.getStatus(),
+                        ExtensionEnums.ScaStatusEnum.PSU_AUTHENTICATED.toString()));
+    }
 
-        if (allAuthorizations.isEmpty()) {
-            return true;
-        } else {
-            return allAuthorizations.stream().allMatch(authorisation
-                    -> StringUtils.equals(authorisation.getStatus(),
-                    ExtensionEnums.ScaStatusEnum.PSU_AUTHENTICATED.toString()));
+    /**
+     * Returns the authorizations of the consent other than the one being authorized, leaving out those of a
+     * different type, since an authorisation and a cancellation of the same consent are authorized separately.
+     *
+     * @param authorizingResource authorization resource being authorized
+     * @param allAuthorizations   all the authorizations associated with this consent
+     * @return the other authorizations of the same type, which is empty when there are none
+     */
+    private static List<StoredAuthorization> getOtherAuthorizationsOfSameType(
+            StoredAuthorization authorizingResource, List<StoredAuthorization> allAuthorizations) {
+        if (allAuthorizations == null) {
+            return Collections.emptyList();
         }
+
+        return allAuthorizations.stream()
+                .filter(resource -> !StringUtils.equals(resource.getId(), authorizingResource.getId())
+                        && StringUtils.equals(resource.getType(), authorizingResource.getType()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -392,7 +384,7 @@ public class ConsentAuthorizationUtil {
     public static boolean isPaymentResourceSubmitted(String paymentId, String paymentData, String submissionType)
             throws IOException {
 
-        String paymentBackendURL = ConfigurationConstants.PAYMENT_BACKEND_URL;
+        String paymentBackendURL = ExtensionConfiguration.getPaymentBackendUrl();
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost request = new HttpPost(paymentBackendURL + "/" + submissionType + "/" + paymentId);
@@ -434,56 +426,46 @@ public class ConsentAuthorizationUtil {
     }
 
     /**
-     * Calculates aggregate consent status based on status of all authorization resources.
+     * Calculates the aggregated consent status from the status of all authorization resources of the consent.
+     * <p>
+     * This is called while the PSU approval of the authorizing resource is being persisted, so that resource is
+     * counted as passed rather than by the status it still carries in the request. The consent therefore reaches
+     * its final status only once every other authorization of the same type has been finalised, and is rejected
+     * as soon as one of them has failed.
      *
      * @param storedAuthorizations authorization resources sent with the request
      * @param authorizingResource resource being authorized by the SCA
+     * @param isTransaction whether the consent is a payment, which carries a transaction status
      * @return new consent status based on authorization status of all authorization objects
      */
-    public static Optional<String> getAggregatedConsentStatus(List<StoredAuthorization> storedAuthorizations,
-                                                                         StoredAuthorization authorizingResource,
-                                                                         boolean isTransaction) {
+    public static String getAggregatedConsentStatus(List<StoredAuthorization> storedAuthorizations,
+                                                    StoredAuthorization authorizingResource,
+                                                    boolean isTransaction) {
 
-        // Have all authorisations passed.
-        boolean hasPassed = storedAuthorizations.stream().allMatch(
-                authorisation -> authorisation.getStatus().equals(
-                        ExtensionEnums.ScaStatusEnum.FINALISED.toString())
-                        || StringUtils.equals(authorisation.getId(), authorizingResource.getId()));
+        List<StoredAuthorization> otherAuthorizations =
+                getOtherAuthorizationsOfSameType(authorizingResource, storedAuthorizations);
 
-        if (hasPassed) {
-            if (isTransaction) {
-                return Optional.of(ExtensionEnums.TransactionStatusEnum.ACCP.name());
-            } else {
-                return Optional.of(ExtensionEnums.ConsentStatusEnum.VALID.toString());
-            }
+        // Have all the other authorisations passed. Holds for a consent authorized by a single PSU.
+        boolean haveAllPassed = otherAuthorizations.stream().allMatch(authorisation -> StringUtils.equals(
+                ExtensionEnums.ScaStatusEnum.FINALISED.toString(), authorisation.getStatus()));
+
+        if (haveAllPassed) {
+            return isTransaction ? ExtensionEnums.TransactionStatusEnum.ACCP.name()
+                    : ExtensionEnums.ConsentStatusEnum.VALID.toString();
         }
 
-        // Has at least one authorisation failed
-        boolean hasFailed = storedAuthorizations.stream().anyMatch(
-                authorisation -> authorisation.getStatus().equals(
-                        ExtensionEnums.ScaStatusEnum.FAILED.toString())
-                        || StringUtils.equals(authorisation.getId(), authorizingResource.getId()));
+        // Has at least one of the other authorisations failed
+        boolean hasAnyFailed = otherAuthorizations.stream().anyMatch(authorisation -> StringUtils.equals(
+                ExtensionEnums.ScaStatusEnum.FAILED.toString(), authorisation.getStatus()));
 
-        if (hasFailed) {
-            if (isTransaction) {
-                return Optional.of(ExtensionEnums.TransactionStatusEnum.RJCT.name());
-            } else {
-                return Optional.of(ExtensionEnums.ConsentStatusEnum.REJECTED.toString());
-            }
+        if (hasAnyFailed) {
+            return isTransaction ? ExtensionEnums.TransactionStatusEnum.RJCT.name()
+                    : ExtensionEnums.ConsentStatusEnum.REJECTED.toString();
         }
 
-        // Has at least a single successful authorisation taken place.
-        boolean partiallyPassed = storedAuthorizations.stream().anyMatch(authorisation ->
-                authorisation.getStatus().equals(ExtensionEnums.ScaStatusEnum.FINALISED.toString()));
-
-        if (partiallyPassed) {
-            if (isTransaction) {
-                return Optional.of(ExtensionEnums.TransactionStatusEnum.PATC.name());
-            } else {
-                return Optional.of(ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString());
-            }
-        }
-        return Optional.empty();
+        // The authorization being persisted has passed while others are still awaiting their PSU
+        return isTransaction ? ExtensionEnums.TransactionStatusEnum.PATC.name()
+                : ExtensionEnums.ConsentStatusEnum.PARTIALLY_AUTHORISED.toString();
     }
 
     /**
@@ -511,12 +493,14 @@ public class ConsentAuthorizationUtil {
      */
     public static void verifySingleAuthorizedResource(List<AuthorizedResourcesAuthorizedDataInner> authorizedData)
             throws ExtensionException {
+        if (authorizedData == null || authorizedData.isEmpty()) {
+            throw new ExtensionException(Response.Status.BAD_REQUEST, ErrorConstants.INVALID_REQUEST,
+                    ErrorConstants.SINGLE_ACCOUNT_CONSENT_ACCOUNT_MISSING);
+        }
+
         if (authorizedData.size() > 1 || authorizedData.get(0).getAccounts().size() > 1) {
-            log.error("Retrieved more than one authorized account for a consent that " +
-            "can have only a single account");
-            throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
-                    "Retrieved more than one authorized account for a consent that " +
-                    "can have only a single account");
+            throw new ExtensionException(Response.Status.BAD_REQUEST, ErrorConstants.INVALID_REQUEST,
+                    ErrorConstants.SINGLE_ACCOUNT_CONSENT_MULTIPLE_ACCOUNTS);
         }
     }
 
@@ -538,9 +522,7 @@ public class ConsentAuthorizationUtil {
             throws ExtensionException, AuthorizationFailureException {
 
         String consentType = requestData.getConsentResource().getType();
-        boolean isTransaction = ExtensionEnums.ConsentTypeEnum.PAYMENTS.toString().equals(consentType)
-                || ExtensionEnums.ConsentTypeEnum.PERIODIC_PAYMENTS.toString().equals(consentType)
-                || ExtensionEnums.ConsentTypeEnum.BULK_PAYMENTS.toString().equals(consentType);
+        boolean isTransaction = ExtensionEnums.ConsentTypeEnum.isPaymentType(consentType);
 
         String newConsentStatus;
         if (!isApproved) {
@@ -555,28 +537,14 @@ public class ConsentAuthorizationUtil {
                     }
                     throw new AuthorizationFailureException(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 } else {
-                    log.error(ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
-                    throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request",
+                    throw new ExtensionException(Response.Status.BAD_REQUEST, ErrorConstants.INVALID_REQUEST,
                             ErrorConstants.APPROVE_WITH_NO_ACCOUNTS_ERROR);
                 }
             }
 
             // Set aggregate consent status
-            Optional<String> consentStatus = getAggregatedConsentStatus(
-                    requestData.getConsentResource().getAuthorizations(),
-                    authorizingResource,
-                    isTransaction
-            );
-
-            if (consentStatus.isPresent()) {
-                newConsentStatus = consentStatus.get();
-            } else {
-                log.error(String.format(ErrorConstants.INVALID_CONSENT_STATUS_UPDATE,
-                        requestData.getConsentId()));
-                throw new ExtensionException(Response.Status.BAD_REQUEST, "invalid_request", 
-                        String.format(ErrorConstants.INVALID_CONSENT_STATUS_UPDATE,
-                                requestData.getConsentId()));
-            }
+            newConsentStatus = getAggregatedConsentStatus(requestData.getConsentResource().getAuthorizations(),
+                    authorizingResource, isTransaction);
         }
 
         // Build auth amendments
